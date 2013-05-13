@@ -1,4 +1,4 @@
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import javafx.geometry.Orientation;

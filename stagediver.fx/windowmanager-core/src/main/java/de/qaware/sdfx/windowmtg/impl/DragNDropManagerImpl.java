@@ -1,7 +1,7 @@
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.application.Platform;
+
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;

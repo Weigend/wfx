@@ -1,6 +1,6 @@
 package de.qaware.sdfx.examplegui;
 
-import de.qaware.sdfx.windowmtg.api.FXMLView;
+import de.qaware.sdfx.windowmtg.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.osgi.framework.BundleActivator;
@@ -43,17 +43,13 @@ public class Activator implements BundleActivator {
 
                     @Override
                     public void modifiedService(ServiceReference<WindowManager> reference, Object o) {
-
                     }
 
                     @Override
                     public void removedService(ServiceReference<WindowManager> reference, Object o) {
-                        //To change body of implemented methods use File | Settings | File Templates.
                     }
                 });
         tracker.open();
-
-
     }
 
     @Override

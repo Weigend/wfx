@@ -12,14 +12,14 @@
 //         Copyright: (c) QAware GmbH
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.windowmtg.api;
+package de.qaware.sdfx.windowmtg;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
 import java.io.IOException;
 import java.net.URL;
 

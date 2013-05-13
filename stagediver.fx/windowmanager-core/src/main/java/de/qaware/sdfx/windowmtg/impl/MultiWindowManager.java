@@ -1,7 +1,6 @@
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.fxml.Initializable;
 
 /**
  *

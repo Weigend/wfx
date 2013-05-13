@@ -1,4 +1,4 @@
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.impl;
 
 import com.google.common.collect.ImmutableList;
 import javafx.event.EventHandler;

@@ -1,4 +1,4 @@
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.impl;
 
 import javafx.fxml.Initializable;
 import javafx.scene.input.DataFormat;
