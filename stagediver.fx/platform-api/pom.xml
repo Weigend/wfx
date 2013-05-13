@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>stagediver.fx</artifactId>
+        <groupId>de.qaware.stagediver.fx</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>platform-api</artifactId>
+    <packaging>bundle</packaging>
+
+    <name>platform-api</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-api</artifactId>
+        </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!--<Bundle-Activator>de.qaware.sdfx.windowmtg.WindowMtgActivator</Bundle-Activator>-->
+                        <Private-Package>de.qaware.sdfx.platform.*</Private-Package>
+                        <Export-Package>de.qaware.sdfx.platform.api</Export-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

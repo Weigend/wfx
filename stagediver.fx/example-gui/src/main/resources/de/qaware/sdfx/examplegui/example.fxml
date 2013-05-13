@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<VBox fx:id="root" fillWidth="true" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml" fx:controller="de.qaware.sdfx.examplegui.ExampleController">
+  <Label prefHeight="112.0" prefWidth="210.0" style="background-color: #c4c400;" text="ExampleGui" textFill="BLACK" />
+</VBox>
