@@ -60,7 +60,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.windowmtg.WindowMtgActivator</Bundle-Activator>
+                        <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowMtgActivator</Bundle-Activator>
                         <Private-Package>de.qaware.sdfx.windowmtg.*</Private-Package>
                     </instructions>
 
