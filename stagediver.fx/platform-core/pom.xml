@@ -36,10 +36,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.platform.PlatformActivator</Bundle-Activator>
-                       <!-- <Private-Package>de.qaware.sdfx.platform.*</Private-Package>-->
-                        <Export-Package>de.qaware.sdfx.platform</Export-Package>
-
+                        <Bundle-Activator>de.qaware.sdfx.platform.impl.PlatformActivator</Bundle-Activator>
+                        <Private-Package>de.qaware.sdfx.platform.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
