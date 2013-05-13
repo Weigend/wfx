@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 /**
- *
+ * Register the a example view within the window manager.
  */
 public class Activator implements BundleActivator {
 
@@ -31,11 +31,9 @@ public class Activator implements BundleActivator {
                     public Object addingService(ServiceReference<WindowManager> reference) {
                         WindowManager manager = context.getService(reference);
                         try {
-                            manager.register(
-                                    new FXMLView("example-1", "Example GUI", Position.CENTER,
-                                            "/de/qaware/sdfx/examplegui/example.fxml"));
-                        }
-                        catch (IOException e) {
+                            manager.register(new FXMLView("example-1", "Example GUI", Position.CENTER,
+                                    "/de/qaware/sdfx/examplegui/example.fxml", getClass().getClassLoader()));
+                        } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
                         return null;

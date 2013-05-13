@@ -14,6 +14,7 @@
 
 package de.qaware.sdfx.windowmtg;
 
+import com.google.common.base.Preconditions;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 
@@ -26,8 +27,10 @@ import java.net.URL;
 /**
  * This is the default implementation of a window management view. It loads the view from an fxml file and defines the
  * other needed values.
+ *
+ * @param <C> Defines the type of the controller class.
  */
-public class FXMLView implements View {
+public class FXMLView<C> implements View {
 
     private final String id;
 
@@ -39,19 +42,22 @@ public class FXMLView implements View {
 
     private final String toolTipInfo;
 
+    private final C controller;
+
     /**
      * Get a new view with the specified values.
      * <p/>
      * The resulted view will not have a tooltip.
      *
-     * @param id    The view id.
-     * @param title The view title.
-     * @param pos   The initial position of the view.
-     * @param file  The path to the fxml file.
-     * @throws java.io.IOException In case of the view can not be loaded.
+     * @param id          The view id.
+     * @param title       The view title.
+     * @param pos         The initial position of the view.
+     * @param file        The path to the fxml file.
+     * @param classLoader The class loader to resolve the fxml file and its controller.
+     * @throws IOException In case of the view can not be loaded.
      */
-    public FXMLView(String id, String title, Position pos, String file) throws IOException {
-        this(id, title, pos, file, null);
+    public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws IOException {
+        this(id, title, pos, file, null, classLoader);
     }
 
     /**
@@ -64,15 +70,23 @@ public class FXMLView implements View {
      * @param pos         The initial position of the view.
      * @param file        The path to the fxml file.
      * @param toolTipInfo The tooltip info.
-     * @throws java.io.IOException In case of the view can not be loaded.
+     * @param classLoader The class loader to resolve the fxml file and its controller.
+     * @throws IOException In case of the view can not be loaded.
      */
-    public FXMLView(String id, String title, Position pos, String file, String toolTipInfo) throws IOException {
+    public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, ClassLoader classLoader)
+            throws IOException {
+
+        Preconditions.checkNotNull(classLoader);
         this.id = id;
         this.title = title;
         this.defaultPosition = pos;
         this.toolTipInfo = toolTipInfo;
-        URL location = getClass().getResource(file);
-        rootPane = FXMLLoader.load(location);
+
+        URL location = classLoader.getResource(file);
+        FXMLLoader loader = new FXMLLoader(location);
+        loader.setClassLoader(classLoader);
+        rootPane = (Pane) loader.load();
+        controller = loader.getController();
     }
 
     @Override
@@ -98,5 +112,14 @@ public class FXMLView implements View {
     @Override
     public Node getRootNode() {
         return rootPane;
+    }
+
+    /**
+     * Get the controller instance.
+     *
+     * @return The controller instance.
+     */
+    public C getController() {
+        return controller;
     }
 }
