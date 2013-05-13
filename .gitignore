@@ -2,5 +2,8 @@
 *.iml
 *.ipr
 *.fxml.bak
-*/target/
-*/.idea/
+*/**/target/
+*/**/.idea/
+**/target/
+**/.idea/
+stagediver.fx/classes/
