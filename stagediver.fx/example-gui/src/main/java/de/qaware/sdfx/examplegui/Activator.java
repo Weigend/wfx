@@ -31,8 +31,16 @@ public class Activator implements BundleActivator {
                     public Object addingService(ServiceReference<WindowManager> reference) {
                         WindowManager manager = context.getService(reference);
                         try {
-                            manager.register(new FXMLView("example-1", "Example GUI", Position.CENTER,
-                                    "/de/qaware/sdfx/examplegui/example.fxml", getClass().getClassLoader()));
+                            FXMLView<ExampleController> center = new FXMLView<>("example-1", "Example GUI",
+                                    Position.CENTER, "/de/qaware/sdfx/examplegui/example.fxml",
+                                    getClass().getClassLoader());
+
+                            FXMLView<ExampleExplorerController> explorer = new FXMLView<>("example-explorer-1",
+                                    "Example Explorer", Position.LEFT,
+                                    "/de/qaware/sdfx/examplegui/example_explorer.fxml", getClass().getClassLoader());
+
+                            manager.register(center);
+                            manager.register(explorer, center);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
