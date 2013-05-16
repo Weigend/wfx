@@ -10,7 +10,7 @@
     <artifactId>windowmanager-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>windowmanager-api</name>
+    <name>stagediver.fx - Window Manager API</name>
 
     <build>
         <plugins>

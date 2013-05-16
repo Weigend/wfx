@@ -10,7 +10,7 @@
     <artifactId>windowmanager-core</artifactId>
     <packaging>bundle</packaging>
 
-    <name>windowmanager-core</name>
+    <name>stagediver.fx - Window Manager Core</name>
     <dependencies>
         <!-- Window Mtg Api -->
         <dependency>
@@ -20,10 +20,6 @@
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-core</artifactId>
         </dependency>
 
         <!-- OSGi Container - Felix -->

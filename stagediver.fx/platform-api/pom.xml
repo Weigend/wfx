@@ -10,7 +10,7 @@
     <artifactId>platform-api</artifactId>
     <packaging>bundle</packaging>
 
-    <name>platform-api</name>
+    <name>stagediver.fx - Platform API</name>
 
     <dependencies>
         <dependency>
@@ -26,7 +26,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <!--<Bundle-Activator>de.qaware.sdfx.windowmtg.WindowMtgActivator</Bundle-Activator>-->
                         <Private-Package>de.qaware.sdfx.platform.*</Private-Package>
                         <Export-Package>de.qaware.sdfx.platform.api</Export-Package>
                     </instructions>

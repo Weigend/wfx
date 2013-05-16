@@ -10,7 +10,8 @@
     <artifactId>example-gui</artifactId>
     <packaging>bundle</packaging>
 
-    <name>example-gui</name>
+    <name>stagediver.fx Example-GUI</name>
+    <description>Example GUI Implementation for stagediver.fx</description>
 
     <dependencies>
         <dependency>
