@@ -1,22 +1,16 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Control;
-import javafx.scene.control.TabPane;
-import javafx.scene.effect.Blend;
-import javafx.scene.effect.BlendMode;
-import javafx.scene.effect.ColorInput;
-import javafx.scene.input.*;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.effect.*;
+import javafx.scene.input.*;
+import javafx.scene.paint.*;
+import javafx.stage.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -50,12 +44,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
 
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
-     /*   Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                init();
-            }
-        });            */
     }
 
     @Override
@@ -138,6 +126,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         dragedViewStatus.getArea().remove(dragedViewStatus, false);
         dragedViewStatus.setPosition(Position.CENTER);
         area.add(dragedViewStatus, Position.CENTER);
+        stage.setTitle(dragedViewStatus.getView().getTitle());
         stage.show();
         windowManager.register(area);
         completeDropped(event, true);
@@ -304,13 +293,17 @@ public class DragNDropManagerImpl implements DragNDropManager {
         double areaY = event.getY() / source.getHeight();
         if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
             return Position.CENTER;
-        } else if (areaY < 0.25) {
+        }
+        else if (areaY < 0.25) {
             return Position.TOP;
-        } else if (areaY >= 0.75) {
+        }
+        else if (areaY >= 0.75) {
             return Position.BOTTOM;
-        } else if (areaX < 0.25) {
+        }
+        else if (areaX < 0.25) {
             return Position.LEFT;
-        } else {
+        }
+        else {
             return Position.RIGHT;
         }
     }

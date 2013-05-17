@@ -1,6 +1,6 @@
 package de.qaware.sdfx.windowmtg.api;
 
-import javafx.scene.Node;
+import javafx.scene.*;
 
 /**
  * Defines a View. A view is an object that could be registered within the {@link WindowManager} and displayed as a tab.
@@ -29,7 +29,8 @@ public interface View {
     String getToolTipInfo();
 
     /**
-     * Get the default position for this view. This position is used to define the initial position where this view is displayed.
+     * Get the default position for this view. This position is used to define the initial position where this view is
+     * displayed.
      *
      * @return The default position.
      */

@@ -1,31 +1,46 @@
 package de.qaware.sdfx.platform.impl;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
+
+import javafx.application.*;
 
 /**
- *
+ * Activates and deactivates the stagediver.fx platform bundle.
  */
 public class PlatformActivator implements BundleActivator {
 
+    /**
+     * Starts the stagediver.fx platform bundle.
+     * <p/>
+     * When starting the platform bundle it will start the JavaFX application and show the main window.
+     *
+     * @param context The bundle context.
+     */
     @Override
-    public void start(BundleContext context) throws Exception {
+    public void start(BundleContext context) {
         Platform.setImplicitExit(true);
         Thread platformThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Application.launch(PlatformApplication.class, null);
+                Application.launch(PlatformApplication.class, "");
             }
         });
         platformThread.setName("Platform-Application-Thread");
         platformThread.start();
     }
 
+    /**
+     * Stops the the complete platform.
+     * <p/>
+     * The platform bundle is a essential part of the stagediver.fx platform so it is required to shutdown the whole
+     * osgi platform when this bundle was stoped.
+     *
+     * @param context The bundle context.
+     */
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) throws BundleException {
         context.getBundle(0).stop();
     }
 }
