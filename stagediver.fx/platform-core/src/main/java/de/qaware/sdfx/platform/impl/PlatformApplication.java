@@ -25,23 +25,19 @@ public class PlatformApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         stage.setTitle("stagediver.fx Platform");
         URL location = getClass().getResource("/de/qaware/sdfx/platform/MainWindow.fxml");
 
-        FXMLLoader fxmlLoader = new FXMLLoader(location);
-        Parent parent = (Parent) fxmlLoader.load();
-        MainWindowImpl controller = fxmlLoader.getController();
-
+        FXMLLoader loader = new FXMLLoader(location);
+        loader.setClassLoader(getClass().getClassLoader());
+        Parent parent = (Parent) loader.load();
+        MainWindowImpl controller = loader.getController();
+        controller.setStage(stage);
         stage.setScene(new Scene(parent));
         stage.show();
 
         FrameworkUtil.getBundle(getClass()).getBundleContext()
                 .registerService(MainWindow.class, controller, null);
-
-        Thread.currentThread().setContextClassLoader(oldCl);
     }
 
     /**
