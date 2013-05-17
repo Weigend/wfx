@@ -1,11 +1,11 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.geometry.Orientation;
-import javafx.scene.Parent;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 
 /**
  *
@@ -59,6 +59,8 @@ public final class RootArea extends ViewArea {
     protected void setFirstChild(ViewArea child) {
         super.setFirstChild(child);
         box.getChildren().set(0, child.getNode());
+        HBox.setHgrow(child.getNode(), Priority.ALWAYS);
+        VBox.setVgrow(child.getNode(), Priority.ALWAYS);
     }
 
     @Override
