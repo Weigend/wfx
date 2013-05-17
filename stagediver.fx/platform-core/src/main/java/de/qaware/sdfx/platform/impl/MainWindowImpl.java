@@ -2,18 +2,25 @@ package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.MainWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.Parent;
-import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javafx.event.*;
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
 
 /**
  *
  */
 public class MainWindowImpl implements MainWindow {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainWindowImpl.class);
+
     @FXML
     private VBox root;
+
+    private WindowManager windowManager;
 
     @Override
     public void setWindowManager(WindowManager windowManager) {
@@ -22,11 +29,17 @@ public class MainWindowImpl implements MainWindow {
             root.getChildren().add(rootPane);
             windowManager.initialize(null, null);
         }
+        this.windowManager = windowManager;
     }
 
-    public void closeView(ActionEvent actionEvent) {
+    public void closeView(ActionEvent event) {
+
     }
 
     public void resetToDefaults(ActionEvent actionEvent) {
+        if (windowManager != null) {
+            LOGGER.info("Restore default layout. Event: {}", actionEvent);
+            windowManager.restoreDefaultLayout();
+        }
     }
 }
