@@ -43,6 +43,8 @@ public final class RootArea extends ViewArea {
         editorArea.setEditor(true);
         this.box.getChildren().add(editorArea.getNode());
         setFirstChild(editorArea);
+        HBox.setHgrow(box, Priority.ALWAYS);
+        VBox.setVgrow(box, Priority.ALWAYS);
     }
 
     @Override

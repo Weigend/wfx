@@ -25,7 +25,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     private final List<RootArea> subWindows = new ArrayList<>();
 
-    protected Pane rootPane = new VBox();
+    protected Pane rootPane = new HBox();
 
     private RootArea mainArea;
 
