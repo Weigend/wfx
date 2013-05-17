@@ -9,6 +9,7 @@ import javafx.event.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
+import javafx.stage.*;
 
 /**
  *
@@ -21,6 +22,23 @@ public class MainWindowImpl implements MainWindow {
     private VBox root;
 
     private WindowManager windowManager;
+    private Stage stage;
+    private String defaultTitle;
+
+    protected void setStage(Stage stage) {
+        this.stage = stage;
+        this.defaultTitle = stage.getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+        stage.setTitle(title + " | " + defaultTitle);
+    }
+
+    @Override
+    public void restoreTitle() {
+        stage.setTitle(defaultTitle);
+    }
 
     @Override
     public void setWindowManager(WindowManager windowManager) {
