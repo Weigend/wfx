@@ -1,0 +1,6 @@
+*.iws
+*.iml
+*.ipr
+*.fxml.bak
+*/target/
+*/.idea/
