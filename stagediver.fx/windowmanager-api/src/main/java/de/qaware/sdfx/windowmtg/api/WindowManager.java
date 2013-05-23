@@ -1,10 +1,10 @@
 package de.qaware.sdfx.windowmtg.api;
 
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
+import javafx.fxml.*;
+import javafx.scene.*;
 
 /**
- * This interface defines the window manager.
+ * A Window manager which is able to handle views dynamically.
  */
 public interface WindowManager extends Initializable {
 

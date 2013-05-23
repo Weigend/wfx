@@ -29,10 +29,17 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     private RootArea mainArea;
 
+    /**
+     * Called to initialize a controller after its root element has been completely processed.
+     *
+     * @param location  The location used to resolve relative paths for the root object,
+     *                  or null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         LOGGER.info("Initialize the WindowManager");
-        dragNDropManager.initialize(url, resourceBundle);
+        dragNDropManager.initialize(location, resources);
     }
 
     /**

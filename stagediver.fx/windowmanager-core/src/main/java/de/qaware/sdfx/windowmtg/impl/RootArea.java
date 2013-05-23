@@ -8,7 +8,7 @@ import javafx.scene.layout.*;
 import javafx.stage.*;
 
 /**
- *
+ * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  */
 public final class RootArea extends ViewArea {
     private final Pane box;
@@ -47,6 +47,15 @@ public final class RootArea extends ViewArea {
         VBox.setVgrow(box, Priority.ALWAYS);
     }
 
+    /**
+     * Add the {@param view} to this area at {@param position}.
+     * <p/>
+     * If {@param position} is {@link Position#CENTER} it will be added to that child that is defined as editor area.
+     * Otherwise this area is split and the view will be positioned according the {@param position} parameter.
+     *
+     * @param view     The view to add.
+     * @param position Add the view at this position.
+     */
     @Override
     public void add(ViewStatus view, Position position) {
         getFirstChild().add(view, position);
@@ -57,6 +66,13 @@ public final class RootArea extends ViewArea {
         return box;
     }
 
+    /**
+     * Set {@param child} as first child of this view area.
+     * <p/>
+     * It will also update the javafx scene graph and the childs parent value.
+     *
+     * @param child The new child.
+     */
     @Override
     protected void setFirstChild(ViewArea child) {
         super.setFirstChild(child);

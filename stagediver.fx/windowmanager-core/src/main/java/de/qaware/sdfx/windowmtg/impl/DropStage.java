@@ -1,20 +1,16 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import com.google.common.collect.ImmutableList;
-import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.event.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,10 +22,19 @@ import java.util.List;
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);
 
+    /**
+     * The drag&drop manager
+     */
     private final DragNDropManager dndManager;
 
+    /**
+     * The the primary stage containing the window manager.
+     */
     private final Stage owner;
 
+    /**
+     * A list with all stages (one per screen) which are used as drop areas.
+     */
     private final List<Stage> stages = new ArrayList<>();
 
     /**
@@ -40,9 +45,9 @@ class DropStage {
     public DropStage(final DragNDropManager dndManager) {
         this.dndManager = dndManager;
         this.owner = (Stage) dndManager.getWindowManager()
-                                       .getRootPane()
-                                       .getScene()
-                                       .getWindow();
+                .getRootPane()
+                .getScene()
+                .getWindow();
     }
 
     /**

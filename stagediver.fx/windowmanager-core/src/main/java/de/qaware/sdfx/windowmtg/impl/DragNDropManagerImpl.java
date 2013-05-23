@@ -18,7 +18,9 @@ import java.util.ResourceBundle;
  * Handles the full drag&drop gestures for the window and view management.
  */
 public class DragNDropManagerImpl implements DragNDropManager {
-
+    /**
+     * The logger.
+     */
     private static final Logger LOGGER = LoggerFactory.getLogger(DragNDropManagerImpl.class);
 
     /**
@@ -36,18 +38,39 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     private DropStage dropStage;
 
+    /**
+     * The effect for the current drop zone.
+     */
     private final Blend effect = new Blend();
 
+    /**
+     * The visible effect.
+     */
     private final ColorInput dropOverlay = new ColorInput();
 
+    /**
+     * The current node where the effect is active.
+     */
     private Node effectTarget;
 
+    /**
+     * Create a new drag&drop manager instance.
+     *
+     * @param windowManager The window manager which handles the views and sub windows.
+     */
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
     }
 
+    /**
+     * Called to initialize a controller after its root element has been completely processed.
+     *
+     * @param location  The location used to resolve relative paths for the root object,
+     *                  or null if the location is not known.
+     * @param resources The resources used to localize the root object, or null if the root object was not localized.
+     */
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
+    public void initialize(URL location, ResourceBundle resources) {
         windowManager.getRootPane().getScene().setOnDragExited(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {
@@ -61,6 +84,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         });
     }
 
+    /**
+     * Initialize the drag&drop for a view.
+     *
+     * @param event The mouse event.
+     */
     @Override
     public void onDragDetected(MouseEvent event) {
         if (!(event.getSource() instanceof TabPane)) {
@@ -84,6 +112,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         event.consume();
     }
 
+    /**
+     * Finish the drag&drop gesture.
+     *
+     * @param event The drag event
+     */
     @Override
     public void onDragDone(DragEvent event) {
         if (!(event.getSource() instanceof TabPane) && ((TabPane) event.getSource()).getUserData() instanceof TabArea) {
@@ -111,6 +144,12 @@ public class DragNDropManagerImpl implements DragNDropManager {
         }
     }
 
+    /**
+     * Handle Drag&Drop to a invisible stage => opens a new window
+     *
+     * @param event     The fired event.
+     * @param dropStage The stage where the view was dropped.
+     */
     @Override
     public void onDragDroppedNewStage(DragEvent event, Stage dropStage) {
 
@@ -156,6 +195,12 @@ public class DragNDropManagerImpl implements DragNDropManager {
         return stage;
     }
 
+    /**
+     * Handle the dropped event for panes. Mainly this event removes the view from the old position and adds it at the
+     * new position.
+     *
+     * @param event The drag event.
+     */
     @Override
     public void onDragDropped(DragEvent event) {
         boolean success = false;
@@ -211,6 +256,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         event.consume();
     }
 
+    /**
+     * Handle the drag exited event for panes.
+     *
+     * @param event the drag event.
+     */
     @Override
     public void onDragExited(DragEvent event) {
         if (!(event.getSource() instanceof Node)) {
@@ -222,6 +272,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         event.consume();
     }
 
+    /**
+     * Handle the drag over event. It draws the drop position for the current cursor position.
+     *
+     * @param event The drag event.
+     */
     @Override
     public void onDragOver(DragEvent event) {
         if (!(event.getSource() instanceof Control)) {
@@ -308,6 +363,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         }
     }
 
+    /**
+     * Get the window manager instance.
+     *
+     * @return The window manager instance.
+     */
     @Override
     public MultiWindowManager getWindowManager() {
         return windowManager;

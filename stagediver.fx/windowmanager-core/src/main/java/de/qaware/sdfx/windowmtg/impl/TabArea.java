@@ -1,19 +1,18 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.event.EventHandler;
-import javafx.scene.Parent;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Describes a logical view area which displays the views within a tabpane.
+ * Describes a logical view area which displays the views within a tab pane.
  */
 public class TabArea extends ViewArea {
 
@@ -21,13 +20,27 @@ public class TabArea extends ViewArea {
 
     private final TabPane tabPane = new TabPane();
 
+    /**
+     * A list with all contained views.
+     */
     private final Set<ViewStatus> views = new LinkedHashSet<>();
 
+    /**
+     * Create a new tab area.
+     *
+     * @param dragNDropManager Use this drag&drop manager to handle the view management.
+     */
     public TabArea(DragNDropManager dragNDropManager) {
         super(dragNDropManager);
         registerDragEvents();
     }
 
+    /**
+     * Create a new tab area.
+     *
+     * @param parent           Use this area as parent area.
+     * @param dragNDropManager Use this drag&drop manager to handle the view management.
+     */
     public TabArea(ViewArea parent, DragNDropManager dragNDropManager) {
         super(parent, dragNDropManager);
         registerDragEvents();

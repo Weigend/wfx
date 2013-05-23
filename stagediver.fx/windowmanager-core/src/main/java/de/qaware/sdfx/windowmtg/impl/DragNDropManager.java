@@ -1,15 +1,17 @@
 package de.qaware.sdfx.windowmtg.impl;
 
-import javafx.fxml.Initializable;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
+import javafx.fxml.*;
+import javafx.scene.input.*;
+import javafx.stage.*;
 
 /**
- *
+ * The drag&drop manager.
  */
 public interface DragNDropManager extends Initializable {
+
+    /**
+     * The specialized data format to handle the drag&drop gestures with managed tabs.
+     */
     DataFormat DATAFORMAT = new DataFormat("de.qaware.sdfx.DragNDrop");
 
     /**
