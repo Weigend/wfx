@@ -12,11 +12,9 @@
 //         Copyright: (c) QAware GmbH
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.windowmtg;
+package de.qaware.sdfx.windowmtg.api;
 
 import com.google.common.base.Preconditions;
-import de.qaware.sdfx.windowmtg.api.Position;
-import de.qaware.sdfx.windowmtg.api.View;
 
 import javafx.fxml.*;
 import javafx.scene.*;

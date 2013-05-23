@@ -11,7 +11,14 @@
     <packaging>bundle</packaging>
 
     <name>stagediver.fx - Window Manager API</name>
-
+    <dependencies>
+        <!-- Google Guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>

@@ -1,6 +1,6 @@
 package de.qaware.sdfx.examplegui;
 
-import de.qaware.sdfx.windowmtg.FXMLView;
+import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.osgi.framework.BundleActivator;

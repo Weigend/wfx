@@ -18,10 +18,6 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>windowmanager-core</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
