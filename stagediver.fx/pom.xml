@@ -38,7 +38,11 @@
                 <artifactId>platform-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>platform-runner</artifactId>
+                <version>${project.version}</version>
+            </dependency>
             <!-- Window Management -->
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
@@ -48,6 +52,13 @@
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>windowmanager-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- Example GUI -->
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>example-gui</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
