@@ -9,7 +9,10 @@
     <packaging>pom</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>stagediver.fx</name>
-
+    <organization>
+        <name>QAware GmbH</name>
+        <url>http://www.qaware.de/</url>
+    </organization>
     <modules>
         <module>platform-runner</module>
         <module>platform-api</module>
@@ -23,6 +26,7 @@
         <project.build.version>7</project.build.version>
         <guava.version>14.0.1</guava.version>
         <osgi.version>4.3.1</osgi.version>
+        <felix.version>4.2.1</felix.version>
     </properties>
 
     <dependencyManagement>
@@ -66,7 +70,7 @@
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.framework</artifactId>
-                <version>4.2.1</version>
+                <version>${felix.version}</version>
                 <type>jar</type>
             </dependency>
             <dependency>

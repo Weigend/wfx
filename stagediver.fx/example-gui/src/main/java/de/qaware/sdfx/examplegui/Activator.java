@@ -20,15 +20,15 @@ public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
-    private ServiceTracker<WindowManager, Object> tracker;
+    private ServiceTracker<WindowManager, WindowManager> tracker;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         LOGGER.info("Starting Bundle {}", context.getBundle());
         tracker = new ServiceTracker<>(context, WindowManager.class,
-                new ServiceTrackerCustomizer<WindowManager, Object>() {
+                new ServiceTrackerCustomizer<WindowManager, WindowManager>() {
                     @Override
-                    public Object addingService(ServiceReference<WindowManager> reference) {
+                    public WindowManager addingService(ServiceReference<WindowManager> reference) {
                         WindowManager manager = context.getService(reference);
                         try {
                             FXMLView<ExampleController> center = new FXMLView<>("example-1", "Example GUI",
@@ -44,15 +44,15 @@ public class Activator implements BundleActivator {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                        return null;
+                        return manager;
                     }
 
                     @Override
-                    public void modifiedService(ServiceReference<WindowManager> reference, Object o) {
+                    public void modifiedService(ServiceReference<WindowManager> reference, WindowManager o) {
                     }
 
                     @Override
-                    public void removedService(ServiceReference<WindowManager> reference, Object o) {
+                    public void removedService(ServiceReference<WindowManager> reference, WindowManager o) {
                     }
                 });
         tracker.open();
