@@ -1,0 +1,7 @@
+.splash-progress-bar {
+}
+
+.splash-progress-text {
+    -fx-text-fill: #ffffff;
+    -fx-label-padding: 5px;
+}
