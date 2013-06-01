@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml" fx:controller="de.qaware.sdfx.example.editor.impl.ExampleController">
+  <bottom>
+    <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0" prefHeight="20.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
+      <children>
+        <Label text="Status bar" HBox.hgrow="ALWAYS" />
+        <Separator orientation="VERTICAL" prefHeight="200.0" />
+        <Label alignment="CENTER_RIGHT" text="Other Info" HBox.hgrow="SOMETIMES" />
+      </children>
+    </HBox>
+  </bottom>
+  <center>
+    <Label text="Content" />
+  </center>
+  <top>
+    <ToolBar>
+      <items>
+        <Button mnemonicParsing="false" text="Button" />
+      </items>
+    </ToolBar>
+  </top>
+</BorderPane>
