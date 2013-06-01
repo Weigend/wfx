@@ -76,4 +76,14 @@ public interface WindowManager extends Initializable {
      * @throws IllegalArgumentException In case of the view is not registered.
      */
     void showView(View view);
+
+    /**
+     * Find a view with the assigned view id.
+     * <p/>
+     * This returns that view that has the given unique view id. If there is no view found it returns null.
+     *
+     * @param viewID The view id to search.
+     * @return The registered view or null if it was not found.
+     */
+    View findView(String viewID);
 }

@@ -246,6 +246,22 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
+     * Find a view with the assigned view id.
+     * <p/>
+     * This returns that view that has the given unique view id. If there is no view found it returns null.
+     *
+     * @param viewID The view id to search.
+     * @return The registered view or null if it was not found.
+     */
+    @Override
+    public View findView(String viewID) {
+        if (!views.containsKey(viewID)) {
+            return null;
+        }
+        return views.get(viewID).getView();
+    }
+
+    /**
      * Get a list with all views which are registered under the given {@link RootArea}
      *
      * @param area The requested root area.
