@@ -20,6 +20,7 @@
         <module>windowmanager-api</module>
         <module>windowmanager-core</module>
         <module>example-gui</module>
+        <module>platform-full</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -77,13 +78,11 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>${osgi.version}</version>
-                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
                 <version>${osgi.version}</version>
-                <scope>provided</scope>
             </dependency>
 
             <!-- Logging -->
@@ -96,11 +95,6 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
                 <version>1.7.5</version>
-            </dependency>
-            <dependency>
-                <groupId>log4j</groupId>
-                <artifactId>log4j</artifactId>
-                <version>1.2.17</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
