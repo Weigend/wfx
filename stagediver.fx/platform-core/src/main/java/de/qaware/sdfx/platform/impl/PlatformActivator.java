@@ -3,6 +3,8 @@ package de.qaware.sdfx.platform.impl;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
 
@@ -10,6 +12,8 @@ import javafx.application.*;
  * Activates and deactivates the stagediver.fx platform bundle.
  */
 public class PlatformActivator implements BundleActivator {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformActivator.class);
 
     /**
      * Starts the stagediver.fx platform bundle.
@@ -20,10 +24,12 @@ public class PlatformActivator implements BundleActivator {
      */
     @Override
     public void start(BundleContext context) {
+        LOGGER.info("Activate platform core bundle");
         Platform.setImplicitExit(true);
         Thread platformThread = new Thread(new Runnable() {
             @Override
             public void run() {
+                LOGGER.info("Launch JavaFX Application");
                 Application.launch(PlatformApplication.class, "");
             }
         });

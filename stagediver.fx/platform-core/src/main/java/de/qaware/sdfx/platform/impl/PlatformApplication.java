@@ -3,6 +3,8 @@ package de.qaware.sdfx.platform.impl;
 import de.qaware.sdfx.platform.api.MainWindow;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
 import javafx.fxml.*;
@@ -16,6 +18,8 @@ import java.net.URL;
  */
 public class PlatformApplication extends Application {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
+
     /**
      * Start the JavaFX application. This will include the initialization of the content for the first stage and
      * show the primary window for the stagediver.fx platform.
@@ -25,6 +29,7 @@ public class PlatformApplication extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
+        LOGGER.info("Run JavaFX application start method");
         stage.setTitle("stagediver.fx Platform");
         URL location = getClass().getResource("/de/qaware/sdfx/platform/MainWindow.fxml");
 
@@ -36,6 +41,7 @@ public class PlatformApplication extends Application {
         stage.setScene(new Scene(parent));
         stage.show();
 
+        LOGGER.debug("Register MainWindow service: {}", controller);
         FrameworkUtil.getBundle(getClass()).getBundleContext()
                 .registerService(MainWindow.class, controller, null);
     }
@@ -47,6 +53,7 @@ public class PlatformApplication extends Application {
      */
     @Override
     public void stop() throws BundleException {
+        LOGGER.info("Stop JavaFX application");
         FrameworkUtil.getBundle(getClass()).stop();
     }
 }
