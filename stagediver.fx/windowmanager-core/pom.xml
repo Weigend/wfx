@@ -62,7 +62,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowMtgActivator</Bundle-Activator>
-                        <Private-Package>de.qaware.sdfx.windowmtg.*</Private-Package>
                     </instructions>
 
                 </configuration>

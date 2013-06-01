@@ -58,7 +58,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>de.qaware.sdfx.platform.impl.PlatformActivator</Bundle-Activator>
-                        <Private-Package>de.qaware.sdfx.platform.*</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
