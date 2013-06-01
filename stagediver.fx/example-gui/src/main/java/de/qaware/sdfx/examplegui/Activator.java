@@ -11,6 +11,7 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
 import java.io.IOException;
 
 /**
@@ -20,39 +21,46 @@ public class Activator implements BundleActivator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
-    private ServiceTracker<WindowManager, WindowManager> tracker;
+    private ServiceTracker<WindowManager, Object> tracker;
 
     @Override
     public void start(final BundleContext context) throws Exception {
         LOGGER.info("Starting Bundle {}", context.getBundle());
         tracker = new ServiceTracker<>(context, WindowManager.class,
-                new ServiceTrackerCustomizer<WindowManager, WindowManager>() {
+                new ServiceTrackerCustomizer<WindowManager, Object>() {
                     @Override
-                    public WindowManager addingService(ServiceReference<WindowManager> reference) {
-                        WindowManager manager = context.getService(reference);
-                        try {
-                            FXMLView<ExampleController> center = new FXMLView<>("example-1", "Example GUI",
-                                    Position.CENTER, "/de/qaware/sdfx/examplegui/example.fxml",
-                                    getClass().getClassLoader());
+                    public Object addingService(ServiceReference<WindowManager> reference) {
+                        final WindowManager manager = context.getService(reference);
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    FXMLView<ExampleController> center =
+                                            new FXMLView<>("example-1", "Example GUI", Position.CENTER,
+                                                    "/de/qaware/sdfx/examplegui/example.fxml",
+                                                    getClass().getClassLoader());
 
-                            FXMLView<ExampleExplorerController> explorer = new FXMLView<>("example-explorer-1",
-                                    "Example Explorer", Position.LEFT,
-                                    "/de/qaware/sdfx/examplegui/example_explorer.fxml", getClass().getClassLoader());
+                                    FXMLView<ExampleExplorerController> explorer =
+                                            new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
+                                                    "/de/qaware/sdfx/examplegui/example_explorer.fxml",
+                                                    getClass().getClassLoader());
 
-                            manager.register(center);
-                            manager.register(explorer, center);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                                    manager.register(center);
+                                    manager.register(explorer, center);
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
+                        });
                         return manager;
                     }
 
                     @Override
-                    public void modifiedService(ServiceReference<WindowManager> reference, WindowManager o) {
+                    public void modifiedService(ServiceReference<WindowManager> reference, Object o) {
                     }
 
                     @Override
-                    public void removedService(ServiceReference<WindowManager> reference, WindowManager o) {
+                    public void removedService(ServiceReference<WindowManager> reference, Object o) {
                     }
                 });
         tracker.open();
