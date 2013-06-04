@@ -1,6 +1,7 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.platform.api.MainWindow;
+import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -25,7 +26,8 @@ public class WindowMtgActivator implements BundleActivator {
     @Override
     public void start(final BundleContext bundleContext) throws Exception {
         LOGGER.info("Starting Bundle {}", bundleContext.getBundle());
-
+        bundleContext.getService(bundleContext.getServiceReference(PreloaderNotificationService.class))
+                .sendNotification(bundleContext.getBundle(), "Starting Window Management", 0);
         tracker = new ServiceTracker<>(bundleContext, MainWindow.class,
                 new ServiceTrackerCustomizer<MainWindow, Object>() {
 
@@ -38,6 +40,9 @@ public class WindowMtgActivator implements BundleActivator {
                         controller.setWindowManager(manager);
 
                         registration = bundleContext.registerService(WindowManager.class, manager, null);
+
+                        bundleContext.getService(bundleContext.getServiceReference(PreloaderNotificationService.class))
+                                .sendNotification(bundleContext.getBundle(), "Starting Window Management", 1);
                         return controller;
                     }
 

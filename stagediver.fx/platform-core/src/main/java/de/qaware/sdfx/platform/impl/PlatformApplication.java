@@ -1,6 +1,8 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.MainWindow;
+import de.qaware.sdfx.platform.api.PreloaderNotificationService;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -19,6 +21,19 @@ import java.net.URL;
 public class PlatformApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
+    private BundleContext context;
+    private Stage mainStage;
+
+    @Override
+    public void init() throws Exception {
+        context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        PreloaderNotificationService pns = context.getService(
+                context.getServiceReference(PreloaderNotificationService.class)
+        );
+        if (pns instanceof PreloaderNotificationServiceImpl) {
+            ((PreloaderNotificationServiceImpl) pns).setApplication(this);
+        }
+    }
 
     /**
      * Start the JavaFX application. This will include the initialization of the content for the first stage and
@@ -28,22 +43,19 @@ public class PlatformApplication extends Application {
      * @throws IOException In case of any fxml loading failure.
      */
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(final Stage stage) throws IOException {
         LOGGER.info("Run JavaFX application start method");
+        this.mainStage = stage;
         stage.setTitle("stagediver.fx Platform");
         URL location = getClass().getResource("/de/qaware/sdfx/platform/MainWindow.fxml");
-
         FXMLLoader loader = new FXMLLoader(location);
         loader.setClassLoader(getClass().getClassLoader());
         Parent parent = (Parent) loader.load();
         MainWindowImpl controller = loader.getController();
         controller.setStage(stage);
         stage.setScene(new Scene(parent));
-        stage.show();
-
         LOGGER.debug("Register MainWindow service: {}", controller);
-        FrameworkUtil.getBundle(getClass()).getBundleContext()
-                .registerService(MainWindow.class, controller, null);
+        context.registerService(MainWindow.class, controller, null);
     }
 
     /**
@@ -55,5 +67,17 @@ public class PlatformApplication extends Application {
     public void stop() throws BundleException {
         LOGGER.info("Stop JavaFX application");
         FrameworkUtil.getBundle(getClass()).stop();
+    }
+
+    protected void showMainStage() {
+        if (mainStage.isShowing()) {
+            return;
+        }
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                mainStage.show();
+            }
+        });
     }
 }

@@ -1,5 +1,6 @@
 package de.qaware.sdfx.platform.impl;
 
+import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
@@ -7,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
+
+import static com.sun.javafx.application.LauncherImpl.launchApplication;
 
 /**
  * Activates and deactivates the stagediver.fx platform bundle.
@@ -30,11 +33,12 @@ public class PlatformActivator implements BundleActivator {
             @Override
             public void run() {
                 LOGGER.info("Launch JavaFX Application");
-                Application.launch(PlatformApplication.class, "");
+                launchApplication(PlatformApplication.class, PlatformPreloader.class, new String[]{});
             }
         });
         platformThread.setName("Platform-Application-Thread");
         platformThread.start();
+        context.registerService(PreloaderNotificationService.class, new PreloaderNotificationServiceImpl(), null);
     }
 
     /**
