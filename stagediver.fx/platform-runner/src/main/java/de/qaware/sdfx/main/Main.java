@@ -6,10 +6,7 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -50,6 +47,12 @@ public class Main {
      * Name of the configuration directory.
      */
     public static final String CONFIG_DIRECTORY = "conf";
+
+    /**
+     * Private Constructor
+     */
+    private Main() {
+    }
 
     public static void main(String[] args) throws Exception {
         new Main().run(args);
@@ -211,7 +214,7 @@ public class Main {
 
         try (InputStream is = propURL.openConnection().getInputStream()) {
             props.load(is);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             return null;
         }
 

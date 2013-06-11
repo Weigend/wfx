@@ -301,6 +301,13 @@ public class DragNDropManagerImpl implements DragNDropManager {
             effectTarget = null;
             return;
         }
+        adjustOverlay(target, position);
+        effectTarget = target;
+        event.acceptTransferModes(TransferMode.MOVE);
+        event.consume();
+    }
+
+    private void adjustOverlay(Control target, Position position) {
         switch (position) {
             case CENTER:
                 dropOverlay.setX(0);
@@ -332,9 +339,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
                 dropOverlay.setWidth(target.getWidth());
                 dropOverlay.setHeight(target.getHeight() * 0.5);
         }
-        effectTarget = target;
-        event.acceptTransferModes(TransferMode.MOVE);
-        event.consume();
     }
 
     /**

@@ -105,44 +105,51 @@ public class AutoProcessor {
         }
 
         // Install bundle JAR files and remember the bundle objects.
-        for (File aJarList : jarList) {
+        for (File jarFile : jarList) {
             // Look up the bundle by location, removing it from
             // the map of installed bundles so the remaining bundles
             // indicate which bundles may need to be uninstalled.
-            Bundle b = installedBundleMap.remove(aJarList.toURI().toString());
-
-            try {
-                // If the bundle is not already installed, then install it
-                if ((b == null)) {
-                    b = context.installBundle(aJarList.toURI().toString());
-                }
-                // If the bundle is already installed, then update it
-                else {
-                    b.update();
-                }
-
-                // If we have found and/or successfully installed a bundle,
-                // then add it to the list of bundles to potentially start
-                // and also set its start level accordingly.
-                if ((b != null) && !isFragment(b)) {
-                    startBundleList.add(b);
-                    BundleStartLevel bundleStartLevel = b.adapt(BundleStartLevel.class);
-                    bundleStartLevel.setStartLevel(getStartLevel(b));
-                }
-            } catch (BundleException ex) {
-                System.err.println("Auto-deploy install: " + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : ""));
-            }
+            Bundle b = installedBundleMap.remove(jarFile.toURI().toString());
+            installUpdateBundle(jarFile, b);
         }
 
+        uninstallOldBundles(installedBundleMap);
+    }
+
+    private void uninstallOldBundles(Map<String, Bundle> installedBundleMap) {
         for (Map.Entry<String, Bundle> entry : installedBundleMap.entrySet()) {
             Bundle b = entry.getValue();
             if (b.getBundleId() != 0) {
                 try {
                     b.uninstall();
                 } catch (BundleException ex) {
-                    System.err.println("Auto-deploy uninstall: " + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : ""));
+                    System.err.println("Auto-deploy uninstall: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
                 }
             }
+        }
+    }
+
+    private void installUpdateBundle(File jarFile, Bundle b) {
+        try {
+            // If the bundle is not already installed, then install it
+            if ((b == null)) {
+                b = context.installBundle(jarFile.toURI().toString());
+            }
+            // If the bundle is already installed, then update it
+            else {
+                b.update();
+            }
+
+            // If we have found and/or successfully installed a bundle,
+            // then add it to the list of bundles to potentially start
+            // and also set its start level accordingly.
+            if ((b != null) && !isFragment(b)) {
+                startBundleList.add(b);
+                BundleStartLevel bundleStartLevel = b.adapt(BundleStartLevel.class);
+                bundleStartLevel.setStartLevel(getStartLevel(b));
+            }
+        } catch (BundleException ex) {
+            System.err.println("Auto-deploy install: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
         }
     }
 
@@ -152,7 +159,7 @@ public class AutoProcessor {
                 try {
                     b.start();
                 } catch (BundleException ex) {
-                    System.err.println("Auto-deploy start: " + ex + ((ex.getCause() != null) ? " - " + ex.getCause() : ""));
+                    System.err.println("Auto-deploy start: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
                 }
             }
         }

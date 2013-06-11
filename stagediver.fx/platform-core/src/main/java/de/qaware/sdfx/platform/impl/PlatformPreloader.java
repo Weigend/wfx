@@ -23,12 +23,11 @@ public class PlatformPreloader extends Preloader {
     Label progressText;
     Stage stage;
     boolean noLoadingProgress = true;
-    private BundleContext context;
     private PreloaderNotificationServiceImpl notificationService;
 
     @Override
     public void init() throws Exception {
-        context = FrameworkUtil.getBundle(getClass()).getBundleContext();
+        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
         PreloaderNotificationService pns = context.getService(
                 context.getServiceReference(PreloaderNotificationService.class)
         );

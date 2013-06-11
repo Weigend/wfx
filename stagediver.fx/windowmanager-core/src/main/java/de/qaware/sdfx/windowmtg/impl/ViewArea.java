@@ -1,19 +1,17 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.event.EventHandler;
-import javafx.geometry.Orientation;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.control.SplitPane;
-import javafx.scene.input.DragEvent;
-import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Serializable;
+import javafx.event.*;
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
 
-public class ViewArea implements Serializable {
+public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);
 
     private final SplitPane outerPane;
@@ -31,7 +29,7 @@ public class ViewArea implements Serializable {
     /**
      * Did this area contains the editor pane?
      */
-    private boolean editor = false;
+    private boolean editor;
 
     protected ViewArea(ViewArea parent, DragNDropManager dragNDropManager) {
         this(dragNDropManager);
@@ -161,7 +159,8 @@ public class ViewArea implements Serializable {
             case TOP:
                 if (orientation == Orientation.VERTICAL) {
                     getFirstChild().add(view, position);
-                } else {
+                }
+                else {
                     ViewArea target = new TabArea(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(target, this, Orientation.VERTICAL);
@@ -170,7 +169,8 @@ public class ViewArea implements Serializable {
             case BOTTOM:
                 if (orientation == Orientation.VERTICAL) {
                     getSecondChild().add(view, position);
-                } else {
+                }
+                else {
                     ViewArea target = new TabArea(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(this, target, Orientation.VERTICAL);
@@ -179,7 +179,8 @@ public class ViewArea implements Serializable {
             case LEFT:
                 if (orientation == Orientation.HORIZONTAL) {
                     getSecondChild().add(view, position);
-                } else {
+                }
+                else {
                     ViewArea target = new TabArea(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(target, this, Orientation.HORIZONTAL);
@@ -188,7 +189,8 @@ public class ViewArea implements Serializable {
             case RIGHT:
                 if (orientation == Orientation.HORIZONTAL) {
                     getSecondChild().add(view, position);
-                } else {
+                }
+                else {
                     ViewArea target = new TabArea(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(this, target, Orientation.HORIZONTAL);
@@ -207,7 +209,8 @@ public class ViewArea implements Serializable {
     protected void remove(ViewArea area) {
         if (area == firstChild) {
             getParent().replace(this, secondChild);
-        } else if (area == secondChild) {
+        }
+        else if (area == secondChild) {
             getParent().replace(this, firstChild);
         }
     }
@@ -229,7 +232,8 @@ public class ViewArea implements Serializable {
     protected void replace(ViewArea oldArea, ViewArea newArea) {
         if (oldArea == firstChild) {
             setFirstChild(newArea);
-        } else if (oldArea == secondChild) {
+        }
+        else if (oldArea == secondChild) {
             setSecondChild(newArea);
         }
     }
@@ -242,7 +246,8 @@ public class ViewArea implements Serializable {
     private ViewArea getEditorArea() {
         if (getFirstChild().isEditor()) {
             return getFirstChild();
-        } else if (getSecondChild().isEditor()) {
+        }
+        else if (getSecondChild().isEditor()) {
             return getSecondChild();
         }
         return null;

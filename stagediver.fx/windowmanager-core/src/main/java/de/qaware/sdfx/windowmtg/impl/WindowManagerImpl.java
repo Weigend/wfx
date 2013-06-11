@@ -152,11 +152,11 @@ public class WindowManagerImpl implements MultiWindowManager {
         this.views = new LinkedHashMap<>();
         for (ViewStatus view : views.values()) {
             view.restoreDefault();
-            if (view.getParent() != null) {
-                register(view.getView(), view.getParent().getView());
+            if (view.getParent() == null) {
+                register(view.getView());
             }
             else {
-                register(view.getView());
+                register(view.getView(), view.getParent().getView());
             }
         }
     }

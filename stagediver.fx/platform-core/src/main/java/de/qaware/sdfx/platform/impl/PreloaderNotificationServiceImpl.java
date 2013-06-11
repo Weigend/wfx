@@ -47,13 +47,11 @@ public class PreloaderNotificationServiceImpl implements PreloaderNotificationSe
     @Override
     public boolean sendNotification(Preloader.PreloaderNotification notification) {
 
-        if (application != null) {
-            application.notifyPreloader(notification);
-            return true;
-        }
-        else {
+        if (application == null) {
             notifications.add(notification);
             return false;
         }
+        application.notifyPreloader(notification);
+        return true;
     }
 }
