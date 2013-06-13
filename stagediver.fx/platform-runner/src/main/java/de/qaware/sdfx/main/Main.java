@@ -18,8 +18,6 @@ import java.util.Properties;
  * This is the  stagediver.fx plattform runner.
  */
 public class Main {
-    private Framework framework;
-    private Map<String, String> configProps;
     /**
      * The property name used to specify whether the launcher should
      * install a shutdown hook.
@@ -47,6 +45,8 @@ public class Main {
      * Name of the configuration directory.
      */
     public static final String CONFIG_DIRECTORY = "conf";
+    private Framework framework;
+    private Map<String, String> configProps;
 
     /**
      * Private Constructor
@@ -56,90 +56,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         new Main().run(args);
-    }
-
-    private void run(String[] args) {
-        loadProperties();
-        addShutdownHook();
-        try {
-            initFramework();
-            new AutoProcessor(framework.getBundleContext(), configProps).process();
-            runFramework();
-        } catch (Exception ex) {
-            System.err.println("Could not create framework: " + ex);
-            ex.printStackTrace();
-            System.exit(0);
-        }
-    }
-
-    private void runFramework() throws BundleException, InterruptedException {
-        FrameworkEvent event;
-        do {
-            // Start the framework.
-            framework.start();
-            // Wait for framework to stop to exit the VM.
-            event = framework.waitForStop(0);
-        }
-        // If the framework was updated, then restart it.
-        while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-        // Otherwise, exit.
-        System.exit(0);
-    }
-
-    private void initFramework() throws Exception {
-        FrameworkFactory factory = getFrameworkFactory();
-        framework = factory.newFramework(configProps);
-        framework.init();
-    }
-
-    private void addShutdownHook() {
-        // If enabled, register a shutdown hook to make sure the framework is
-        // cleanly shutdown when the VM exits.
-        String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
-        if ((enableHook == null) || !enableHook.equalsIgnoreCase("false")) {
-            Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
-                public void run() {
-                    try {
-                        if (framework != null) {
-                            framework.stop();
-                            framework.waitForStop(0);
-                        }
-                    } catch (Exception ex) {
-                        System.err.println("Error stopping framework: " + ex);
-                    }
-                }
-            });
-        }
-    }
-
-    private void loadProperties() {
-        Map<String, String> systemProps = loadProperties(SYSTEM_PROPERTIES_PROP, SYSTEM_PROPERTIES_FILE_VALUE);
-        if (systemProps != null) {
-            System.getProperties().putAll(systemProps);
-        }
-
-        configProps = loadProperties(CONFIG_PROPERTIES_PROP, CONFIG_PROPERTIES_FILE_VALUE);
-        if (configProps == null) {
-            System.err.println("No " + CONFIG_PROPERTIES_FILE_VALUE + " found.");
-            configProps = new HashMap<>();
-        }
-        copySystemProperties();
-    }
-
-    private FrameworkFactory getFrameworkFactory() throws Exception {
-        java.net.URL url = Main.class.getResource("/META-INF/services/org.osgi.framework.launch.FrameworkFactory");
-        if (url != null) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-                for (String s = br.readLine(); s != null; s = br.readLine()) {
-                    s = s.trim();
-                    // Try to load first non-empty, non-commented line.
-                    if ((s.length() > 0) && (s.charAt(0) != '#')) {
-                        return (FrameworkFactory) Class.forName(s).newInstance();
-                    }
-                }
-            }
-        }
-        throw new Exception("Could not find framework factory.");
     }
 
     /**
@@ -226,6 +142,90 @@ public class Main {
             map.put(name, Util.substVars((String) entry.getValue(), name, null, props));
         }
         return map;
+    }
+
+    private void run(String[] args) {
+        loadProperties();
+        addShutdownHook();
+        try {
+            initFramework();
+            new AutoProcessor(framework.getBundleContext(), configProps).process();
+            runFramework();
+        } catch (Exception ex) {
+            System.err.println("Could not create framework: " + ex);
+            ex.printStackTrace();
+            System.exit(0);
+        }
+    }
+
+    private void runFramework() throws BundleException, InterruptedException {
+        FrameworkEvent event;
+        do {
+            // Start the framework.
+            framework.start();
+            // Wait for framework to stop to exit the VM.
+            event = framework.waitForStop(0);
+        }
+        // If the framework was updated, then restart it.
+        while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
+        // Otherwise, exit.
+        System.exit(0);
+    }
+
+    private void initFramework() throws Exception {
+        FrameworkFactory factory = getFrameworkFactory();
+        framework = factory.newFramework(configProps);
+        framework.init();
+    }
+
+    private void addShutdownHook() {
+        // If enabled, register a shutdown hook to make sure the framework is
+        // cleanly shutdown when the VM exits.
+        String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
+        if ((enableHook == null) || !enableHook.equalsIgnoreCase("false")) {
+            Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
+                public void run() {
+                    try {
+                        if (framework != null) {
+                            framework.stop();
+                            framework.waitForStop(0);
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Error stopping framework: " + ex);
+                    }
+                }
+            });
+        }
+    }
+
+    private void loadProperties() {
+        Map<String, String> systemProps = loadProperties(SYSTEM_PROPERTIES_PROP, SYSTEM_PROPERTIES_FILE_VALUE);
+        if (systemProps != null) {
+            System.getProperties().putAll(systemProps);
+        }
+
+        configProps = loadProperties(CONFIG_PROPERTIES_PROP, CONFIG_PROPERTIES_FILE_VALUE);
+        if (configProps == null) {
+            System.err.println("No " + CONFIG_PROPERTIES_FILE_VALUE + " found.");
+            configProps = new HashMap<>();
+        }
+        copySystemProperties();
+    }
+
+    private FrameworkFactory getFrameworkFactory() throws Exception {
+        java.net.URL url = Main.class.getResource("/META-INF/services/org.osgi.framework.launch.FrameworkFactory");
+        if (url != null) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
+                for (String s = br.readLine(); s != null; s = br.readLine()) {
+                    s = s.trim();
+                    // Try to load first non-empty, non-commented line.
+                    if ((s.length() > 0) && (s.charAt(0) != '#')) {
+                        return (FrameworkFactory) Class.forName(s).newInstance();
+                    }
+                }
+            }
+        }
+        throw new Exception("Could not find framework factory.");
     }
 
     private void copySystemProperties() {

@@ -18,15 +18,10 @@ import java.util.*;
 public class WindowManagerImpl implements MultiWindowManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
-
     private final DragNDropManager dragNDropManager = new DragNDropManagerImpl(this);
-
-    private Map<String, ViewStatus> views = new LinkedHashMap<>();
-
     private final List<RootArea> subWindows = new ArrayList<>();
-
     protected Pane rootPane = new HBox();
-
+    private Map<String, ViewStatus> views = new LinkedHashMap<>();
     private RootArea mainArea;
 
     /**
