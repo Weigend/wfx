@@ -8,7 +8,13 @@ import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 
 import java.io.File;
-import java.util.*;
+import java.io.IOException;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AutoProcessor {
 
@@ -42,7 +48,7 @@ public class AutoProcessor {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
 
-    public void process() {
+    public void process() throws IOException {
         initStartLevels();
         loadBundles();
         startBundles();
@@ -83,7 +89,7 @@ public class AutoProcessor {
         return frameworkStartLevel;
     }
 
-    private void loadBundles() {
+    private void loadBundles() throws IOException {
         Map<String, Bundle> installedBundleMap = new HashMap<>();
         for (Bundle b : context.getBundles()) {
             installedBundleMap.put(b.getLocation(), b);
@@ -92,18 +98,19 @@ public class AutoProcessor {
         // Get the auto deploy directory.
         String autoDir = configProps.get(AUTO_DEPLOY_DIR_PROPERY);
         autoDir = (autoDir == null) ? AUTO_DEPLOY_DIR_VALUE : autoDir;
-        // Look in the specified bundle directory to create a list of all JAR files to install.
-        File[] files = new File(autoDir).listFiles();
-        List<File> jarList = new ArrayList<>();
-        if (files != null) {
-            Arrays.sort(files);
-            for (File file : files) {
-                if (file.getName().endsWith(".jar")) {
-                    jarList.add(file);
-                }
-            }
-        }
 
+        // Look in the specified bundle directory to create a list of all JAR files to install.
+        final List<File> jarList = new ArrayList<>();
+        Files.walkFileTree(Paths.get(autoDir), new SimpleFileVisitor<Path>() {
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                if (file.getFileName().toString().endsWith(".jar")) {
+                    jarList.add(file.toFile());
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
         // Install bundle JAR files and remember the bundle objects.
         for (File jarFile : jarList) {
             // Look up the bundle by location, removing it from
