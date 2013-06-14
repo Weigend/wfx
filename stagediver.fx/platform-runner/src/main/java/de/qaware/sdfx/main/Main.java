@@ -48,12 +48,6 @@ public class Main {
     private Framework framework;
     private Map<String, String> configProps;
 
-    /**
-     * Private Constructor
-     */
-    private Main() {
-    }
-
     public static void main(String[] args) throws Exception {
         new Main().run(args);
     }
@@ -75,7 +69,7 @@ public class Main {
      *
      * @return A <tt>Properties</tt> instance or <tt>null</tt> if there was an error.
      */
-    private static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
+    protected static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
         // The config properties file is either specified by a system
         // property or it is in the conf/ directory of the Felix
         // installation directory.  Try to load it from one of these
@@ -144,7 +138,7 @@ public class Main {
         return map;
     }
 
-    private void run(String[] args) {
+    public void run(String[] args) {
         loadProperties();
         addShutdownHook();
         try {
@@ -158,7 +152,7 @@ public class Main {
         }
     }
 
-    private void runFramework() throws BundleException, InterruptedException {
+    protected void runFramework() throws BundleException, InterruptedException {
         FrameworkEvent event;
         do {
             // Start the framework.
@@ -172,13 +166,13 @@ public class Main {
         System.exit(0);
     }
 
-    private void initFramework() throws Exception {
+    protected void initFramework() throws Exception {
         FrameworkFactory factory = getFrameworkFactory();
         framework = factory.newFramework(configProps);
         framework.init();
     }
 
-    private void addShutdownHook() {
+    protected void addShutdownHook() {
         // If enabled, register a shutdown hook to make sure the framework is
         // cleanly shutdown when the VM exits.
         String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
@@ -198,7 +192,7 @@ public class Main {
         }
     }
 
-    private void loadProperties() {
+    protected void loadProperties() {
         Map<String, String> systemProps = loadProperties(SYSTEM_PROPERTIES_PROP, SYSTEM_PROPERTIES_FILE_VALUE);
         if (systemProps != null) {
             System.getProperties().putAll(systemProps);
@@ -212,7 +206,7 @@ public class Main {
         copySystemProperties();
     }
 
-    private FrameworkFactory getFrameworkFactory() throws Exception {
+    protected FrameworkFactory getFrameworkFactory() throws Exception {
         java.net.URL url = Main.class.getResource("/META-INF/services/org.osgi.framework.launch.FrameworkFactory");
         if (url != null) {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
@@ -228,7 +222,7 @@ public class Main {
         throw new Exception("Could not find framework factory.");
     }
 
-    private void copySystemProperties() {
+    protected void copySystemProperties() {
         for (Enumeration e = System.getProperties().propertyNames();
              e.hasMoreElements(); ) {
             String key = (String) e.nextElement();
@@ -236,5 +230,9 @@ public class Main {
                 configProps.put(key, System.getProperty(key));
             }
         }
+    }
+
+    protected Framework getFramework() {
+        return framework;
     }
 }
