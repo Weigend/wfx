@@ -44,7 +44,7 @@ public class AutoProcessor {
         this.configProps = configProps;
     }
 
-    private static boolean isFragment(Bundle bundle) {
+    protected static boolean isFragment(Bundle bundle) {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
 
@@ -54,7 +54,7 @@ public class AutoProcessor {
         startBundles();
     }
 
-    private void initStartLevels() {
+    protected void initStartLevels() {
         if (configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL) != null) {
             String[] bundles = configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL).split(" ");
             for (String s : bundles) {
@@ -77,7 +77,7 @@ public class AutoProcessor {
         }
     }
 
-    private int getStartLevel(Bundle bundle) {
+    protected int getStartLevel(Bundle bundle) {
 
         String bundleIdentifier = bundle.getSymbolicName() + ":" + bundle.getVersion().toString();
         if (bundelStartLevels.containsKey(bundleIdentifier)) {
@@ -89,7 +89,7 @@ public class AutoProcessor {
         return frameworkStartLevel;
     }
 
-    private void loadBundles() throws IOException {
+    protected void loadBundles() throws IOException {
         Map<String, Bundle> installedBundleMap = new HashMap<>();
         for (Bundle b : context.getBundles()) {
             installedBundleMap.put(b.getLocation(), b);
@@ -123,7 +123,7 @@ public class AutoProcessor {
         uninstallOldBundles(installedBundleMap);
     }
 
-    private void uninstallOldBundles(Map<String, Bundle> installedBundleMap) {
+    protected void uninstallOldBundles(Map<String, Bundle> installedBundleMap) {
         for (Map.Entry<String, Bundle> entry : installedBundleMap.entrySet()) {
             Bundle b = entry.getValue();
             if (b.getBundleId() != 0) {
@@ -136,7 +136,7 @@ public class AutoProcessor {
         }
     }
 
-    private void installUpdateBundle(File jarFile, Bundle b) {
+    protected void installUpdateBundle(File jarFile, Bundle b) {
         try {
             // If the bundle is not already installed, then install it
             if ((b == null)) {
@@ -160,7 +160,7 @@ public class AutoProcessor {
         }
     }
 
-    private void startBundles() {
+    protected void startBundles() {
         for (Bundle b : startBundleList) {
             if (b.getState() != Bundle.ACTIVE) {
                 try {
