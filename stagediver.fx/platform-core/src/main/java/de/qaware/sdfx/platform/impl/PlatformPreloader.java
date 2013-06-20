@@ -14,15 +14,19 @@ import javafx.stage.*;
 import java.io.IOException;
 import java.net.URL;
 
+/**
+ * This is the preloader implementation for the stagediver.fx platform. It is a generic implementation which can be
+ * branded by an application and supports displaying text messages on the splash screen.
+ */
 public class PlatformPreloader extends Preloader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformPreloader.class);
     @FXML
-    ProgressBar progressBar;
+    private ProgressBar progressBar;
     @FXML
-    Label progressText;
-    Stage stage;
-    boolean noLoadingProgress = true;
+    private Label progressText;
+    private Stage stage;
+    private boolean noLoadingProgress = true;
     private PreloaderNotificationServiceImpl notificationService;
 
     @Override
