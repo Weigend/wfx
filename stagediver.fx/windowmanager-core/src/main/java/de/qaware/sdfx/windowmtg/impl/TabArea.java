@@ -118,7 +118,7 @@ public class TabArea extends ViewArea {
      * @return True if this area is empty and was successfully removed.
      */
     public boolean handleEmpty() {
-        if (views.isEmpty()) {
+        if (views.isEmpty() && !isEditor()) {
             LOGGER.info("Remove empty TabArea {}", this);
             getParent().remove(this);
             return true;
