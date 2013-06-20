@@ -42,6 +42,12 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.javafx</groupId>
+            <artifactId>javafx</artifactId>
+            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+        </dependency>
     </dependencies>
 
     <build>

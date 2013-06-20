@@ -18,6 +18,12 @@
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.javafx</groupId>
+            <artifactId>javafx</artifactId>
+            <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>
