@@ -57,28 +57,39 @@ class DropStage {
         List<Screen> screenList = Screen.getScreens();
 
         for (Screen screen : screenList) {
-            Stage stage = new Stage();
-            stage.initStyle(StageStyle.TRANSPARENT);
-            //stage.initOwner(owner);
-            Rectangle2D screenBounds = screen.getVisualBounds();
-            //set Stage boundaries to visible bounds of the main screen
-            stage.setX(screenBounds.getMinX());
-            stage.setY(screenBounds.getMinY());
-            stage.setWidth(screenBounds.getWidth());
-            stage.setHeight(screenBounds.getHeight());
-
-            Scene scene = new Scene(
-                    new Pane(),
-                    screenBounds.getWidth(),
-                    screenBounds.getHeight(),
-                    Color.color(1, 1, 1, 0.01)
-            );
-
-            stage.setScene(scene);
-            stage.show();
-            initSceneEvents(scene, stage);
+            Stage stage = initDropStage(screen);
             stages.add(stage);
         }
+    }
+
+    /**
+     * Init a drop stage for the given screen.
+     *
+     * @param screen Init a drop stage for this screen.
+     * @return The initialized drop stage.
+     */
+    private Stage initDropStage(Screen screen) {
+        Stage stage = new Stage();
+        stage.initStyle(StageStyle.TRANSPARENT);
+        //stage.initOwner(owner);
+        Rectangle2D screenBounds = screen.getVisualBounds();
+        //set Stage boundaries to visible bounds of the main screen
+        stage.setX(screenBounds.getMinX());
+        stage.setY(screenBounds.getMinY());
+        stage.setWidth(screenBounds.getWidth());
+        stage.setHeight(screenBounds.getHeight());
+
+        Scene scene = new Scene(
+                new Pane(),
+                screenBounds.getWidth(),
+                screenBounds.getHeight(),
+                Color.color(1, 1, 1, 0.01)
+        );
+
+        stage.setScene(scene);
+        stage.show();
+        initSceneEvents(scene, stage);
+        return stage;
     }
 
     /**
