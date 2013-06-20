@@ -2,7 +2,6 @@ package de.qaware.sdfx.main;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -124,5 +123,4 @@ public class AutoProcessorTest {
         processor.initStartLevels();
         assertEquals(3, processor.getStartLevel(fragmentBundle));
     }
-
 }

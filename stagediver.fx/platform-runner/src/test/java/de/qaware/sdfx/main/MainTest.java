@@ -1,6 +1,9 @@
 package de.qaware.sdfx.main;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
@@ -28,7 +31,6 @@ public class MainTest {
         runner = null;
     }
 
-    @Test
     @Test
     public void testRunFramework() throws Exception {
         when(runner.getFramework().waitForStop(0)).thenReturn(
