@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 20.06.13 17:03
+//     description: The platform preloader shows the splash screen during startup.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;

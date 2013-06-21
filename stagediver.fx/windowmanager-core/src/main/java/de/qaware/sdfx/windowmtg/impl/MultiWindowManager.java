@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 23.05.13 10:48
+//     description: Defines a window manager which can handle multiple windows.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.WindowManager;

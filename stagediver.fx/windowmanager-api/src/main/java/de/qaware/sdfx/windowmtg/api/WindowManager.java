@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 21.06.13 10:22
+//     description: The window manager.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.api;
 
 import javafx.fxml.*;
@@ -48,7 +60,6 @@ public interface WindowManager extends Initializable {
      * {@link IllegalArgumentException} will be thrown.
      *
      * @param view That view that should be closed
-     * @throws IllegalArgumentException In case of the view is not registered.
      */
     void closeView(View view);
 
@@ -62,7 +73,6 @@ public interface WindowManager extends Initializable {
      *
      * @param view Clone the given view.
      * @return The cloned view object.
-     * @throws IllegalArgumentException In case of the view is not registered.
      */
     View cloneView(View view);
 
@@ -73,7 +83,6 @@ public interface WindowManager extends Initializable {
      * {@link IllegalArgumentException} will be thrown.
      *
      * @param view The view to show.
-     * @throws IllegalArgumentException In case of the view is not registered.
      */
     void showView(View view);
 

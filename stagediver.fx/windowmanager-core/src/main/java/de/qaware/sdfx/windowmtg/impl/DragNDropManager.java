@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 23.05.13 10:35
+//     description: Defines the drag&drop manager interface-
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import javafx.fxml.*;
@@ -5,7 +17,7 @@ import javafx.scene.input.*;
 import javafx.stage.*;
 
 /**
- * The drag&drop manager.
+ * The drag&drop manager. The implementations handles the full dnd management of views.
  */
 public interface DragNDropManager extends Initializable {
 

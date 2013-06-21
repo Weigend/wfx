@@ -1,15 +1,13 @@
 // ______________________________________________________________________________
-//
-//           Project: windowmtg - windowmtg
-//              File: FXMLView.java
+//         Project: stagediver.fx
 // ______________________________________________________________________________
 //
-//        created by: christian.fritz
-//     creation date: 06.05.13 09:29
-//       description: Default Implementation for a window management view
+//      created by: christian.fritz
+//   creation date: 23.05.13 10:25
+//     description: Default implementation for fxml based views.
 // ______________________________________________________________________________
 //
-//         Copyright: (c) QAware GmbH
+//       Copyright: (c) QAware GmbH, all rights reserved
 // ______________________________________________________________________________
 
 package de.qaware.sdfx.windowmtg.api;
@@ -31,15 +29,10 @@ import java.net.URL;
 public class FXMLView<C> implements View {
 
     private final String id;
-
     private final String title;
-
     private final Position defaultPosition;
-
     private final Pane rootPane;
-
     private final String toolTipInfo;
-
     private final C controller;
 
     /**

@@ -1,3 +1,16 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 20.06.13 16:15
+//     description: Describes a logical view area which displays the views within
+//                  a tab pane.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
@@ -17,9 +30,7 @@ import java.util.Set;
 public class TabArea extends ViewArea {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TabArea.class);
-
     private final TabPane tabPane = new TabPane();
-
     /**
      * A list with all contained views.
      */
@@ -66,24 +77,6 @@ public class TabArea extends ViewArea {
     }
 
     /**
-     * Add the view to this area.
-     *
-     * @param view     The view to add.
-     * @param position Add the view at this position.
-     */
-    @Override
-    public void add(ViewStatus view, Position position) {
-        if (position != Position.CENTER) {
-            super.add(view, position);
-            return;
-        }
-        views.add(view);
-        view.setArea(this);
-        view.setPosition(position);
-        tabPane.getTabs().add(view.getTab());
-    }
-
-    /**
      * Remove a view from this area. If this area is empty it will also be removed.
      *
      * @param view The view to remove
@@ -93,7 +86,7 @@ public class TabArea extends ViewArea {
     }
 
     /**
-     * Remove a view from this area. If {@param checkEmpty} is true it checks if this area is empty and remove this area.
+     * Remove a view from this area. If checkEmpty is true it checks if this area is empty and remove this area.
      *
      * @param view       The view to remove.
      * @param checkEmpty Should this area be removed if it is empty?
@@ -134,6 +127,24 @@ public class TabArea extends ViewArea {
     @Override
     public Parent getNode() {
         return tabPane;
+    }
+
+    /**
+     * Add the view to this area.
+     *
+     * @param view     The view to add.
+     * @param position Add the view at this position.
+     */
+    @Override
+    public void add(ViewStatus view, Position position) {
+        if (position != Position.CENTER) {
+            super.add(view, position);
+            return;
+        }
+        views.add(view);
+        view.setArea(this);
+        view.setPosition(position);
+        tabPane.getTabs().add(view.getTab());
     }
 
     /**

@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 20.06.13 13:45
+//     description: Handles the drag&drop gestures for views.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
@@ -22,32 +34,26 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DragNDropManagerImpl.class);
-
     /**
      * Temporal storage for the draged view
      */
     private static ViewStatus dragedViewStatus;
-
     /**
      * The window manager.
      */
     private final MultiWindowManager windowManager;
-
-    /**
-     * Handler for drag&drop outside a window
-     */
-    private DropStage dropStage;
-
     /**
      * The effect for the current drop zone.
      */
     private final Blend effect = new Blend();
-
     /**
      * The visible effect.
      */
     private final ColorInput dropOverlay = new ColorInput();
-
+    /**
+     * Handler for drag&drop outside a window
+     */
+    private DropStage dropStage;
     /**
      * The current node where the effect is active.
      */
@@ -134,17 +140,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Close all the invisible drop stages.
-     */
-    private void closeDropStages() {
-
-        if (dropStage != null) {
-            dropStage.close();
-            dropStage = null;
-        }
-    }
-
-    /**
      * Handle Drag&Drop to a invisible stage => opens a new window
      *
      * @param event     The fired event.
@@ -172,27 +167,34 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Initialize a new managed window.
+     * Complete the dropped event.
+     * This contains the cleaning the effects and other status.
      *
-     * @param dropStage The stage where the view was dropped.
-     * @param area      The new root area which should be the new root node for the new stage.
-     * @return The new created stage.
+     * @param event   The drag event
+     * @param success Was the drop gesture successful
      */
-    private Stage initManagedWindow(Stage dropStage, final RootArea area) {
-        Scene scene = new Scene(area.getNode(), dropStage.getWidth(), dropStage.getHeight());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setWidth(dropStage.getWidth());
-        stage.setHeight(dropStage.getHeight());
-        stage.setX(dropStage.getX());
-        stage.setY(dropStage.getY());
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                windowManager.remove(area);
-            }
-        });
-        return stage;
+    private void completeDropped(DragEvent event, boolean success) {
+        if (effectTarget != null) {
+            effectTarget.setEffect(null);
+        }
+        effectTarget = null;
+        dragedViewStatus = null;
+        event.setDropCompleted(success);
+        closeDropStages();
+        event.consume();
+    }
+
+    /**
+     * Validates the dragboard content.
+     *
+     * @param event The drag drop event.
+     * @return False if the dragboard of the event contains a valid view id.
+     */
+    private boolean isInvalidDragboard(DragEvent event) {
+        // Check if dropped content is valid for dropping here
+        Dragboard dragboard = event.getDragboard();
+        return !dragboard.hasContent(DATAFORMAT)
+                || !dragboard.getContent(DATAFORMAT).equals(dragedViewStatus.getView().getViewId());
     }
 
     /**
@@ -226,34 +228,29 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Validates the dragboard content.
+     * Detect in witch sub area of the rootpane the given dragevent is rised.
      *
-     * @param event The drag drop event.
-     * @return False if the dragboard of the event contains a valid view id.
+     * @param event The drag event
+     * @return The position value for the detected sub area.
      */
-    private boolean isInvalidDragboard(DragEvent event) {
-        // Check if dropped content is valid for dropping here
-        Dragboard dragboard = event.getDragboard();
-        return !dragboard.hasContent(DATAFORMAT)
-                || !dragboard.getContent(DATAFORMAT).equals(dragedViewStatus.getView().getViewId());
-    }
-
-    /**
-     * Complete the dropped event.
-     * This contains the cleaning the effects and other status.
-     *
-     * @param event   The drag event
-     * @param success Was the drop gesture successful
-     */
-    private void completeDropped(DragEvent event, boolean success) {
-        if (effectTarget != null) {
-            effectTarget.setEffect(null);
+    private Position detectPosition(DragEvent event, Control source) {
+        double areaX = event.getX() / source.getWidth();
+        double areaY = event.getY() / source.getHeight();
+        if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
+            return Position.CENTER;
         }
-        effectTarget = null;
-        dragedViewStatus = null;
-        event.setDropCompleted(success);
-        closeDropStages();
-        event.consume();
+        else if (areaY < 0.25) {
+            return Position.TOP;
+        }
+        else if (areaY >= 0.75) {
+            return Position.BOTTOM;
+        }
+        else if (areaX < 0.25) {
+            return Position.LEFT;
+        }
+        else {
+            return Position.RIGHT;
+        }
     }
 
     /**
@@ -307,6 +304,16 @@ public class DragNDropManagerImpl implements DragNDropManager {
         event.consume();
     }
 
+    /**
+     * Get the window manager instance.
+     *
+     * @return The window manager instance.
+     */
+    @Override
+    public MultiWindowManager getWindowManager() {
+        return windowManager;
+    }
+
     private void adjustOverlay(Control target, Position position) {
         switch (position) {
             case CENTER:
@@ -342,38 +349,37 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Detect in witch sub area of the rootpane the given dragevent is rised.
+     * Initialize a new managed window.
      *
-     * @param event The drag event
-     * @return The position value for the detected sub area.
+     * @param dropStage The stage where the view was dropped.
+     * @param area      The new root area which should be the new root node for the new stage.
+     * @return The new created stage.
      */
-    private Position detectPosition(DragEvent event, Control source) {
-        double areaX = event.getX() / source.getWidth();
-        double areaY = event.getY() / source.getHeight();
-        if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
-            return Position.CENTER;
-        }
-        else if (areaY < 0.25) {
-            return Position.TOP;
-        }
-        else if (areaY >= 0.75) {
-            return Position.BOTTOM;
-        }
-        else if (areaX < 0.25) {
-            return Position.LEFT;
-        }
-        else {
-            return Position.RIGHT;
-        }
+    private Stage initManagedWindow(Stage dropStage, final RootArea area) {
+        Scene scene = new Scene(area.getNode(), dropStage.getWidth(), dropStage.getHeight());
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setWidth(dropStage.getWidth());
+        stage.setHeight(dropStage.getHeight());
+        stage.setX(dropStage.getX());
+        stage.setY(dropStage.getY());
+        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+            @Override
+            public void handle(WindowEvent event) {
+                windowManager.remove(area);
+            }
+        });
+        return stage;
     }
 
     /**
-     * Get the window manager instance.
-     *
-     * @return The window manager instance.
+     * Close all the invisible drop stages.
      */
-    @Override
-    public MultiWindowManager getWindowManager() {
-        return windowManager;
+    private void closeDropStages() {
+
+        if (dropStage != null) {
+            dropStage.close();
+            dropStage = null;
+        }
     }
 }

@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 14.06.13 09:11
+//     description: Processor for auto deployment.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.main;
 
 import org.osgi.framework.Bundle;
@@ -16,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Processor for auto deployment.
+ */
 public class AutoProcessor {
 
     /**
@@ -30,15 +45,19 @@ public class AutoProcessor {
      * The property name used to specify auto-deploy start level.
      */
     public static final String AUTO_DEPLOY_STARTLEVEL_PROPERY = "stagediver.auto.deploy.startlevel";
-
     public static final String AUTO_DEPLOY_BUNDLE_STARTLEVEL = "stagediver.auto.deploy.startlevel.bundle";
-
     private BundleContext context;
     private Map<String, String> configProps;
     private List<Bundle> startBundleList = new ArrayList<>();
     private Map<String, Integer> bundelStartLevels = new HashMap<>();
     private int frameworkStartLevel;
 
+    /**
+     * Initialize the auto processor.
+     *
+     * @param context     The bundle context of the framework bundle (bundle id 0).
+     * @param configProps The configuration properties which define the auto deploy settings.
+     */
     public AutoProcessor(BundleContext context, Map<String, String> configProps) {
         this.context = context;
         this.configProps = configProps;
@@ -48,6 +67,11 @@ public class AutoProcessor {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
 
+    /**
+     * process the auto deployment and installation of bundles.
+     *
+     * @throws IOException In case of the bundles can not be deployed or started.
+     */
     public void process() throws IOException {
         initStartLevels();
         loadBundles();

@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 04.06.13 21:31
+//     description: The JavaFX application for the stagediver.fx platform.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.MainWindow;
@@ -61,7 +73,7 @@ public class PlatformApplication extends Application {
     /**
      * Shutdown the JavaFX application and stop the platform bundle.
      *
-     * @throws BundleException
+     * @throws BundleException In case of this bundle can not be stopped
      */
     @Override
     public void stop() throws BundleException {
@@ -69,6 +81,9 @@ public class PlatformApplication extends Application {
         FrameworkUtil.getBundle(getClass()).stop();
     }
 
+    /**
+     * Request the platform to show the main window.
+     */
     protected void showMainStage() {
         if (mainStage.isShowing()) {
             return;

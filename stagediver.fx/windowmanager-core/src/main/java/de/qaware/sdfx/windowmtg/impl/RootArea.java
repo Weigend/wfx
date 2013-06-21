@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 23.05.13 10:53
+//     description: Defines the root view area.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
@@ -48,10 +60,10 @@ public final class RootArea extends ViewArea {
     }
 
     /**
-     * Add the {@param view} to this area at {@param position}.
+     * Add the view to this area at position.
      * <p/>
-     * If {@param position} is {@link Position#CENTER} it will be added to that child that is defined as editor area.
-     * Otherwise this area is split and the view will be positioned according the {@param position} parameter.
+     * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
+     * Otherwise this area is split and the view will be positioned according the position parameter.
      *
      * @param view     The view to add.
      * @param position Add the view at this position.

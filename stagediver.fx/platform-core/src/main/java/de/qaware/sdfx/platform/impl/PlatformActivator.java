@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 04.06.13 21:50
+//     description: Activates the the stagediver.fx platform.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
@@ -48,6 +60,7 @@ public class PlatformActivator implements BundleActivator {
      * osgi platform when this bundle was stoped.
      *
      * @param context The bundle context.
+     * @throws BundleException In case of the bundle can not be stopped.
      */
     @Override
     public void stop(BundleContext context) throws BundleException {

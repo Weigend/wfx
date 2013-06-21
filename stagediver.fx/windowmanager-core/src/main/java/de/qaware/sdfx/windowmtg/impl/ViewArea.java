@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 11.06.13 20:19
+//     description: Defines a regular view area.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
@@ -11,31 +23,38 @@ import javafx.scene.control.*;
 import javafx.scene.input.*;
 import javafx.scene.layout.*;
 
+/**
+ * A ViewArea is a node within the area tree. It has two children which are self view areas.
+ */
 public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);
-
     private final SplitPane outerPane;
-
-    private ViewArea parent;
-
-    private ViewArea firstChild;
-
-    private ViewArea secondChild;
-
-    private Orientation orientation;
-
     private final DragNDropManager dragNDropManager;
-
+    private ViewArea parent;
+    private ViewArea firstChild;
+    private ViewArea secondChild;
+    private Orientation orientation;
     /**
      * Did this area contains the editor pane?
      */
     private boolean editor;
 
+    /**
+     * Create a new view area and register the given area as parent.
+     *
+     * @param parent           The parent area.
+     * @param dragNDropManager The drag&drop manager to handle moving the contained views.
+     */
     protected ViewArea(ViewArea parent, DragNDropManager dragNDropManager) {
         this(dragNDropManager);
         this.parent = parent;
     }
 
+    /**
+     * Create a new view area.
+     *
+     * @param dragNDropManager The drag&drop manager to handle moving the contained views.
+     */
     protected ViewArea(DragNDropManager dragNDropManager) {
         outerPane = new SplitPane();
         outerPane.setOrientation(Orientation.VERTICAL);
@@ -142,10 +161,10 @@ public class ViewArea {
     }
 
     /**
-     * Add the {@param view} to this area at {@param position}.
+     * Add the view to this area at position.
      * <p/>
-     * If {@param position} is {@link Position#CENTER} it will be added to that child that is defined as editor area.
-     * Otherwise this area is split and the view will be positioned according the {@param position} parameter.
+     * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
+     * Otherwise this area is split and the view will be positioned according the position parameter.
      *
      * @param view     The view to add.
      * @param position Add the view at this position.
@@ -215,14 +234,6 @@ public class ViewArea {
         }
     }
 
-    protected ViewArea getParent() {
-        return parent;
-    }
-
-    protected void setParent(ViewArea parent) {
-        this.parent = parent;
-    }
-
     /**
      * Replace the {@param oldArea} with the {@param newArea}.
      *
@@ -236,6 +247,14 @@ public class ViewArea {
         else if (oldArea == secondChild) {
             setSecondChild(newArea);
         }
+    }
+
+    protected ViewArea getParent() {
+        return parent;
+    }
+
+    protected void setParent(ViewArea parent) {
+        this.parent = parent;
     }
 
     /**

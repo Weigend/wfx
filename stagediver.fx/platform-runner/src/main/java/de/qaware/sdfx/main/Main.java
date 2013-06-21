@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 14.06.13 13:23
+//     description: This is the  stagediver.fx plattform runner.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.main;
 
 import org.apache.felix.framework.util.Util;
@@ -48,6 +60,12 @@ public class Main {
     private Framework framework;
     private Map<String, String> configProps;
 
+    /**
+     * The initial main method to start up the platform.
+     *
+     * @param args The commandline arguments
+     * @throws Exception In any case of problems which can not be handled by the platform.
+     */
     public static void main(String[] args) throws Exception {
         new Main().run(args);
     }
@@ -138,6 +156,11 @@ public class Main {
         return map;
     }
 
+    /**
+     * Run the platform.
+     *
+     * @param args The commandline arguments.
+     */
     public void run(String[] args) {
         loadProperties();
         addShutdownHook();

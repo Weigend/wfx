@@ -1,11 +1,22 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 23.05.13 08:57
+//     description: Status class for the currently registered views.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.scene.control.Tab;
-import javafx.scene.control.Tooltip;
+
+import javafx.event.*;
+import javafx.scene.control.*;
 
 /**
  * Stores the current status and additional metadata of an window manager view.

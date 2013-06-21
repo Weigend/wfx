@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 20.06.13 14:23
+//     description: Defines the drop stages for dropping views to the desktop.
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.windowmtg.impl;
 
 import com.google.common.collect.ImmutableList;
@@ -21,17 +33,14 @@ import java.util.List;
  */
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);
-
     /**
      * The drag&drop manager
      */
     private final DragNDropManager dndManager;
-
     /**
      * The the primary stage containing the window manager.
      */
     private final Stage owner;
-
     /**
      * A list with all stages (one per screen) which are used as drop areas.
      */

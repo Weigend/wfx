@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//         Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//      created by: christian.fritz
+//   creation date: 21.06.13 09:55
+//     description:
+// ______________________________________________________________________________
+//
+//       Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
@@ -10,6 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Implements the preloader notification service.
+ */
 public class PreloaderNotificationServiceImpl implements PreloaderNotificationService {
 
     private PlatformApplication application;
