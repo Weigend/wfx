@@ -1,12 +1,12 @@
 package de.qaware.sdfx.platform.api;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.ops4j.peaberry.Peaberry.osgiModule;
@@ -28,8 +28,8 @@ public class Registry {
     public static void init(Module... modules) {
 
         BundleContext context = FrameworkUtil.getBundle(Registry.class).getBundleContext();
-        List<Module> moduleList = Arrays.asList(modules);
-        moduleList.add(osgiModule(context));
+        Module osgiModule = osgiModule(context);
+        List<Module> moduleList = Lists.asList(osgiModule, modules);
         injector = Guice.createInjector(moduleList);
     }
 
