@@ -177,4 +177,15 @@
             </plugin>
         </plugins>
     </build>
+
+    <distributionManagement>
+        <repository>
+            <id>qaware-nexus</id>
+            <url>https://neu.qaware.de/nexus/content/repositories/QAWARE-STAGEDIVER-FX/</url>
+        </repository>
+        <snapshotRepository>
+            <id>qaware-nexus</id>
+            <url>https://neu.qaware.de/nexus/content/repositories/QAWARE-STAGEDIVER-FX-SNAPSHOTS/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>
