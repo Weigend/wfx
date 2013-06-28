@@ -1,5 +1,6 @@
 package de.qaware.sdfx.example.editor.impl;
 
+import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
@@ -26,6 +27,11 @@ public class Activator implements BundleActivator {
     @Override
     public void start(final BundleContext context) throws Exception {
         LOGGER.info("Starting Bundle {}", context.getBundle());
+
+        final PreloaderNotificationService notificationService = context.getService(context
+                .getServiceReference(PreloaderNotificationService.class));
+        notificationService.sendNotification(context.getBundle(), "Starting...", 0);
+
         tracker = new ServiceTracker<>(context, WindowManager.class,
                 new ServiceTrackerCustomizer<WindowManager, Object>() {
                     @Override
@@ -42,6 +48,7 @@ public class Activator implements BundleActivator {
 
                                     manager.register(center);
                                     //manager.register(explorer, center);
+                                    notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
                                 } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
