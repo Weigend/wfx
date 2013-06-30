@@ -119,6 +119,11 @@ public final class RootArea extends ViewArea {
         throw new UnsupportedOperationException("Root Areas can not have any parent area");
     }
 
+    /**
+     * Set the view that holds currently the focus and updates the last focused view.
+     *
+     * @param focusedView The view that should hold the focus.
+     */
     public void setFocusedView(View focusedView) {
         this.lastFocusedView = this.focusedView;
         this.focusedView = focusedView;

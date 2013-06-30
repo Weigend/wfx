@@ -69,12 +69,12 @@ public interface Window {
      * @throws IllegalArgumentException In case of the given view is currently not
      *                                  placed within this window
      */
-    void setFocusedView(View view);
+    void setFocusedView(View view) throws IllegalArgumentException;
 
     /**
      * Get the the javafx stage for this window.
      *
-     * @return
+     * @return The stage where this window is shown.
      */
     Stage getStage();
 }
