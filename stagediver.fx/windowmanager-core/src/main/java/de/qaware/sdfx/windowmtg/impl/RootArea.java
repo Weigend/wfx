@@ -13,6 +13,7 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
+import de.qaware.sdfx.windowmtg.api.View;
 
 import javafx.geometry.*;
 import javafx.scene.*;
@@ -29,6 +30,8 @@ public final class RootArea extends ViewArea {
      * Close the stage containing this area when removing the child.
      */
     private final boolean closeStage;
+    private View focusedView;
+    private View lastFocusedView;
 
     /**
      * Create a new root area.
@@ -114,5 +117,18 @@ public final class RootArea extends ViewArea {
     @Override
     protected void setParent(ViewArea parent) {
         throw new UnsupportedOperationException("Root Areas can not have any parent area");
+    }
+
+    public void setFocusedView(View focusedView) {
+        this.lastFocusedView = this.focusedView;
+        this.focusedView = focusedView;
+    }
+
+    public View getFocusedView() {
+        return focusedView;
+    }
+
+    public View getLastFocusedView() {
+        return lastFocusedView;
     }
 }

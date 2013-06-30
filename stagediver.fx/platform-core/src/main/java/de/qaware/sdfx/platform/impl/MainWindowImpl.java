@@ -14,6 +14,7 @@ import javafx.stage.*;
 /**
  *
  */
+@Deprecated
 public class MainWindowImpl implements MainWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MainWindowImpl.class);
