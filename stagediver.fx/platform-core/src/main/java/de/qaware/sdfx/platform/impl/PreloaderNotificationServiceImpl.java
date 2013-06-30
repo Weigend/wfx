@@ -14,6 +14,8 @@ package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.platform.api.ProgressNotification;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Service;
 import org.osgi.framework.Bundle;
 
 import javafx.application.*;
@@ -25,6 +27,8 @@ import java.util.Map;
 /**
  * Implements the preloader notification service.
  */
+@Component
+@Service
 public class PreloaderNotificationServiceImpl implements PreloaderNotificationService {
 
     private PlatformApplication application;
