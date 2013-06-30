@@ -86,18 +86,14 @@ public class AutoProcessor {
                 bundelStartLevels.put(parts[0].trim(), Integer.parseInt(parts[1]));
             }
         }
-
-        // Retrieve the Start Level service, since it will be needed
-        // to set the start level of the installed bundles.
-        FrameworkStartLevel fwStartLevel = context.getBundle(0).adapt(FrameworkStartLevel.class);
-        // Get start level for auto-deploy bundles.
-        frameworkStartLevel = fwStartLevel.getInitialBundleStartLevel();
-        if (configProps.get(AUTO_DEPLOY_STARTLEVEL_PROPERY) != null) {
-            try {
-                frameworkStartLevel = Integer.parseInt(configProps.get(AUTO_DEPLOY_STARTLEVEL_PROPERY));
-            } catch (NumberFormatException ex) {
-                // Ignore and keep default level.
-            }
+        try {
+            frameworkStartLevel = Integer.parseInt(configProps.get(AUTO_DEPLOY_STARTLEVEL_PROPERY));
+        }
+        catch (NumberFormatException ex) {
+            // Retrieve the Start Level service, since it will be needed
+            // to set the start level of the installed bundles.
+            FrameworkStartLevel fwStartLevel = context.getBundle(0).adapt(FrameworkStartLevel.class);
+            frameworkStartLevel = fwStartLevel.getInitialBundleStartLevel();
         }
     }
 
@@ -153,7 +149,8 @@ public class AutoProcessor {
             if (b.getBundleId() != 0) {
                 try {
                     b.uninstall();
-                } catch (BundleException ex) {
+                }
+                catch (BundleException ex) {
                     System.err.println("Auto-deploy uninstall: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
                 }
             }
@@ -179,7 +176,8 @@ public class AutoProcessor {
                 BundleStartLevel bundleStartLevel = b.adapt(BundleStartLevel.class);
                 bundleStartLevel.setStartLevel(getStartLevel(b));
             }
-        } catch (BundleException ex) {
+        }
+        catch (BundleException ex) {
             System.err.println("Auto-deploy install: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
         }
     }
@@ -189,7 +187,8 @@ public class AutoProcessor {
             if (b.getState() != Bundle.ACTIVE) {
                 try {
                     b.start();
-                } catch (BundleException ex) {
+                }
+                catch (BundleException ex) {
                     System.err.println("Auto-deploy start: " + ex + ((ex.getCause() == null) ? "" : " - " + ex.getCause()));
                 }
             }
