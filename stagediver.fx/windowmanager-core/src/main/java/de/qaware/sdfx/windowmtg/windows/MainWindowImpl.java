@@ -5,7 +5,7 @@
 //
 //       created by: christian
 //    creation date: 29.06.13 21:51
-//      description:
+//      description: The main window of the stagediver.fx platform.
 //  ______________________________________________________________________________
 //
 //        Copyright: (c) QAware GmbH, all rights reserved
@@ -23,11 +23,8 @@ import javafx.scene.control.*;
 import javafx.stage.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: christian
- * Date: 29.06.13
- * Time: 21:51
- * To change this template use File | Settings | File Templates.
+ * This is the main window of the stagediver.fx platform. It supports the window management
+ * and the default bars like menu, tool and status bar.
  */
 public class MainWindowImpl extends AbstractWindow implements MainWindow {
 
@@ -35,28 +32,53 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
     private WindowManager windowManager;
     private ToolBar toolbar = new ToolBar();
 
-
+    /**
+     * Create a new main window.
+     *
+     * @param stage    The stage for this window.
+     * @param rootArea The root area.
+     */
     public MainWindowImpl(Stage stage, RootArea rootArea) {
         super(stage, rootArea);
         menuBar.setUseSystemMenuBar(true);
         getRootPane().getChildren().add(0, menuBar);
     }
 
+    /**
+     * Get a list with all menu items.
+     *
+     * @return A list with the menu items.
+     */
     @Override
     public ObservableList<Menu> getMenu() {
         return menuBar.getMenus();
     }
 
+    /**
+     * Get a list with all tool bar items.
+     *
+     * @return A list with the toolbar items.
+     */
     @Override
     public ObservableList<Node> getToolbarItems() {
         return toolbar.getItems();
     }
 
+    /**
+     * Get the window manager that is used to manage this window.
+     *
+     * @return The currently used window manager.
+     */
     @Override
     public WindowManager getWindowManager() {
         return windowManager;
     }
 
+    /**
+     * Set a new window manager for this window.
+     *
+     * @param windowManager The window manager.
+     */
     @Override
     public void setWindowManager(WindowManager windowManager) {
         Parent rootPane = windowManager.getRootPane();

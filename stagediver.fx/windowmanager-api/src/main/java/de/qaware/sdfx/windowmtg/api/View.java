@@ -15,7 +15,8 @@ package de.qaware.sdfx.windowmtg.api;
 import javafx.scene.*;
 
 /**
- * Defines a View. A view is an object that could be registered within the {@link WindowManager} and displayed as a tab.
+ * Defines a View. A view is an object that could be registered within the
+ * {@link WindowManager} and displayed as a tab.
  */
 public interface View {
 

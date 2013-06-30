@@ -21,8 +21,19 @@ import javafx.stage.*;
  * Defines a window of the stagediver.fx platform.
  */
 public interface Window {
+
+    /**
+     * Set the new title for this window.
+     *
+     * @param title The new title.
+     */
     void setTitle(String title);
 
+    /**
+     * Get the current title of this window.
+     *
+     * @return The title.
+     */
     String getTitle();
 
     /**
@@ -60,5 +71,10 @@ public interface Window {
      */
     void setFocusedView(View view);
 
+    /**
+     * Get the the javafx stage for this window.
+     *
+     * @return
+     */
     Stage getStage();
 }

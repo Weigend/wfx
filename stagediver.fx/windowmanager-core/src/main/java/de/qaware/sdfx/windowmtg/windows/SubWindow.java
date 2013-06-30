@@ -5,7 +5,7 @@
 //
 //       created by: christian
 //    creation date: 30.06.13 11:49
-//      description:
+//      description: This is a sub window of the stagediver.fx platform.
 //  ______________________________________________________________________________
 //
 //        Copyright: (c) QAware GmbH, all rights reserved
@@ -18,13 +18,17 @@ import de.qaware.sdfx.windowmtg.impl.RootArea;
 import javafx.stage.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: christian
- * Date: 30.06.13
- * Time: 11:49
- * To change this template use File | Settings | File Templates.
+ * This defines a subwindow of the stagediver.fx platform. It do not have a menu bar or a
+ * toolbar and the views of this window are managed by the window manager of the main window.
  */
 public class SubWindow extends AbstractWindow {
+
+    /**
+     * Create a new sub window.
+     *
+     * @param stage    The stage where this window should be shown.
+     * @param rootArea The root area for the window management.
+     */
     public SubWindow(Stage stage, RootArea rootArea) {
         super(stage, rootArea);
     }

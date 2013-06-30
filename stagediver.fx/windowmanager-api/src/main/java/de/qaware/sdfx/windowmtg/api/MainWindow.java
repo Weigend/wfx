@@ -43,5 +43,10 @@ public interface MainWindow extends Window {
      */
     WindowManager getWindowManager();
 
+    /**
+     * Set the window manager for the main window instance.
+     *
+     * @param windowManager The window manager.
+     */
     void setWindowManager(WindowManager windowManager);
 }
