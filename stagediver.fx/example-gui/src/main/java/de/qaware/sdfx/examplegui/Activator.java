@@ -40,6 +40,7 @@ public class Activator implements BundleActivator {
                             @Override
                             public void run() {
                                 try {
+                                    LOGGER.info("Register example view");
                                     FXMLView<ExampleController> center =
                                             new FXMLView<>("example-1", "Example GUI", Position.CENTER,
                                                     "/de/qaware/sdfx/examplegui/example.fxml",

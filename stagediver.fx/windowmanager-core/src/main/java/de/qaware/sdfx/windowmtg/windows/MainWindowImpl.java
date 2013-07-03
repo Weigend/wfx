@@ -19,6 +19,8 @@ import de.qaware.sdfx.windowmtg.impl.MultiWindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 import javafx.collections.*;
 import javafx.scene.*;
@@ -53,6 +55,9 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
             getStage().show();
         }
         windowManager.initialize(url, resourceBundle);
+
+        BundleContext context = FrameworkUtil.getBundle(WindowManagerImpl.class).getBundleContext();
+        context.registerService(WindowManager.class, windowManager, null);
     }
 
     /**
