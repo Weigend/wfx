@@ -39,4 +39,6 @@ public interface MultiWindowManager extends WindowManager {
      * @param area The root area to remove.
      */
     void remove(RootArea area);
+
+    RootArea getMainRootArea();
 }

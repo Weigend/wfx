@@ -95,7 +95,8 @@ public class WindowManagerImpl implements MultiWindowManager {
      *
      * @return The main area.
      */
-    private ViewArea getMainArea() {
+    @Override
+    public RootArea getMainRootArea() {
         if (mainArea == null) {
             mainArea = new RootArea(rootPane, dragNDropManager, false);
         }
@@ -125,7 +126,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public Parent getRootPane() {
-        return getMainArea().getNode();
+        return getMainRootArea().getNode();
     }
 
     /**
@@ -145,7 +146,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             area.remove(oldView);
         }
         else {
-            getMainArea().add(v, v.getPosition());
+            getMainRootArea().add(v, v.getPosition());
         }
         views.put(view.getViewId(), v);
     }
