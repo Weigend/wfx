@@ -12,8 +12,8 @@
 
 package de.qaware.sdfx.platform.impl;
 
-import de.qaware.sdfx.platform.api.MainWindow;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
+import de.qaware.sdfx.windowmtg.api.MainWindow;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
@@ -21,11 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
-import javafx.fxml.*;
-import javafx.scene.*;
 import javafx.stage.*;
 import java.io.IOException;
-import java.net.URL;
 
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for stagediver.fx platform.
@@ -59,15 +56,10 @@ public class PlatformApplication extends Application {
         LOGGER.info("Run JavaFX application start method");
         this.mainStage = stage;
         stage.setTitle("stagediver.fx Platform");
-        URL location = getClass().getResource("/de/qaware/sdfx/platform/MainWindow.fxml");
-        FXMLLoader loader = new FXMLLoader(location);
-        loader.setClassLoader(getClass().getClassLoader());
-        Parent parent = (Parent) loader.load();
-        MainWindowImpl controller = loader.getController();
-        controller.setStage(stage);
-        stage.setScene(new Scene(parent));
-        LOGGER.debug("Register MainWindow service: {}", controller);
-        context.registerService(MainWindow.class, controller, null);
+
+        MainWindow mainWindow = context.getService(context.getServiceReference(MainWindow.class));
+        mainWindow.setStage(stage);
+        mainWindow.initialize(null, null);
     }
 
     /**

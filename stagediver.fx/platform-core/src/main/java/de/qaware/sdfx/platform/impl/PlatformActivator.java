@@ -50,7 +50,6 @@ public class PlatformActivator implements BundleActivator {
         });
         platformThread.setName("Platform-Application-Thread");
         platformThread.start();
-        context.registerService(PreloaderNotificationService.class, new PreloaderNotificationServiceImpl(), null);
     }
 
     /**
