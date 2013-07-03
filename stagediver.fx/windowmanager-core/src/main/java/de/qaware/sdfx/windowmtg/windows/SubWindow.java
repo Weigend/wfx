@@ -30,6 +30,7 @@ public class SubWindow extends AbstractWindow {
      * @param rootArea The root area for the window management.
      */
     public SubWindow(Stage stage, RootArea rootArea) {
-        super(stage, rootArea);
+        super(stage);
+        setRootArea(rootArea);
     }
 }

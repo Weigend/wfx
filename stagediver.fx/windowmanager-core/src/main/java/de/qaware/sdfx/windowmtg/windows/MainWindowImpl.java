@@ -35,11 +35,10 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
     /**
      * Create a new main window.
      *
-     * @param stage    The stage for this window.
-     * @param rootArea The root area.
+     * @param stage The stage for this window.
      */
-    public MainWindowImpl(Stage stage, RootArea rootArea) {
-        super(stage, rootArea);
+    public MainWindowImpl(Stage stage) {
+        super(stage);
         menuBar.setUseSystemMenuBar(true);
         getRootPane().getChildren().add(0, menuBar);
     }

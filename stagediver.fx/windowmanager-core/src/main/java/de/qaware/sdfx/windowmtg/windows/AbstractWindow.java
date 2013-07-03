@@ -39,12 +39,18 @@ public abstract class AbstractWindow implements Window {
     /**
      * Create a new window with in the given stage and with the given root area.
      *
-     * @param stage    The stage where this window should be shown.
-     * @param rootArea The root area node for this window.
+     * @param stage The stage where this window should be shown.
      */
-    protected AbstractWindow(Stage stage, RootArea rootArea) {
+    protected AbstractWindow(Stage stage) {
         this.stage = stage;
         this.defaultTitle = stage.getTitle();
+    }
+
+    protected RootArea getRootArea() {
+        return rootArea;
+    }
+
+    protected void setRootArea(RootArea rootArea) {
         this.rootArea = rootArea;
         root.getChildren().add(rootArea.getNode());
     }
