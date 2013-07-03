@@ -17,11 +17,12 @@ import de.qaware.sdfx.windowmtg.api.MainWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.MultiWindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Service;
 
 import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
-import javafx.stage.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -29,20 +30,13 @@ import java.util.ResourceBundle;
  * This is the main window of the stagediver.fx platform. It supports the window management
  * and the default bars like menu, tool and status bar.
  */
+@Component
+@Service
 public class MainWindowImpl extends AbstractWindow implements MainWindow {
 
     private MenuBar menuBar = new MenuBar();
     private MultiWindowManager windowManager = new WindowManagerImpl();
     private ToolBar toolbar = new ToolBar();
-
-    /**
-     * Create a new main window.
-     *
-     * @param stage The stage for this window.
-     */
-    public MainWindowImpl(Stage stage) {
-        super(stage);
-    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {

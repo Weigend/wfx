@@ -40,7 +40,7 @@ public class WindowMtgActivator implements BundleActivator {
         bundleContext.getService(bundleContext.getServiceReference(PreloaderNotificationService.class))
                 .sendNotification(bundleContext.getBundle(), "Starting Window Management", 0);
 
-        bundleContext.registerService(MainWindowFactory.class, new MainWindowFactoryImpl(), null);
+       // bundleContext.registerService(MainWindowFactory.class, new MainWindowFactoryImpl(), null);
 
     }
 

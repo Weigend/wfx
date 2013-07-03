@@ -36,16 +36,6 @@ public abstract class AbstractWindow implements Window {
     private String defaultTitle;
     private RootArea rootArea;
 
-    /**
-     * Create a new window with in the given stage and with the given root area.
-     *
-     * @param stage The stage where this window should be shown.
-     */
-    protected AbstractWindow(Stage stage) {
-        this.stage = stage;
-        this.defaultTitle = stage.getTitle();
-    }
-
     protected RootArea getRootArea() {
         return rootArea;
     }
@@ -76,6 +66,16 @@ public abstract class AbstractWindow implements Window {
     @Override
     public Stage getStage() {
         return stage;
+    }
+    /**
+     * Set the javafx stage for this window.
+     *
+     * @param stage The stage for this window.
+     */
+    @Override
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        this.defaultTitle = stage.getTitle();
     }
 
     /**

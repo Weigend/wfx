@@ -77,4 +77,11 @@ public interface Window {
      * @return The stage where this window is shown.
      */
     Stage getStage();
+
+    /**
+     * Set the javafx stage for this window.
+     *
+     * @param stage The stage for this window.
+     */
+    void setStage(Stage stage);
 }
