@@ -21,6 +21,11 @@
 
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
 
