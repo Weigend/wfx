@@ -12,7 +12,6 @@
 
 package de.qaware.sdfx.platform.impl;
 
-import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;

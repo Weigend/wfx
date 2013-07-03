@@ -23,7 +23,7 @@ public class Registry {
     /**
      * No instantiation, static methods only.
      */
-    public Registry() { /* emtpy */ }
+    private Registry() { /* emtpy */ }
 
     public static void init(Module... modules) {
 

@@ -149,7 +149,8 @@ class DropStage {
      */
     public void close() {
         LOGGER.debug("close");
-        for (Stage stage : new ImmutableList.Builder<Stage>().addAll(stages).build()) {
+        List<Stage> immuteAbleStages = new ImmutableList.Builder<Stage>().addAll(stages).build();
+        for (Stage stage : immuteAbleStages) {
             stage.close();
             stages.remove(stage);
         }

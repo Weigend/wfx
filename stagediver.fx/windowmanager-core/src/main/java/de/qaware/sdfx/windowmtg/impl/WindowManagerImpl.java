@@ -181,8 +181,8 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void restoreDefaultLayout() {
         mainArea = null;
-
-        for (RootArea subWindow : new ImmutableList.Builder<RootArea>().addAll(subWindows).build()) {
+        List<RootArea> immuteAbleSubWindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
+        for (RootArea subWindow : immuteAbleSubWindows) {
             remove(subWindow);
         }
         rootPane.getChildren().clear();

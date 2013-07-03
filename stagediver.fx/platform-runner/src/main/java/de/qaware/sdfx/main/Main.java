@@ -67,7 +67,7 @@ public class Main {
      * @throws Exception In any case of problems which can not be handled by the platform.
      */
     public static void main(String[] args) throws Exception {
-        new Main().run(args);
+        new Main().run();
     }
 
     /**
@@ -99,7 +99,8 @@ public class Main {
         if (custom != null) {
             try {
                 propURL = new URL(custom);
-            } catch (MalformedURLException ex) {
+            }
+            catch (MalformedURLException ex) {
                 System.err.print("Main: " + ex);
                 return null;
             }
@@ -131,7 +132,8 @@ public class Main {
 
             try {
                 propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            } catch (MalformedURLException ex) {
+            }
+            catch (MalformedURLException ex) {
                 System.err.print("Main: " + ex);
                 return null;
             }
@@ -142,7 +144,8 @@ public class Main {
 
         try (InputStream is = propURL.openConnection().getInputStream()) {
             props.load(is);
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             return null;
         }
 
@@ -158,17 +161,16 @@ public class Main {
 
     /**
      * Run the platform.
-     *
-     * @param args The commandline arguments.
      */
-    public void run(String[] args) {
+    public void run() {
         loadProperties();
         addShutdownHook();
         try {
             initFramework();
-            new AutoProcessor(framework.getBundleContext(), configProps).process();
+            new AutoProcessor(getFramework().getBundleContext(), configProps).process();
             runFramework();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             System.err.println("Could not create framework: " + ex);
             ex.printStackTrace();
             System.exit(0);
@@ -179,9 +181,9 @@ public class Main {
         FrameworkEvent event;
         do {
             // Start the framework.
-            framework.start();
+            getFramework().start();
             // Wait for framework to stop to exit the VM.
-            event = framework.waitForStop(0);
+            event = getFramework().waitForStop(0);
         }
         // If the framework was updated, then restart it.
         while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
@@ -192,7 +194,7 @@ public class Main {
     protected void initFramework() throws Exception {
         FrameworkFactory factory = getFrameworkFactory();
         framework = factory.newFramework(configProps);
-        framework.init();
+        getFramework().init();
     }
 
     protected void addShutdownHook() {
@@ -203,11 +205,12 @@ public class Main {
             Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
                 public void run() {
                     try {
-                        if (framework != null) {
-                            framework.stop();
-                            framework.waitForStop(0);
+                        if (getFramework() != null) {
+                            getFramework().stop();
+                            getFramework().waitForStop(0);
                         }
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex) {
                         System.err.println("Error stopping framework: " + ex);
                     }
                 }
