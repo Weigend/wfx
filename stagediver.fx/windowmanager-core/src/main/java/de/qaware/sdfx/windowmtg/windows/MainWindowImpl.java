@@ -31,7 +31,7 @@ import java.util.ResourceBundle;
  * and the default bars like menu, tool and status bar.
  */
 @Component
-@Service
+@Service(value = MainWindow.class)
 public class MainWindowImpl extends AbstractWindow implements MainWindow {
 
     private MenuBar menuBar = new MenuBar();
