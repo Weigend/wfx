@@ -55,6 +55,10 @@ public abstract class AbstractWindow implements Window {
         root.getChildren().add(rootArea.getNode());
     }
 
+    protected HBox getStatusBar() {
+        return statusBar;
+    }
+
     /**
      * Get the javafx root node for this window.
      *

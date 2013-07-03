@@ -14,13 +14,14 @@
 package de.qaware.sdfx.windowmtg.api;
 
 import javafx.collections.*;
+import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 
 /**
  * Defines the main window of the stagediver.fx platform.
  */
-public interface MainWindow extends Window {
+public interface MainWindow extends Window, Initializable {
 
     /**
      * Get all menus within the menu bar.
@@ -42,11 +43,4 @@ public interface MainWindow extends Window {
      * @return The window manager.
      */
     WindowManager getWindowManager();
-
-    /**
-     * Set the window manager for the main window instance.
-     *
-     * @param windowManager The window manager.
-     */
-    void setWindowManager(WindowManager windowManager);
 }

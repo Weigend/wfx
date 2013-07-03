@@ -15,12 +15,15 @@ package de.qaware.sdfx.windowmtg.windows;
 
 import de.qaware.sdfx.windowmtg.api.MainWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import de.qaware.sdfx.windowmtg.impl.RootArea;
+import de.qaware.sdfx.windowmtg.impl.MultiWindowManager;
+import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 
 import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import java.net.URL;
+import java.util.ResourceBundle;
 
 /**
  * This is the main window of the stagediver.fx platform. It supports the window management
@@ -29,7 +32,7 @@ import javafx.stage.*;
 public class MainWindowImpl extends AbstractWindow implements MainWindow {
 
     private MenuBar menuBar = new MenuBar();
-    private WindowManager windowManager;
+    private MultiWindowManager windowManager = new WindowManagerImpl();
     private ToolBar toolbar = new ToolBar();
 
     /**
@@ -39,8 +42,23 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
      */
     public MainWindowImpl(Stage stage) {
         super(stage);
+    }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         menuBar.setUseSystemMenuBar(true);
-        getRootPane().getChildren().add(0, menuBar);
+        getRootPane().getChildren().clear();
+        getRootPane().getChildren().add(menuBar);
+        getRootPane().getChildren().add(toolbar);
+        setRootArea(windowManager.getMainRootArea());
+        getRootPane().getChildren().add(getStatusBar());
+        getRootPane().setPrefWidth(800);
+        getRootPane().setPrefHeight(600);
+        getStage().setScene(new Scene(getRootPane()));
+        if (!getStage().isShowing()) {
+            getStage().show();
+        }
+        windowManager.initialize(url, resourceBundle);
     }
 
     /**
@@ -71,20 +89,5 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
     @Override
     public WindowManager getWindowManager() {
         return windowManager;
-    }
-
-    /**
-     * Set a new window manager for this window.
-     *
-     * @param windowManager The window manager.
-     */
-    @Override
-    public void setWindowManager(WindowManager windowManager) {
-        Parent rootPane = windowManager.getRootPane();
-        if (!getRootPane().getChildren().contains(rootPane)) {
-            getRootPane().getChildren().add(rootPane);
-            windowManager.initialize(null, null);
-        }
-        this.windowManager = windowManager;
     }
 }
