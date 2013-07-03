@@ -40,5 +40,10 @@ public interface MultiWindowManager extends WindowManager {
      */
     void remove(RootArea area);
 
+    /**
+     * Get the root area of the main window.
+     *
+     * @return The root area of the main window
+     */
     RootArea getMainRootArea();
 }

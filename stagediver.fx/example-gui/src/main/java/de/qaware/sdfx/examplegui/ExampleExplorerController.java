@@ -9,6 +9,9 @@ import javafx.scene.input.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * This is a example editor controller.
+ */
 public class ExampleExplorerController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleExplorerController.class);

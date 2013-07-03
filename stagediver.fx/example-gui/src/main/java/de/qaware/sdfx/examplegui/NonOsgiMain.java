@@ -24,13 +24,15 @@ import javafx.scene.control.*;
 import javafx.stage.*;
 
 /**
- * Created with IntelliJ IDEA.
- * User: christian
- * Date: 03.07.13
- * Time: 13:27
- * To change this template use File | Settings | File Templates.
+ * Example main class to demonstrate running without osgi.
  */
 public class NonOsgiMain extends Application {
+
+    /**
+     * This is the main method for demonstrating that the platform can be started without unsing osgi.
+     *
+     * @param args Commandline args
+     */
     public static void main(String[] args) {
         Application.launch(NonOsgiMain.class, args);
     }
