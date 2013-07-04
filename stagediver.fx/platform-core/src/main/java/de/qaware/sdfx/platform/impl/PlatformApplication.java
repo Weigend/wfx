@@ -31,7 +31,7 @@ public class PlatformApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
     private BundleContext context;
-    private Stage mainStage;
+    private MainWindow mainWindow;
 
     @Override
     public void init() throws Exception {
@@ -54,12 +54,10 @@ public class PlatformApplication extends Application {
     @Override
     public void start(final Stage stage) throws IOException {
         LOGGER.info("Run JavaFX application start method");
-        this.mainStage = stage;
         stage.setTitle("stagediver.fx Platform");
 
-        MainWindow mainWindow = context.getService(context.getServiceReference(MainWindow.class));
+        mainWindow = context.getService(context.getServiceReference(MainWindow.class));
         mainWindow.setStage(stage);
-        mainWindow.initialize(null, null);
     }
 
     /**
@@ -77,13 +75,13 @@ public class PlatformApplication extends Application {
      * Request the platform to show the main window.
      */
     protected void showMainStage() {
-        if (mainStage.isShowing()) {
+        if (mainWindow.getStage().isShowing()) {
             return;
         }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mainStage.show();
+                mainWindow.initialize(null, null);
             }
         });
     }

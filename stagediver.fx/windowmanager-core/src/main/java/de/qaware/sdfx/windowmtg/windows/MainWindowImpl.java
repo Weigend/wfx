@@ -40,6 +40,11 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
     private MultiWindowManager windowManager = new WindowManagerImpl();
     private ToolBar toolbar = new ToolBar();
 
+    public MainWindowImpl() {
+        BundleContext context = FrameworkUtil.getBundle(WindowManagerImpl.class).getBundleContext();
+        context.registerService(WindowManager.class, windowManager, null);
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         menuBar.setUseSystemMenuBar(true);
@@ -55,9 +60,6 @@ public class MainWindowImpl extends AbstractWindow implements MainWindow {
             getStage().show();
         }
         windowManager.initialize(url, resourceBundle);
-
-        BundleContext context = FrameworkUtil.getBundle(WindowManagerImpl.class).getBundleContext();
-        context.registerService(WindowManager.class, windowManager, null);
     }
 
     /**
