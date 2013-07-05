@@ -21,6 +21,7 @@
         <module>windowmanager-core</module>
         <module>example-gui</module>
         <module>platform-full</module>
+        <module>lookup</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
