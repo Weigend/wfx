@@ -18,7 +18,9 @@ import javafx.scene.*;
 /**
  * A Window manager which is able to handle views dynamically.
  */
-public interface WindowManager extends Initializable {
+public interface WindowManager {
+
+    void init();
 
     /**
      * Register a new view within this window manager.
@@ -95,4 +97,25 @@ public interface WindowManager extends Initializable {
      * @return The registered view or null if it was not found.
      */
     View findView(String viewID);
+
+    /**
+     * Get that view that currently holds the focus within this window.
+     *
+     * @return That view that holds the focus.
+     */
+    View getFocusedView();
+
+    /**
+     * Get that view that holds recently the focus within this window..
+     *
+     * @return That view that hodls recently the focus.
+     */
+    View getLastFocusedView();
+
+    /**
+     * Set the given view as the view that holds currently the focus.
+     *
+     * @param view The view that should hold the focus.
+     */
+    void setFocusedView(View view);
 }

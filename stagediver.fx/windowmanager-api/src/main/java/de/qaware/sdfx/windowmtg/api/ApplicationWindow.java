@@ -4,8 +4,8 @@
 //  ______________________________________________________________________________
 //
 //       created by: christian.fritz
-//    creation date: 29.06.13 20:51
-//      description: Defines a window
+//    creation date: 29.06.13 20:40
+//      description: Defines the main window.
 //  ______________________________________________________________________________
 //
 //        Copyright: (c) QAware GmbH, all rights reserved
@@ -15,12 +15,55 @@ package de.qaware.sdfx.windowmtg.api;
 
 import javafx.collections.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
 import javafx.stage.*;
 
 /**
- * Defines a window of the stagediver.fx platform.
+ * Defines the main window of the stagediver.fx platform.
  */
-public interface Window {
+public interface ApplicationWindow {
+
+    void init();
+
+    /**
+     * Get all menus within the menu bar.
+     *
+     * @return A list with all menus.
+     */
+    ObservableList<Menu> getMenu();
+
+    /**
+     * Get all items which are placed within the tool bar.
+     *
+     * @return A list with all nodes.
+     */
+    ObservableList<Node> getToolbarItems();
+
+    /**
+     * Get the items which are currently placed in the status bar.
+     *
+     * @return A list with all items in the status bar.
+     */
+    ObservableList<Node> getStatusBarItems();
+
+    /**
+     * Get the window manager for the plattform.
+     *
+     * @return The window manager.
+     */
+    WindowManager getWindowManager();
+
+    /**
+     * Add the window manager to the main window.
+     *
+     * @param windowManager The window manager.
+     */
+    void setWindowManager(WindowManager windowManager);
+
+    /**
+     * Restore the default title.
+     */
+    void restoreTitle();
 
     /**
      * Set the new title for this window.
@@ -35,41 +78,6 @@ public interface Window {
      * @return The title.
      */
     String getTitle();
-
-    /**
-     * Restore the default title.
-     */
-    void restoreTitle();
-
-    /**
-     * Get the items which are currently placed in the status bar.
-     *
-     * @return A list with all items in the status bar.
-     */
-    ObservableList<Node> getStatusBarItems();
-
-    /**
-     * Get that view that currently holds the focus within this window.
-     *
-     * @return That view that holds the focus.
-     */
-    View getFocusedView();
-
-    /**
-     * Get that view that holds recently the focus within this window..
-     *
-     * @return That view that hodls recently the focus.
-     */
-    View getLastFocusedView();
-
-    /**
-     * Set the given view as the view that holds currently the focus.
-     *
-     * @param view The view that should hold the focus.
-     * @throws IllegalArgumentException In case of the given view is currently not
-     *                                  placed within this window
-     */
-    void setFocusedView(View view) throws IllegalArgumentException;
 
     /**
      * Get the the javafx stage for this window.

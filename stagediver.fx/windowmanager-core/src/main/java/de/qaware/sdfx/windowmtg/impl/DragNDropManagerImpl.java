@@ -23,8 +23,6 @@ import javafx.scene.effect.*;
 import javafx.scene.input.*;
 import javafx.scene.paint.*;
 import javafx.stage.*;
-import java.net.URL;
-import java.util.ResourceBundle;
 
 /**
  * Handles the full drag&drop gestures for the window and view management.
@@ -76,7 +74,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void init() {
         windowManager.getRootPane().getScene().setOnDragExited(new EventHandler<DragEvent>() {
             @Override
             public void handle(DragEvent event) {

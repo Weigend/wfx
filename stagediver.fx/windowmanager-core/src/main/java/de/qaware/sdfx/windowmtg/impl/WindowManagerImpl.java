@@ -15,18 +15,25 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import de.qaware.sdfx.windowmtg.api.WindowManager;
+import org.apache.felix.scr.annotations.Component;
+import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
  */
+@Component
+@Service(value = {WindowManager.class, MultiWindowManager.class})
 public class WindowManagerImpl implements MultiWindowManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
@@ -35,6 +42,8 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final List<RootArea> subWindows = new ArrayList<>();
     private Map<String, ViewStatus> views = new LinkedHashMap<>();
     private RootArea mainArea;
+    private View focusedView;
+    private View lastFocusedView;
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
@@ -43,10 +52,9 @@ public class WindowManagerImpl implements MultiWindowManager {
      *                  or null if the location is not known.
      * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void init() {
         LOGGER.info("Initialize the WindowManager");
-        dragNDropManager.initialize(location, resources);
+        dragNDropManager.init();
     }
 
     /**
@@ -280,5 +288,26 @@ public class WindowManagerImpl implements MultiWindowManager {
             return null;
         }
         return views.get(viewID).getView();
+    }
+
+    /**
+     * Set the view that holds currently the focus and updates the last focused view.
+     *
+     * @param focusedView The view that should hold the focus.
+     */
+    @Override
+    public void setFocusedView(View focusedView) {
+        this.lastFocusedView = this.focusedView;
+        this.focusedView = focusedView;
+    }
+
+    @Override
+    public View getFocusedView() {
+        return focusedView;
+    }
+
+    @Override
+    public View getLastFocusedView() {
+        return lastFocusedView;
     }
 }

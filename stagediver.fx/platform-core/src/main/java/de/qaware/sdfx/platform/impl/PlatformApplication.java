@@ -12,9 +12,10 @@
 
 package de.qaware.sdfx.platform.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
-import de.qaware.sdfx.windowmtg.api.MainWindow;
-import org.osgi.framework.BundleContext;
+import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
+import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -30,17 +31,19 @@ import java.io.IOException;
 public class PlatformApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
-    private BundleContext context;
-    private MainWindow mainWindow;
+    private static Lookup lookup = new Lookup(PlatformApplication.class);
+    private PreloaderNotificationService notificationService;
+
+    private Stage mainApplicationStage;
+
+    private boolean shouldShowing;
 
     @Override
     public void init() throws Exception {
-        context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        PreloaderNotificationService pns = context.getService(
-                context.getServiceReference(PreloaderNotificationService.class)
-        );
-        if (pns instanceof PreloaderNotificationServiceImpl) {
-            ((PreloaderNotificationServiceImpl) pns).setApplication(this);
+
+        notificationService = lookup.lookup(PreloaderNotificationService.class);
+        if (notificationService instanceof PreloaderNotificationServiceImpl) {
+            ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }
     }
 
@@ -54,10 +57,10 @@ public class PlatformApplication extends Application {
     @Override
     public void start(final Stage stage) throws IOException {
         LOGGER.info("Run JavaFX application start method");
-        stage.setTitle("stagediver.fx Platform");
-
-        mainWindow = context.getService(context.getServiceReference(MainWindow.class));
-        mainWindow.setStage(stage);
+        mainApplicationStage = stage;
+        if (shouldShowing) {
+            showMainStage();
+        }
     }
 
     /**
@@ -75,13 +78,21 @@ public class PlatformApplication extends Application {
      * Request the platform to show the main window.
      */
     protected void showMainStage() {
-        if (mainWindow.getStage().isShowing()) {
+        if (mainApplicationStage == null || mainApplicationStage.isShowing()) {
+            shouldShowing = true;
             return;
         }
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                mainWindow.initialize(null, null);
+                WindowManager windowManager = lookup.lookup(WindowManager.class);
+                ApplicationWindow applicationWindow = lookup.lookup(ApplicationWindow.class);
+
+                applicationWindow.setStage(mainApplicationStage);
+                applicationWindow.setWindowManager(windowManager);
+                applicationWindow.init();
+                applicationWindow.getStage().show();
+                windowManager.init();
             }
         });
     }

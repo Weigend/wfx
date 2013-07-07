@@ -19,7 +19,9 @@ import javafx.stage.*;
 /**
  * The drag&drop manager. The implementations handles the full dnd management of views.
  */
-public interface DragNDropManager extends Initializable {
+public interface DragNDropManager {
+
+    void init();
 
     /**
      * The specialized data format to handle the drag&drop gestures with managed tabs.
