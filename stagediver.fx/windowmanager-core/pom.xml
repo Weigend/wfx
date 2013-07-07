@@ -21,6 +21,10 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup</artifactId>
+        </dependency>
 
         <!-- OSGi Container -->
         <dependency>
@@ -67,7 +71,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowMtgActivator</Bundle-Activator>
+                        <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowSystemActivator</Bundle-Activator>
                     </instructions>
 
                 </configuration>
