@@ -71,7 +71,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowSystemActivator</Bundle-Activator>
+                        <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowMtgActivator</Bundle-Activator>
                     </instructions>
 
                 </configuration>
