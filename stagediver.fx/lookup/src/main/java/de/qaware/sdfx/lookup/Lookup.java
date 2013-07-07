@@ -19,6 +19,7 @@ import com.google.inject.Module;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleReference;
 import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.ServiceReference;
 
 /**
  * The general service lookup for the platform.
@@ -66,7 +67,11 @@ public class Lookup {
      */
     public <T> T lookup(Class<T> clazz) {
         if (withinOsgi) {
-            return context.getService(context.getServiceReference(clazz));
+            ServiceReference<T> reference = context.getServiceReference(clazz);
+            if (reference != null) {
+                return context.getService(reference);
+            }
+            return null;
         }
         else {
             return injector.getInstance(clazz);
