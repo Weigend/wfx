@@ -18,13 +18,12 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * This is the  stagediver.fx plattform runner.
@@ -233,19 +232,8 @@ public class Main {
     }
 
     protected FrameworkFactory getFrameworkFactory() throws Exception {
-        java.net.URL url = Main.class.getResource("/META-INF/services/org.osgi.framework.launch.FrameworkFactory");
-        if (url != null) {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(url.openStream()))) {
-                for (String s = br.readLine(); s != null; s = br.readLine()) {
-                    s = s.trim();
-                    // Try to load first non-empty, non-commented line.
-                    if ((s.length() > 0) && (s.charAt(0) != '#')) {
-                        return (FrameworkFactory) Class.forName(s).newInstance();
-                    }
-                }
-            }
-        }
-        throw new Exception("Could not find framework factory.");
+        ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
+        return loader.iterator().next();
     }
 
     protected void copySystemProperties() {
