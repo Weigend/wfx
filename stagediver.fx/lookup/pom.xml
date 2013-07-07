@@ -9,8 +9,8 @@
 
     <artifactId>lookup</artifactId>
     <packaging>bundle</packaging>
+    <name>stagediver.fx - Lookup</name>
 
-    <name>lookup</name>
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>

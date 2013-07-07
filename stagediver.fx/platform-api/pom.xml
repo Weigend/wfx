@@ -34,12 +34,6 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- peaberry -->
-        <dependency>
-            <groupId>org.ops4j</groupId>
-            <artifactId>peaberry</artifactId>
-        </dependency>
-
         <!-- Apache ServiceMix OSGi Bundles as replaces to aopalliance and javax.inject -->
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
