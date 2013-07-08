@@ -13,11 +13,11 @@
 
 package de.qaware.sdfx.examplegui;
 
+import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
-import de.qaware.sdfx.windowmtg.api.MainWindow;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import de.qaware.sdfx.windowmtg.windows.MainWindowImpl;
+import de.qaware.sdfx.windowmtg.windows.DefaultApplicationWindow;
 
 import javafx.application.*;
 import javafx.scene.control.*;
@@ -40,9 +40,9 @@ public class NonOsgiMain extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         stage.setTitle("stagediver.fx Example Application");
-        MainWindow mainWindow = new MainWindowImpl();
+        ApplicationWindow mainWindow = new DefaultApplicationWindow();
         mainWindow.setStage(stage);
-        mainWindow.initialize(null, null);
+        mainWindow.init();
 
         Menu file = new Menu("File");
         file.getItems().add(new MenuItem("New"));

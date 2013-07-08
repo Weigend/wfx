@@ -1,9 +1,13 @@
 package de.qaware.sdfx.example.editor.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
+import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.application.Platform;
+import javafx.application.Preloader;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -12,7 +16,6 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
 import java.io.IOException;
 
 /**
@@ -23,13 +26,13 @@ public class Activator implements BundleActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(Activator.class);
 
     private ServiceTracker<WindowManager, Object> tracker;
+    private static Lookup lookup = new Lookup(Activator.class);
 
     @Override
     public void start(final BundleContext context) throws Exception {
         LOGGER.info("Starting Bundle {}", context.getBundle());
-
-        final PreloaderNotificationService notificationService = context.getService(context
-                .getServiceReference(PreloaderNotificationService.class));
+        ApplicationWindow manager = lookup.lookup(ApplicationWindow.class);
+        final PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         notificationService.sendNotification(context.getBundle(), "Starting...", 0);
 
         tracker = new ServiceTracker<>(context, WindowManager.class,
