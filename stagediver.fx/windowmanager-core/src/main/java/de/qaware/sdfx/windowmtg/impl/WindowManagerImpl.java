@@ -47,94 +47,10 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object,
-     *                  or null if the location is not known.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
     public void init() {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
-    }
-
-    /**
-     * Register a new root area as subwindow.
-     *
-     * @param area The new root area.
-     */
-    @Override
-    public void register(RootArea area) {
-        LOGGER.info("Register a new window");
-        subWindows.add(area);
-    }
-
-    /**
-     * Bring all windows managed by this window manager to front.
-     */
-    @Override
-    public void bringToFront() {
-
-        for (RootArea area : subWindows) {
-            if (area.getNode().getScene().getWindow() instanceof Stage) {
-                ((Stage) area.getNode().getScene().getWindow()).toFront();
-            }
-        }
-        ((Stage) mainArea.getNode().getScene().getWindow()).toFront();
-    }
-
-    /**
-     * Remove and close the given root area.
-     *
-     * @param area The root area to remove.
-     */
-    @Override
-    public void remove(RootArea area) {
-        LOGGER.info("Remove existing window");
-        List<ViewStatus> views = getForRootArea(area);
-        for (ViewStatus view : views) {
-            view.getArea().remove(view);
-        }
-        ((Stage) area.getNode().getScene().getWindow()).close();
-        subWindows.remove(area);
-    }
-
-    /**
-     * Get the main area. If it not exists it will be created.
-     *
-     * @return The main area.
-     */
-    @Override
-    public RootArea getMainRootArea() {
-        if (mainArea == null) {
-            mainArea = new RootArea(rootPane, dragNDropManager, false);
-        }
-        return mainArea;
-    }
-
-    /**
-     * Get a list with all views which are registered under the given {@link RootArea}
-     *
-     * @param area The requested root area.
-     * @return A list with all views which are registered under the given area.
-     */
-    private List<ViewStatus> getForRootArea(final RootArea area) {
-        List<ViewStatus> areaViews = new ArrayList<>();
-        for (ViewStatus view : views.values()) {
-            if (view.getArea() != null && view.getArea().getRootArea() == area) {
-                areaViews.add(view);
-            }
-        }
-        return areaViews;
-    }
-
-    /**
-     * Get the root pane for this window manager.
-     *
-     * @return The root pane.
-     */
-    @Override
-    public Parent getRootPane() {
-        return getMainRootArea().getNode();
     }
 
     /**
@@ -179,6 +95,16 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
         views.put(view.getViewId(), viewStatus);
+    }
+
+    /**
+     * Get the root pane for this window manager.
+     *
+     * @return The root pane.
+     */
+    @Override
+    public Parent getRootPane() {
+        return getMainRootArea().getNode();
     }
 
     /**
@@ -290,6 +216,11 @@ public class WindowManagerImpl implements MultiWindowManager {
         return views.get(viewID).getView();
     }
 
+    @Override
+    public View getFocusedView() {
+        return focusedView;
+    }
+
     /**
      * Set the view that holds currently the focus and updates the last focused view.
      *
@@ -302,12 +233,77 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     @Override
-    public View getFocusedView() {
-        return focusedView;
-    }
-
-    @Override
     public View getLastFocusedView() {
         return lastFocusedView;
+    }
+
+    /**
+     * Register a new root area as subwindow.
+     *
+     * @param area The new root area.
+     */
+    @Override
+    public void register(RootArea area) {
+        LOGGER.info("Register a new window");
+        subWindows.add(area);
+    }
+
+    /**
+     * Bring all windows managed by this window manager to front.
+     */
+    @Override
+    public void bringToFront() {
+
+        for (RootArea area : subWindows) {
+            if (area.getNode().getScene().getWindow() instanceof Stage) {
+                ((Stage) area.getNode().getScene().getWindow()).toFront();
+            }
+        }
+        ((Stage) mainArea.getNode().getScene().getWindow()).toFront();
+    }
+
+    /**
+     * Remove and close the given root area.
+     *
+     * @param area The root area to remove.
+     */
+    @Override
+    public void remove(RootArea area) {
+        LOGGER.info("Remove existing window");
+        List<ViewStatus> views = getForRootArea(area);
+        for (ViewStatus view : views) {
+            view.getArea().remove(view);
+        }
+        ((Stage) area.getNode().getScene().getWindow()).close();
+        subWindows.remove(area);
+    }
+
+    /**
+     * Get the main area. If it not exists it will be created.
+     *
+     * @return The main area.
+     */
+    @Override
+    public RootArea getMainRootArea() {
+        if (mainArea == null) {
+            mainArea = new RootArea(rootPane, dragNDropManager, false);
+        }
+        return mainArea;
+    }
+
+    /**
+     * Get a list with all views which are registered under the given {@link RootArea}
+     *
+     * @param area The requested root area.
+     * @return A list with all views which are registered under the given area.
+     */
+    private List<ViewStatus> getForRootArea(final RootArea area) {
+        List<ViewStatus> areaViews = new ArrayList<>();
+        for (ViewStatus view : views.values()) {
+            if (view.getArea() != null && view.getArea().getRootArea() == area) {
+                areaViews.add(view);
+            }
+        }
+        return areaViews;
     }
 }
