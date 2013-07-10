@@ -16,10 +16,11 @@ package de.qaware.sdfx.lookup;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleReference;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * The general service lookup for the platform.
@@ -28,15 +29,14 @@ import org.osgi.framework.ServiceReference;
  */
 public class Lookup {
 
-    private BundleContext context;
-
     private static boolean withinOsgi;
-
     private static Injector injector;
 
     static {
         withinOsgi = Lookup.class.getClassLoader() instanceof BundleReference;
     }
+
+    private BundleContext context;
 
     /**
      * Init the lookup for the given class.
@@ -76,5 +76,28 @@ public class Lookup {
         else {
             return injector.getInstance(clazz);
         }
+    }
+
+    /**
+     * Lookup all services for one class from the registry.
+     *
+     * @param clazz The class to search.
+     * @param <T>   The type of the class to search.
+     * @return A list with all found service instances for the searched class.
+     */
+    public <T> List<T> lookupAll(Class<T> clazz) {
+        List<T> services = new ArrayList<>();
+        try {
+            if (withinOsgi) {
+                Collection<ServiceReference<T>> references = context.getServiceReferences(clazz, null);
+                for (ServiceReference<T> reference : references) {
+                    services.add(context.getService(reference));
+                }
+            }
+            //TODO: Guice Implementation
+        } catch (InvalidSyntaxException e) {
+            return null;
+        }
+        return services;
     }
 }
