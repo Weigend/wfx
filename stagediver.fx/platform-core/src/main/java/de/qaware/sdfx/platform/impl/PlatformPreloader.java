@@ -100,10 +100,15 @@ public class PlatformPreloader extends Preloader {
         }
         else if (pn instanceof StateChangeNotification) {
             //hide after get any state update from application
-            stage.hide();
             if (notificationService != null) {
                 notificationService.getApplication().showMainStage();
             }
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    stage.hide();
+                }
+            });
         }
     }
 }
