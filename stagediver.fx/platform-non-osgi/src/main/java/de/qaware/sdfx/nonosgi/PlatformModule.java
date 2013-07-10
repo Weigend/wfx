@@ -8,7 +8,7 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 import de.qaware.sdfx.windowmtg.windows.DefaultApplicationWindow;
 
-public class PlattformModule extends AbstractModule {
+public class PlatformModule extends AbstractModule {
     protected void configure() {
         bind(WindowManager.class).to(WindowManagerImpl.class).asEagerSingleton();
         bind(PreloaderNotificationService.class).to(PreloaderNotificationServiceImpl.class).asEagerSingleton();
