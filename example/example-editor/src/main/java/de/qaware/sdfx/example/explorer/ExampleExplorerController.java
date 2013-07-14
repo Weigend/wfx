@@ -1,4 +1,4 @@
-package de.qaware.sdfx.example.explorer.impl;
+package de.qaware.sdfx.example.explorer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

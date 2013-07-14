@@ -18,7 +18,6 @@
     </properties>
     <modules>
         <module>example-application</module>
-        <module>example-explorer</module>
         <module>example-editor</module>
     </modules>
     <dependencyManagement>
@@ -30,7 +29,6 @@
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx.example</groupId>
-                <artifactId>example-explorer</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

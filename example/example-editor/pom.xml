@@ -43,8 +43,9 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.example.editor.impl.Activator</Bundle-Activator>
-                        <Export-Package>de.qaware.sdfx.example.editor.api</Export-Package>
+                        <Bundle-Activator>
+                            de.qaware.sdfx.example.application.ApplicationActivator
+                        </Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
