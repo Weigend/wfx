@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx.example</groupId>
-            <artifactId>example-explorer</artifactId>
+            <artifactId>example-branding</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

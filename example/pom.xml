@@ -19,6 +19,7 @@
     <modules>
         <module>example-application</module>
         <module>example-editor</module>
+        <module>example-branding</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -29,6 +30,7 @@
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx.example</groupId>
+                <artifactId>example-branding</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
