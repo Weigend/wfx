@@ -55,12 +55,26 @@ public class PlatformPreloader extends Preloader {
     @Override
     public void start(Stage stage) throws Exception {
         LOGGER.info("Starting platform preloader");
-        Parent parent = load(getClass().getResource("/de/qaware/sdfx/platform/splash.fxml"));
+
+        URL splashFxmlUrl = findSplashScreen();
+
+        Parent parent = load(splashFxmlUrl);
         Scene scene = new Scene(parent);
         stage.setScene(scene);
         this.stage = stage;
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
+    }
+
+    private URL findSplashScreen() {
+        URL url;
+        url = getClass().getResource("/splash/splash.fxml");
+        if (url != null) {
+            return url;
+        }
+        else {
+            return getClass().getResource("/default/splash.fxml");
+        }
     }
 
     private Parent load(URL url) throws IOException {
