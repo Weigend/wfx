@@ -21,6 +21,7 @@ import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
@@ -61,7 +62,17 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @param view The view to register.
      */
     @Override
-    public void register(View view) {
+    public void register(final View view) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    register(view);
+                }
+            });
+            return;
+        }
+
         ViewStatus v = new ViewStatus(view);
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
@@ -82,7 +93,17 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @param parent An already registered view which defines the exact position to insert the view.
      */
     @Override
-    public void register(View view, View parent) {
+    public void register(final View view, final View parent) {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    register(view, parent);
+                }
+            });
+            return;
+        }
+
         if (!views.containsKey(parent.getViewId())) {
             throw new IllegalArgumentException("Can not find parent view");
         }
