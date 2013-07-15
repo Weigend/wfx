@@ -1,4 +1,4 @@
-package de.qaware.sdfx.example.editor.impl;
+package de.qaware.sdfx.example.editor;
 
 /**
  *
