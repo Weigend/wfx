@@ -160,9 +160,10 @@ public class AutoProcessor {
         }
     }
 
-    protected void installUpdateBundle(File jarFile, Bundle b) {
+    protected void installUpdateBundle(File jarFile, Bundle bundle) {
         try {
             // If the bundle is not already installed, then install it
+            Bundle b=bundle;
             if ((b == null)) {
                 b = context.installBundle(jarFile.toURI().toString());
             }

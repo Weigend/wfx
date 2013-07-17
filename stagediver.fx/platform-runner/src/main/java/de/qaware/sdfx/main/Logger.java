@@ -19,10 +19,14 @@ import java.io.PrintStream;
  */
 public class Logger {
 
-    private static boolean enableDebug = false;
     private static PrintStream writer = System.err;
     private String name;
 
+    /**
+     * Initialize a new logger.
+     *
+     * @param clazz The class where this logger should be used.
+     */
     public Logger(Class clazz) {
         name = clazz.getName();
     }
