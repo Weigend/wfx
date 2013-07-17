@@ -4,7 +4,7 @@
 //
 //      created by: christian.fritz
 //   creation date: 14.06.13 13:23
-//     description: This is the  stagediver.fx plattform runner.
+//     description: This is the  stagediver.fx platform runner.
 // ______________________________________________________________________________
 //
 //       Copyright: (c) QAware GmbH, all rights reserved
@@ -26,7 +26,7 @@ import java.net.URL;
 import java.util.*;
 
 /**
- * This is the  stagediver.fx plattform runner.
+ * This is the  stagediver.fx platform runner.
  */
 public class Main {
     /**
@@ -56,6 +56,7 @@ public class Main {
      * Name of the configuration directory.
      */
     public static final String CONFIG_DIRECTORY = "conf";
+    private static Logger logger = new Logger(Main.class);
     private Framework framework;
     private Map<String, String> configProps;
 
@@ -93,14 +94,14 @@ public class Main {
         // places.
 
         // See if the property URL was specified as a property.
+        logger.info("Loading properties file");
         URL propURL;
         String custom = System.getProperty(propertiesProp);
         if (custom != null) {
             try {
                 propURL = new URL(custom);
-            }
-            catch (MalformedURLException ex) {
-                System.err.print("Main: " + ex);
+            } catch (MalformedURLException ex) {
+                logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
         }
@@ -131,20 +132,19 @@ public class Main {
 
             try {
                 propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            }
-            catch (MalformedURLException ex) {
-                System.err.print("Main: " + ex);
+            } catch (MalformedURLException ex) {
+                logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
         }
 
         // Read the properties file.
         Properties props = new Properties();
-
+        logger.debug("Loading properties from url %s", propURL);
         try (InputStream is = propURL.openConnection().getInputStream()) {
             props.load(is);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
+            logger.debug("Can not load properties", ex);
             return null;
         }
 
@@ -168,30 +168,28 @@ public class Main {
             initFramework();
             new AutoProcessor(getFramework().getBundleContext(), configProps).process();
             runFramework();
-        }
-        catch (Exception ex) {
-            System.err.println("Could not create framework: " + ex);
-            ex.printStackTrace();
-            System.exit(0);
+        } catch (Exception ex) {
+            logger.error("Could not create framework", ex);
         }
     }
 
     protected void runFramework() throws BundleException, InterruptedException {
         FrameworkEvent event;
         do {
-            // Start the framework.
+            logger.info("Start the framework.");
             getFramework().start();
             // Wait for framework to stop to exit the VM.
             event = getFramework().waitForStop(0);
         }
         // If the framework was updated, then restart it.
         while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-        // Otherwise, exit.
-        System.exit(0);
+        logger.info("Framework stopped");
     }
 
     protected void initFramework() throws Exception {
+        logger.info("Init the framework");
         FrameworkFactory factory = getFrameworkFactory();
+        logger.debug("Using framework factory: %s", factory);
         framework = factory.newFramework(configProps);
         getFramework().init();
     }
@@ -201,6 +199,7 @@ public class Main {
         // cleanly shutdown when the VM exits.
         String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
         if ((enableHook == null) || !enableHook.equalsIgnoreCase("false")) {
+            logger.debug("Add shutdown hook");
             Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
                 public void run() {
                     try {
@@ -208,9 +207,8 @@ public class Main {
                             getFramework().stop();
                             getFramework().waitForStop(0);
                         }
-                    }
-                    catch (Exception ex) {
-                        System.err.println("Error stopping framework: " + ex);
+                    } catch (Exception ex) {
+                        logger.error("Error stopping framework", ex);
                     }
                 }
             });
@@ -225,7 +223,7 @@ public class Main {
 
         configProps = loadProperties(CONFIG_PROPERTIES_PROP, CONFIG_PROPERTIES_FILE_VALUE);
         if (configProps == null) {
-            System.err.println("No " + CONFIG_PROPERTIES_FILE_VALUE + " found.");
+            logger.warn("No %s found.", CONFIG_PROPERTIES_FILE_VALUE);
             configProps = new HashMap<>();
         }
         copySystemProperties();

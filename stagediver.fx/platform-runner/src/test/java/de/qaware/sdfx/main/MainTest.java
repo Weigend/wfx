@@ -2,9 +2,7 @@ package de.qaware.sdfx.main;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.contrib.java.lang.system.ExpectedSystemExit;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.FrameworkFactory;
@@ -16,9 +14,6 @@ import static org.mockito.Mockito.*;
 public class MainTest {
 
     private Main runner;
-
-    @Rule
-    public ExpectedSystemExit exit = ExpectedSystemExit.none();
 
     @Before
     public void setUp() throws Exception {
@@ -37,7 +32,6 @@ public class MainTest {
                 new FrameworkEvent(FrameworkEvent.STOPPED_UPDATE, mock(Bundle.class), null),
                 new FrameworkEvent(FrameworkEvent.STOPPED, mock(Bundle.class), null));
 
-        exit.expectSystemExitWithStatus(0);
         runner.runFramework();
         verify(runner.getFramework(), times(2)).start();
         verify(runner.getFramework(), times(2)).waitForStop(0);
