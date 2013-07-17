@@ -27,73 +27,133 @@ public class Logger {
         name = clazz.getName();
     }
 
-    public static boolean isEnableDebug() {
-        return enableDebug;
-    }
-
-    public static void setEnableDebug(boolean enableDebug) {
-        Logger.enableDebug = enableDebug;
-    }
-
+    /**
+     * Log a simple message on error
+     *
+     * @param message The message to log.
+     */
     public void error(String message) {
-        writeMessage("ERROR", message);
+        writeMessage(Level.ERROR, message);
     }
 
+    /**
+     * Log a exception on error.
+     *
+     * @param message The message to log.
+     * @param e       The exception to log.
+     */
     public void error(String message, Throwable e) {
-        writeMessage("ERROR", message, e);
+        writeMessage(Level.ERROR, message, e);
     }
 
+    /**
+     * Log a formatted message on error.
+     *
+     * @param message The format string. See {@link String#format(String, Object...)} for the format string.
+     * @param args    The objects to include into the message.
+     */
     public void error(String message, Object... args) {
-        writeMessage("ERROR", message, args);
+        writeMessage(Level.ERROR, message, args);
     }
 
+    /**
+     * Log a simple message on warning
+     *
+     * @param message The message to log.
+     */
     public void warn(String message) {
-        writeMessage("WARN", message);
+        writeMessage(Level.WARN, message);
     }
 
+    /**
+     * Log a exception on warning.
+     *
+     * @param message The message to log.
+     * @param e       The exception to log.
+     */
     public void warn(String message, Throwable e) {
-        writeMessage("WARN", message, e);
+        writeMessage(Level.WARN, message, e);
     }
 
+    /**
+     * Log a formatted message on warning.
+     *
+     * @param message The format string. See {@link String#format(String, Object...)} for the format string.
+     * @param args    The objects to include into the message.
+     */
     public void warn(String message, Object... args) {
-        writeMessage("WARN", message, args);
+        writeMessage(Level.WARN, message, args);
     }
 
+    /**
+     * Log a simple message on info
+     *
+     * @param message The message to log.
+     */
     public void info(String message) {
-        writeMessage("INFO", message);
+        writeMessage(Level.INFO, message);
     }
 
+    /**
+     * Log a exception on info.
+     *
+     * @param message The message to log.
+     * @param e       The exception to log.
+     */
     public void info(String message, Throwable e) {
-        writeMessage("INFO", message, e);
+        writeMessage(Level.INFO, message, e);
     }
 
+    /**
+     * Log a formatted message on info.
+     *
+     * @param message The format string. See {@link String#format(String, Object...)} for the format string.
+     * @param args    The objects to include into the message.
+     */
     public void info(String message, Object... args) {
-        writeMessage("INFO", message, args);
+        writeMessage(Level.INFO, message, args);
     }
 
+    /**
+     * Log a simple message on debug
+     *
+     * @param message The message to log.
+     */
     public void debug(String message) {
-        if (isEnableDebug()) {
-            writeMessage("DEBUG", message);
-        }
+        writeMessage(Level.DEBUG, message);
     }
 
+    /**
+     * Log a exception on debug.
+     *
+     * @param message The message to log.
+     * @param e       The exception to log.
+     */
     public void debug(String message, Throwable e) {
-        if (isEnableDebug()) {
-            writeMessage("DEBUG", message, e);
-        }
+        writeMessage(Level.DEBUG, message, e);
     }
 
+    /**
+     * Log a formatted message on debug.
+     *
+     * @param message The format string. See {@link String#format(String, Object...)} for the format string.
+     * @param args    The objects to include into the message.
+     */
     public void debug(String message, Object... args) {
-        if (isEnableDebug()) {
-            writeMessage("DEBUG", message, args);
-        }
+        writeMessage(Level.DEBUG, message, args);
     }
 
-    private void writeMessage(String level, String message) {
+    private void writeMessage(Level level, String message) {
+        if (!level.isEnabled()) {
+            return;
+        }
         writeMessage(level, message, new String[]{""});
     }
 
-    private void writeMessage(String level, String message, Throwable e) {
+    private void writeMessage(Level level, String message, Throwable e) {
+        if (!level.isEnabled()) {
+            return;
+        }
         String msg = String.format("[%s]%s %s - %s - %s%n", Thread.currentThread().getName(), level, name, message,
                 e.getMessage());
         writer.print(msg);
@@ -101,9 +161,49 @@ public class Logger {
         writer.print('\n');
     }
 
-    private void writeMessage(String level, String message, Object[] args) {
+    private void writeMessage(Level level, String message, Object[] args) {
+        if (!level.isEnabled()) {
+            return;
+        }
         String msg = String.format(message, args);
         msg = String.format("[%s] %s %s - %s%n", Thread.currentThread().getName(), level, name, msg);
         writer.print(msg);
+    }
+
+    /**
+     * Available log levels
+     */
+    public enum Level {
+        ERROR,
+        WARN,
+        INFO,
+        DEBUG(false);
+        private boolean enabled;
+
+        private Level() {
+            enabled = true;
+        }
+
+        private Level(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+        /**
+         * Is this log level enabled?
+         *
+         * @return If this log level is enabled.
+         */
+        public boolean isEnabled() {
+            return enabled;
+        }
+
+        /**
+         * Enable or disable this log level.
+         *
+         * @param enabled The new status of the log level.
+         */
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
     }
 }
