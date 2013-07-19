@@ -13,7 +13,6 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import de.qaware.sdfx.windowmtg.api.View;
 
 import javafx.geometry.*;
 import javafx.scene.*;
@@ -25,7 +24,6 @@ import javafx.stage.*;
  */
 public final class RootArea extends ViewArea {
     private final Pane box;
-
     /**
      * Close the stage containing this area when removing the child.
      */
@@ -62,25 +60,6 @@ public final class RootArea extends ViewArea {
     }
 
     /**
-     * Add the view to this area at position.
-     * <p/>
-     * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
-     * Otherwise this area is split and the view will be positioned according the position parameter.
-     *
-     * @param view     The view to add.
-     * @param position Add the view at this position.
-     */
-    @Override
-    public void add(ViewStatus view, Position position) {
-        getFirstChild().add(view, position);
-    }
-
-    @Override
-    public Parent getNode() {
-        return box;
-    }
-
-    /**
      * Set {@param child} as first child of this view area.
      * <p/>
      * It will also update the javafx scene graph and the childs parent value.
@@ -96,8 +75,32 @@ public final class RootArea extends ViewArea {
     }
 
     @Override
+    public Parent getNode() {
+        return box;
+    }
+
+    @Override
+    protected void setSecondChild(ViewArea child) {
+        throw new UnsupportedOperationException("Root Areas can not contain more than one ");
+    }
+
+    @Override
     protected void split(ViewArea first, ViewArea second, Orientation orientation) {
         throw new UnsupportedOperationException("Root Areas can not be split");
+    }
+
+    /**
+     * Add the view to this area at position.
+     * <p/>
+     * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
+     * Otherwise this area is split and the view will be positioned according the position parameter.
+     *
+     * @param view     The view to add.
+     * @param position Add the view at this position.
+     */
+    @Override
+    public void add(ViewStatus view, Position position) {
+        getFirstChild().add(view, position);
     }
 
     @Override
@@ -106,11 +109,6 @@ public final class RootArea extends ViewArea {
             throw new UnsupportedOperationException("Root Areas must have exactly one child");
         }
         ((Stage) box.getScene().getWindow()).close();
-    }
-
-    @Override
-    protected void setSecondChild(ViewArea child) {
-        throw new UnsupportedOperationException("Root Areas can not contain more than one ");
     }
 
     @Override

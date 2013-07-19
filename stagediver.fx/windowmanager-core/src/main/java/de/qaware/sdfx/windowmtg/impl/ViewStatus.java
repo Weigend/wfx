@@ -24,24 +24,21 @@ import javafx.scene.control.*;
 public final class ViewStatus {
 
     /**
+     * The registered view
+     */
+    private final View view;
+    private final Position defaultPosition;
+    private final ViewStatus parent;
+
+    /**
      * The status whether this view is visible or hidden (or something else)
      */
     private Status status;
 
     /**
-     * The registered view
-     */
-    private final View view;
-
-    /**
      * The current position within the window
      */
     private Position position;
-
-    private final Position defaultPosition;
-
-    private final ViewStatus parent;
-
     private TabArea area;
 
     /**

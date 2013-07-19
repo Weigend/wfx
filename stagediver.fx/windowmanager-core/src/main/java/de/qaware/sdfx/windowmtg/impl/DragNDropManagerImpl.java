@@ -68,10 +68,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object,
-     *                  or null if the location is not known.
-     * @param resources The resources used to localize the root object, or null if the root object was not localized.
      */
     @Override
     public void init() {
@@ -165,37 +161,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Complete the dropped event.
-     * This contains the cleaning the effects and other status.
-     *
-     * @param event   The drag event
-     * @param success Was the drop gesture successful
-     */
-    private void completeDropped(DragEvent event, boolean success) {
-        if (effectTarget != null) {
-            effectTarget.setEffect(null);
-        }
-        effectTarget = null;
-        dragedViewStatus = null;
-        event.setDropCompleted(success);
-        closeDropStages();
-        event.consume();
-    }
-
-    /**
-     * Validates the dragboard content.
-     *
-     * @param event The drag drop event.
-     * @return False if the dragboard of the event contains a valid view id.
-     */
-    private boolean isInvalidDragboard(DragEvent event) {
-        // Check if dropped content is valid for dropping here
-        Dragboard dragboard = event.getDragboard();
-        return !dragboard.hasContent(DATAFORMAT)
-                || !dragboard.getContent(DATAFORMAT).equals(dragedViewStatus.getView().getViewId());
-    }
-
-    /**
      * Handle the dropped event for panes. Mainly this event removes the view from the old position and adds it at the
      * new position.
      *
@@ -223,32 +188,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
             success = true;
         }
         completeDropped(event, success);
-    }
-
-    /**
-     * Detect in witch sub area of the rootpane the given dragevent is rised.
-     *
-     * @param event The drag event
-     * @return The position value for the detected sub area.
-     */
-    private Position detectPosition(DragEvent event, Control source) {
-        double areaX = event.getX() / source.getWidth();
-        double areaY = event.getY() / source.getHeight();
-        if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
-            return Position.CENTER;
-        }
-        else if (areaY < 0.25) {
-            return Position.TOP;
-        }
-        else if (areaY >= 0.75) {
-            return Position.BOTTOM;
-        }
-        else if (areaX < 0.25) {
-            return Position.LEFT;
-        }
-        else {
-            return Position.RIGHT;
-        }
     }
 
     /**
@@ -310,6 +249,63 @@ public class DragNDropManagerImpl implements DragNDropManager {
     @Override
     public MultiWindowManager getWindowManager() {
         return windowManager;
+    }
+
+    /**
+     * Complete the dropped event.
+     * This contains the cleaning the effects and other status.
+     *
+     * @param event   The drag event
+     * @param success Was the drop gesture successful
+     */
+    private void completeDropped(DragEvent event, boolean success) {
+        if (effectTarget != null) {
+            effectTarget.setEffect(null);
+        }
+        effectTarget = null;
+        dragedViewStatus = null;
+        event.setDropCompleted(success);
+        closeDropStages();
+        event.consume();
+    }
+
+    /**
+     * Validates the dragboard content.
+     *
+     * @param event The drag drop event.
+     * @return False if the dragboard of the event contains a valid view id.
+     */
+    private boolean isInvalidDragboard(DragEvent event) {
+        // Check if dropped content is valid for dropping here
+        Dragboard dragboard = event.getDragboard();
+        return !dragboard.hasContent(DATAFORMAT)
+                || !dragboard.getContent(DATAFORMAT).equals(dragedViewStatus.getView().getViewId());
+    }
+
+    /**
+     * Detect in witch sub area of the rootpane the given dragevent is rised.
+     *
+     * @param event The drag event
+     * @return The position value for the detected sub area.
+     */
+    private Position detectPosition(DragEvent event, Control source) {
+        double areaX = event.getX() / source.getWidth();
+        double areaY = event.getY() / source.getHeight();
+        if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
+            return Position.CENTER;
+        }
+        else if (areaY < 0.25) {
+            return Position.TOP;
+        }
+        else if (areaY >= 0.75) {
+            return Position.BOTTOM;
+        }
+        else if (areaX < 0.25) {
+            return Position.LEFT;
+        }
+        else {
+            return Position.RIGHT;
+        }
     }
 
     private void adjustOverlay(Control target, Position position) {
