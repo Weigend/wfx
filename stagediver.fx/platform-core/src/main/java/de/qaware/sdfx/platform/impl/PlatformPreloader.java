@@ -12,9 +12,8 @@
 
 package de.qaware.sdfx.platform.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +32,7 @@ import java.net.URL;
 public class PlatformPreloader extends Preloader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformPreloader.class);
+    private static Lookup lookup = new Lookup(PlatformPreloader.class);
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -43,10 +43,7 @@ public class PlatformPreloader extends Preloader {
 
     @Override
     public void init() throws Exception {
-        BundleContext context = FrameworkUtil.getBundle(getClass()).getBundleContext();
-        PreloaderNotificationService pns = context.getService(
-                context.getServiceReference(PreloaderNotificationService.class)
-        );
+        PreloaderNotificationService pns = lookup.lookup(PreloaderNotificationService.class);
         if (pns instanceof PreloaderNotificationServiceImpl) {
             notificationService = (PreloaderNotificationServiceImpl) pns;
         }
