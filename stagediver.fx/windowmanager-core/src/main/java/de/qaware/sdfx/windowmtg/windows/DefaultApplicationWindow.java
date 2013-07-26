@@ -13,7 +13,6 @@
 
 package de.qaware.sdfx.windowmtg.windows;
 
-import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.apache.felix.scr.annotations.Component;
@@ -39,7 +38,7 @@ import java.io.IOException;
         @Property(name = "service.ranking", intValue = Integer.MIN_VALUE)
 })
 public class DefaultApplicationWindow implements ApplicationWindow {
-    private static Lookup lookup = new Lookup(DefaultApplicationWindow.class);
+
     @FXML
     private MenuBar menuBar;
     @FXML
@@ -48,7 +47,6 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private HBox statusBar;
     @FXML
     private Pane windowManagerArea;
-
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
@@ -64,8 +62,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
             stage.setScene(new Scene(parent));
             windowManagerArea.getChildren().clear();
             windowManagerArea.getChildren().add(windowManager.getRootPane());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

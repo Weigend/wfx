@@ -21,10 +21,6 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>lookup</artifactId>
-        </dependency>
 
         <!-- OSGi Container -->
         <dependency>
