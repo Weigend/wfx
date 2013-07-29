@@ -115,4 +115,8 @@ public final class RootArea extends ViewArea {
     protected void setParent(ViewArea parent) {
         throw new UnsupportedOperationException("Root Areas can not have any parent area");
     }
+
+    public boolean isCloseStage() {
+        return closeStage;
+    }
 }

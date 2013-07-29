@@ -295,12 +295,12 @@ public class ViewArea {
      *
      * @return The root area of this view.
      */
-    public ViewArea getRootArea() {
+    public RootArea getRootArea() {
         ViewArea parent = this;
         while (parent.getParent() != null) {
             parent = parent.getParent();
         }
-        return parent;
+        return (RootArea) parent;
     }
 
     protected DragNDropManager getDragNDropManager() {
