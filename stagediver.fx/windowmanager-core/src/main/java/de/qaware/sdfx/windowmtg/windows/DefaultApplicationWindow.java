@@ -51,6 +51,9 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private Stage stage;
     private String defaultTitle;
 
+    /**
+     * Initialize the application window.
+     */
     public void init() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
@@ -62,7 +65,8 @@ public class DefaultApplicationWindow implements ApplicationWindow {
             stage.setScene(new Scene(parent));
             windowManagerArea.getChildren().clear();
             windowManagerArea.getChildren().add(windowManager.getRootPane());
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

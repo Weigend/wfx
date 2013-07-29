@@ -23,6 +23,9 @@ import javafx.stage.*;
  */
 public interface ApplicationWindow {
 
+    /**
+     * Initialize the application window.
+     */
     void init();
 
     /**

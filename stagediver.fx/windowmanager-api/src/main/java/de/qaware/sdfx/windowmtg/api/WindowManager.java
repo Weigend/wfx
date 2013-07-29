@@ -12,7 +12,6 @@
 
 package de.qaware.sdfx.windowmtg.api;
 
-import javafx.fxml.*;
 import javafx.scene.*;
 
 /**
@@ -20,6 +19,9 @@ import javafx.scene.*;
  */
 public interface WindowManager {
 
+    /**
+     * Initialize the window manager.
+     */
     void init();
 
     /**

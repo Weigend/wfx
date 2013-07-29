@@ -8,6 +8,9 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 import de.qaware.sdfx.windowmtg.windows.DefaultApplicationWindow;
 
+/**
+ * Google Guice Module for accessing the platform services without the osgi registry.
+ */
 public class PlatformModule extends AbstractModule {
     protected void configure() {
         bind(WindowManager.class).to(WindowManagerImpl.class).asEagerSingleton();
