@@ -7,6 +7,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.FrameworkFactory;
 
+import java.net.URL;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -62,8 +63,8 @@ public class MainTest {
     }
 
     @Test
-    public void testLoadPropertiesNull() throws Exception {
-        Map<String, String> props = Main.loadProperties(null);
+    public void testLoadPropertiesInvalidUrl() throws Exception {
+        Map<String, String> props = Main.loadProperties(new URL("file:///test.properties"));
         assertNull(props);
     }
 }
