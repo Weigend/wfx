@@ -32,6 +32,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DragNDropManagerImpl.class);
+
     /**
      * Temporal storage for the draged view
      */
@@ -98,7 +99,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
 
         TabPane pane = (TabPane) event.getSource();
         ViewStatus view = (ViewStatus) pane.getSelectionModel().getSelectedItem().getUserData();
-        dragedViewStatus = view;
+        setDragedViewStatus(view);
 
         Dragboard db = pane.startDragAndDrop(TransferMode.MOVE);
         ClipboardContent content = new ClipboardContent();
@@ -151,10 +152,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
         RootArea area = new RootArea(this, true);
         Stage stage = initManagedWindow(dropStage, area);
 
-        dragedViewStatus.getArea().remove(dragedViewStatus, false);
-        dragedViewStatus.setPosition(Position.CENTER);
-        area.add(dragedViewStatus, Position.CENTER);
-        stage.setTitle(dragedViewStatus.getView().getTitle());
+        getDragedViewStatus().getArea().remove(getDragedViewStatus(), false);
+        getDragedViewStatus().setPosition(Position.CENTER);
+        area.add(getDragedViewStatus(), Position.CENTER);
+        stage.setTitle(getDragedViewStatus().getView().getTitle());
         stage.show();
         windowManager.register(area);
         completeDropped(event, true);
@@ -181,10 +182,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
         // Add view to new area
         if (targetNode.getUserData() instanceof ViewArea) {
             ViewArea target = (ViewArea) targetNode.getUserData();
-            dragedViewStatus.getArea().remove(dragedViewStatus, false);
-            dragedViewStatus.setPosition(detectPosition(event, targetNode));
+            getDragedViewStatus().getArea().remove(getDragedViewStatus(), false);
+            getDragedViewStatus().setPosition(detectPosition(event, targetNode));
             Position position = detectPosition(event, targetNode);
-            target.add(dragedViewStatus, position);
+            target.add(getDragedViewStatus(), position);
             success = true;
         }
         completeDropped(event, success);
@@ -251,6 +252,14 @@ public class DragNDropManagerImpl implements DragNDropManager {
         return windowManager;
     }
 
+    public static ViewStatus getDragedViewStatus() {
+        return dragedViewStatus;
+    }
+
+    public static void setDragedViewStatus(ViewStatus dragedViewStatus) {
+        DragNDropManagerImpl.dragedViewStatus = dragedViewStatus;
+    }
+
     /**
      * Complete the dropped event.
      * This contains the cleaning the effects and other status.
@@ -263,7 +272,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
             effectTarget.setEffect(null);
         }
         effectTarget = null;
-        dragedViewStatus = null;
+        setDragedViewStatus(null);
         event.setDropCompleted(success);
         closeDropStages();
         event.consume();
@@ -279,7 +288,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         // Check if dropped content is valid for dropping here
         Dragboard dragboard = event.getDragboard();
         return !dragboard.hasContent(DATAFORMAT)
-                || !dragboard.getContent(DATAFORMAT).equals(dragedViewStatus.getView().getViewId());
+                || !dragboard.getContent(DATAFORMAT).equals(getDragedViewStatus().getView().getViewId());
     }
 
     /**
