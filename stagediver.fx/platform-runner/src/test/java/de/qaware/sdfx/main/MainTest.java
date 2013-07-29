@@ -7,7 +7,9 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.FrameworkFactory;
 
-import static org.junit.Assert.assertTrue;
+import java.util.Map;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
@@ -48,5 +50,20 @@ public class MainTest {
     public void testGetFrameworkFactory() throws Exception {
         FrameworkFactory factory = runner.getFrameworkFactory();
         assertTrue(factory instanceof MockFrameworkFactory);
+    }
+
+    @Test
+    public void testLoadProperties() throws Exception {
+
+        Map<String, String> props = Main.loadProperties(getClass().getResource("/test.properties"));
+        assertEquals(2, props.size());
+        assertEquals("asdf", props.get("prop.1"));
+        assertEquals("test-asdf", props.get("prop.replaced"));
+    }
+
+    @Test
+    public void testLoadPropertiesNull() throws Exception {
+        Map<String, String> props = Main.loadProperties(null);
+        assertNull(props);
     }
 }

@@ -70,6 +70,14 @@ public class Main {
         new Main().run();
     }
 
+    protected static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
+        URL propURL = getPropertyFileUrl(propertiesProp, defaultPropertiesFile);
+        if (propURL == null) {
+            return null;
+        }
+        return loadProperties(propURL);
+    }
+
     /**
      * <p>
      * Loads the configuration properties in the configuration property file
@@ -87,20 +95,39 @@ public class Main {
      *
      * @return A <tt>Properties</tt> instance or <tt>null</tt> if there was an error.
      */
-    protected static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
-        // The config properties file is either specified by a system
-        // property or it is in the conf/ directory of the Felix
-        // installation directory.  Try to load it from one of these
-        // places.
+    protected static Map<String, String> loadProperties(URL propURL) {
 
-        // See if the property URL was specified as a property.
         logger.info("Loading properties file");
+
+        // Read the properties file.
+        Properties props = new Properties();
+        logger.debug("Loading properties from url %s", propURL);
+        try (InputStream is = propURL.openConnection().getInputStream()) {
+            props.load(is);
+        }
+        catch (IOException ex) {
+            logger.debug("Can not load properties", ex);
+            return null;
+        }
+
+        // Perform variable substitution for system properties and
+        // convert to dictionary.
+        Map<String, String> map = new HashMap<>();
+        for (Map.Entry entry : props.entrySet()) {
+            String name = (String) entry.getKey();
+            map.put(name, Util.substVars((String) entry.getValue(), name, null, props));
+        }
+        return map;
+    }
+
+    protected static URL getPropertyFileUrl(String propertiesProp, String defaultPropertiesFile) {
         URL propURL;
         String custom = System.getProperty(propertiesProp);
         if (custom != null) {
             try {
                 propURL = new URL(custom);
-            } catch (MalformedURLException ex) {
+            }
+            catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
@@ -132,30 +159,13 @@ public class Main {
 
             try {
                 propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            } catch (MalformedURLException ex) {
+            }
+            catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
         }
-
-        // Read the properties file.
-        Properties props = new Properties();
-        logger.debug("Loading properties from url %s", propURL);
-        try (InputStream is = propURL.openConnection().getInputStream()) {
-            props.load(is);
-        } catch (IOException ex) {
-            logger.debug("Can not load properties", ex);
-            return null;
-        }
-
-        // Perform variable substitution for system properties and
-        // convert to dictionary.
-        Map<String, String> map = new HashMap<>();
-        for (Map.Entry entry : props.entrySet()) {
-            String name = (String) entry.getKey();
-            map.put(name, Util.substVars((String) entry.getValue(), name, null, props));
-        }
-        return map;
+        return propURL;
     }
 
     /**
@@ -168,7 +178,8 @@ public class Main {
             initFramework();
             new AutoProcessor(getFramework().getBundleContext(), configProps).process();
             runFramework();
-        } catch (Exception ex) {
+        }
+        catch (Exception ex) {
             logger.error("Could not create framework", ex);
         }
     }
@@ -207,7 +218,8 @@ public class Main {
                             getFramework().stop();
                             getFramework().waitForStop(0);
                         }
-                    } catch (Exception ex) {
+                    }
+                    catch (Exception ex) {
                         logger.error("Error stopping framework", ex);
                     }
                 }
