@@ -5,21 +5,13 @@ import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.application.Preloader;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-/**
- * Created with IntelliJ IDEA.
- * User: christian
- * Date: 14.07.13
- * Time: 17:06
- * To change this template use File | Settings | File Templates.
- */
+import javafx.application.*;
 public class ApplicationActivator implements BundleActivator {
 
     private Lookup lookup = new Lookup(ApplicationActivator.class);
-
     private PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
 
     public void start(BundleContext context) throws Exception {

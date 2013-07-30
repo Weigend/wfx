@@ -3,30 +3,17 @@ package de.qaware.sdfx.example.application;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.ToolBar;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 
+import javafx.collections.*;
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 import java.io.IOException;
 
-/**
- * Created with IntelliJ IDEA.
- * User: christian
- * Date: 07.07.13
- * Time: 17:33
- * To change this template use File | Settings | File Templates.
- */
 @Component(immediate = true)
 @Service(ApplicationWindow.class)
 public class ExampleApplicationWindow implements ApplicationWindow {
@@ -39,7 +26,6 @@ public class ExampleApplicationWindow implements ApplicationWindow {
     private HBox statusBar;
     @FXML
     private Pane windowManagerArea;
-
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
