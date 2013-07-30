@@ -25,7 +25,7 @@ public class ExampleApplicationWindow implements ApplicationWindow {
     @FXML
     private HBox statusBar;
     @FXML
-    private Pane windowManagerArea;
+    private BorderPane root;
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
@@ -39,8 +39,7 @@ public class ExampleApplicationWindow implements ApplicationWindow {
             loader.setController(this);
             Parent parent = (Parent) loader.load();
             stage.setScene(new Scene(parent));
-            windowManagerArea.getChildren().clear();
-            windowManagerArea.getChildren().add(windowManager.getRootPane());
+            root.setCenter(lookup.lookup(WindowManager.class).getRootPane());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -86,6 +85,11 @@ public class ExampleApplicationWindow implements ApplicationWindow {
         stage.setTitle(defaultTitle);
     }
 
+    @FXML
+    protected void restoreDefaultLayout() {
+        lookup.lookup(WindowManager.class).restoreDefaultLayout();
+    }
+
     @Override
     public void setTitle(String title) {
         stage.setTitle(title);
@@ -106,5 +110,4 @@ public class ExampleApplicationWindow implements ApplicationWindow {
         this.stage = stage;
         this.defaultTitle = stage.getTitle();
     }
-
 }
