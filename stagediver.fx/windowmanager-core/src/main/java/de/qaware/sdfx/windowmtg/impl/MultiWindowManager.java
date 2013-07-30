@@ -46,4 +46,9 @@ public interface MultiWindowManager extends WindowManager {
      * @return The root area of the main window
      */
     RootArea getMainRootArea();
+
+    /**
+     * Request the redrawing of all areas.
+     */
+    void redrawAreas();
 }

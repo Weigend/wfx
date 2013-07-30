@@ -138,6 +138,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
             area.handleEmpty();
             closeDropStages();
         }
+        windowManager.redrawAreas();
         event.consume();
     }
 
@@ -267,16 +268,14 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * @param success Was the drop gesture successful
      */
     private void completeDropped(DragEvent event, boolean success) {
+        LOGGER.debug("Complete dropped event: {}", event);
         if (effectTarget != null) {
             effectTarget.setEffect(null);
         }
         effectTarget = null;
-        if (getDragedViewStatus() != null) {
-            getDragedViewStatus().getArea().getNode().requestLayout();
-        }
         setDragedViewStatus(null);
         event.setDropCompleted(success);
-        closeDropStages();
+        // closeDropStages();
         event.consume();
     }
 

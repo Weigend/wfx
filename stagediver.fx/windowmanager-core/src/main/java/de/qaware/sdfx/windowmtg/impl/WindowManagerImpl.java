@@ -242,6 +242,11 @@ public class WindowManagerImpl implements MultiWindowManager {
         return focusedView;
     }
 
+    @Override
+    public View getLastFocusedView() {
+        return lastFocusedView;
+    }
+
     /**
      * Set the view that holds currently the focus and updates the last focused view.
      *
@@ -251,11 +256,6 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void setFocusedView(View focusedView) {
         this.lastFocusedView = this.focusedView;
         this.focusedView = focusedView;
-    }
-
-    @Override
-    public View getLastFocusedView() {
-        return lastFocusedView;
     }
 
     /**
@@ -310,6 +310,15 @@ public class WindowManagerImpl implements MultiWindowManager {
             mainArea = new RootArea(rootPane, dragNDropManager, false);
         }
         return mainArea;
+    }
+
+    @Override
+    public void redrawAreas() {
+        LOGGER.debug("Redrawing of areas requested");
+        getRootPane().requestLayout();
+        for (RootArea area : subWindows) {
+            area.getNode().requestLayout();
+        }
     }
 
     /**
