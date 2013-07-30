@@ -23,22 +23,6 @@
             <artifactId>javafx</artifactId>
             <systemPath>${java.home}/lib/jfxrt.jar</systemPath>
         </dependency>
-
-        <!-- Google Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Apache ServiceMix OSGi Bundles as replaces to aopalliance and javax.inject -->
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
