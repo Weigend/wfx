@@ -9,12 +9,13 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import javafx.application.*;
+
 public class ApplicationActivator implements BundleActivator {
 
     private Lookup lookup = new Lookup(ApplicationActivator.class);
-    private PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
 
     public void start(BundleContext context) throws Exception {
+        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         notificationService.sendNotification(context.getBundle(), "Loading Example Application", 0);
 
         FXMLView view = new FXMLView("sdfx.example.editor:1", "Example Editor", Position.CENTER, "de/qaware/sdfx/example/editor/example.fxml", getClass().getClassLoader());
