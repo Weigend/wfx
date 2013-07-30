@@ -216,6 +216,7 @@ public class ViewArea {
                 }
                 break;
         }
+        view.getArea().getNode().requestLayout();
     }
 
     /**

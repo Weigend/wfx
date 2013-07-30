@@ -32,7 +32,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * The logger.
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DragNDropManagerImpl.class);
-
     /**
      * Temporal storage for the draged view
      */
@@ -65,6 +64,14 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
+    }
+
+    public static ViewStatus getDragedViewStatus() {
+        return dragedViewStatus;
+    }
+
+    public static void setDragedViewStatus(ViewStatus dragedViewStatus) {
+        DragNDropManagerImpl.dragedViewStatus = dragedViewStatus;
     }
 
     /**
@@ -252,14 +259,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
         return windowManager;
     }
 
-    public static ViewStatus getDragedViewStatus() {
-        return dragedViewStatus;
-    }
-
-    public static void setDragedViewStatus(ViewStatus dragedViewStatus) {
-        DragNDropManagerImpl.dragedViewStatus = dragedViewStatus;
-    }
-
     /**
      * Complete the dropped event.
      * This contains the cleaning the effects and other status.
@@ -272,6 +271,9 @@ public class DragNDropManagerImpl implements DragNDropManager {
             effectTarget.setEffect(null);
         }
         effectTarget = null;
+        if (getDragedViewStatus() != null) {
+            getDragedViewStatus().getArea().getNode().requestLayout();
+        }
         setDragedViewStatus(null);
         event.setDropCompleted(success);
         closeDropStages();
