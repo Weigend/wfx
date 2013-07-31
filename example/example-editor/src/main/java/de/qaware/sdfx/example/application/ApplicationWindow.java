@@ -1,7 +1,6 @@
 package de.qaware.sdfx.example.application;
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
@@ -15,9 +14,9 @@ import javafx.stage.*;
 import java.io.IOException;
 
 @Component(immediate = true)
-@Service(ApplicationWindow.class)
-public class ExampleApplicationWindow implements ApplicationWindow {
-    private static Lookup lookup = new Lookup(ExampleApplicationWindow.class);
+@Service(de.qaware.sdfx.windowmtg.api.ApplicationWindow.class)
+public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.ApplicationWindow {
+    private static Lookup lookup = new Lookup(ApplicationWindow.class);
     @FXML
     private MenuBar menuBar;
     @FXML
