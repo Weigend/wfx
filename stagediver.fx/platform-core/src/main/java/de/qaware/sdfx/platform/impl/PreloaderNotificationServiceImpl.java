@@ -17,6 +17,8 @@ import de.qaware.sdfx.platform.api.ProgressNotification;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
 import java.util.ArrayList;
@@ -30,20 +32,18 @@ import java.util.Map;
 @Component
 @Service
 public class PreloaderNotificationServiceImpl implements PreloaderNotificationService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(PreloaderNotificationServiceImpl.class);
     private PlatformApplication application;
-
     private Map<Bundle, Double> values = new HashMap<>();
-
     private List<Preloader.PreloaderNotification> notifications = new ArrayList<>();
+
+    protected PlatformApplication getApplication() {
+        return application;
+    }
 
     protected void setApplication(PlatformApplication application) {
         this.application = application;
         sendQueuedNotifications();
-    }
-
-    protected PlatformApplication getApplication() {
-        return application;
     }
 
     private void sendQueuedNotifications() {
@@ -68,6 +68,7 @@ public class PreloaderNotificationServiceImpl implements PreloaderNotificationSe
 
         if (application == null) {
             notifications.add(notification);
+            LOGGER.debug("Queued notification {}", notification);
             return false;
         }
         application.notifyPreloader(notification);
