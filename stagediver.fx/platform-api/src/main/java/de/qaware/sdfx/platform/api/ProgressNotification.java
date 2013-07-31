@@ -38,4 +38,12 @@ public class ProgressNotification extends Preloader.ProgressNotification {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "ProgressNotification{" +
+                "message='" + message + '\'' +
+                ",value='" + getProgress() + '\'' +
+                '}';
+    }
 }
