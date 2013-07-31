@@ -49,7 +49,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.example.application.ApplicationActivator</Bundle-Activator>
+                        <Bundle-Activator>${package}.application.ApplicationActivator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

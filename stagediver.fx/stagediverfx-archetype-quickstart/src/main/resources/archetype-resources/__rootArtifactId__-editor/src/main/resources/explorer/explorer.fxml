@@ -5,7 +5,7 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="${package}.ExplorerController">
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="${package}.explorer.ExplorerController">
     <children>
         <ToolBar/>
         <TreeView fx:id="tree" onMouseClicked="#treeClicked" VBox.vgrow="ALWAYS"/>

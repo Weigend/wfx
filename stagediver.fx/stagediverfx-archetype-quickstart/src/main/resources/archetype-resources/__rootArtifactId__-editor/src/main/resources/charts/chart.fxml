@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml"
-            fx:controller="${package}.ChartController">
+            fx:controller="${package}.charts.ChartController">
     <bottom>
         <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0"
               prefHeight="20.0" prefWidth="-1.0" BorderPane.alignment="CENTER">

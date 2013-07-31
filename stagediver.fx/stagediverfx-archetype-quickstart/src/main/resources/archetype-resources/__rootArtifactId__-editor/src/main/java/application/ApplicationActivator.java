@@ -1,6 +1,6 @@
-#set( $symbol_pound = '#' )
-#set( $symbol_dollar = '$' )
-#set( $symbol_escape = '\' )
+#set($symbol_pound='#')
+#set($symbol_dollar='$')
+#set($symbol_escape='\' )
 package ${package}.application;
 
 import de.qaware.sdfx.lookup.Lookup;
@@ -27,8 +27,8 @@ public class ApplicationActivator implements BundleActivator {
                     PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
                     notificationService.sendNotification(context.getBundle(), "Loading Example Application", 0);
 
-                    FXMLView view = new FXMLView("sdfx.example.charts:1", "Example Editor", Position.CENTER, "${packageInPathFormat}/charts/chart.fxml", getClass().getClassLoader());
-                    FXMLView view1 = new FXMLView("sdfx.example.explorer:1", "Example explorer", Position.LEFT, "${packageInPathFormat}/explorer/explorer.fxml", getClass().getClassLoader());
+                    FXMLView view = new FXMLView("${package}.charts:1", "Example Editor", Position.CENTER, "${packageInPathFormat}/charts/chart.fxml", getClass().getClassLoader());
+                    FXMLView view1 = new FXMLView("${package}.explorer:1", "Example explorer", Position.LEFT, "${packageInPathFormat}/explorer/explorer.fxml", getClass().getClassLoader());
 
                     WindowManager windowManager = lookup.lookup(WindowManager.class);
                     windowManager.register(view);
@@ -45,6 +45,5 @@ public class ApplicationActivator implements BundleActivator {
 
     @Override
     public void stop(BundleContext context) throws Exception {
-        //To change body of implemented methods use File | Settings | File Templates.
     }
 }
