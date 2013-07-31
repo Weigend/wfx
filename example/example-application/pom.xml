@@ -13,10 +13,6 @@
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-runner</artifactId>
-        </dependency>
-        <dependency>
             <groupId>de.qaware.stagediver.fx.example</groupId>
             <artifactId>example-editor</artifactId>
             <scope>provided</scope>
@@ -29,12 +25,11 @@
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-full</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${version.stagediver}</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -58,29 +53,40 @@
                     <execution>
                         <id>copy-osgi-startup</id>
                         <goals>
-                            <goal>copy-dependencies</goal>
+                            <goal>copy</goal>
                         </goals>
-                        <phase>prepare-package</phase>
                         <configuration>
-                            <excludeScope>system,compile,test,provided</excludeScope>
-                            <includeScope>runtime</includeScope>
-                            <outputDirectory>${project.build.directory}/startup</outputDirectory>
+                            <artifactItems>
+                                <item>
+                                    <groupId>de.qaware.stagediver.fx</groupId>
+                                    <artifactId>platform-runner</artifactId>
+                                    <version>${version.stagediver}</version>
+                                    <overWrite>true</overWrite>
+                                    <destFileName>startup.jar</destFileName>
+                                </item>
+                            </artifactItems>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>startup/</classpathPrefix>
-                            <mainClass>de.qaware.sdfx.example.application.App</mainClass>
-                        </manifest>
-                    </archive>
+                    <descriptors>
+                        <descriptor>src/main/assembly/application.xml</descriptor>
+                    </descriptors>
                 </configuration>
             </plugin>
         </plugins>

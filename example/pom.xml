@@ -15,6 +15,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.version>7</project.build.version>
+        <version.stagediver>1.0-SNAPSHOT</version.stagediver>
     </properties>
     <modules>
         <module>example-application</module>
@@ -37,32 +38,32 @@
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>lookup</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>platform-core</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>platform-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>platform-runner</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>windowmanager-api</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>windowmanager-core</artifactId>
-                <version>1.0-SNAPSHOT</version>
+                <version>${version.stagediver}</version>
             </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
