@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?scenebuilder-stylesheet splash.css?>
-<?import java.lang.*?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-
+<?import java.net.URL?>
 <Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2">
-  <children>
-    <ImageView id="splash.png" fitHeight="399.9999694824219" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
-      <image>
-        <Image url="@splash.png" preserveRatio="true" smooth="true" />
-      </image>
-    </ImageView>
-    <ProgressBar id="splash-progress-bar" fx:id="progressBar" layoutX="14.0" layoutY="350.0" prefWidth="561.9998779296875" progress="0.0" styleClass="splash-progress-bar" />
-    <Label id="splash-progress-text" fx:id="progressText" blendMode="HARD_LIGHT" layoutX="14.0" layoutY="361.0" prefWidth="561.9998779296875" styleClass="splash-progress-text" text="Loading..." />
-  </children>
+    <children>
+        <ImageView id="splash.png" fitHeight="399.9999694824219" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
+            <image>
+                <Image url="@splash.png" preserveRatio="true" smooth="true"/>
+            </image>
+        </ImageView>
+        <ProgressBar id="splash-progress-bar" fx:id="progressBar" layoutX="14.0" layoutY="350.0"
+                     prefWidth="561.9998779296875" progress="0.0" styleClass="splash-progress-bar"/>
+        <Label id="splash-progress-text" fx:id="progressText" blendMode="HARD_LIGHT" layoutX="14.0" layoutY="361.0"
+               prefWidth="561.9998779296875" styleClass="splash-progress-text" text="Loading..."/>
+    </children>
+    <stylesheets>
+        <URL value="@splash.css"/>
+    </stylesheets>
 </Pane>
