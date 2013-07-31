@@ -66,11 +66,11 @@ public class PlatformPreloader extends Preloader {
     private URL findSplashScreen() {
         URL url;
         url = getClass().getResource("/splash/splash.fxml");
-        if (url != null) {
-            return url;
+        if (url == null) {
+            return getClass().getResource("/default/splash.fxml");
         }
         else {
-            return getClass().getResource("/default/splash.fxml");
+            return url;
         }
     }
 

@@ -33,14 +33,13 @@ public class PlatformApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
     private static Lookup lookup = new Lookup(PlatformApplication.class);
-    private PreloaderNotificationService notificationService;
     private Stage mainApplicationStage;
     private boolean shouldShowing;
 
     @Override
     public void init() throws Exception {
 
-        notificationService = lookup.lookup(PreloaderNotificationService.class);
+        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }

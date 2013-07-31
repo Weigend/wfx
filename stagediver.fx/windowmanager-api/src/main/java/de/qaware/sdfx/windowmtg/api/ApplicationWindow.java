@@ -26,6 +26,8 @@ public interface ApplicationWindow {
 
     /**
      * Initialize the application window.
+     *
+     * @throws IOException In case of any error when loading the fxml files.
      */
     void init() throws IOException;
 
