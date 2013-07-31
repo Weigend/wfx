@@ -29,9 +29,9 @@
         </fileSet>
         <fileSet>
             <directory>${project.basedir}/src/main/resources</directory>
-            <outputDirectory>/config</outputDirectory>
+            <outputDirectory>/</outputDirectory>
             <includes>
-                <include>*.properties</include>
+                <include>*.*</include>
             </includes>
             <filtered>true</filtered>
         </fileSet>
