@@ -185,11 +185,11 @@ public class Logger {
         private boolean enabled;
 
         private Level() {
-            enabled = true;
+            this(true);
         }
 
         private Level(boolean enabled) {
-            this.enabled = enabled;
+            this.enabled = Boolean.parseBoolean(System.getProperty("sdfx.logger." + this.name(), Boolean.toString(enabled)));
         }
 
         /**
