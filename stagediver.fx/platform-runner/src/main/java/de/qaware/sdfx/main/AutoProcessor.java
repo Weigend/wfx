@@ -40,7 +40,7 @@ public class AutoProcessor {
     /**
      * The default name used for the bundle directory.
      */
-    public static final String AUTO_DEPLOY_DIR_VALUE = "bundle";
+    public static final String AUTO_DEPLOY_DIR_VALUE = "bundles";
     /**
      * The property name used to specify auto-deploy start level.
      */
