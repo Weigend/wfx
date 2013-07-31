@@ -30,19 +30,15 @@ public class ExampleApplicationWindow implements ApplicationWindow {
     private Stage stage;
     private String defaultTitle;
 
-    public void init() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-                    "/de/qaware/sdfx/example/application/appWindow.fxml"
-            ));
-            loader.setClassLoader(getClass().getClassLoader());
-            loader.setController(this);
-            Parent parent = (Parent) loader.load();
-            stage.setScene(new Scene(parent));
-            root.setCenter(lookup.lookup(WindowManager.class).getRootPane());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void init() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
+                "/de/qaware/sdfx/example/application/appWindow.fxml"
+        ));
+        loader.setClassLoader(getClass().getClassLoader());
+        loader.setController(this);
+        Parent parent = (Parent) loader.load();
+        stage.setScene(new Scene(parent));
+        root.setCenter(lookup.lookup(WindowManager.class).getRootPane());
     }
 
     /**
