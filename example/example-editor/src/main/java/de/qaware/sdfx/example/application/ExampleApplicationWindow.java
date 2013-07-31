@@ -33,7 +33,7 @@ public class ExampleApplicationWindow implements ApplicationWindow {
     public void init() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-                    "/de/qaware/sdfx/example/editor/appWindow.fxml"
+                    "/de/qaware/sdfx/example/application/appWindow.fxml"
             ));
             loader.setClassLoader(getClass().getClassLoader());
             loader.setController(this);
