@@ -24,8 +24,8 @@ public class ApplicationActivator implements BundleActivator {
                     PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
                     notificationService.sendNotification(context.getBundle(), "Loading Example Application", 0);
 
-                    FXMLView view = new FXMLView("sdfx.example.charts:1", "Example Editor", Position.CENTER, "de/qaware/sdfx/example/charts/example.fxml", getClass().getClassLoader());
-                    FXMLView view1 = new FXMLView("sdfx.example.explorer:1", "Example explorer", Position.LEFT, "de/qaware/sdfx/example/explorer/example_explorer.fxml", getClass().getClassLoader());
+                    FXMLView view = new FXMLView("sdfx.example.charts:1", "Example Editor", Position.CENTER, "de/qaware/sdfx/example/charts/chart.fxml", getClass().getClassLoader());
+                    FXMLView view1 = new FXMLView("sdfx.example.explorer:1", "Example explorer", Position.LEFT, "de/qaware/sdfx/example/explorer/explorer.fxml", getClass().getClassLoader());
 
                     WindowManager windowManager = lookup.lookup(WindowManager.class);
                     windowManager.register(view);

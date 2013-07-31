@@ -15,7 +15,7 @@ public class ChartControllerMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Parent p = FXMLLoader.load(getClass().getResource("example.fxml"));
+        Parent p = FXMLLoader.load(getClass().getResource("chart.fxml"));
         primaryStage.setScene(new Scene(p));
         primaryStage.show();
 

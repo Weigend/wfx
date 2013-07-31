@@ -9,9 +9,9 @@ import javafx.scene.input.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class ExampleExplorerController implements Initializable {
+public class ExplorerController implements Initializable {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExampleExplorerController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExplorerController.class);
 
     @FXML
     protected TreeView<String> tree;
