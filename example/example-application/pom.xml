@@ -29,6 +29,10 @@
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-runner</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
