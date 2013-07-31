@@ -55,7 +55,7 @@ public class Main {
     /**
      * Name of the configuration directory.
      */
-    public static final String CONFIG_DIRECTORY = "conf";
+    public static final String CONFIG_DIRECTORY = "config";
     private static Logger logger = new Logger(Main.class);
     private Framework framework;
     private Map<String, String> configProps;
@@ -104,8 +104,7 @@ public class Main {
         logger.debug("Loading properties from url %s", propURL);
         try (InputStream is = propURL.openConnection().getInputStream()) {
             props.load(is);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.debug("Can not load properties", ex);
             return null;
         }
@@ -126,8 +125,7 @@ public class Main {
         if (custom != null) {
             try {
                 propURL = new URL(custom);
-            }
-            catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
@@ -139,28 +137,21 @@ public class Main {
             propURL = Main.class.getResource("/" + defaultPropertiesFile);
         }
         else {
-            // Determine where the configuration directory is by figuring
-            // out where felix.jar is located on the system class path.
-            File confDir;
-            String classpath = System.getProperty("java.class.path");
-            int index = classpath.toLowerCase().indexOf("felix.jar");
-            int start = classpath.lastIndexOf(File.pathSeparator, index) + 1;
-            if (index >= start) {
-                // Get the path of the felix.jar file.
-                String jarLocation = classpath.substring(start, index);
-                // Calculate the conf directory based on the parent
-                // directory of the felix.jar directory.
-                confDir = new File(new File(new File(jarLocation).getAbsolutePath()).getParent(), CONFIG_DIRECTORY);
+            File jarLocation = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            if (jarLocation.toString().endsWith(".jar")) {
+                jarLocation = jarLocation.getParentFile();
             }
-            else {
+
+            File confDir = new File(jarLocation, CONFIG_DIRECTORY);
+            logger.debug("confDir: %s", confDir);
+            if (!confDir.exists()) {
                 // Can't figure it out so use the current directory as default.
                 confDir = new File(System.getProperty("user.dir"), CONFIG_DIRECTORY);
             }
 
             try {
                 propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            }
-            catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
@@ -178,8 +169,7 @@ public class Main {
             initFramework();
             new AutoProcessor(getFramework().getBundleContext(), configProps).process();
             runFramework();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("Could not create framework", ex);
         }
     }
@@ -218,8 +208,7 @@ public class Main {
                             getFramework().stop();
                             getFramework().waitForStop(0);
                         }
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         logger.error("Error stopping framework", ex);
                     }
                 }
