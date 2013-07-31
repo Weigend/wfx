@@ -23,6 +23,7 @@
         <module>example-gui</module>
         <module>platform-full</module>
         <module>platform-non-osgi</module>
+        <module>stagediverfx-archetype-quickstart</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

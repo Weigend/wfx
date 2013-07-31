@@ -1,0 +1,46 @@
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="${package}.ChartController">
+    <bottom>
+        <HBox maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-1.0"
+              prefHeight="20.0" prefWidth="-1.0" BorderPane.alignment="CENTER">
+            <children>
+                <Label text="Status bar" HBox.hgrow="ALWAYS"/>
+                <Separator orientation="VERTICAL" prefHeight="200.0"/>
+                <Label alignment="CENTER_RIGHT" text="Other Info" HBox.hgrow="SOMETIMES"/>
+            </children>
+        </HBox>
+    </bottom>
+    <center>
+        <VBox prefHeight="200.0" prefWidth="100.0">
+            <children>
+                <Label text="Content"/>
+                <LineChart fx:id="chart" VBox.vgrow="ALWAYS">
+                    <xAxis>
+                        <NumberAxis side="BOTTOM"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis side="LEFT"/>
+                    </yAxis>
+                </LineChart>
+            </children>
+        </VBox>
+    </center>
+    <top>
+        <ToolBar>
+            <items>
+                <Button mnemonicParsing="false" text="Button"/>
+            </items>
+        </ToolBar>
+    </top>
+</BorderPane>
