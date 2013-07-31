@@ -10,7 +10,7 @@
     <artifactId>platform-non-osgi</artifactId>
     <packaging>jar</packaging>
 
-    <name>platform-non-osgi</name>
+    <name>stagediver.fx - Non-OSGi Services</name>
     <url>http://maven.apache.org</url>
 
     <properties>
