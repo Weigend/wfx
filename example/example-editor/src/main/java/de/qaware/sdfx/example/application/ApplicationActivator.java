@@ -9,24 +9,35 @@ import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
 import javafx.application.*;
+import java.io.IOException;
 
 public class ApplicationActivator implements BundleActivator {
 
     private Lookup lookup = new Lookup(ApplicationActivator.class);
 
-    public void start(BundleContext context) throws Exception {
-        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
-        notificationService.sendNotification(context.getBundle(), "Loading Example Application", 0);
+    public void start(final BundleContext context) throws Exception {
 
-        FXMLView view = new FXMLView("sdfx.example.charts:1", "Example Editor", Position.CENTER, "de/qaware/sdfx/example/charts/example.fxml", getClass().getClassLoader());
-        FXMLView view1 = new FXMLView("sdfx.example.explorer:1", "Example explorer", Position.LEFT, "de/qaware/sdfx/example/explorer/example_explorer.fxml", getClass().getClassLoader());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
+                    notificationService.sendNotification(context.getBundle(), "Loading Example Application", 0);
 
-        WindowManager windowManager = lookup.lookup(WindowManager.class);
-        windowManager.register(view);
-        windowManager.register(view1);
+                    FXMLView view = new FXMLView("sdfx.example.charts:1", "Example Editor", Position.CENTER, "de/qaware/sdfx/example/charts/example.fxml", getClass().getClassLoader());
+                    FXMLView view1 = new FXMLView("sdfx.example.explorer:1", "Example explorer", Position.LEFT, "de/qaware/sdfx/example/explorer/example_explorer.fxml", getClass().getClassLoader());
 
-        notificationService.sendNotification(context.getBundle(), "Finished loading Example Application", 1);
-        notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
+                    WindowManager windowManager = lookup.lookup(WindowManager.class);
+                    windowManager.register(view);
+                    windowManager.register(view1);
+
+                    notificationService.sendNotification(context.getBundle(), "Finished loading Example Application", 1);
+                    notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }).start();
     }
 
     @Override
