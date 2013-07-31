@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import javafx.application.*;
 import javafx.stage.*;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for stagediver.fx platform.
@@ -33,9 +34,7 @@ public class PlatformApplication extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
     private static Lookup lookup = new Lookup(PlatformApplication.class);
     private PreloaderNotificationService notificationService;
-
     private Stage mainApplicationStage;
-
     private boolean shouldShowing;
 
     @Override
@@ -86,11 +85,19 @@ public class PlatformApplication extends Application {
             @Override
             public void run() {
                 WindowManager windowManager = lookup.lookup(WindowManager.class);
-                ApplicationWindow applicationWindow = lookup.lookup(ApplicationWindow.class);
-
-                applicationWindow.setStage(mainApplicationStage);
-                applicationWindow.setWindowManager(windowManager);
-                applicationWindow.init();
+                List<ApplicationWindow> windowList = lookup.lookupAll(ApplicationWindow.class);
+                ApplicationWindow applicationWindow = null;
+                for (ApplicationWindow window : windowList) {
+                    try {
+                        window.setStage(mainApplicationStage);
+                        window.setWindowManager(windowManager);
+                        window.init();
+                        applicationWindow = window;
+                        break;
+                    } catch (IOException e) {
+                        LOGGER.debug("Can not load Application Window", e);
+                    }
+                }
                 applicationWindow.getStage().show();
                 windowManager.init();
             }
