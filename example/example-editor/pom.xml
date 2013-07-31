@@ -26,6 +26,10 @@
             <artifactId>lookup</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-non-osgi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>

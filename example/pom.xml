@@ -66,6 +66,11 @@
                 <version>${version.stagediver}</version>
             </dependency>
             <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>platform-non-osgi</artifactId>
+                <version>${version.stagediver}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>4.3.1</version>
