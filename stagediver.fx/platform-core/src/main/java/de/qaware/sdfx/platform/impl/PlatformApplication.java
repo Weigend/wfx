@@ -86,20 +86,18 @@ public class PlatformApplication extends Application {
             public void run() {
                 WindowManager windowManager = lookup.lookup(WindowManager.class);
                 List<ApplicationWindow> windowList = lookup.lookupAll(ApplicationWindow.class);
-                ApplicationWindow applicationWindow = null;
                 for (ApplicationWindow window : windowList) {
                     try {
                         window.setStage(mainApplicationStage);
                         window.setWindowManager(windowManager);
                         window.init();
-                        applicationWindow = window;
+                        window.getStage().show();
+                        windowManager.init();
                         break;
                     } catch (IOException e) {
                         LOGGER.debug("Can not load Application Window", e);
                     }
                 }
-                applicationWindow.getStage().show();
-                windowManager.init();
             }
         });
     }
