@@ -17,6 +17,7 @@ import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import java.io.IOException;
 
 /**
  * Defines the main window of the stagediver.fx platform.
@@ -26,7 +27,7 @@ public interface ApplicationWindow {
     /**
      * Initialize the application window.
      */
-    void init();
+    void init() throws IOException;
 
     /**
      * Get all menus within the menu bar.
@@ -69,18 +70,18 @@ public interface ApplicationWindow {
     void restoreTitle();
 
     /**
-     * Set the new title for this window.
-     *
-     * @param title The new title.
-     */
-    void setTitle(String title);
-
-    /**
      * Get the current title of this window.
      *
      * @return The title.
      */
     String getTitle();
+
+    /**
+     * Set the new title for this window.
+     *
+     * @param title The new title.
+     */
+    void setTitle(String title);
 
     /**
      * Get the the javafx stage for this window.

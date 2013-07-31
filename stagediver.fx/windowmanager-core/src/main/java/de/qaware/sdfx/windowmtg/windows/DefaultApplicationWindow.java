@@ -54,21 +54,16 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     /**
      * Initialize the application window.
      */
-    public void init() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-                    "/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
-            ));
-            loader.setClassLoader(getClass().getClassLoader());
-            loader.setController(this);
-            Parent parent = (Parent) loader.load();
-            stage.setScene(new Scene(parent));
-            windowManagerArea.getChildren().clear();
-            windowManagerArea.getChildren().add(windowManager.getRootPane());
-        }
-        catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void init() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
+                "/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
+        ));
+        loader.setClassLoader(getClass().getClassLoader());
+        loader.setController(this);
+        Parent parent = (Parent) loader.load();
+        stage.setScene(new Scene(parent));
+        windowManagerArea.getChildren().clear();
+        windowManagerArea.getChildren().add(windowManager.getRootPane());
     }
 
     /**
@@ -112,13 +107,13 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     }
 
     @Override
-    public void setTitle(String title) {
-        stage.setTitle(title);
+    public String getTitle() {
+        return stage.getTitle();
     }
 
     @Override
-    public String getTitle() {
-        return stage.getTitle();
+    public void setTitle(String title) {
+        stage.setTitle(title);
     }
 
     @Override
