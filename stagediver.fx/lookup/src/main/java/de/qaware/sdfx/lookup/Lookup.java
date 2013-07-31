@@ -94,7 +94,10 @@ public class Lookup {
                     services.add(context.getService(reference));
                 }
             }
-            //TODO: Guice Implementation
+            else {
+                //TODO: Guice Implementation
+                services.add(injector.getInstance(clazz));
+            }
         } catch (InvalidSyntaxException e) {
             return null;
         }
