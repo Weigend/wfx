@@ -50,6 +50,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-Activator>${package}.application.ApplicationActivator</Bundle-Activator>
+                        <Import-Package>!de.qaware.sdfx.nonosgi,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -46,7 +46,10 @@
                         </goals>
                         <phase>prepare-package</phase>
                         <configuration>
-                            <excludeScope>system,compile,test</excludeScope>
+                            <excludeScope>system</excludeScope>
+                            <excludeScope>compile</excludeScope>
+                            <excludeScope>test</excludeScope>
+                            <includeScope>runtime</includeScope>
                             <includeScope>provided</includeScope>
                             <outputDirectory>${project.build.directory}/bundles</outputDirectory>
                             <useRepositoryLayout>true</useRepositoryLayout>
