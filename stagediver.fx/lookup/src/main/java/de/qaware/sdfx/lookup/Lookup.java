@@ -115,31 +115,37 @@ public final class Lookup {
      * @return A list with all found service instances for the searched class.
      */
     public <T> List<T> lookupAll(Class<T> clazz) {
-        List<T> services = new ArrayList<>();
+        if (withinOsgi) {
+            return lookupAllOsgi(clazz);
+        }
+        else {
+            List<T> services = new ArrayList<>();
+            //TODO: Guice Implementation
+            services.add(injector.getInstance(clazz));
+            return services;
+        }
+    }
+
+    private <T> List<T> lookupAllOsgi(Class<T> clazz) {
         try {
-            if (withinOsgi) {
-                List<ServiceReference<T>> references = new ArrayList<>(context.getServiceReferences(clazz, null));
+            List<T> services = new ArrayList<>();
+            List<ServiceReference<T>> references = new ArrayList<>(context.getServiceReferences(clazz, null));
 
-                Collections.sort(references, new Comparator<ServiceReference<T>>() {
-                    @Override
-                    public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
-                        Integer r1 = (Integer) (o1.getProperty("service.ranking") == null ? 0 : o1.getProperty("service.ranking"));
-                        Integer r2 = (Integer) (o2.getProperty("service.ranking") == null ? 0 : o2.getProperty("service.ranking"));
-                        return r2.compareTo(r1);
-                    }
-                });
-
-                for (ServiceReference<T> reference : references) {
-                    services.add(context.getService(reference));
+            Collections.sort(references, new Comparator<ServiceReference<T>>() {
+                @Override
+                public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
+                    Integer r1 = (Integer) (o1.getProperty("service.ranking") == null ? 0 : o1.getProperty("service.ranking"));
+                    Integer r2 = (Integer) (o2.getProperty("service.ranking") == null ? 0 : o2.getProperty("service.ranking"));
+                    return r2.compareTo(r1);
                 }
+            });
+
+            for (ServiceReference<T> reference : references) {
+                services.add(context.getService(reference));
             }
-            else {
-                //TODO: Guice Implementation
-                services.add(injector.getInstance(clazz));
-            }
+            return services;
         } catch (InvalidSyntaxException e) {
             return null;
         }
-        return services;
     }
 }
