@@ -84,6 +84,11 @@
                         </goals>
                         <phase>prepare-package</phase>
                         <configuration>
+                            <excludeScope>system</excludeScope>
+                            <excludeScope>compile</excludeScope>
+                            <excludeScope>test</excludeScope>
+                            <includeScope>provided</includeScope>
+                            <includeScope>runtime</includeScope>
                             <outputDirectory>${project.build.directory}/bundles</outputDirectory>
                             <useRepositoryLayout>true</useRepositoryLayout>
                         </configuration>
