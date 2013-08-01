@@ -19,7 +19,8 @@ import com.google.inject.Module;
 import org.osgi.framework.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -60,6 +61,8 @@ public class Lookup {
 
     /**
      * Lookup a class from the registry.
+     * <p/>
+     * The returned service is that service that have the highest service ranking.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
@@ -80,6 +83,8 @@ public class Lookup {
 
     /**
      * Lookup all services for one class from the registry.
+     * <p/>
+     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
@@ -89,7 +94,17 @@ public class Lookup {
         List<T> services = new ArrayList<>();
         try {
             if (withinOsgi) {
-                Collection<ServiceReference<T>> references = context.getServiceReferences(clazz, null);
+                List<ServiceReference<T>> references = new ArrayList<>(context.getServiceReferences(clazz, null));
+
+                Collections.sort(references, new Comparator<ServiceReference<T>>() {
+                    @Override
+                    public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
+                        Integer r1 = (Integer) (o1.getProperty("service.ranking") != null ? o1.getProperty("service.ranking") : 0);
+                        Integer r2 = (Integer) (o2.getProperty("service.ranking") != null ? o2.getProperty("service.ranking") : 0);
+                        return r2.compareTo(r1);
+                    }
+                });
+
                 for (ServiceReference<T> reference : references) {
                     services.add(context.getService(reference));
                 }
