@@ -123,8 +123,8 @@ public final class Lookup {
                 Collections.sort(references, new Comparator<ServiceReference<T>>() {
                     @Override
                     public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
-                        Integer r1 = (Integer) (o1.getProperty("service.ranking") != null ? o1.getProperty("service.ranking") : 0);
-                        Integer r2 = (Integer) (o2.getProperty("service.ranking") != null ? o2.getProperty("service.ranking") : 0);
+                        Integer r1 = (Integer) (o1.getProperty("service.ranking") == null ? 0 : o1.getProperty("service.ranking"));
+                        Integer r2 = (Integer) (o2.getProperty("service.ranking") == null ? 0 : o2.getProperty("service.ranking"));
                         return r2.compareTo(r1);
                     }
                 });
