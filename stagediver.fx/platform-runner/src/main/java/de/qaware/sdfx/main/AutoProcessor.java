@@ -163,7 +163,7 @@ public class AutoProcessor {
     protected void installUpdateBundle(File jarFile, Bundle bundle) {
         try {
             // If the bundle is not already installed, then install it
-            Bundle b=bundle;
+            Bundle b = bundle;
             if ((b == null)) {
                 b = context.installBundle(jarFile.toURI().toString());
             }
@@ -181,6 +181,7 @@ public class AutoProcessor {
                 bundleStartLevel.setStartLevel(getStartLevel(b));
             }
         } catch (BundleException ex) {
+            logger.error("Error during install or update bundle %s for jar file: %s", bundle, jarFile);
             logger.error("Auto-deploy install ", ex);
         }
     }
