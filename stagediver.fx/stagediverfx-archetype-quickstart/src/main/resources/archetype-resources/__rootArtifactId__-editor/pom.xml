@@ -11,6 +11,7 @@
     <packaging>bundle</packaging>
 
     <dependencies>
+        <!-- stagediver.fx Platform Dependencies -->
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
@@ -27,6 +28,7 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-non-osgi</artifactId>
         </dependency>
+        <!-- OSGi Framework Dependencies -->
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
@@ -35,12 +37,17 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
         </dependency>
+        <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!-- Build Dependencies - Felix -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+        </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -53,6 +60,10 @@
                         <Import-Package>!de.qaware.sdfx.nonosgi,*</Import-Package>
                     </instructions>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
