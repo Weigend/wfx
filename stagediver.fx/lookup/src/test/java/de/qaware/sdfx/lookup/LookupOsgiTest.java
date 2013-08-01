@@ -4,7 +4,6 @@ import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Multimap;
-import com.sun.istack.internal.Nullable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -95,7 +94,7 @@ public class LookupOsgiTest {
         Collection<ServiceReference<T>> serviceReferences = Collections2.transform(services.get(clazz),
                 new Function<ServiceReference<? extends Object>, ServiceReference<T>>() {
                     @Override
-                    public ServiceReference<T> apply(@Nullable org.osgi.framework.ServiceReference<? extends Object> serviceReference) {
+                    public ServiceReference<T> apply(org.osgi.framework.ServiceReference<? extends Object> serviceReference) {
                         return (ServiceReference<T>) serviceReference;
                     }
                 });
