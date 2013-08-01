@@ -58,6 +58,10 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.scr.annotations</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -69,10 +73,12 @@
                     <instructions>
                         <Bundle-Activator>de.qaware.sdfx.windowmtg.impl.WindowMtgActivator</Bundle-Activator>
                     </instructions>
-
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-scr-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
-
 </project>
