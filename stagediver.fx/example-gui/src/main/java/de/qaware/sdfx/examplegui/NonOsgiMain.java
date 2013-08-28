@@ -50,14 +50,14 @@ public class NonOsgiMain extends Application {
         mainWindow.getMenu().add(file);
 
         WindowManager manager = mainWindow.getWindowManager();
-
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
         FXMLView<ExampleController> center =
                 new FXMLView<>("example-1", "Example GUI", Position.CENTER,
-                        "de/qaware/sdfx/examplegui/example.fxml", getClass().getClassLoader());
+                        "de/qaware/sdfx/examplegui/example.fxml", classLoader);
 
         FXMLView<ExampleExplorerController> explorer =
                 new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
-                        "de/qaware/sdfx/examplegui/example_explorer.fxml", getClass().getClassLoader());
+                        "de/qaware/sdfx/examplegui/example_explorer.fxml", classLoader);
 
 
         manager.register(center);

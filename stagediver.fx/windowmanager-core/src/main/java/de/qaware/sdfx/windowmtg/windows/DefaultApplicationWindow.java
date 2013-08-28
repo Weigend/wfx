@@ -55,10 +55,12 @@ public class DefaultApplicationWindow implements ApplicationWindow {
      * Initialize the application window.
      */
     public void init() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
+
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        FXMLLoader loader = new FXMLLoader(classLoader.getResource(
                 "/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
         ));
-        loader.setClassLoader(getClass().getClassLoader());
+        loader.setClassLoader(classLoader);
         loader.setController(this);
         Parent parent = (Parent) loader.load();
         stage.setScene(new Scene(parent));

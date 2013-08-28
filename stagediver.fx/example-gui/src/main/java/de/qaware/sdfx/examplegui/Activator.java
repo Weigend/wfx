@@ -32,16 +32,17 @@ public class Activator implements BundleActivator {
             @Override
             public void run() {
                 try {
+                    ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
                     LOGGER.info("Register example view");
                     FXMLView<ExampleController> center =
                             new FXMLView<>("example-1", "Example GUI", Position.CENTER,
                                     "/de/qaware/sdfx/examplegui/example.fxml",
-                                    getClass().getClassLoader());
+                                    classLoader);
 
                     FXMLView<ExampleExplorerController> explorer =
                             new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
                                     "/de/qaware/sdfx/examplegui/example_explorer.fxml",
-                                    getClass().getClassLoader());
+                                    classLoader);
 
                     manager.register(center);
                     manager.register(explorer, center);
