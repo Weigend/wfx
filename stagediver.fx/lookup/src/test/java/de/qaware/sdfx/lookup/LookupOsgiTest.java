@@ -33,15 +33,15 @@ public class LookupOsgiTest {
 
     @Before
     public void setUp() throws Exception {
-        Lookup.setWithinOsgi(true);
-        Lookup.setInjector(null);
-        lookup.setContext(context);
+        LookupContextHelper.setWithinOsgi(true);
+        LookupContextHelper.setInjector(null);
+        LookupContextHelper.setContext(context, lookup);
     }
 
     @After
     public void tearDown() throws Exception {
-        Lookup.setWithinOsgi(false);
-        Lookup.setInjector(null);
+        LookupContextHelper.setWithinOsgi(false);
+        LookupContextHelper.setInjector(null);
     }
 
     @Test

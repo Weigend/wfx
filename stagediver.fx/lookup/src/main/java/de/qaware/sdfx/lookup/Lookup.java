@@ -51,22 +51,6 @@ public final class Lookup {
         }
     }
 
-    protected static Injector getInjector() {
-        return injector;
-    }
-
-    protected static void setInjector(Injector injector) {
-        Lookup.injector = injector;
-    }
-
-    protected static boolean isWithinOsgi() {
-        return withinOsgi;
-    }
-
-    protected static void setWithinOsgi(boolean withinOsgi) {
-        Lookup.withinOsgi = withinOsgi;
-    }
-
     /**
      * Init the lookup if the module is not running within an osgi container.
      *
@@ -74,14 +58,6 @@ public final class Lookup {
      */
     public static void init(Module... modules) {
         injector = Guice.createInjector(modules);
-    }
-
-    protected BundleContext getContext() {
-        return context;
-    }
-
-    protected void setContext(BundleContext context) {
-        this.context = context;
     }
 
     /**
