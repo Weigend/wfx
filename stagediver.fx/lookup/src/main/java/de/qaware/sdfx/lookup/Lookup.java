@@ -30,6 +30,7 @@ import java.util.List;
  */
 public final class Lookup {
 
+    private static final String SERVICE_RANKING_PROP = "service.ranking";
     private static boolean withinOsgi;
     private static Injector injector;
 
@@ -134,8 +135,8 @@ public final class Lookup {
             Collections.sort(references, new Comparator<ServiceReference<T>>() {
                 @Override
                 public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
-                    Integer r1 = (Integer) (o1.getProperty("service.ranking") == null ? 0 : o1.getProperty("service.ranking"));
-                    Integer r2 = (Integer) (o2.getProperty("service.ranking") == null ? 0 : o2.getProperty("service.ranking"));
+                    Integer r1 = (Integer) (o1.getProperty(SERVICE_RANKING_PROP) == null ? 0 : o1.getProperty(SERVICE_RANKING_PROP));
+                    Integer r2 = (Integer) (o2.getProperty(SERVICE_RANKING_PROP) == null ? 0 : o2.getProperty(SERVICE_RANKING_PROP));
                     return r2.compareTo(r1);
                 }
             });
