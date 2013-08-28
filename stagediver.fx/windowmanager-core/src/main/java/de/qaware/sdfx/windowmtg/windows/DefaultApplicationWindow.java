@@ -53,6 +53,8 @@ public class DefaultApplicationWindow implements ApplicationWindow {
 
     /**
      * Initialize the application window.
+     *
+     * @throws IOException In case of the requested fxml file can not be found or read.
      */
     public void init() throws IOException {
 

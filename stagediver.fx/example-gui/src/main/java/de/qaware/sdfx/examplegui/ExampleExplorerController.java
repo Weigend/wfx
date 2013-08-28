@@ -15,7 +15,6 @@ import java.util.ResourceBundle;
 public class ExampleExplorerController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleExplorerController.class);
-
     @FXML
     protected TreeView<String> tree;
 
@@ -31,6 +30,11 @@ public class ExampleExplorerController implements Initializable {
         tree.setRoot(root);
     }
 
+    /**
+     * Event handler for a click on a tree item.
+     *
+     * @param event the mouse event.
+     */
     @FXML
     public void treeClicked(MouseEvent event) {
         LOGGER.info("treeClicked: {}", event);
