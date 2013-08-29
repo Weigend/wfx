@@ -22,6 +22,9 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+/**
+ * Test the lookup module in the osgi mode.
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class LookupOsgiTest {
 

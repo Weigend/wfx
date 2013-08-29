@@ -36,6 +36,18 @@
             <artifactId>guava</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- Apache ServiceMix OSGi Bundles as replaces to aopalliance and javax.inject -->
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
