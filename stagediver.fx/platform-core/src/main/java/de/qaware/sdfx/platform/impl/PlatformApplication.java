@@ -16,6 +16,7 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import java.util.List;
 public class PlatformApplication extends Application {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
+    public static final String INIT_WINSYSTEM_MSG = "Initialize Window System";
     private static Lookup lookup = new Lookup(PlatformApplication.class);
     private Stage mainApplicationStage;
     private boolean shouldShowing;
@@ -43,6 +45,9 @@ public class PlatformApplication extends Application {
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }
+
+        Bundle bundle = FrameworkUtil.getBundle(PlatformApplication.class);
+        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 0);
     }
 
     /**
@@ -92,6 +97,11 @@ public class PlatformApplication extends Application {
                         window.init();
                         window.getStage().show();
                         windowManager.init();
+
+                        // Send Init Message
+                        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
+                        Bundle bundle = FrameworkUtil.getBundle(PlatformApplication.class);
+                        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 1);
                         break;
                     } catch (IOException e) {
                         LOGGER.debug("Can not load Application Window", e);
