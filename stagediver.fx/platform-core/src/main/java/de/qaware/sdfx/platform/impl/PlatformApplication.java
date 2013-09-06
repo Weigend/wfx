@@ -32,8 +32,8 @@ import java.util.List;
  */
 public class PlatformApplication extends Application {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
     public static final String INIT_WINSYSTEM_MSG = "Initialize Window System";
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplication.class);
     private static Lookup lookup = new Lookup(PlatformApplication.class);
     private Stage mainApplicationStage;
     private boolean shouldShowing;

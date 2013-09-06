@@ -58,7 +58,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
      */
     public void init() throws IOException {
 
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        ClassLoader classLoader = getClass().getClassLoader();
         FXMLLoader loader = new FXMLLoader(classLoader.getResource(
                 "/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
         ));
