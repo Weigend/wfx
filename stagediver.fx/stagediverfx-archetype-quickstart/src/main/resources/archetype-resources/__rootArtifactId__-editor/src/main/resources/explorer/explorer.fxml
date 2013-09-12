@@ -7,12 +7,6 @@
 <?import javafx.scene.layout.*?>
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="${package}.explorer.ExplorerController">
     <children>
-        <ToolBar/>
         <TreeView fx:id="tree" onMouseClicked="#treeClicked" VBox.vgrow="ALWAYS"/>
-        <HBox prefHeight="20.0" minHeight="20" maxHeight="20">
-            <children>
-                <Label text="Status"/>
-            </children>
-        </HBox>
     </children>
 </VBox>
