@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<BorderPane fx:id="root" prefHeight="200.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <VBox>
+            <children>
+                <MenuBar fx:id="menuBar" useSystemMenuBar="true">
+                    <menus>
+                        <Menu mnemonicParsing="false" text="File">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Close"/>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Edit">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="Delete"/>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="View">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#restoreDefaultLayout"
+                                          text="Default Layout"/>
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Help">
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="About"/>
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+                <ToolBar fx:id="toolBar">
+                    <items>
+                        <Button mnemonicParsing="false" onAction="#restoreDefaultLayout" text="N"/>
+                        <Button mnemonicParsing="false" onAction="#restoreDefaultLayout" text="O"/>
+                        <Button mnemonicParsing="false" onAction="#restoreDefaultLayout" text="S"/>
+                    </items>
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
+    <bottom>
+        <HBox fx:id="statusBar" prefHeight="-1.0" prefWidth="-1.0" style="-fx-background-color: #dddddd;">
+            <children>
+                <Label style="background-color: #dddddd;" text="Status Bar: To be done"/>
+            </children>
+        </HBox>
+    </bottom>
+</BorderPane>
