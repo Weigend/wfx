@@ -17,7 +17,7 @@ import java.io.PrintStream;
 /**
  * This is a simple logger for the startup of stagediver.fx.
  */
-public class Logger {
+public class StartupLogger {
 
     private static PrintStream writer = System.err;
     private String name;
@@ -27,7 +27,7 @@ public class Logger {
      *
      * @param clazz The class where this logger should be used.
      */
-    public Logger(Class clazz) {
+    public StartupLogger(Class clazz) {
         name = clazz.getName();
     }
 

@@ -46,7 +46,7 @@ public class AutoProcessor {
      */
     public static final String AUTO_DEPLOY_STARTLEVEL_PROPERY = "stagediver.auto.deploy.startlevel";
     public static final String AUTO_DEPLOY_BUNDLE_STARTLEVEL = "stagediver.auto.deploy.startlevel.bundle";
-    private static Logger logger = new Logger(AutoProcessor.class);
+    private static StartupLogger logger = new StartupLogger(AutoProcessor.class);
     private BundleContext context;
     private Map<String, String> configProps;
     private List<Bundle> startBundleList = new ArrayList<>();
