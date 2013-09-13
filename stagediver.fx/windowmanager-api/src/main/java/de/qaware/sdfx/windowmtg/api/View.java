@@ -54,5 +54,5 @@ public interface View {
      *
      * @return The views content root node.
      */
-    Node getRootNode();
+    Parent getRootNode();
 }

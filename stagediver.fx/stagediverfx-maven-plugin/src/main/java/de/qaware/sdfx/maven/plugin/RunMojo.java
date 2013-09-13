@@ -1,0 +1,32 @@
+package de.qaware.sdfx.maven.plugin;
+
+import de.qaware.sdfx.main.AutoProcessor;
+import de.qaware.sdfx.main.Main;
+import org.apache.maven.plugin.AbstractMojo;
+import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.MojoFailureException;
+
+/**
+ * @goal run
+ * @phase package
+ * @requiresDependencyResolution compile+runtime
+ */
+public class RunMojo extends AbstractMojo {
+
+    /**
+     * @parameter expression="${project.artifactId}-application/target/bundles"
+     */
+    protected String bundleDirectory;
+
+    @Override
+    public void execute() throws MojoExecutionException, MojoFailureException {
+
+        try {
+            System.setProperty(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, bundleDirectory);
+            System.setProperty("binary.css", "false");
+            Main.main(new String[]{});
+        } catch (Exception e) {
+            throw new MojoExecutionException("Startup failed", e);
+        }
+    }
+}

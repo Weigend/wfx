@@ -101,7 +101,7 @@ public class FXMLView<C> implements View {
     }
 
     @Override
-    public Node getRootNode() {
+    public Parent getRootNode() {
         return rootPane;
     }
 

@@ -34,7 +34,7 @@ public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.Applicati
 
     public void init() throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-                "/${packageInPathFormat}/application/appWindow.fxml"
+                "/${packageInPathFormat}/application/applicationWindow.fxml"
         ));
         loader.setClassLoader(getClass().getClassLoader());
         loader.setController(this);

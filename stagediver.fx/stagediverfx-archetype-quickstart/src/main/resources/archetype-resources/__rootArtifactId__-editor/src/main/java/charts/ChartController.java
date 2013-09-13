@@ -26,7 +26,7 @@ public class ChartController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         Random random = new Random();
-        int values = 10 + random.nextInt(490);
+        int values = 10 + random.nextInt(40);
         List<XYChart.Series<Integer, Integer>> dataList = chart.getData();
         XYChart.Series<Integer, Integer> series = new XYChart.Series<>();
         dataList.add(series);

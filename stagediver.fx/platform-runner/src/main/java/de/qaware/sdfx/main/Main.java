@@ -56,7 +56,7 @@ public class Main {
      * Name of the configuration directory.
      */
     public static final String CONFIG_DIRECTORY = "config";
-    private static Logger logger = new Logger(Main.class);
+    private static StartupLogger logger = new StartupLogger(Main.class);
     private Framework framework;
     private Map<String, String> configProps;
 
