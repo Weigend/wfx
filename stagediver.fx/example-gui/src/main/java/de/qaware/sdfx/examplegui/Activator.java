@@ -41,7 +41,7 @@ public class Activator implements BundleActivator {
 
                     FXMLView<ExampleExplorerController> explorer =
                             new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
-                                    "de/qaware/sdfx/examplegui/example_explorer.fxml",
+                                    "de/qaware/sdfx/examplegui/example_explorer.fxml", 0.3,
                                     classLoader);
 
                     manager.register(center);
