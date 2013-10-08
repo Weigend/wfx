@@ -28,11 +28,13 @@ import java.net.URL;
  */
 public class FXMLView<C> implements View {
 
+    public static final double DEFAULT_VIEW_AREA_SIZE = 0.5;
     private final String id;
     private final String title;
     private final Position defaultPosition;
     private final Pane rootPane;
     private final String toolTipInfo;
+    private final double viewAreaSize;
     private final C controller;
 
     /**
@@ -48,7 +50,24 @@ public class FXMLView<C> implements View {
      * @throws IOException In case of the view can not be loaded.
      */
     public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws IOException {
-        this(id, title, pos, file, null, classLoader);
+        this(id, title, pos, file, null, DEFAULT_VIEW_AREA_SIZE, classLoader);
+    }
+
+    /**
+     * Get a new view with the specified values.
+     * <p/>
+     * The resulted view will not have a tooltip.
+     *
+     * @param id           The view id.
+     * @param title        The view title.
+     * @param pos          The initial position of the view.
+     * @param file         The path to the fxml file.
+     * @param viewAreaSize The view area size. See {@link de.qaware.sdfx.windowmtg.api.View#getViewAreaSize()}.
+     * @param classLoader  The class loader to resolve the fxml file and its controller.
+     * @throws IOException In case of the view can not be loaded.
+     */
+    public FXMLView(String id, String title, Position pos, String file, double viewAreaSize, ClassLoader classLoader) throws IOException {
+        this(id, title, pos, file, null, viewAreaSize, classLoader);
     }
 
     /**
@@ -66,12 +85,32 @@ public class FXMLView<C> implements View {
      */
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, ClassLoader classLoader)
             throws IOException {
+        this(id, title, pos, file, toolTipInfo, DEFAULT_VIEW_AREA_SIZE, classLoader);
+    }
+
+    /**
+     * Get a new view with the specified values.
+     * <p/>
+     * The view will show a tooltip info on mouse over.
+     *
+     * @param id           The view id.
+     * @param title        The view title.
+     * @param pos          The initial position of the view.
+     * @param file         The path to the fxml file.
+     * @param toolTipInfo  The tooltip info.
+     * @param viewAreaSize The view area size. See {@link de.qaware.sdfx.windowmtg.api.View#getViewAreaSize()}.
+     * @param classLoader  The class loader to resolve the fxml file and its controller.
+     * @throws IOException In case of the view can not be loaded.
+     */
+    public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, double viewAreaSize, ClassLoader classLoader)
+            throws IOException {
 
         Preconditions.checkNotNull(classLoader);
         this.id = id;
         this.title = title;
         this.defaultPosition = pos;
         this.toolTipInfo = toolTipInfo;
+        this.viewAreaSize = viewAreaSize;
 
         URL location = classLoader.getResource(file);
         FXMLLoader loader = new FXMLLoader(location);
@@ -103,6 +142,17 @@ public class FXMLView<C> implements View {
     @Override
     public Parent getRootNode() {
         return rootPane;
+    }
+
+    /**
+     * Get the view area size. This will be a number between 0 and 1 which defines the percentage space of this view
+     * within the surrounding area.
+     *
+     * @return The view area size.
+     */
+    @Override
+    public double getViewAreaSize() {
+        return this.viewAreaSize;
     }
 
     /**

@@ -55,4 +55,12 @@ public interface View {
      * @return The views content root node.
      */
     Parent getRootNode();
+
+    /**
+     * Get the view area size. This will be a number between 0 and 1 which defines the percentage space of this view
+     * within the surrounding area.
+     *
+     * @return The view area size.
+     */
+    double getViewAreaSize();
 }
