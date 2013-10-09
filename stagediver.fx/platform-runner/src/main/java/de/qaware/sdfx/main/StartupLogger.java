@@ -189,7 +189,7 @@ public class StartupLogger {
         }
 
         private Level(boolean enabled) {
-            this.enabled = Boolean.parseBoolean(System.getProperty("sdfx.logger." + this.name(), Boolean.toString(enabled)));
+            this.enabled = Boolean.parseBoolean(System.getProperty("sdfx.logger." + this.name().toLowerCase(), Boolean.toString(enabled)));
         }
 
         /**
