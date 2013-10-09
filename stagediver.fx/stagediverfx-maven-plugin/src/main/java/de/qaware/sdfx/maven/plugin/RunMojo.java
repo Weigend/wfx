@@ -23,9 +23,17 @@ public class RunMojo extends AbstractMojo {
 
         try {
             System.setProperty(AutoProcessor.AUTO_DEPLOY_DIR_PROPERY, bundleDirectory);
+
+            System.setProperty("sdfx.logger.error", String.valueOf(getLog().isErrorEnabled()));
+            System.setProperty("sdfx.logger.warn", String.valueOf(getLog().isWarnEnabled()));
+            System.setProperty("sdfx.logger.info", String.valueOf(getLog().isInfoEnabled()));
+            System.setProperty("sdfx.logger.debug", String.valueOf(getLog().isDebugEnabled()));
+
+            getLog().info("Set bundle directory to: " + bundleDirectory);
             System.setProperty("binary.css", "false");
             Main.main(new String[]{});
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new MojoExecutionException("Startup failed", e);
         }
     }
