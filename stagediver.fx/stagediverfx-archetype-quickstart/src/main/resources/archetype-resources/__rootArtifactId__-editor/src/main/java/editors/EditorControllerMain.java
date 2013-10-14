@@ -1,7 +1,7 @@
 #set( $symbol_pound = '#' )
 #set( $symbol_dollar = '$' )
 #set( $symbol_escape = '\' )
-package ${package}.charts;
+package ${package}.editors;
 
 
 import de.qaware.sdfx.lookup.Lookup;
@@ -12,7 +12,7 @@ import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.stage.*;
 
-public class ChartControllerMain extends Application {
+public class EditorControllerMain extends Application {
 
     public static void main(String[] args) {
         Lookup.init(new PlatformModule());
@@ -21,7 +21,7 @@ public class ChartControllerMain extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent p = FXMLLoader.load(getClass().getResource("chart.fxml"));
+        Parent p = FXMLLoader.load(getClass().getResource("editor.fxml"));
         primaryStage.setScene(new Scene(p));
         primaryStage.show();
     }

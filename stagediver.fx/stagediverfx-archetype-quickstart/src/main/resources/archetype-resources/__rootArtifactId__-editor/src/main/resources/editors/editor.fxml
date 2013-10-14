@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+#set( $symbol_pound = '#' )
+#set( $symbol_dollar = '$' )
+#set( $symbol_escape = '\' )
+-->
+<?import java.lang.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml" fx:controller="${package}.editors.EditorController">
+  <top>
+    <Label alignment="CENTER" prefHeight="191.0" prefWidth="429.0" text="Insert your View Content here" textAlignment="CENTER">
+      <font>
+        <Font name="System Bold" size="20.0" />
+      </font>
+    </Label>
+  </top>
+</BorderPane>
