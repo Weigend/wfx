@@ -28,7 +28,7 @@ public class Activator implements BundleActivator {
         notificationService.sendNotification(context.getBundle(), "Starting example gui", 0);
 
         final WindowManager manager = lookup.lookup(WindowManager.class);
-        new Thread(new Runnable() {
+        Platform.runLater(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -36,7 +36,7 @@ public class Activator implements BundleActivator {
                     LOGGER.info("Register example view");
                     FXMLView<ExampleController> center =
                             new FXMLView<>("example-1", "Example GUI", Position.CENTER,
-                                    "de/qaware/sdfx/examplegui/example.fxml",
+                                    "de/qaware/sdfx/examplegui/example.fxml", 0.7,
                                     classLoader);
 
                     FXMLView<ExampleExplorerController> explorer =
@@ -51,10 +51,10 @@ public class Activator implements BundleActivator {
                     notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
 
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    LOGGER.error("Can not start module", e);
                 }
             }
-        }).start();
+        });
     }
 
     @Override
