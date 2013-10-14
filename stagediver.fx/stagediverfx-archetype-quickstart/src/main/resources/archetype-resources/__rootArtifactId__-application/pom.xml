@@ -23,7 +23,7 @@
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-full</artifactId>
-            <version>${version.stagediver}</version>
+            <version>${version.stagediverfx}</version>
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
