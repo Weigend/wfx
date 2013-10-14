@@ -139,7 +139,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         TabArea area = (TabArea) source.getUserData();
         Dragboard db = event.getDragboard();
         if (droppedStage != null) {
-            droppedStage.setMaximized(true);
+            droppedStage.setWidth(droppedStage.getWidth() - 1);
             droppedStage = null;
         }
         if (event.getTransferMode() == TransferMode.MOVE && db.hasContent(DATAFORMAT)) {
