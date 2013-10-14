@@ -45,11 +45,10 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private ToolBar toolbar;
     @FXML
     private HBox statusBar;
-    @FXML
-    private Pane windowManagerArea;
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
+    private BorderPane rootPane;
 
     /**
      * Initialize the application window.
@@ -64,10 +63,9 @@ public class DefaultApplicationWindow implements ApplicationWindow {
         ));
         loader.setClassLoader(classLoader);
         loader.setController(this);
-        Parent parent = (Parent) loader.load();
-        stage.setScene(new Scene(parent));
-        windowManagerArea.getChildren().clear();
-        windowManagerArea.getChildren().add(windowManager.getRootPane());
+        rootPane = (BorderPane) loader.load();
+        stage.setScene(new Scene(rootPane));
+        rootPane.setCenter(windowManager.getRootPane());
     }
 
     /**
