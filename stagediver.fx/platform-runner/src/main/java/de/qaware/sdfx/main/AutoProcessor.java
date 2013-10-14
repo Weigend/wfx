@@ -119,6 +119,7 @@ public class AutoProcessor {
         // Get the auto deploy directory.
         String autoDir = configProps.get(AUTO_DEPLOY_DIR_PROPERY);
         autoDir = (autoDir == null) ? AUTO_DEPLOY_DIR_VALUE : autoDir;
+        autoDir = absoluteBundleDir(autoDir);
 
         logger.info("Load bundles from %s", autoDir);
 
@@ -144,6 +145,28 @@ public class AutoProcessor {
         }
 
         uninstallOldBundles(installedBundleMap);
+    }
+
+    /**
+     * Get the absolute path of the bundle directory.
+     * <p/>
+     * It try also to find the bundle directory if it was started from an ide (like intellij).
+     *
+     * @param bundleDir The bundle dir path directly form the config.
+     * @return The full path to the bundle directory.
+     */
+    private String absoluteBundleDir(String bundleDir) {
+        File dir = new File(bundleDir);
+        File targetDir = new File("target" + File.separator + bundleDir);
+        if (dir.isAbsolute()) {
+            return bundleDir;
+        }
+        else if (targetDir.exists()) {
+            return targetDir.getAbsolutePath();
+        }
+        else {
+            return dir.getAbsolutePath();
+        }
     }
 
     protected void uninstallOldBundles(Map<String, Bundle> installedBundleMap) {

@@ -119,6 +119,14 @@ public class Main {
         return map;
     }
 
+    /**
+     * Get the url of a property file.
+     *
+     * @param propertiesProp        The systme property name where the property file name can be found
+     * @param defaultPropertiesFile The default file name if the file from "propertiesProp" can not
+     *                              be found or is empty.
+     * @return Return the full qualified url the searched property file.
+     */
     protected static URL getPropertyFileUrl(String propertiesProp, String defaultPropertiesFile) {
         URL propURL;
         String custom = System.getProperty(propertiesProp);
