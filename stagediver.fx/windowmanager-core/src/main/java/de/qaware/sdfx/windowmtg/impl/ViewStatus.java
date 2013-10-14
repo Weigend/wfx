@@ -14,6 +14,8 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javafx.event.*;
 import javafx.scene.control.*;
@@ -23,6 +25,7 @@ import javafx.scene.control.*;
  */
 public final class ViewStatus {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewStatus.class);
     /**
      * The registered view
      */
@@ -134,6 +137,33 @@ public final class ViewStatus {
 
     public void setArea(TabArea area) {
         this.area = area;
+    }
+
+    public void setDeviderPositions() {
+        SplitPane splitPane;
+        final double space = getView().getViewAreaSize();
+
+        if (getArea().getParent().getNode() instanceof SplitPane) {
+            splitPane = (SplitPane) getArea().getParent().getNode();
+        }
+        else {
+            return;
+        }
+
+        if (space < 0.05 || space > 0.95) {
+            return;
+        }
+        switch (position) {
+            case LEFT:      // fall trough
+            case TOP:
+                splitPane.setDividerPositions(space);
+                break;
+            case RIGHT:     // all trough
+            case BOTTOM:
+                splitPane.setDividerPositions(1 - space);
+                break;
+        }
+        LOGGER.debug("Set the devider position to {} for position {}", space, position);
     }
 
     /**

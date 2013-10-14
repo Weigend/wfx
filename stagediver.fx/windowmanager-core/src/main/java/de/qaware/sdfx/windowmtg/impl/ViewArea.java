@@ -216,8 +216,8 @@ public class ViewArea {
                 }
                 break;
         }
+        view.setPosition(position);
         view.getArea().getNode().requestLayout();
-        setDeviderPosition(view, position);
     }
 
     /**
@@ -326,28 +326,5 @@ public class ViewArea {
      */
     public boolean dropToCenter() {
         return false;
-    }
-
-    /**
-     * Set the divider position for the given view within this area based on the insert position
-     *
-     * @param view     The inserted view.
-     * @param position The position of the inserted view.
-     */
-    private void setDeviderPosition(ViewStatus view, final Position position) {
-
-        final double space = view.getView().getViewAreaSize();
-
-        switch (position) {
-            case LEFT:      // fall trough
-            case TOP:
-                outerPane.setDividerPositions(space);
-                break;
-            case RIGHT:     // all trough
-            case BOTTOM:
-                outerPane.setDividerPositions(1 - space);
-                break;
-        }
-        LOGGER.debug("Set the devider position to {} for position {}", space, position);
     }
 }

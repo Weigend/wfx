@@ -52,6 +52,14 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void init() {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                for (ViewStatus status : views.values()) {
+                    status.setDeviderPositions();
+                }
+            }
+        });
     }
 
     /**
