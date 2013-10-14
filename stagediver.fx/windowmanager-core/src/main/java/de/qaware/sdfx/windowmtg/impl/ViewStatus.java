@@ -32,18 +32,15 @@ public final class ViewStatus {
     private final View view;
     private final Position defaultPosition;
     private final ViewStatus parent;
-
     /**
      * The status whether this view is visible or hidden (or something else)
      */
     private Status status;
-
     /**
      * The current position within the window
      */
     private Position position;
     private TabArea area;
-
     /**
      * The tab which contains this view.
      */
@@ -139,6 +136,9 @@ public final class ViewStatus {
         this.area = area;
     }
 
+    /**
+     * Resize the area of this view to the defined value.
+     */
     public void setDeviderPositions() {
         SplitPane splitPane;
         final double space = getView().getViewAreaSize();
