@@ -56,6 +56,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * The current node where the effect is active.
      */
     private Node effectTarget;
+    /**
+     * Temp stage when the view was dropped outside a stagediver.fx window.
+     */
+    private Stage droppedStage;
 
     /**
      * Create a new drag&drop manager instance.
@@ -134,6 +138,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
         TabPane source = (TabPane) event.getSource();
         TabArea area = (TabArea) source.getUserData();
         Dragboard db = event.getDragboard();
+        if (droppedStage != null) {
+            droppedStage.setMaximized(true);
+            droppedStage = null;
+        }
         if (event.getTransferMode() == TransferMode.MOVE && db.hasContent(DATAFORMAT)) {
             area.handleEmpty();
             closeDropStages();
@@ -167,6 +175,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         area.add(getDragedViewStatus(), Position.CENTER);
         stage.setTitle(getDragedViewStatus().getView().getTitle());
         stage.show();
+        droppedStage = stage;
         windowManager.register(area);
         completeDropped(event, true);
     }
