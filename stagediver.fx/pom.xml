@@ -32,6 +32,9 @@
         <guava.version>14.0.1</guava.version>
         <osgi.version>4.3.1</osgi.version>
         <felix.version>4.2.1</felix.version>
+        <version.asm/>
+        <version.jfx/>
+        <path.jfx/>
     </properties>
 
     <dependencyManagement>
@@ -261,7 +264,7 @@
             <properties>
                 <version.asm>5.0_ALPHA</version.asm>
                 <version.jfx>8.0</version.jfx>
-                <path.jfx>${java.home}/lib/ext/jfxrt.jar</path.jfx>
+                <path.jfx>${java.home}${file.separator}lib${file.separator}ext${file.separator}jfxrt.jar</path.jfx>
             </properties>
         </profile>
         <profile>
@@ -272,7 +275,7 @@
             <properties>
                 <version.asm>4.0</version.asm>
                 <version.jfx>2.2</version.jfx>
-                <path.jfx>${java.home}/lib/jfxrt.jar</path.jfx>
+                <path.jfx>${java.home}${file.separator}lib${file.separator}jfxrt.jar</path.jfx>
             </properties>
         </profile>
     </profiles>
