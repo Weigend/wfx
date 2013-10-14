@@ -87,9 +87,10 @@ class DropStage {
         stage.setY(screenBounds.getMinY());
         stage.setWidth(screenBounds.getWidth());
         stage.setHeight(screenBounds.getHeight());
-
+        Pane pane = new Pane();
+        pane.setStyle("-fx-background-color: null");
         Scene scene = new Scene(
-                new Pane(),
+                pane,
                 screenBounds.getWidth(),
                 screenBounds.getHeight(),
                 Color.color(1, 1, 1, 0.01)
