@@ -5,17 +5,20 @@ import de.qaware.sdfx.main.Main;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
-/**
- * @goal run
- * @phase package
- * @requiresDependencyResolution compile+runtime
- */
+
+@Mojo(
+        name = "run",
+        defaultPhase = LifecyclePhase.PACKAGE,
+        requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME
+)
 public class RunMojo extends AbstractMojo {
 
-    /**
-     * @parameter expression="${project.artifactId}-application/target/bundles"
-     */
+    @Parameter(defaultValue = "${project.artifactId}-application/target/bundles")
     protected String bundleDirectory;
 
     @Override
@@ -32,8 +35,7 @@ public class RunMojo extends AbstractMojo {
             getLog().info("Set bundle directory to: " + bundleDirectory);
             System.setProperty("binary.css", "false");
             Main.main(new String[]{});
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new MojoExecutionException("Startup failed", e);
         }
     }
