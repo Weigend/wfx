@@ -59,7 +59,7 @@ public class BinaryCssMojo extends AbstractMojo {
         bssParams.setOutdir(outputDirectory);
         bssParams.setVerbose(getLog().isDebugEnabled());
         try {
-            if (outputDirectory.exists() || outputDirectory.mkdirs()) {
+            if (outputDirectory.exists() || outputDirectory.mkdir()) {
                 packager.generateBSS(bssParams);
                 updateProjectResources();
                 getLog().info("Compiling CSS successfully");
