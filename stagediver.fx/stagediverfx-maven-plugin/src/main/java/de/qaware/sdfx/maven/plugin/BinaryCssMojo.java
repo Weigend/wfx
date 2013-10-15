@@ -16,7 +16,9 @@ import org.codehaus.plexus.util.DirectoryScanner;
 import java.io.File;
 import java.util.List;
 
-
+/**
+ * This maven plugin compiles all css files into bss to use them with javafx.
+ */
 @Mojo(name = "binary-css", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, requiresProject = true)
 public class BinaryCssMojo extends AbstractMojo {
 
@@ -24,19 +26,19 @@ public class BinaryCssMojo extends AbstractMojo {
      * The output directory into which to copy the resources.
      */
     @Parameter(defaultValue = "${project.build.directory}/binary-css", required = true)
-    private File outputDirectory;
+    protected File outputDirectory;
     /**
      * The list of resources we want to transfer.
      */
 
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
-    private List<Resource> resources;
+    protected List<Resource> resources;
     /**
      * The Maven project.
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    private MavenProject project;
-    private PackagerLib packager = new PackagerLib();
+    protected MavenProject project;
+    protected PackagerLib packager = new PackagerLib();
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -54,11 +56,13 @@ public class BinaryCssMojo extends AbstractMojo {
         bssParams.setOutdir(outputDirectory);
         bssParams.setVerbose(getLog().isDebugEnabled());
         try {
-            if (!outputDirectory.exists()) {
-                outputDirectory.mkdirs();
+            if (outputDirectory.exists() || outputDirectory.mkdirs()) {
+                packager.generateBSS(bssParams);
+                updateProjectResources();
             }
-            packager.generateBSS(bssParams);
-            updateProjectResources();
+            else {
+                throw new MojoExecutionException("Can not create output directory '" + outputDirectory + "'.");
+            }
         } catch (PackagerException e) {
             throw new MojoExecutionException("Can not generate binary style sheets", e);
         }

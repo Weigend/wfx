@@ -48,7 +48,6 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
-    private BorderPane rootPane;
 
     /**
      * Initialize the application window.
@@ -63,7 +62,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
         ));
         loader.setClassLoader(classLoader);
         loader.setController(this);
-        rootPane = (BorderPane) loader.load();
+        BorderPane rootPane = (BorderPane) loader.load();
         stage.setScene(new Scene(rootPane));
         rootPane.setCenter(windowManager.getRootPane());
     }
