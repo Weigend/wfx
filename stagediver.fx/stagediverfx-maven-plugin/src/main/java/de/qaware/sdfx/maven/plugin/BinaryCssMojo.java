@@ -42,8 +42,10 @@ public class BinaryCssMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        CreateBSSParams bssParams = new CreateBSSParams();
 
+        getLog().info("Compiling CSS to BSS");
+
+        CreateBSSParams bssParams = new CreateBSSParams();
         for (Resource resource : resources) {
             DirectoryScanner scanner = new DirectoryScanner();
             scanner.setIncludes(new String[]{"**/*.css"});
@@ -51,6 +53,7 @@ public class BinaryCssMojo extends AbstractMojo {
             scanner.scan();
             for (String file : scanner.getIncludedFiles()) {
                 bssParams.addResource(new File(resource.getDirectory()), file);
+                getLog().debug("Compile CSS: " + file);
             }
         }
         bssParams.setOutdir(outputDirectory);
@@ -59,6 +62,7 @@ public class BinaryCssMojo extends AbstractMojo {
             if (outputDirectory.exists() || outputDirectory.mkdirs()) {
                 packager.generateBSS(bssParams);
                 updateProjectResources();
+                getLog().info("Compiling CSS successfully");
             }
             else {
                 throw new MojoExecutionException("Can not create output directory '" + outputDirectory + "'.");
