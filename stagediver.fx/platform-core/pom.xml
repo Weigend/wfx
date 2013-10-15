@@ -69,6 +69,20 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-scr-plugin</artifactId>
             </plugin>
+            <plugin>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>stagediverfx-maven-plugin</artifactId>
+                <version>${project.version}</version>
+                <executions>
+                    <execution>
+                        <id>bss</id>
+                        <goals>
+                            <goal>binary-css</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
         </plugins>
     </build>
 </project>
