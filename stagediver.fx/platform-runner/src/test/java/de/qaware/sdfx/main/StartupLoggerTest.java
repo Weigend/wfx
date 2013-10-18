@@ -68,7 +68,7 @@ public class StartupLoggerTest {
     public void testWarnDisabled() throws Exception {
         StartupLogger.Level.WARN.setEnabled(false);
         String msg = "warn Msg";
-        logger.warn(msg);
+        logger.warn(msg, "Abc");
         verify(output, never()).print(anyString());
     }
 
@@ -120,7 +120,7 @@ public class StartupLoggerTest {
     public void testDebugDisabled() throws Exception {
         StartupLogger.Level.DEBUG.setEnabled(false);
         String msg = "debug Msg";
-        logger.debug(msg);
+        logger.debug(msg, new RuntimeException("Test"));
         verify(output, never()).print(anyString());
     }
 
