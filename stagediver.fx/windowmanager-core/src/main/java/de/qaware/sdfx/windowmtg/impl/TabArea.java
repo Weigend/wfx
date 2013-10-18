@@ -17,6 +17,7 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.beans.value.*;
 import javafx.event.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
@@ -30,7 +31,9 @@ import java.util.Set;
 public class TabArea extends ViewArea {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TabArea.class);
+
     private final TabPane tabPane = new TabPane();
+
     /**
      * A list with all contained views.
      */
@@ -44,6 +47,8 @@ public class TabArea extends ViewArea {
     public TabArea(DragNDropManager dragNDropManager) {
         super(dragNDropManager);
         registerDragEvents();
+
+        initFocusEvents();
     }
 
     /**
@@ -55,6 +60,35 @@ public class TabArea extends ViewArea {
     public TabArea(ViewArea parent, DragNDropManager dragNDropManager) {
         super(parent, dragNDropManager);
         registerDragEvents();
+        initFocusEvents();
+    }
+
+    /**
+     * Initialize the focused events.
+     * This event handlers handles all the events which would change the current focused view.
+     */
+    private void initFocusEvents() {
+        tabPane.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old, Boolean newValue) {
+                if (newValue) {
+                    ViewStatus status = (ViewStatus) tabPane.getSelectionModel().getSelectedItem().getUserData();
+                    getDragNDropManager().getWindowManager().setFocusedView(status.getView());
+                    LOGGER.debug("Focused tab pane changed, new focused view: {}", status);
+                }
+            }
+        });
+
+        tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+            @Override
+            public void changed(ObservableValue<? extends Tab> observableValue, Tab oldTab, Tab newTab) {
+                if (newTab != null) {
+                    ViewStatus status = (ViewStatus) newTab.getUserData();
+                    getDragNDropManager().getWindowManager().setFocusedView(status.getView());
+                    LOGGER.debug("Tab selection changed, new focused view: {}", newTab.getUserData());
+                }
+            }
+        });
     }
 
     /**
