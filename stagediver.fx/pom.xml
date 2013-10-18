@@ -25,6 +25,7 @@
         <module>stagediverfx-maven-plugin</module>
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
+        <module>itests</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
