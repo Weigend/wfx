@@ -166,6 +166,16 @@ public final class ViewStatus {
         LOGGER.debug("Set the devider position to {} for position {}", space, position);
     }
 
+    @Override
+    public String toString() {
+        return "ViewStatus{" +
+                "view=" + view +
+                ", parent=" + parent +
+                ", status=" + status +
+                ", position=" + position +
+                '}';
+    }
+
     /**
      * The status of a view.
      */

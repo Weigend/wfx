@@ -163,4 +163,15 @@ public class FXMLView<C> implements View {
     public C getController() {
         return controller;
     }
+
+    @Override
+    public String toString() {
+        return "FXMLView{" +
+                "id='" + id + '\'' +
+                ", title='" + title + '\'' +
+                ", defaultPosition=" + defaultPosition +
+                ", viewAreaSize=" + viewAreaSize +
+                ", controller=" + controller +
+                '}';
+    }
 }
