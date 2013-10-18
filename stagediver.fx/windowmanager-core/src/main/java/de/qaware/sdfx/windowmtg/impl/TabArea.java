@@ -71,7 +71,7 @@ public class TabArea extends ViewArea {
         tabPane.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observableValue, Boolean old, Boolean newValue) {
-                if (newValue) {
+                if (newValue && tabPane.getSelectionModel().getSelectedItem() != null) {
                     ViewStatus status = (ViewStatus) tabPane.getSelectionModel().getSelectedItem().getUserData();
                     getDragNDropManager().getWindowManager().setFocusedView(status.getView());
                     LOGGER.debug("Focused tab pane changed, new focused view: {}", status);
