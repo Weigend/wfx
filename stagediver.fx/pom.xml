@@ -25,7 +25,6 @@
         <module>stagediverfx-maven-plugin</module>
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
-        <module>itests</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -278,6 +277,12 @@
                 <version.jfx>2.2</version.jfx>
                 <path.jfx>${java.home}${file.separator}lib${file.separator}jfxrt.jar</path.jfx>
             </properties>
+        </profile>
+        <profile>
+            <id>itests</id>
+            <modules>
+                <module>itests</module>
+            </modules>
         </profile>
     </profiles>
 </project>
