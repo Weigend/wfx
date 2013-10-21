@@ -16,6 +16,7 @@ import static org.loadui.testfx.Assertions.assertNodeExists;
 import static org.loadui.testfx.Matchers.hasLabel;
 
 public class InitialPositionUITest extends GuiTest {
+
     private WindowManager windowManager = new WindowManagerImpl();
 
     private View center = new TestView("Center", Position.CENTER);
@@ -29,18 +30,17 @@ public class InitialPositionUITest extends GuiTest {
     @Before
     public void setUp() throws Exception {
         showNodeInStage(windowManager.getRootPane());
-        windowManager.init();
-
 
         windowManager.register(center);
         windowManager.register(left);
         windowManager.register(bottom, center);
         windowManager.register(top, left);
-
+        windowManager.init();
     }
 
     @Test
     public void testPositions() throws Exception {
+        sleep(500);
         assertNodeExists(hasLabel("Center"));
     }
 
