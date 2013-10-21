@@ -13,7 +13,7 @@ The stagediver.fx platfrom provides the following features:
 - Module System
  - Container startup
  - OSGi-less startup  
- In this case the OSGi Service-Registry will be replaced by a Google Guice registry implementation.
+ In this case the OSGi Service-Registry will be replaced by a [Google Guice](https://code.google.com/p/google-guice/) registry implementation.
 - Packaging support
 - Maven Archetype for rapid project starting
 
