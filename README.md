@@ -13,7 +13,8 @@ The stagediver.fx platfrom provides the following features:
 - Module System
  - Container startup
  - OSGi-less startup  
- In this case the OSGi Service-Registry will be replaced by a [Google Guice](https://code.google.com/p/google-guice/) registry implementation.
+ In this case the OSGi Service-Registry will be replaced by a
+ [Google Guice](https://code.google.com/p/google-guice/) registry implementation.
 - Packaging support
 - Maven Archetype for rapid project starting
 
@@ -32,4 +33,21 @@ You can create a new stagediver.fx based project easy through the maven archetyp
 
 ## First start of a project
 
-After the creation of a new project through the archetype you can start your project the first time. To do this, you have to go to the project directory and compile the project with `mvn install`. Then you are able to start the platform and deploy your project. The Platform provides a runner module which handles the full startup and deployment of your project bundles. The platforms main class is `de.qaware.sdfx.main.Main`.
+After the creation of a new project through the archetype you can start your project the first time. To do this, you have to go to the project directory and compile the project with `mvn install`. Then you are able to start the platform and deploy your project.
+
+The Platform provides a runner module which handles the full startup and deployment of your project bundles. The platforms main class is `de.qaware.sdfx.main.Main`.
+
+## Maven Plugin
+
+The stagediverfx-maven-plugin provides currently two goals:
+
+- binary-css
+- run
+
+### Goal "binary-css"
+
+This maven goal binds to the `process-resources` phase and compiles all cascading stylesheets (CSS) to binary style sheets (BSS). See <http://docs.oracle.com/javafx/2/deployment/javafx_ant_task_reference.htm#CIAEFCGA> for more information about the binary stylesheets.
+
+### Goal "run"
+
+The goal "run" is a wrapper to start your project within the OSGi Container.
