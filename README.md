@@ -1,4 +1,31 @@
-stagediver.fx
-=============
+# stagediver.fx - A lightweight RCP for JavaFX
+stagediver.fx is a lightweight Rich Client Platfrom for JavaFX. It is based on [OSGi](http://www.osgi.org) and uses [Apache Felix](http://felix.apache.org/).
 
-JavaFX RCP
+## Introduction
+
+The stagediver.fx platfrom provides the following features:
+
+- Window Management with
+ - Free layouting at runtime by the end user
+ - Multiple sindow support
+ - Editor area
+ - Minimal impact to existing JavaFX-based components
+- Module System
+ - Container startup
+ - OSGi-less startup  
+ In this case the OSGi Service-Registry will be replaced by a Google Guice registry implementation.
+- Packaging support
+- Maven Archetype for rapid project starting
+
+## Create a new Project with mvn archetype:generate
+
+You can create a new stagediver.fx based project easy through the maven archetype. Because stagediver.fx is currently not integrated into common Maven repositories like Maven-Central you have first to clone and install it into the local repository. After that you can create a new project by calling:
+
+	mvn archetype:generate                                    \
+	  -DarchetypeGroupId=de.qaware.stagediver.fx              \
+	  -DarchetypeArtifactId=stagediverfx-archetype-quickstart \
+	  -DarchetypeVersion=0.1-SNAPSHOT  			   			  \
+	  -DgroupId=YOUR_GROUPID                       		   	  \
+	  -DartifactId=YOUR_ARTIFACTID			   			      \
+	  -Dversion=1.0-SNAPSHOT				          		  \
+	  -DinteractiveMode=false 
