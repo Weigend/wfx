@@ -10,7 +10,7 @@
     <artifactId>itests-windowmanager</artifactId>
     <packaging>jar</packaging>
 
-    <name>itests-windowmanager</name>
+    <name>stagediver.fx - Window Manager UI Integration Tests </name>
 
 
     <dependencies>
