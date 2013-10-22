@@ -20,7 +20,7 @@ public class ApplicationActivator implements BundleActivator {
 
     public void start(final BundleContext context) throws Exception {
 
-        Platform.runLater(new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -40,11 +40,12 @@ public class ApplicationActivator implements BundleActivator {
 
                     notificationService.sendNotification(context.getBundle(), "Finished loading Example Application", 1);
                     notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        }).start();
     }
 
     @Override
