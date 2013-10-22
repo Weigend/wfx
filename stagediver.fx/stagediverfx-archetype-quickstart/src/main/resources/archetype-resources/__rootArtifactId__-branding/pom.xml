@@ -27,6 +27,18 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>stagediverfx-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>Compile CSS to BSS</id>
+                        <goals>
+                            <goal>binary-css</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>
