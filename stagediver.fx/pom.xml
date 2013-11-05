@@ -13,6 +13,32 @@
         <name>QAware GmbH</name>
         <url>http://www.qaware.de/</url>
     </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:qaware/stagediver.fx.git</connection>
+        <developerConnection>scm:git:git@github.com:qaware/stagediver.fx.git</developerConnection>
+        <url>git@github.com:qaware/stagediver.fx.git</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>chr-fritz</id>
+            <name>Christian Fritz</name>
+            <email>christian dot fritz at qaware dot de</email>
+            <timezone>Europe/Berlin</timezone>
+            <organization>QAware GmbH</organization>
+            <organizationUrl>http://www.qaware.de</organizationUrl>
+        </developer>
+    </developers>
+
     <modules>
         <module>platform-runner</module>
         <module>platform-api</module>
@@ -26,6 +52,7 @@
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
     </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.version>7</project.build.version>
@@ -188,6 +215,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>
