@@ -47,14 +47,7 @@ public class BinaryCssMojo extends AbstractMojo {
 
         CreateBSSParams bssParams = new CreateBSSParams();
         for (Resource resource : resources) {
-            DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setIncludes(new String[]{"**/*.css"});
-            scanner.setBasedir(resource.getDirectory());
-            scanner.scan();
-            for (String file : scanner.getIncludedFiles()) {
-                bssParams.addResource(new File(resource.getDirectory()), file);
-                getLog().debug("Compile CSS: " + file);
-            }
+            addCssForResource(bssParams, resource);
         }
 
         removeOldBssFiles();
@@ -76,6 +69,17 @@ public class BinaryCssMojo extends AbstractMojo {
         }
     }
 
+    private void addCssForResource(CreateBSSParams bssParams, Resource resource) {
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"**/*.css"});
+        scanner.setBasedir(resource.getDirectory());
+        scanner.scan();
+        for (String file : scanner.getIncludedFiles()) {
+            bssParams.addResource(new File(resource.getDirectory()), file);
+            getLog().debug("Compile CSS: " + file);
+        }
+    }
+
     /**
      * Remove all old binary style sheets if there are any.
      */
@@ -89,7 +93,9 @@ public class BinaryCssMojo extends AbstractMojo {
         scanner.setBasedir(outputDirectory);
         scanner.scan();
         for (String file : scanner.getIncludedFiles()) {
-            new File(file).delete();
+            if (new File(file).delete()) {
+                getLog().error("Can not delete binary style sheet file: " + file);
+            }
         }
     }
 
