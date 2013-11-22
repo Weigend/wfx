@@ -56,6 +56,9 @@ public class BinaryCssMojo extends AbstractMojo {
                 getLog().debug("Compile CSS: " + file);
             }
         }
+
+        removeOldBssFiles();
+
         bssParams.setOutdir(outputDirectory);
         bssParams.setVerbose(getLog().isDebugEnabled());
         try {
@@ -67,10 +70,29 @@ public class BinaryCssMojo extends AbstractMojo {
             else {
                 throw new MojoExecutionException("Can not create output directory '" + outputDirectory + "'.");
             }
-        } catch (PackagerException e) {
+        }
+        catch (PackagerException e) {
             throw new MojoExecutionException("Can not generate binary style sheets", e);
         }
     }
+
+    /**
+     * Remove all old binary style sheets if there are any.
+     */
+    private void removeOldBssFiles() {
+        if (!outputDirectory.exists()) {
+            return;
+        }
+        getLog().debug("Remove old bss files for recompiling");
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"**/*.bss"});
+        scanner.setBasedir(outputDirectory);
+        scanner.scan();
+        for (String file : scanner.getIncludedFiles()) {
+            new File(file).delete();
+        }
+    }
+
 
     /**
      * Update the Maven project resources.
