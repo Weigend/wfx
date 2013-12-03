@@ -15,27 +15,34 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import java.io.IOException;
+import java.net.URL;
 
 @Component(immediate = true)
 @Service(de.qaware.sdfx.windowmtg.api.ApplicationWindow.class)
 public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.ApplicationWindow {
     private static Lookup lookup = new Lookup(ApplicationWindow.class);
+
     @FXML
     private MenuBar menuBar;
+
     @FXML
     private ToolBar toolbar;
+
     @FXML
     private HBox statusBar;
+
     @FXML
     private BorderPane root;
+
     private WindowManager windowManager;
+
     private Stage stage;
+
     private String defaultTitle;
 
     public void init() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource(
-                "/${packageInPathFormat}/application/applicationWindow.fxml"
-        ));
+        URL location = getClass().getClassLoader().getResource("${packageInPathFormat}/application/applicationWindow.fxml");
+        FXMLLoader loader = new FXMLLoader(location);
         loader.setClassLoader(getClass().getClassLoader());
         loader.setController(this);
         Parent parent = (Parent) loader.load();
@@ -89,13 +96,13 @@ public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.Applicati
     }
 
     @Override
-    public void setTitle(String title) {
-        stage.setTitle(title);
+    public String getTitle() {
+        return stage.getTitle();
     }
 
     @Override
-    public String getTitle() {
-        return stage.getTitle();
+    public void setTitle(String title) {
+        stage.setTitle(title);
     }
 
     @Override
