@@ -6,13 +6,46 @@
 
     <groupId>de.qaware.stagediver.fx</groupId>
     <artifactId>stagediver.fx</artifactId>
-    <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
     <name>stagediver.fx</name>
+    <description>stagediver.fx is a rich-client-platform for JavaFX.</description>
+    <packaging>pom</packaging>
+
     <organization>
         <name>QAware GmbH</name>
         <url>http://www.qaware.de/</url>
     </organization>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <connection>scm:git:git@github.com:qaware/stagediver.fx.git</connection>
+        <developerConnection>scm:git:git@github.com:qaware/stagediver.fx.git</developerConnection>
+        <url>https://github.com/qaware/stagediver.fx</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/qaware/stagediver.fx/issues</url>
+    </issueManagement>
+
+    <developers>
+        <developer>
+            <id>chr-fritz</id>
+            <name>Christian Fritz</name>
+            <email>christian dot fritz at qaware dot de</email>
+            <timezone>Europe/Berlin</timezone>
+            <organization>QAware GmbH</organization>
+            <organizationUrl>http://www.qaware.de</organizationUrl>
+        </developer>
+    </developers>
+
     <modules>
         <module>platform-runner</module>
         <module>platform-api</module>
@@ -26,10 +59,11 @@
         <module>example-gui</module>
         <module>platform-full</module>
     </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.version>7</project.build.version>
-        <guava.version>14.0.1</guava.version>
+        <guava.version>15.0</guava.version>
         <osgi.version>4.3.1</osgi.version>
         <felix.version>4.2.1</felix.version>
         <version.asm/>
@@ -122,12 +156,12 @@
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
-                <version>1.7.0</version>
+                <version>1.7.1</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
-                <version>1.7.0</version>
+                <version>1.7.1</version>
             </dependency>
 
             <!-- Google Guava -->
@@ -188,6 +222,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>
@@ -273,7 +308,7 @@
                 <jdk>[1.7,1.8)</jdk>
             </activation>
             <properties>
-                <version.asm>4.0</version.asm>
+                <version.asm>4.1</version.asm>
                 <version.jfx>2.2</version.jfx>
                 <path.jfx>${java.home}${file.separator}lib${file.separator}jfxrt.jar</path.jfx>
             </properties>

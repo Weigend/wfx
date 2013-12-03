@@ -47,15 +47,11 @@ public class BinaryCssMojo extends AbstractMojo {
 
         CreateBSSParams bssParams = new CreateBSSParams();
         for (Resource resource : resources) {
-            DirectoryScanner scanner = new DirectoryScanner();
-            scanner.setIncludes(new String[]{"**/*.css"});
-            scanner.setBasedir(resource.getDirectory());
-            scanner.scan();
-            for (String file : scanner.getIncludedFiles()) {
-                bssParams.addResource(new File(resource.getDirectory()), file);
-                getLog().debug("Compile CSS: " + file);
-            }
+            addCssForResource(bssParams, resource);
         }
+
+        removeOldBssFiles();
+
         bssParams.setOutdir(outputDirectory);
         bssParams.setVerbose(getLog().isDebugEnabled());
         try {
@@ -67,10 +63,42 @@ public class BinaryCssMojo extends AbstractMojo {
             else {
                 throw new MojoExecutionException("Can not create output directory '" + outputDirectory + "'.");
             }
-        } catch (PackagerException e) {
+        }
+        catch (PackagerException e) {
             throw new MojoExecutionException("Can not generate binary style sheets", e);
         }
     }
+
+    private void addCssForResource(CreateBSSParams bssParams, Resource resource) {
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"**/*.css"});
+        scanner.setBasedir(resource.getDirectory());
+        scanner.scan();
+        for (String file : scanner.getIncludedFiles()) {
+            bssParams.addResource(new File(resource.getDirectory()), file);
+            getLog().debug("Compile CSS: " + file);
+        }
+    }
+
+    /**
+     * Remove all old binary style sheets if there are any.
+     */
+    private void removeOldBssFiles() {
+        if (!outputDirectory.exists()) {
+            return;
+        }
+        getLog().debug("Remove old bss files for recompiling");
+        DirectoryScanner scanner = new DirectoryScanner();
+        scanner.setIncludes(new String[]{"**/*.bss"});
+        scanner.setBasedir(outputDirectory);
+        scanner.scan();
+        for (String file : scanner.getIncludedFiles()) {
+            if (new File(file).delete()) {
+                getLog().error("Can not delete binary style sheet file: " + file);
+            }
+        }
+    }
+
 
     /**
      * Update the Maven project resources.
