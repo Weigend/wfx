@@ -23,10 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Processor for auto deployment.
@@ -37,20 +34,29 @@ public class AutoProcessor {
      * The property name used for the bundle directory.
      */
     public static final String AUTO_DEPLOY_DIR_PROPERY = "stagediver.auto.deploy.dir";
+
     /**
      * The default name used for the bundle directory.
      */
     public static final String AUTO_DEPLOY_DIR_VALUE = "bundles";
+
     /**
      * The property name used to specify auto-deploy start level.
      */
     public static final String AUTO_DEPLOY_STARTLEVEL_PROPERY = "stagediver.auto.deploy.startlevel";
+
     public static final String AUTO_DEPLOY_BUNDLE_STARTLEVEL = "stagediver.auto.deploy.startlevel.bundle";
+
     private static StartupLogger logger = new StartupLogger(AutoProcessor.class);
+
     private BundleContext context;
+
     private Map<String, String> configProps;
+
     private List<Bundle> startBundleList = new ArrayList<>();
+
     private Map<String, Integer> bundelStartLevels = new HashMap<>();
+
     private int frameworkStartLevel;
 
     /**
@@ -79,7 +85,7 @@ public class AutoProcessor {
         startBundles();
     }
 
-    protected void initStartLevels() {
+    public void initStartLevels() {
         if (configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL) != null) {
             String[] bundles = configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL).split(" ");
             for (String s : bundles) {
@@ -111,11 +117,6 @@ public class AutoProcessor {
     }
 
     protected void loadBundles() throws IOException {
-        Map<String, Bundle> installedBundleMap = new HashMap<>();
-        for (Bundle b : context.getBundles()) {
-            installedBundleMap.put(b.getLocation(), b);
-        }
-
         // Get the auto deploy directory.
         String autoDir = configProps.get(AUTO_DEPLOY_DIR_PROPERY);
         autoDir = (autoDir == null) ? AUTO_DEPLOY_DIR_VALUE : autoDir;
@@ -135,6 +136,16 @@ public class AutoProcessor {
                 return FileVisitResult.CONTINUE;
             }
         });
+
+        installBundles(jarList);
+    }
+
+    public void installBundles(Collection<File> jarList) {
+        Map<String, Bundle> installedBundleMap = new HashMap<>();
+        for (Bundle b : context.getBundles()) {
+            installedBundleMap.put(b.getLocation(), b);
+        }
+
         // Install bundle JAR files and remember the bundle objects.
         for (File jarFile : jarList) {
             // Look up the bundle by location, removing it from
@@ -209,7 +220,7 @@ public class AutoProcessor {
         }
     }
 
-    protected void startBundles() {
+    public void startBundles() {
         logger.info("Start bundles");
         for (Bundle b : startBundleList) {
             if (b.getState() != Bundle.ACTIVE) {

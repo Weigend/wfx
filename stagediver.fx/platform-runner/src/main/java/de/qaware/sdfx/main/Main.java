@@ -238,7 +238,7 @@ public class Main {
         copySystemProperties();
     }
 
-    protected FrameworkFactory getFrameworkFactory() throws Exception {
+    public FrameworkFactory getFrameworkFactory() throws Exception {
         ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
         return loader.iterator().next();
     }
