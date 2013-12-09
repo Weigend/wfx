@@ -14,12 +14,22 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.sonatype.aether.RepositorySystem;
+import org.sonatype.aether.RepositorySystemSession;
+import org.sonatype.aether.collection.CollectRequest;
+import org.sonatype.aether.collection.DependencyCollectionException;
+import org.sonatype.aether.graph.Dependency;
+import org.sonatype.aether.graph.DependencyNode;
+import org.sonatype.aether.repository.RemoteRepository;
+import org.sonatype.aether.resolution.ArtifactRequest;
+import org.sonatype.aether.resolution.DependencyRequest;
+import org.sonatype.aether.resolution.DependencyResolutionException;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
+import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 
 
 @Mojo(
@@ -69,15 +79,30 @@ public class RunMojo extends AbstractMojo {
 
     private Main defaultRunner = new Main();
 
-    private AutoProcessor bundleProcessor;
+    /**
+     * The entry point to Aether, i.e. the component doing all the work.
+     */
+    @Component
+    private RepositorySystem repoSystem;
+
+    /**
+     * The current repository/network configuration of Maven.
+     */
+    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
+    private RepositorySystemSession repoSession;
+
+    /**
+     * The project's remote repositories to use for the resolution.
+     */
+    @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
+    private List<RemoteRepository> remoteRepos;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-
         try {
             System.setProperty("binary.css", "false");
             initFramework();
-            bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
+            AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
             bundleProcessor.initStartLevels();
             bundleProcessor.installBundles(getBundles());
             runFramework();
@@ -108,17 +133,23 @@ public class RunMojo extends AbstractMojo {
         initShutdownHook();
     }
 
-    public Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException {
+    public Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException, MojoExecutionException {
         Set<File> bundles = new HashSet<>();
-        String projectBundle = project.getBuild().getDirectory() + File.separator +
-                project.getBuild().getFinalName() + ".jar";
-
+        String projectBundle = project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar";
 
         bundles.add(new File(projectBundle));
 
-        for (Object obj : project.getRuntimeArtifacts()) {
+        for (Object obj : project.getArtifacts()) {
             Artifact dependency = (Artifact) obj;
-            bundles.add(dependency.getFile());
+            if (dependency.getFile().getName().endsWith(".jar")) {
+                bundles.add(dependency.getFile());
+            }
+        }
+
+        for (File f : getPlatformArtifacts()) {
+            if (f.getName().endsWith(".jar")) {
+                bundles.add(f);
+            }
         }
         return bundles;
     }
@@ -148,5 +179,32 @@ public class RunMojo extends AbstractMojo {
                 }
             }
         });
+    }
+
+    private List<File> getPlatformArtifacts() throws MojoExecutionException {
+        try {
+            Properties props = new Properties();
+            props.load(getClass().getResourceAsStream("/plugin.properties"));
+
+            DefaultArtifact artifact = new DefaultArtifact(props.getProperty("platform.coordinate"));
+            ArtifactRequest request = new ArtifactRequest();
+            request.setArtifact(artifact);
+            request.setRepositories(remoteRepos);
+
+            CollectRequest collectRequest = new CollectRequest();
+            collectRequest.setRoot(new Dependency(artifact, "runtime"));
+            collectRequest.setRepositories(remoteRepos);
+            DependencyNode node = repoSystem.collectDependencies(repoSession, collectRequest).getRoot();
+
+            DependencyRequest dependencyRequest = new DependencyRequest(node, null);
+
+            repoSystem.resolveDependencies(repoSession, dependencyRequest);
+
+            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
+            node.accept(nlg);
+            return nlg.getFiles();
+        } catch (DependencyCollectionException | DependencyResolutionException | IOException e) {
+            throw new MojoExecutionException(e.getMessage(), e);
+        }
     }
 }
