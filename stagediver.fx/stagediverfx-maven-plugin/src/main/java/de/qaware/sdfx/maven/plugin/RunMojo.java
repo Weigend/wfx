@@ -28,16 +28,10 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionException;
-import org.sonatype.aether.graph.Dependency;
-import org.sonatype.aether.graph.DependencyNode;
 import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.ArtifactRequest;
-import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
-import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
 import java.io.IOException;
@@ -110,6 +104,8 @@ public class RunMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
     protected List<RemoteRepository> remoteRepos;
 
+    protected ArtifactResolver artifactResolver;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         try {
@@ -147,7 +143,7 @@ public class RunMojo extends AbstractMojo {
         initShutdownHook();
     }
 
-    public Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException, MojoExecutionException {
+    protected Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException, MojoExecutionException, IOException, DependencyResolutionException, DependencyCollectionException {
         Set<File> bundles = new HashSet<>();
         String projectBundle = project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + BUNDLE_EXTESION;
 
@@ -160,15 +156,23 @@ public class RunMojo extends AbstractMojo {
             }
         }
 
-        for (File f : getPlatformArtifacts()) {
+        addPlatformBundles(bundles);
+        return bundles;
+    }
+
+    private void addPlatformBundles(Set<File> bundles) throws IOException, DependencyResolutionException, DependencyCollectionException {
+        ArtifactResolver resolver = getArtifactResolver();
+        resolver.addUnresolvedArtifact(getPlatformArtifact());
+        resolver.resolveArtifacts();
+
+        for (File f : resolver.getResolvedFiles()) {
             if (f.getName().endsWith(BUNDLE_EXTESION)) {
                 bundles.add(f);
             }
         }
-        return bundles;
     }
 
-    private Map<String, String> mergeProperties() {
+    protected Map<String, String> mergeProperties() {
         if (configProps == null) {
             return defaultProps;
         }
@@ -195,30 +199,16 @@ public class RunMojo extends AbstractMojo {
         });
     }
 
-    private List<File> getPlatformArtifacts() throws MojoExecutionException {
-        try {
-            Properties props = new Properties();
-            props.load(getClass().getResourceAsStream("/plugin.properties"));
+    protected org.sonatype.aether.artifact.Artifact getPlatformArtifact() throws IOException {
+        Properties props = new Properties();
+        props.load(getClass().getResourceAsStream("/plugin.properties"));
+        return new DefaultArtifact(props.getProperty("platform.coordinate"));
+    }
 
-            DefaultArtifact artifact = new DefaultArtifact(props.getProperty("platform.coordinate"));
-            ArtifactRequest request = new ArtifactRequest();
-            request.setArtifact(artifact);
-            request.setRepositories(remoteRepos);
-
-            CollectRequest collectRequest = new CollectRequest();
-            collectRequest.setRoot(new Dependency(artifact, "runtime"));
-            collectRequest.setRepositories(remoteRepos);
-            DependencyNode node = repoSystem.collectDependencies(repoSession, collectRequest).getRoot();
-
-            DependencyRequest dependencyRequest = new DependencyRequest(node, null);
-
-            repoSystem.resolveDependencies(repoSession, dependencyRequest);
-
-            PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
-            node.accept(nlg);
-            return nlg.getFiles();
-        } catch (DependencyCollectionException | DependencyResolutionException | IOException e) {
-            throw new MojoExecutionException(e.getMessage(), e);
+    protected ArtifactResolver getArtifactResolver() {
+        if (artifactResolver == null) {
+            artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
         }
+        return artifactResolver;
     }
 }
