@@ -52,7 +52,7 @@ import java.util.*;
 )
 public class RunMojo extends AbstractMojo {
 
-    protected static Map<String, String> defaultProps = new HashMap<String, String>() {
+    protected static final Map<String, String> defaultProps = new HashMap<String, String>() {
         {
             put("org.osgi.framework.system.packages.extra", "javafx.animation, javafx.application, javafx.beans, " +
                     "javafx.beans.binding, javafx.beans.property, javafx.beans.property.adapter, javafx.beans.value," +
@@ -77,6 +77,7 @@ public class RunMojo extends AbstractMojo {
                     ".stagediver.fx.windowmanager-api@1");
         }
     };
+    private static final String BUNDLE_EXTESION = ".jar";
 
     @Parameter(alias = "osgiProperties")
     protected Map<String, String> configProps;
@@ -87,27 +88,27 @@ public class RunMojo extends AbstractMojo {
     @Component
     protected MavenProject project;
 
-    private Framework framework;
+    protected Framework framework;
 
-    private Main defaultRunner = new Main();
+    protected Main defaultRunner = new Main();
 
     /**
      * The entry point to Aether, i.e. the component doing all the work.
      */
     @Component
-    private RepositorySystem repoSystem;
+    protected RepositorySystem repoSystem;
 
     /**
      * The current repository/network configuration of Maven.
      */
     @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
-    private RepositorySystemSession repoSession;
+    protected RepositorySystemSession repoSession;
 
     /**
      * The project's remote repositories to use for the resolution.
      */
     @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
-    private List<RemoteRepository> remoteRepos;
+    protected List<RemoteRepository> remoteRepos;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -148,19 +149,19 @@ public class RunMojo extends AbstractMojo {
 
     public Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException, MojoExecutionException {
         Set<File> bundles = new HashSet<>();
-        String projectBundle = project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + ".jar";
+        String projectBundle = project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + BUNDLE_EXTESION;
 
         bundles.add(new File(projectBundle));
 
         for (Object obj : project.getArtifacts()) {
             Artifact dependency = (Artifact) obj;
-            if (dependency.getFile().getName().endsWith(".jar")) {
+            if (dependency.getFile().getName().endsWith(BUNDLE_EXTESION)) {
                 bundles.add(dependency.getFile());
             }
         }
 
         for (File f : getPlatformArtifacts()) {
-            if (f.getName().endsWith(".jar")) {
+            if (f.getName().endsWith(BUNDLE_EXTESION)) {
                 bundles.add(f);
             }
         }
