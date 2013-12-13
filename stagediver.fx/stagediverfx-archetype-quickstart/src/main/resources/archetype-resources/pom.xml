@@ -152,9 +152,6 @@
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>
                 <version>${version.stagediverfx}</version>
-                <configuration>
-                    <bundleDirectory>\${artifactId}-application/target/bundles</bundleDirectory>
-                </configuration>
             </plugin>
         </plugins>
     </build>
