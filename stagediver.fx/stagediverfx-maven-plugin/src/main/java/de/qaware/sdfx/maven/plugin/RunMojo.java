@@ -1,3 +1,15 @@
+// ______________________________________________________________________________
+//          Project: stagediver.fx
+// ______________________________________________________________________________
+//
+//       created by: christian.fritz
+//    creation date: 13.12.13 12:56
+//      description: Run the current project within the osgi container
+// ______________________________________________________________________________
+//
+//        Copyright: (c) QAware GmbH, all rights reserved
+// ______________________________________________________________________________
+
 package de.qaware.sdfx.maven.plugin;
 
 import de.qaware.sdfx.main.AutoProcessor;
@@ -105,6 +117,7 @@ public class RunMojo extends AbstractMojo {
             AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
             bundleProcessor.initStartLevels();
             bundleProcessor.installBundles(getBundles());
+            bundleProcessor.startBundles();
             runFramework();
         } catch (Exception e) {
             throw new MojoExecutionException("Startup failed", e);

@@ -65,6 +65,11 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>stagediverfx-maven-plugin</artifactId>
+                <version>${project.parent.version}</version>
+            </plugin>
         </plugins>
     </build>
 </project>
