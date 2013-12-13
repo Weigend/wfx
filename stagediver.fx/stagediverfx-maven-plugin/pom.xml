@@ -72,13 +72,6 @@
         </dependency>
         <dependency>
             <groupId>com.javafx</groupId>
-            <artifactId>javafx</artifactId>
-            <version>${version.jfx}</version>
-            <systemPath>${path.jfx}</systemPath>
-            <scope>system</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.javafx</groupId>
             <artifactId>antjavafx</artifactId>
             <version>${version.jfx}</version>
             <scope>system</scope>
