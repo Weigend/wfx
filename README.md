@@ -50,4 +50,6 @@ This maven goal binds to the `process-resources` phase and compiles all cascadin
 
 ### Goal "run"
 
-The goal "run" is a wrapper to start your project within the OSGi Container.
+The goal "run" is a wrapper to start a single module or the full project within the OSGi Container. Which part of the full application is started depends on the selected module from where you start the plugin. It always starts current selected module (current working directory) inclusive all dependencies and the dependencies of the stagediver.fx platform module ([de.qaware.stagediver.fx:platform-full](stagediver.fx/platform-full/pom.xml)).
+
+**Note**: Please note that the run goal is currently not compatible with Maven 3.1.x.
