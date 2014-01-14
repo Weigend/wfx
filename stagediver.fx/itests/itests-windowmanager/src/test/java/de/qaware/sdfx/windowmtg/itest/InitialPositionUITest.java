@@ -5,15 +5,17 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
-
-import javafx.scene.*;
-import javafx.scene.control.*;
+import org.loadui.testfx.controls.impl.NodeExistsMatcher;
 
 import static org.loadui.testfx.Assertions.assertNodeExists;
-import static org.loadui.testfx.Matchers.hasLabel;
+import static org.loadui.testfx.Assertions.verifyThat;
+import static org.loadui.testfx.controls.Commons.hasText;
+import static org.loadui.testfx.controls.Commons.nodeLabeledBy;
 
 public class InitialPositionUITest extends GuiTest {
 
@@ -29,7 +31,6 @@ public class InitialPositionUITest extends GuiTest {
 
     @Before
     public void setUp() throws Exception {
-        showNodeInStage(windowManager.getRootPane());
 
         windowManager.register(center);
         windowManager.register(left);
@@ -41,7 +42,12 @@ public class InitialPositionUITest extends GuiTest {
     @Test
     public void testPositions() throws Exception {
         sleep(500);
-        assertNodeExists(hasLabel("Center"));
+        assertNodeExists(hasText("Center"));
+    }
+
+    @Override
+    protected Parent getRootNode() {
+        return windowManager.getRootPane();
     }
 
     private class TestView implements View {
