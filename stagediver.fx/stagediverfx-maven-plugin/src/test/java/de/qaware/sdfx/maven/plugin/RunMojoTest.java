@@ -14,6 +14,7 @@ package de.qaware.sdfx.maven.plugin;
 
 import de.qaware.sdfx.main.Main;
 import org.apache.felix.framework.FrameworkFactory;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
@@ -27,7 +28,10 @@ import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 
+import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -62,7 +66,7 @@ public class RunMojoTest {
         mojo.defaultRunner = mock(Main.class);
         mojo.framework = framework;
         mojo.artifactResolver = resolver;
-        mojo.project=project;
+        mojo.project = project;
 
         when(project.getBuild()).thenReturn(projectBuild);
         when(projectBuild.getOutputDirectory()).thenReturn("outputDir");
@@ -76,6 +80,11 @@ public class RunMojoTest {
         when(framework.waitForStop(0)).thenReturn(
                 new FrameworkEvent(FrameworkEvent.STOPPED_UPDATE, mock(Bundle.class), null),
                 new FrameworkEvent(FrameworkEvent.STOPPED, mock(Bundle.class), null));
+        Set<File> resolvedFiles = new HashSet<>();
+        resolvedFiles.add(new File("test.jar"));
+        resolvedFiles.add(new File("test.war"));
+
+        when(resolver.getResolvedFiles()).thenReturn(resolvedFiles);
     }
 
 
@@ -114,4 +123,21 @@ public class RunMojoTest {
         verify(framework, times(2)).start();
         verify(framework, times(2)).waitForStop(0);
     }
+
+    @Test
+    public void testGetBundles() throws Exception {
+
+        Set<Artifact> artifacts = new HashSet<>();
+        Artifact a1 = mock(Artifact.class);
+        when(a1.getFile()).thenReturn(new File("test.jar"));
+        Artifact a2 = mock(Artifact.class);
+        when(a2.getFile()).thenReturn(new File("test.war"));
+        artifacts.add(a1);
+        artifacts.add(a2);
+        when(project.getArtifacts()).thenReturn(artifacts);
+
+        Set<File> actual = mojo.getBundles();
+        assertThat(actual.size(), is(2));
+    }
+
 }
