@@ -63,7 +63,7 @@
                     <version>0.6.3.201306030806</version>
                     <configuration>
                         <destFile>${sonar.jacoco.itReportPath}</destFile>
-                        <dataFile>${sonar.jacoco.itReportPath}</dataFile>
+                        <!--<dataFile>${sonar.jacoco.itReportPath}</dataFile>-->
                         <propertyName>jacoco.agent.argLine</propertyName>
                         <append>true</append>
                     </configuration>
