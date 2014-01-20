@@ -5,17 +5,15 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
-import javafx.scene.Parent;
-import javafx.scene.control.Label;
 import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.controls.impl.NodeExistsMatcher;
+
+import javafx.scene.*;
+import javafx.scene.control.*;
 
 import static org.loadui.testfx.Assertions.assertNodeExists;
-import static org.loadui.testfx.Assertions.verifyThat;
 import static org.loadui.testfx.controls.Commons.hasText;
-import static org.loadui.testfx.controls.Commons.nodeLabeledBy;
 
 public class InitialPositionUITest extends GuiTest {
 
