@@ -5,15 +5,14 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
-import javafx.scene.*;
-import javafx.scene.control.*;
-
-import static org.loadui.testfx.Assertions.assertNodeExists;
-import static org.loadui.testfx.controls.Commons.hasText;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class InitialPositionUITest extends GuiTest {
 
@@ -40,7 +39,17 @@ public class InitialPositionUITest extends GuiTest {
     @Test
     public void testPositions() throws Exception {
         sleep(500);
-        assertNodeExists(hasText("Center"));
+        Parent center = find("#center");
+        assertThat(center, notNullValue());
+        Parent p = getLogicalParent(getLogicalParent(center));
+        assertThat(find("#bottom", p), notNullValue());
+        p=getLogicalParent(p);
+        assertThat(find("#top", p), notNullValue());
+        assertThat(find("#left", p), notNullValue());
+    }
+
+    private Parent getLogicalParent(Parent parent) {
+        return parent.getParent().getParent().getParent();
     }
 
     @Override
@@ -81,7 +90,9 @@ public class InitialPositionUITest extends GuiTest {
 
         @Override
         public Parent getRootNode() {
-            return new Label("View ID: " + id);
+            Label l = new Label("View ID: " + id);
+            l.setId(id.toLowerCase());
+            return l;
         }
 
         @Override
