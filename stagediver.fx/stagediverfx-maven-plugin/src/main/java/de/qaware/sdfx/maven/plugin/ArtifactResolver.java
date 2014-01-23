@@ -104,8 +104,8 @@ public class ArtifactResolver {
      *
      * @param artifact The unresolved artifact.
      * @return A list with all files of the resolved artifact.
-     * @throws DependencyResolutionException
-     * @throws DependencyCollectionException
+     * @throws DependencyResolutionException In case of the dependencies can not be resolved.
+     * @throws DependencyCollectionException In case of the dependencies can not be collected.
      */
     private List<File> resolveArtifact(Artifact artifact) throws DependencyResolutionException, DependencyCollectionException {
         ArtifactRequest request = new ArtifactRequest();
