@@ -55,20 +55,43 @@ public class ArtifactResolver {
 
     private Set<Artifact> artifactsToResolve = new HashSet<>();
 
+    /**
+     * Initiate a new artifact resolver.
+     *
+     * @param repoSystem  The used repository system.
+     * @param repoSession Use this session for resolving.
+     * @param remoteRepos Search in this repositories for artifacts.
+     */
     public ArtifactResolver(RepositorySystem repoSystem, RepositorySystemSession repoSession, List<RemoteRepository> remoteRepos) {
         this.repoSystem = repoSystem;
         this.repoSession = repoSession;
         this.remoteRepos = remoteRepos;
     }
 
+    /**
+     * Add a artifact that should be resolved.
+     *
+     * @param artifact The unresolved artifact
+     */
     public void addUnresolvedArtifact(Artifact artifact) {
         artifactsToResolve.add(artifact);
     }
 
+    /**
+     * Get a list with all files that are resolved.
+     *
+     * @return The resolved file set.
+     */
     public Set<File> getResolvedFiles() {
         return Collections.unmodifiableSet(artifacts);
     }
 
+    /**
+     * Resolve the added unresolved artifacts.
+     *
+     * @throws DependencyResolutionException
+     * @throws DependencyCollectionException
+     */
     public void resolveArtifacts() throws DependencyResolutionException, DependencyCollectionException {
         for (Artifact artifact : artifactsToResolve) {
             artifacts.addAll(resolveArtifact(artifact));
@@ -76,6 +99,14 @@ public class ArtifactResolver {
         }
     }
 
+    /**
+     * Resolve a artifact.
+     *
+     * @param artifact The unresolved artifact.
+     * @return A list with all files of the resolved artifact.
+     * @throws DependencyResolutionException
+     * @throws DependencyCollectionException
+     */
     private List<File> resolveArtifact(Artifact artifact) throws DependencyResolutionException, DependencyCollectionException {
         ArtifactRequest request = new ArtifactRequest();
         request.setArtifact(artifact);
