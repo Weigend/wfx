@@ -13,16 +13,20 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Control;
+import javafx.scene.control.TabPane;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorInput;
+import javafx.scene.input.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.event.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.effect.*;
-import javafx.scene.input.*;
-import javafx.scene.paint.*;
-import javafx.stage.*;
 
 /**
  * Handles the full drag&drop gestures for the window and view management.
@@ -104,6 +108,20 @@ public class DragNDropManagerImpl implements DragNDropManager {
     @Override
     public void onDragDetected(MouseEvent event) {
         if (!(event.getSource() instanceof TabPane)) {
+            return;
+        }
+
+        boolean withinHeader = false;
+        Node target = (Node) event.getTarget();
+        while (target != event.getSource()) {
+            LOGGER.debug("Target<{}>: {}", target.getClass().getSimpleName(), target);
+            if ("TabHeaderArea".equals(target.getClass().getSimpleName())) {
+                withinHeader = true;
+                break;
+            }
+            target = target.getParent();
+        }
+        if (!withinHeader) {
             return;
         }
         LOGGER.debug("Handle drag detected: {}", event);
