@@ -46,7 +46,7 @@ import java.util.*;
 )
 public class RunMojo extends AbstractMojo {
 
-    protected static final Map<String, String> defaultProps = new HashMap<String, String>() {
+    protected static final Map<String, String> DEFAULT_PROPS = new HashMap<String, String>() {
         {
             put("org.osgi.framework.system.packages.extra", "javafx.animation, javafx.application, javafx.beans, " +
                     "javafx.beans.binding, javafx.beans.property, javafx.beans.property.adapter, javafx.beans.value," +
@@ -174,9 +174,9 @@ public class RunMojo extends AbstractMojo {
 
     protected Map<String, String> mergeProperties() {
         if (configProps == null) {
-            return defaultProps;
+            return DEFAULT_PROPS;
         }
-        Map<String, String> props = new HashMap<>(defaultProps);
+        Map<String, String> props = new HashMap<>(DEFAULT_PROPS);
         for (Map.Entry<String, String> entry : configProps.entrySet()) {
             props.put(entry.getKey(),
                     entry.getValue());
