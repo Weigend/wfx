@@ -26,6 +26,10 @@ import static org.mockito.Mockito.mock;
 
 /**
  * Test for the preloader notification service.
+ *
+ * Please note that the verification of the application mock is not possible because method
+ * {@link javafx.application.Application#notifyPreloader(javafx.application.Preloader.PreloaderNotification)}
+ * is final.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PreloaderNotificationServiceImplTest {
@@ -49,7 +53,6 @@ public class PreloaderNotificationServiceImplTest {
         assertThat(notificationService.sendNotification(mock(Bundle.class), "Message", 1), is(false));
         notificationService.setApplication(application);
     }
-
 
     @Test
     public void testSendNotification() throws Exception {
