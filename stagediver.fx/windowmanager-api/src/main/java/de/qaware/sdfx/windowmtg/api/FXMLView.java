@@ -13,10 +13,11 @@
 package de.qaware.sdfx.windowmtg.api;
 
 import com.google.common.base.Preconditions;
+import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.layout.Pane;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -49,7 +50,7 @@ public class FXMLView<C> implements View {
      * @param classLoader The class loader to resolve the fxml file and its controller.
      * @throws IOException In case of the view can not be loaded.
      */
-    public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws IOException {
+    public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws ViewNotFoundException, IOException {
         this(id, title, pos, file, null, DEFAULT_VIEW_AREA_SIZE, classLoader);
     }
 
@@ -66,7 +67,7 @@ public class FXMLView<C> implements View {
      * @param classLoader  The class loader to resolve the fxml file and its controller.
      * @throws IOException In case of the view can not be loaded.
      */
-    public FXMLView(String id, String title, Position pos, String file, double viewAreaSize, ClassLoader classLoader) throws IOException {
+    public FXMLView(String id, String title, Position pos, String file, double viewAreaSize, ClassLoader classLoader) throws ViewNotFoundException, IOException {
         this(id, title, pos, file, null, viewAreaSize, classLoader);
     }
 
@@ -84,7 +85,7 @@ public class FXMLView<C> implements View {
      * @throws IOException In case of the view can not be loaded.
      */
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, ClassLoader classLoader)
-            throws IOException {
+            throws ViewNotFoundException, IOException {
         this(id, title, pos, file, toolTipInfo, DEFAULT_VIEW_AREA_SIZE, classLoader);
     }
 
@@ -103,7 +104,7 @@ public class FXMLView<C> implements View {
      * @throws IOException In case of the view can not be loaded.
      */
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, double viewAreaSize, ClassLoader classLoader)
-            throws IOException {
+            throws ViewNotFoundException, IOException {
 
         Preconditions.checkNotNull(classLoader);
         this.id = id;
@@ -113,6 +114,9 @@ public class FXMLView<C> implements View {
         this.viewAreaSize = viewAreaSize;
 
         URL location = classLoader.getResource(file);
+        if (location == null) {
+            throw new ViewNotFoundException("Can not find view '" + file + "'. Please check the bundle exports and imports.");
+        }
         FXMLLoader loader = new FXMLLoader(location);
         loader.setClassLoader(classLoader);
         rootPane = (Pane) loader.load();
