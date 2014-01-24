@@ -12,10 +12,12 @@
 
 package de.qaware.sdfx.windowmtg.api.exceptions;
 
+import java.io.IOException;
+
 /**
  * Special exception in case of the fxml view is not found.
  */
-public class ViewNotFoundException extends Exception {
+public class ViewNotFoundException extends IOException {
     public ViewNotFoundException() {
     }
 
@@ -29,9 +31,5 @@ public class ViewNotFoundException extends Exception {
 
     public ViewNotFoundException(Throwable cause) {
         super(cause);
-    }
-
-    public ViewNotFoundException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
     }
 }
