@@ -85,6 +85,9 @@ public class AutoProcessor {
         startBundles();
     }
 
+    /**
+     * Initialize the framework and bundle startlevels.
+     */
     public void initStartLevels() {
         if (configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL) != null) {
             String[] bundles = configProps.get(AUTO_DEPLOY_BUNDLE_STARTLEVEL).split(" ");
@@ -104,6 +107,12 @@ public class AutoProcessor {
         logger.info("Default startlevel for bundles: %s", frameworkStartLevel);
     }
 
+    /**
+     * Get the startlevel for a given bundle.
+     *
+     * @param bundle The bundle.
+     * @return The startlevel for the given bundle.
+     */
     protected int getStartLevel(Bundle bundle) {
 
         String bundleIdentifier = bundle.getSymbolicName() + ":" + bundle.getVersion().toString();
@@ -116,6 +125,11 @@ public class AutoProcessor {
         return frameworkStartLevel;
     }
 
+    /**
+     * Load the bundles.
+     *
+     * @throws IOException In case of a bundle can not be loaded.
+     */
     protected void loadBundles() throws IOException {
         // Get the auto deploy directory.
         String autoDir = configProps.get(AUTO_DEPLOY_DIR_PROPERY);
@@ -140,6 +154,11 @@ public class AutoProcessor {
         installBundles(jarList);
     }
 
+    /**
+     * Install the items of the given list of jars as bundles.
+     *
+     * @param jarList The jars to install.
+     */
     public void installBundles(Collection<File> jarList) {
         Map<String, Bundle> installedBundleMap = new HashMap<>();
         for (Bundle b : context.getBundles()) {
@@ -180,6 +199,11 @@ public class AutoProcessor {
         }
     }
 
+    /**
+     * Uninstall all bundles thats were installed but shut not activated while the next start.
+     *
+     * @param installedBundleMap A map with all previous installed bundles.
+     */
     protected void uninstallOldBundles(Map<String, Bundle> installedBundleMap) {
         logger.warn("There are bundles in cache they don't should be loaded");
         for (Map.Entry<String, Bundle> entry : installedBundleMap.entrySet()) {
@@ -194,6 +218,15 @@ public class AutoProcessor {
         }
     }
 
+    /**
+     * Install or update the given jar bundle combination.
+     * <p/>
+     * If {@param bundle} is null than the bundle will be installed otherwise the bundle is updated.
+     * In the case of updateing the bundle the bundle id will be the same.
+     *
+     * @param jarFile The jar from where the bundle should be installed
+     * @param bundle  The previous installed bundle instance.
+     */
     protected void installUpdateBundle(File jarFile, Bundle bundle) {
         try {
             // If the bundle is not already installed, then install it
@@ -220,6 +253,9 @@ public class AutoProcessor {
         }
     }
 
+    /**
+     * Start all bundles from the internal bundle start list.
+     */
     public void startBundles() {
         logger.info("Start bundles");
         for (Bundle b : startBundleList) {

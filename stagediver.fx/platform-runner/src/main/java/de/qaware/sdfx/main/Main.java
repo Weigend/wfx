@@ -70,6 +70,13 @@ public class Main {
         new Main().run();
     }
 
+    /**
+     * Load the porperties from a given file.
+     *
+     * @param propertiesProp        The system propery where the filename can be found.
+     * @param defaultPropertiesFile The default file name.
+     * @return A property map of the loaded file.
+     */
     protected static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
         URL propURL = getPropertyFileUrl(propertiesProp, defaultPropertiesFile);
         if (propURL == null) {
@@ -182,6 +189,12 @@ public class Main {
         }
     }
 
+    /**
+     * Run the initialized framework until it stops.
+     *
+     * @throws BundleException      In case of any bundle failures.
+     * @throws InterruptedException In case of the thread is interuppted unexpected.
+     */
     protected void runFramework() throws BundleException, InterruptedException {
         FrameworkEvent event;
         do {
@@ -195,6 +208,11 @@ public class Main {
         logger.info("Framework stopped");
     }
 
+    /**
+     * Initialize the osgi framework.
+     *
+     * @throws Exception In case of the framework can not be initialized.
+     */
     protected void initFramework() throws Exception {
         logger.info("Init the framework");
         FrameworkFactory factory = getFrameworkFactory();
@@ -203,6 +221,11 @@ public class Main {
         getFramework().init();
     }
 
+    /**
+     * Add the osgi framework shutdown hook.
+     * <p/>
+     * The shutdown hook will shutdown all active bundles and stop the framework when the jvm is requested to stop.
+     */
     protected void addShutdownHook() {
         // If enabled, register a shutdown hook to make sure the framework is
         // cleanly shutdown when the VM exits.
@@ -224,6 +247,9 @@ public class Main {
         }
     }
 
+    /**
+     * Load all property files that are needed to startup the framework successfully.
+     */
     protected void loadProperties() {
         Map<String, String> systemProps = loadProperties(SYSTEM_PROPERTIES_PROP, SYSTEM_PROPERTIES_FILE_VALUE);
         if (systemProps != null) {
@@ -238,11 +264,24 @@ public class Main {
         copySystemProperties();
     }
 
+    /**
+     * Load the framework factory to initialize the osgi container.
+     * <p/>
+     * It will choose the first factory within the classpath that are named within
+     * "services/org.osgi.framework.launch.FrameworkFactory".
+     * For more information see {@link java.util.ServiceLoader#load(Class)}.
+     *
+     * @return The fully instanciate factory to initialize the osgi container.
+     * @throws Exception In case of no factory can be found.
+     */
     public FrameworkFactory getFrameworkFactory() throws Exception {
         ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
         return loader.iterator().next();
     }
 
+    /**
+     * Copy all framework related system properties into the framework initialize properties.
+     */
     protected void copySystemProperties() {
         for (Enumeration e = System.getProperties().propertyNames();
              e.hasMoreElements(); ) {
