@@ -58,7 +58,7 @@ public class Main {
     public static final String CONFIG_DIRECTORY = "config";
     private static StartupLogger logger = new StartupLogger(Main.class);
     private Framework framework;
-    private Map<String, String> configProps;
+    protected Map<String, String> configProps;
 
     /**
      * The initial main method to start up the platform.

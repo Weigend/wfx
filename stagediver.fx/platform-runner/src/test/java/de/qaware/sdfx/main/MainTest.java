@@ -2,16 +2,18 @@ package de.qaware.sdfx.main;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.FrameworkFactory;
 
+import java.io.File;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -89,7 +91,7 @@ public class MainTest {
     }
 
     @Test
-    public void testGetPropertyFileUrl2() throws Exception {
+    public void testGetPropertyFileUrlCustomProperty() throws Exception {
         URL expected = getClass().getResource("/test.properties");
         System.setProperty("sdfx.test.platform.runner.prop", expected.toString());
         URL actual = Main.getPropertyFileUrl("sdfx.test.platform.runner.prop", "didnotexist.properties");
@@ -97,10 +99,41 @@ public class MainTest {
     }
 
     @Test
-    @Ignore
+    public void testGetPropertyFileUrlCustomPropertyError() throws Exception {
+        System.setProperty("sdfx.test.platform.runner.prop", "undefinedProtocol:///didnotExist.properties");
+        URL actual = Main.getPropertyFileUrl("sdfx.test.platform.runner.prop", "didnotexist.properties");
+        assertThat(actual, is(nullValue()));
+    }
+
+    @Test
     public void testGetPropertyFileUrlConfigDir() throws Exception {
         assertThat(System.getProperty(PROPERTY_THAT_NOT_EXISTS), is(nullValue()));
+        assertThat(System.getProperty("user.dir"), is(notNullValue()));
+
+        File expected = new File(System.getProperty("user.dir"), "config/withinConfig.properties");
         URL actual = Main.getPropertyFileUrl(PROPERTY_THAT_NOT_EXISTS, "withinConfig.properties");
-        assertThat(actual, is(nullValue()));
+        assertThat(actual, equalTo(expected.toURI().toURL()));
+    }
+
+    @Test
+    public void testLoadPropertiesExists() throws Exception {
+        assertThat(System.getProperty(PROPERTY_THAT_NOT_EXISTS), is(nullValue()));
+        Map p = Main.loadProperties(PROPERTY_THAT_NOT_EXISTS, "/test.properties");
+        assertThat(p.size(), is(2));
+    }
+
+    @Test
+    public void testLoadPropertiesNotExists() throws Exception {
+        System.setProperty("sdfx.test.platform.runner.prop", "undefinedProtocol:///didnotExist.properties");
+        Map p = Main.loadProperties("sdfx.test.platform.runner.prop", "didnotexist.properties");
+        assertThat(p, is(nullValue()));
+    }
+
+    @Test
+    public void testCopyProperties() throws Exception {
+        runner.configProps = new HashMap<>();
+        System.setProperty("stagediver.test.property","test");
+        runner.copySystemProperties();
+        assertThat(runner.configProps.size(), greaterThan(0));
     }
 }
