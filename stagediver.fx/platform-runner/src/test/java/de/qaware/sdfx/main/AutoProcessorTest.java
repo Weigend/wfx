@@ -6,20 +6,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
+import org.osgi.framework.*;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
+import org.osgi.framework.startlevel.BundleStartLevel;
 import org.osgi.framework.startlevel.FrameworkStartLevel;
 
+import java.io.File;
 import java.util.*;
 
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyMap;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AutoProcessorTest {
@@ -31,6 +30,8 @@ public class AutoProcessorTest {
 
     @Mock
     private Framework framework;
+
+    private BundleContext frameworkContext;
 
     private Bundle bundle;
 
@@ -48,7 +49,8 @@ public class AutoProcessorTest {
         bundle = initBundle(1, "standardBundle", "0.1.2.SNAPSHOT", false);
         fragmentBundle = initBundle(2, "fragmentBundle", "0.1.1.SNAPSHOT", true);
         initConfig();
-        processor = new AutoProcessor(initContext(framework), configProps);
+        frameworkContext = initContext(framework);
+        processor = new AutoProcessor(frameworkContext, configProps);
     }
 
     private void initConfig() {
@@ -57,7 +59,7 @@ public class AutoProcessorTest {
                 "standardBundle@1 notExistingBundle@3");
     }
 
-    private Bundle initBundle(long id, String name, String version, boolean isFragment) {
+    private Bundle initBundle(long id, String name, String version, boolean isFragment) throws BundleException {
         Bundle bundle = mock(Bundle.class);
 
         Dictionary<String, String> headers = new Hashtable<>();
@@ -67,6 +69,7 @@ public class AutoProcessorTest {
         when(bundle.getHeaders()).thenReturn(headers);
         if (isFragment) {
             headers.put(Constants.FRAGMENT_HOST, "de.qaware.example.fragmentHost");
+            doThrow(BundleException.class).when(bundle).start();
         }
         bundles.put(id, bundle);
         return bundle;
@@ -122,5 +125,42 @@ public class AutoProcessorTest {
 
         processor.initStartLevels();
         assertEquals(3, processor.getStartLevel(fragmentBundle));
+    }
+
+    @Test
+    public void testStartBundles() throws Exception {
+        Bundle b1 = initBundle(2, "active", "1.0.0", false);
+        when(b1.getState()).thenReturn(Bundle.ACTIVE);
+        processor.getStartBundleList().add(b1);
+
+        Bundle b2 = initBundle(3, "inactive", "1.0.0", false);
+        processor.getStartBundleList().add(b2);
+        Bundle b3 = initBundle(4, "fragment", "1.0.0", true);
+        processor.getStartBundleList().add(b3);
+
+        processor.startBundles();
+
+        verify(b1, never()).start();
+        verify(b2, times(1)).start();
+        verify(b3, times(1)).start();
+    }
+
+    @Test
+    public void testInstallUpdateBundleInstall() throws Exception {
+        bundle = initBundle(4, "fragment", "1.0.0", true);
+        when(frameworkContext.installBundle(anyString())).thenReturn(bundle);
+        processor.installUpdateBundle(new File("t.jar"), null);
+        assertThat(processor.getStartBundleList().contains(bundle), is(false));
+    }
+
+    @Test
+    public void testInstallUpdateBundleUpdate() throws Exception {
+        Bundle bundle = initBundle(3, "inactive", "1.0.0", false);
+        BundleStartLevel bundleSl = mock(BundleStartLevel.class);
+        when(bundle.adapt(BundleStartLevel.class)).thenReturn(bundleSl);
+        processor.installUpdateBundle(new File("t.jar"), bundle);
+        assertThat(processor.getStartBundleList().contains(bundle), is(true));
+        verify(bundle, times(1)).update();
+        verify(bundleSl, times(1)).setStartLevel(anyInt());
     }
 }

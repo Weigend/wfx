@@ -74,6 +74,18 @@ public class AutoProcessor {
         return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
     }
 
+    protected int getFrameworkStartLevel() {
+        return frameworkStartLevel;
+    }
+
+    protected Map<String, Integer> getBundelStartLevels() {
+        return bundelStartLevels;
+    }
+
+    protected List<Bundle> getStartBundleList() {
+        return startBundleList;
+    }
+
     /**
      * process the auto deployment and installation of bundles.
      *
