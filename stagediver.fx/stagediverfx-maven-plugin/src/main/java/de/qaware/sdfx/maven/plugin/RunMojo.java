@@ -35,6 +35,7 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 
@@ -201,7 +202,9 @@ public class RunMojo extends AbstractMojo {
 
     protected org.sonatype.aether.artifact.Artifact getPlatformArtifact() throws IOException {
         Properties props = new Properties();
-        props.load(getClass().getResourceAsStream("/plugin.properties"));
+        try (InputStream propStream = getClass().getResourceAsStream("/plugin.properties")) {
+            props.load(propStream);
+        }
         return new DefaultArtifact(props.getProperty("platform.coordinate"));
     }
 

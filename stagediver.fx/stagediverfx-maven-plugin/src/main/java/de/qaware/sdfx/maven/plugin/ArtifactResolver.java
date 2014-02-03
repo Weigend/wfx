@@ -89,8 +89,8 @@ public class ArtifactResolver {
     /**
      * Resolve the added unresolved artifacts.
      *
-     * @throws DependencyResolutionException
-     * @throws DependencyCollectionException
+     * @throws DependencyResolutionException In case of the dependencies can not be resolved.
+     * @throws DependencyCollectionException In case of the dependencies can not be collected.
      */
     public void resolveArtifacts() throws DependencyResolutionException, DependencyCollectionException {
         for (Artifact artifact : artifactsToResolve) {
