@@ -2,6 +2,7 @@ package de.qaware.sdfx.main;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkEvent;
@@ -10,12 +11,14 @@ import org.osgi.framework.launch.FrameworkFactory;
 import java.net.URL;
 import java.util.Map;
 
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
 public class MainTest {
 
+    private static final String PROPERTY_THAT_NOT_EXISTS = "sys.prop.not.exists";
     private Main runner;
 
     @Before
@@ -66,5 +69,38 @@ public class MainTest {
     public void testLoadPropertiesInvalidUrl() throws Exception {
         Map<String, String> props = Main.loadProperties(new URL("file:///test.properties"));
         assertNull(props);
+    }
+
+    @Test
+    public void testGetPropertyFileUrl() throws Exception {
+        assertThat(System.getProperty(PROPERTY_THAT_NOT_EXISTS), is(nullValue()));
+
+        URL expected = getClass().getResource("/test.properties");
+        URL actual = Main.getPropertyFileUrl(PROPERTY_THAT_NOT_EXISTS, "test.properties");
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void testGetPropertyFileUrl1() throws Exception {
+        assertThat(System.getProperty(PROPERTY_THAT_NOT_EXISTS), is(nullValue()));
+        URL expected = getClass().getResource("/test.properties");
+        URL actual = Main.getPropertyFileUrl(PROPERTY_THAT_NOT_EXISTS, "/test.properties");
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    public void testGetPropertyFileUrl2() throws Exception {
+        URL expected = getClass().getResource("/test.properties");
+        System.setProperty("sdfx.test.platform.runner.prop", expected.toString());
+        URL actual = Main.getPropertyFileUrl("sdfx.test.platform.runner.prop", "didnotexist.properties");
+        assertThat(actual, equalTo(expected));
+    }
+
+    @Test
+    @Ignore
+    public void testGetPropertyFileUrlConfigDir() throws Exception {
+        assertThat(System.getProperty(PROPERTY_THAT_NOT_EXISTS), is(nullValue()));
+        URL actual = Main.getPropertyFileUrl(PROPERTY_THAT_NOT_EXISTS, "withinConfig.properties");
+        assertThat(actual, is(nullValue()));
     }
 }
