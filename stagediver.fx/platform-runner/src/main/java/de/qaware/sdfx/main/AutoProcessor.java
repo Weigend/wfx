@@ -197,7 +197,7 @@ public class AutoProcessor {
      * @param bundleDir The bundle dir path directly form the config.
      * @return The full path to the bundle directory.
      */
-    private String absoluteBundleDir(String bundleDir) {
+    protected static String absoluteBundleDir(String bundleDir) {
         File dir = new File(bundleDir);
         File targetDir = new File("target" + File.separator + bundleDir);
         if (dir.isAbsolute()) {

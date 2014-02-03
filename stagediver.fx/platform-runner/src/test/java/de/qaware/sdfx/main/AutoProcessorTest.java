@@ -15,6 +15,7 @@ import org.osgi.framework.startlevel.FrameworkStartLevel;
 import java.io.File;
 import java.util.*;
 
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.anyMap;
@@ -162,5 +163,25 @@ public class AutoProcessorTest {
         assertThat(processor.getStartBundleList().contains(bundle), is(true));
         verify(bundle, times(1)).update();
         verify(bundleSl, times(1)).setStartLevel(anyInt());
+    }
+
+    @Test
+    public void testAbsoluteBundleDir() throws Exception {
+        String expected = new File(getClass().getResource("/test.properties").toString()).getAbsolutePath();
+
+        assertThat(AutoProcessor.absoluteBundleDir("target").endsWith(File.separator + "target"), is(true));
+        assertThat(AutoProcessor.absoluteBundleDir(expected), equalTo(expected));
+    }
+
+    @Test
+    public void testUninstallOldBundles() throws Exception {
+        Map<String, Bundle> bundleMap = new HashMap<>();
+        bundleMap.put("1", initBundle(2, "installed", "0.1.1", false));
+        bundleMap.put("2", initBundle(0, "uninstalled", "0.1.1", false));
+
+        processor.uninstallOldBundles(bundleMap);
+
+        verify(bundleMap.get("1"), times(1)).uninstall();
+        verify(bundleMap.get("2"), never()).uninstall();
     }
 }
