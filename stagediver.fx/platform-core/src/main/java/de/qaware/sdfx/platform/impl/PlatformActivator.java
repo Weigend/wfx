@@ -44,7 +44,7 @@ public class PlatformActivator implements BundleActivator {
             @Override
             public void run() {
                 LOGGER.info("Launch JavaFX Application");
-                launchApplication(PlatformApplication.class, PlatformPreloader.class, new String[]{});
+                launchApplication(PlatformApplicationImpl.class, PlatformPreloader.class, new String[]{});
             }
         });
         platformThread.setName("Platform-Application-Thread");

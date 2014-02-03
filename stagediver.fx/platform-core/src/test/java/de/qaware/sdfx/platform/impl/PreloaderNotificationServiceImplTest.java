@@ -22,7 +22,8 @@ import org.osgi.framework.Bundle;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * Test for the preloader notification service.
@@ -52,11 +53,13 @@ public class PreloaderNotificationServiceImplTest {
         assertThat(notificationService.sendNotification(bundle, "Message", 0.5), is(false));
         assertThat(notificationService.sendNotification(mock(Bundle.class), "Message", 1), is(false));
         notificationService.setApplication(application);
+        verify(application,times(2)).notifyPreloader(any(Preloader.PreloaderNotification.class));
     }
 
     @Test
     public void testSendNotification() throws Exception {
         notificationService.setApplication(application);
         assertThat(notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START)), is(true));
+        verify(application).notifyPreloader(any(Preloader.PreloaderNotification.class));
     }
 }
