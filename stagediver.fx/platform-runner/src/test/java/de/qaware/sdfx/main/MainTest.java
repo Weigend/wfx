@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -133,7 +133,9 @@ public class MainTest {
     public void testCopyProperties() throws Exception {
         runner.configProps = new HashMap<>();
         System.setProperty("stagediver.test.property","test");
+        System.setProperty("felix.test.property", "test");
+        System.setProperty("org.osgi.framework.test.property", "test");
         runner.copySystemProperties();
-        assertThat(runner.configProps.size(), greaterThan(0));
+        assertThat(runner.configProps.size(), greaterThanOrEqualTo(3));
     }
 }
