@@ -58,6 +58,7 @@ public class Main {
     public static final String CONFIG_DIRECTORY = "config";
     private static StartupLogger logger = new StartupLogger(Main.class);
     protected Map<String, String> configProps;
+    protected Thread shutdownThread;
     private Framework framework;
 
     /**
@@ -230,9 +231,9 @@ public class Main {
         // If enabled, register a shutdown hook to make sure the framework is
         // cleanly shutdown when the VM exits.
         String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
-        if ((enableHook == null) || !enableHook.equalsIgnoreCase("false")) {
+        if (!"false".equalsIgnoreCase(enableHook)) {
             logger.debug("Add shutdown hook");
-            Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
+            shutdownThread = new Thread("Felix Shutdown Hook") {
                 public void run() {
                     try {
                         if (getFramework() != null) {
@@ -243,7 +244,8 @@ public class Main {
                         logger.error("Error stopping framework", ex);
                     }
                 }
-            });
+            };
+            Runtime.getRuntime().addShutdownHook(shutdownThread);
         }
     }
 

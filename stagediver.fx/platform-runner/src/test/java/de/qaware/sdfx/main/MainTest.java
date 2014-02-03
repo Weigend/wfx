@@ -12,8 +12,9 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -137,5 +138,25 @@ public class MainTest {
         System.setProperty("org.osgi.framework.test.property", "test");
         runner.copySystemProperties();
         assertThat(runner.configProps.size(), greaterThanOrEqualTo(3));
+    }
+
+    @Test
+    public void testAddShutdownHook() throws Exception {
+        runner.configProps = new HashMap<>();
+        runner.configProps.put(Main.SHUTDOWN_HOOK_PROP, "true");
+        runner.addShutdownHook();
+        assertThat(runner.shutdownThread, is(notNullValue()));
+        assertThat(Runtime.getRuntime().removeShutdownHook(runner.shutdownThread), is(true));
+        runner.shutdownThread.start();
+        runner.shutdownThread.join();
+        verify(runner.getFramework()).stop();
+    }
+
+    @Test
+    public void testAddShutdownHookDisabled() throws Exception {
+        runner.configProps = new HashMap<>();
+        runner.configProps.put(Main.SHUTDOWN_HOOK_PROP, "false");
+        runner.addShutdownHook();
+        assertThat(runner.shutdownThread, is(nullValue()));
     }
 }
