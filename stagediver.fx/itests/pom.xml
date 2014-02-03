@@ -15,15 +15,6 @@
     <modules>
         <module>itests-windowmanager</module>
     </modules>
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.loadui</groupId>
-                <artifactId>testFx</artifactId>
-                <version>3.1.1</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
     <build>
         <pluginManagement>
             <plugins>
