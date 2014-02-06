@@ -23,7 +23,7 @@ import javafx.scene.control.*;
 /**
  * Stores the current status and additional metadata of an window manager view.
  */
-public final class ViewStatus {
+public class ViewStatus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewStatus.class);
     /**
