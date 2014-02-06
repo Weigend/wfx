@@ -23,6 +23,12 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+        </dependency>
 
         <dependency>
             <groupId>org.loadui</groupId>
