@@ -7,6 +7,8 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
@@ -48,8 +50,15 @@ public class InitialPositionUITest extends GuiTest {
         assertThat(find("#left", p), notNullValue());
     }
 
-    private Parent getLogicalParent(Parent parent) {
-        return parent.getParent().getParent().getParent();
+    private Parent getLogicalParent(Parent node) {
+        Parent parent = node.getParent();
+        while (parent != null) {
+            if (parent instanceof SplitPane || parent instanceof TabPane) {
+                return parent;
+            }
+            parent = parent.getParent();
+        }
+        return null;
     }
 
     @Override
