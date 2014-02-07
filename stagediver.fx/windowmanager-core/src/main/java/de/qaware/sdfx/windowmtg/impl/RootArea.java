@@ -12,6 +12,7 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
 
 import javafx.geometry.*;
@@ -23,6 +24,8 @@ import javafx.stage.*;
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  */
 public final class RootArea extends ViewArea {
+    private final Lookup LOOKUP = new Lookup(RootArea.class);
+
     private final Pane box;
     /**
      * Close the stage containing this area when removing the child.
@@ -51,7 +54,7 @@ public final class RootArea extends ViewArea {
         super(dragNDropManager);
         this.closeStage = closeStage;
         this.box = box;
-        ViewArea editorArea = new TabArea(this, dragNDropManager);
+        ViewArea editorArea = LOOKUP.lookup(ViewConainterAreaFactory.class).getInstance(this, dragNDropManager);
         editorArea.setEditor(true);
         this.box.getChildren().add(editorArea.getNode());
         setFirstChild(editorArea);
