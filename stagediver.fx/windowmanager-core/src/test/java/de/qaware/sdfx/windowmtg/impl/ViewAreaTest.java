@@ -19,7 +19,6 @@ import de.qaware.sdfx.windowmtg.api.View;
 import javafx.scene.Parent;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -104,9 +104,65 @@ public class ViewAreaTest {
     }
 
     @Test
-    @Ignore
-    public void testRemove() throws Exception {
+    public void testAddBottomSplit() throws Exception {
+        ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
 
+        when(initialEditorView.getTab()).thenCallRealMethod();
+        viewArea.add(initialEditorView, Position.BOTTOM);
+        verify(parentArea).replace(eq(viewArea), viewAreaCaptor.capture());
+
+        assertThat(viewAreaCaptor.getValue().getFirstChild(), is(viewArea));
+        assertThat(viewAreaCaptor.getValue().getSecondChild().isEditor(), is(false));
+        assertThat(viewAreaCaptor.getValue().isEditor(), is(true));
+        assertThat(viewAreaCaptor.getValue().getParent(), is(parentArea));
+    }
+
+    @Test
+    public void testAddLeftSplit() throws Exception {
+        ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
+
+        when(initialEditorView.getTab()).thenCallRealMethod();
+        viewArea.add(initialEditorView, Position.LEFT);
+        verify(parentArea).replace(eq(viewArea), viewAreaCaptor.capture());
+
+        assertThat(viewAreaCaptor.getValue().getSecondChild(), is(viewArea));
+        assertThat(viewAreaCaptor.getValue().getFirstChild().isEditor(), is(false));
+        assertThat(viewAreaCaptor.getValue().isEditor(), is(true));
+        assertThat(viewAreaCaptor.getValue().getParent(), is(parentArea));
+    }
+
+    @Test
+    public void testAddRightSplit() throws Exception {
+        ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
+
+        when(initialEditorView.getTab()).thenCallRealMethod();
+        viewArea.add(initialEditorView, Position.RIGHT);
+        verify(parentArea).replace(eq(viewArea), viewAreaCaptor.capture());
+
+        assertThat(viewAreaCaptor.getValue().getFirstChild(), is(viewArea));
+        assertThat(viewAreaCaptor.getValue().getSecondChild().isEditor(), is(false));
+        assertThat(viewAreaCaptor.getValue().isEditor(), is(true));
+        assertThat(viewAreaCaptor.getValue().getParent(), is(parentArea));
+    }
+
+    @Test
+    public void testRemoveFirst() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setFirstChild(viewArea);
+        viewArea.setParent(parent);
+        viewArea.remove(editorArea);
+        assertThat(parent.getFirstChild(), is((ViewArea) secondArea));
+        assertThat(parent.getSecondChild(), is(nullValue()));
+    }
+
+    @Test
+    public void testRemoveSecond() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setSecondChild(viewArea);
+        viewArea.setParent(parent);
+        viewArea.remove(editorArea);
+        assertThat(parent.getFirstChild(), is(nullValue()));
+        assertThat(parent.getSecondChild(), is((ViewArea) secondArea));
     }
 
     @Test
@@ -123,14 +179,9 @@ public class ViewAreaTest {
 
 
     @Test
-    @Ignore
     public void testGetRootArea() throws Exception {
-
-    }
-
-    @Test
-    @Ignore
-    public void testDropToCenter() throws Exception {
-
+        RootArea rootArea = new RootArea(dragNDropManager, false);
+        when(parentArea.getParent()).thenReturn(rootArea);
+        assertThat(viewArea.getRootArea(), is(rootArea));
     }
 }

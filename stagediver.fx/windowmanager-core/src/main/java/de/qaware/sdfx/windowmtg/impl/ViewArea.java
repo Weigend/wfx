@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);
-    private static final Lookup lookup = new Lookup(ViewArea.class);
+    private static final Lookup LOOKUP = new Lookup(ViewArea.class);
     private final SplitPane outerPane;
     private final DragNDropManager dragNDropManager;
     private ViewArea parent;
@@ -173,7 +173,7 @@ public class ViewArea {
      */
     public void add(ViewStatus view, Position position) {
         LOGGER.debug("Add view {} on {} to area {}", view.getView().getViewId(), position, this);
-        ViewConainterAreaFactory viewContainerFactory = lookup.lookup(ViewConainterAreaFactory.class);
+        ViewConainterAreaFactory viewContainerFactory = LOOKUP.lookup(ViewConainterAreaFactory.class);
         switch (position) {
             case CENTER:
                 getEditorArea().add(view, position);
