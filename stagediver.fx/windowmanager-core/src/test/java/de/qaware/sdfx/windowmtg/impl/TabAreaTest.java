@@ -23,7 +23,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.beans.property.*;
 import javafx.collections.*;
 import javafx.scene.control.*;
 import java.lang.reflect.Field;
@@ -91,20 +90,42 @@ public class TabAreaTest {
     }
 
     @Test
-    public void testRemove() throws Exception {
+    public void testAddRemove() throws Exception {
         ViewStatus status = mock(ViewStatus.class);
         when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
         when(status.getArea()).thenReturn(tabArea);
-
+        Tab t = mock(Tab.class);
+        when(status.getTab()).thenReturn(t);
         tabArea.add(status, Position.CENTER);
+        verify(tabs).add(t);
+        verify(status).setPosition(Position.CENTER);
+        verify(status).setArea(tabArea);
 
         tabArea.remove(status, false);
+        verify(status).setPosition(null);
+        verify(status).setArea(null);
+        verify(tabs).remove(t);
     }
 
     @Test
-    public void testHandleEmpty() throws Exception {
-        tabArea.handleEmpty();
+    public void testAddRemoveHandleEmpty() throws Exception {
+        ViewStatus status = mock(ViewStatus.class);
+        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
+        when(status.getArea()).thenReturn(tabArea);
+        Tab t = mock(Tab.class);
+        when(status.getTab()).thenReturn(t);
+        tabArea.add(status, Position.CENTER);
+
+        tabArea.remove(status, true);
+        verify(tabs).remove(t);
         verify(parent).remove(tabArea);
+    }
+
+    @Test
+    public void testHandleEmptyWrong() throws Exception {
+        ViewStatus status = mock(ViewStatus.class);
+        tabArea.add(status, Position.CENTER);
+        assertThat(tabArea.handleEmpty(), is(false));
     }
 
     @Test
