@@ -26,6 +26,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
@@ -84,6 +87,12 @@ public class ViewAreaTest {
         viewArea.setParent(parentArea);
     }
 
+    private void setOrientation(ViewArea area, Orientation orientation) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method m = ViewArea.class.getDeclaredMethod("setOrientation", Orientation.class);
+        m.setAccessible(true);
+        m.invoke(area, orientation);
+    }
+
     @Test
     public void testAddCenter() throws Exception {
         viewArea.add(initialEditorView, Position.CENTER);
@@ -113,6 +122,13 @@ public class ViewAreaTest {
     }
 
     @Test
+    public void testAddTop() throws Exception {
+        setOrientation(viewArea, Orientation.VERTICAL);
+        viewArea.add(initialEditorView, Position.TOP);
+        verify(editorArea).add(initialEditorView, Position.TOP);
+    }
+
+    @Test
     public void testAddBottomSplit() throws Exception {
         ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
 
@@ -124,6 +140,13 @@ public class ViewAreaTest {
         assertThat(viewAreaCaptor.getValue().getSecondChild().isEditor(), is(false));
         assertThat(viewAreaCaptor.getValue().isEditor(), is(true));
         assertThat(viewAreaCaptor.getValue().getParent(), is(parentArea));
+    }
+
+    @Test
+    public void testAddBottom() throws Exception {
+        setOrientation(viewArea, Orientation.VERTICAL);
+        viewArea.add(initialEditorView, Position.BOTTOM);
+        verify(secondArea).add(initialEditorView, Position.BOTTOM);
     }
 
     @Test
@@ -141,6 +164,13 @@ public class ViewAreaTest {
     }
 
     @Test
+    public void testAddLeft() throws Exception {
+        setOrientation(viewArea, Orientation.HORIZONTAL);
+        viewArea.add(initialEditorView, Position.LEFT);
+        verify(secondArea).add(initialEditorView, Position.LEFT);
+    }
+
+    @Test
     public void testAddRightSplit() throws Exception {
         ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
 
@@ -152,6 +182,13 @@ public class ViewAreaTest {
         assertThat(viewAreaCaptor.getValue().getSecondChild().isEditor(), is(false));
         assertThat(viewAreaCaptor.getValue().isEditor(), is(true));
         assertThat(viewAreaCaptor.getValue().getParent(), is(parentArea));
+    }
+
+    @Test
+    public void testAddRight() throws Exception {
+        setOrientation(viewArea, Orientation.HORIZONTAL);
+        viewArea.add(initialEditorView, Position.RIGHT);
+        verify(secondArea).add(initialEditorView, Position.RIGHT);
     }
 
     @Test
