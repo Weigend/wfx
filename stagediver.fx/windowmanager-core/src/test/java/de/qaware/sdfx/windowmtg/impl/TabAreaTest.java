@@ -17,12 +17,16 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import javafx.beans.property.*;
+import javafx.collections.*;
+import javafx.scene.control.*;
+import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -45,6 +49,9 @@ public class TabAreaTest {
     private RootArea rootArea = new RootArea(dragNDropManager, true);
 
     @Mock
+    private ObservableList<Tab> tabs;
+
+    @Mock
     private ViewArea parent;
 
     @BeforeClass
@@ -64,11 +71,16 @@ public class TabAreaTest {
 
         //todo: replace tabs list
         tabArea = new TabArea(parent, dragNDropManager);
-//        TabPane tabPane = mock(TabPane.class);
-//        when(tabPane.getTabs()).thenReturn(new SimpleListProperty<Tab>());
-//        Field tabPaneField = TabArea.class.getDeclaredField("tabPane");
-//        tabPaneField.setAccessible(true);
-//        tabPaneField.set(tabArea, tabPane);
+        TabPane tabPane = mock(TabPane.class);
+
+        //tabs = new SimpleListProperty<>();
+        Field tabsField = TabPane.class.getDeclaredField("tabs");
+        tabsField.setAccessible(true);
+        tabsField.set(tabPane, tabs);
+
+        Field tabPaneField = TabArea.class.getDeclaredField("tabPane");
+        tabPaneField.setAccessible(true);
+        tabPaneField.set(tabArea, tabPane);
     }
 
     @Test
@@ -79,7 +91,6 @@ public class TabAreaTest {
     }
 
     @Test
-    @Ignore
     public void testRemove() throws Exception {
         ViewStatus status = mock(ViewStatus.class);
         when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
