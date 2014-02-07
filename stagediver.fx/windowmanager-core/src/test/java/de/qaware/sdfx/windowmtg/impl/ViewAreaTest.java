@@ -16,6 +16,7 @@ import com.google.inject.AbstractModule;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -85,6 +86,14 @@ public class ViewAreaTest {
 
     @Test
     public void testAddCenter() throws Exception {
+        viewArea.add(initialEditorView, Position.CENTER);
+        verify(editorArea).add(initialEditorView, Position.CENTER);
+    }
+
+    @Test
+    public void testAddCenterSecondChild() throws Exception {
+        viewArea.setFirstChild(secondArea);
+        viewArea.setSecondChild(editorArea);
         viewArea.add(initialEditorView, Position.CENTER);
         verify(editorArea).add(initialEditorView, Position.CENTER);
     }
@@ -160,9 +169,9 @@ public class ViewAreaTest {
         ViewArea parent = new ViewArea(dragNDropManager);
         parent.setSecondChild(viewArea);
         viewArea.setParent(parent);
-        viewArea.remove(editorArea);
+        viewArea.remove(secondArea);
         assertThat(parent.getFirstChild(), is(nullValue()));
-        assertThat(parent.getSecondChild(), is((ViewArea) secondArea));
+        assertThat(parent.getSecondChild(), is((ViewArea) editorArea));
     }
 
     @Test
@@ -183,5 +192,10 @@ public class ViewAreaTest {
         RootArea rootArea = new RootArea(dragNDropManager, false);
         when(parentArea.getParent()).thenReturn(rootArea);
         assertThat(viewArea.getRootArea(), is(rootArea));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testSplitFail() throws Exception {
+        viewArea.split(viewArea, viewArea, Orientation.HORIZONTAL);
     }
 }
