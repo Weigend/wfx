@@ -17,7 +17,10 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.scene.Parent;
-import org.junit.*;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -107,10 +110,17 @@ public class ViewAreaTest {
     }
 
     @Test
-    @Ignore
-    public void testReplace() throws Exception {
-
+    public void testReplaceFirst() throws Exception {
+        viewArea.replace(editorArea, secondArea);
+        assertThat(viewArea.getFirstChild(), is((ViewArea) secondArea));
     }
+
+    @Test
+    public void testReplaceSecond() throws Exception {
+        viewArea.replace(secondArea, editorArea);
+        assertThat(viewArea.getSecondChild(), is((ViewArea) editorArea));
+    }
+
 
     @Test
     @Ignore
