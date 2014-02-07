@@ -12,22 +12,24 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.SplitPane;
+import javafx.scene.input.DragEvent;
+import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.event.*;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
 
 /**
  * A ViewArea is a node within the area tree. It has two children which are self view areas.
  */
 public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);
+    private static final Lookup lookup = new Lookup(ViewArea.class);
     private final SplitPane outerPane;
     private final DragNDropManager dragNDropManager;
     private ViewArea parent;
@@ -171,6 +173,7 @@ public class ViewArea {
      */
     public void add(ViewStatus view, Position position) {
         LOGGER.debug("Add view {} on {} to area {}", view.getView().getViewId(), position, this);
+        ViewConainterAreaFactory viewContainerFactory = lookup.lookup(ViewConainterAreaFactory.class);
         switch (position) {
             case CENTER:
                 getEditorArea().add(view, position);
@@ -180,7 +183,7 @@ public class ViewArea {
                     getFirstChild().add(view, position);
                 }
                 else {
-                    ViewArea target = new TabArea(dragNDropManager);
+                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(target, this, Orientation.VERTICAL);
                 }
@@ -190,7 +193,7 @@ public class ViewArea {
                     getSecondChild().add(view, position);
                 }
                 else {
-                    ViewArea target = new TabArea(dragNDropManager);
+                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(this, target, Orientation.VERTICAL);
                 }
@@ -200,7 +203,7 @@ public class ViewArea {
                     getSecondChild().add(view, position);
                 }
                 else {
-                    ViewArea target = new TabArea(dragNDropManager);
+                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(target, this, Orientation.HORIZONTAL);
                 }
@@ -210,7 +213,7 @@ public class ViewArea {
                     getSecondChild().add(view, position);
                 }
                 else {
-                    ViewArea target = new TabArea(dragNDropManager);
+                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
                     target.add(view, Position.CENTER);
                     split(this, target, Orientation.HORIZONTAL);
                 }
