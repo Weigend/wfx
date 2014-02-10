@@ -115,7 +115,7 @@ public class ViewStatus {
         tab.setClosable(true);
         tab.setContent(view.getRootNode());
         tab.setId(view.getViewId());
-        tab.setTooltip(new Tooltip(view.getToolTipInfo()));
+        //tab.setTooltip(new Tooltip(view.getToolTipInfo()));
         tab.setUserData(this);
 
         tab.setOnClosed(new EventHandler<Event>() {
