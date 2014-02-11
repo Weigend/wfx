@@ -10,7 +10,7 @@
 //        Copyright: (c) QAware GmbH, all rights reserved
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.maven.plugin;
+package de.qaware.sdfx.maven.plugin.run;
 
 import de.qaware.sdfx.main.AutoProcessor;
 import de.qaware.sdfx.main.Main;
@@ -19,7 +19,6 @@ import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.*;
 import org.apache.maven.project.MavenProject;
 import org.osgi.framework.BundleException;
@@ -31,11 +30,9 @@ import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.DependencyResolutionException;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 
@@ -108,7 +105,7 @@ public class RunMojo extends AbstractMojo {
     protected ArtifactResolver artifactResolver;
 
     @Override
-    public void execute() throws MojoExecutionException, MojoFailureException {
+    public void execute() throws MojoExecutionException {
         try {
             System.setProperty("binary.css", "false");
             initFramework();
@@ -163,7 +160,7 @@ public class RunMojo extends AbstractMojo {
 
     private void addPlatformBundles(Set<File> bundles) throws IOException, DependencyResolutionException, DependencyCollectionException {
         ArtifactResolver resolver = getArtifactResolver();
-        resolver.addUnresolvedArtifact(getPlatformArtifact());
+        resolver.addUnresolvedArtifact(ArtifactResolver.resolvePlatformArtifact());
         resolver.resolveArtifacts();
 
         for (File f : resolver.getResolvedFiles()) {
@@ -198,14 +195,6 @@ public class RunMojo extends AbstractMojo {
                 }
             }
         });
-    }
-
-    protected org.sonatype.aether.artifact.Artifact getPlatformArtifact() throws IOException {
-        Properties props = new Properties();
-        try (InputStream propStream = getClass().getResourceAsStream("/plugin.properties")) {
-            props.load(propStream);
-        }
-        return new DefaultArtifact(props.getProperty("platform.coordinate"));
     }
 
     protected ArtifactResolver getArtifactResolver() {

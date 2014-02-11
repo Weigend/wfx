@@ -10,9 +10,11 @@
 //        Copyright: (c) QAware GmbH, all rights reserved
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.maven.plugin;
+package de.qaware.sdfx.maven.plugin.run;
 
 import de.qaware.sdfx.main.Main;
+import de.qaware.sdfx.maven.plugin.run.ArtifactResolver;
+import de.qaware.sdfx.maven.plugin.run.RunMojo;
 import org.apache.felix.framework.FrameworkFactory;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;

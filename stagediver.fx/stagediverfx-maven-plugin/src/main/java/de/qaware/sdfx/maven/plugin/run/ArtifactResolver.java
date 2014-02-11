@@ -10,7 +10,7 @@
 //        Copyright: (c) QAware GmbH, all rights reserved
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.maven.plugin;
+package de.qaware.sdfx.maven.plugin.run;
 
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
@@ -23,13 +23,13 @@ import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
+import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 /**
  * Resolve the final artifacts including all transitive artifacts from a set of maven artifacts.
@@ -124,5 +124,13 @@ public class ArtifactResolver {
         PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
         node.accept(nlg);
         return nlg.getFiles();
+    }
+
+    protected static Artifact resolvePlatformArtifact() throws IOException {
+        Properties props = new Properties();
+        try (InputStream propStream = ArtifactResolver.class.getResourceAsStream("/plugin.properties")) {
+            props.load(propStream);
+        }
+        return new DefaultArtifact(props.getProperty("platform.coordinate"));
     }
 }
