@@ -63,7 +63,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.version>7</project.build.version>
-        <guava.version>15.0</guava.version>
+        <guava.version>16.0.1</guava.version>
         <osgi.version>4.3.1</osgi.version>
         <felix.version>4.2.1</felix.version>
         <version.asm>5.0_BETA</version.asm>
@@ -146,22 +146,22 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.5</version>
+                <version>1.7.6</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-log4j12</artifactId>
-                <version>1.7.5</version>
+                <version>1.7.6</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.2</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
-                <version>1.7.1</version>
+                <version>1.7.2</version>
             </dependency>
 
             <!-- Google Guava -->
