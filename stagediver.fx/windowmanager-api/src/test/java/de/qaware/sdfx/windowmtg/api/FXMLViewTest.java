@@ -14,6 +14,8 @@ package de.qaware.sdfx.windowmtg.api;
 
 import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
 import javafx.scene.layout.BorderPane;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -25,6 +27,16 @@ import static org.junit.Assert.assertThat;
  * Test for loading of standard fxml views.
  */
 public class FXMLViewTest {
+
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        TestApplication.launchTest();
+    }
+
+    @AfterClass
+    public static void tearDownClass() throws Exception {
+        TestApplication.stopTest();
+    }
 
     @Test(expected = ViewNotFoundException.class)
     public void testConstructorViewNotFound() throws Exception {
