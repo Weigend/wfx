@@ -42,16 +42,13 @@ public class BinaryCssMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-
+        removeOldBssFiles();
         getLog().info("Compiling CSS to BSS");
 
         CreateBSSParams bssParams = new CreateBSSParams();
         for (Resource resource : resources) {
             addCssForResource(bssParams, resource);
         }
-
-        removeOldBssFiles();
-
         bssParams.setOutdir(outputDirectory);
         bssParams.setVerbose(getLog().isDebugEnabled());
         try {
@@ -93,8 +90,9 @@ public class BinaryCssMojo extends AbstractMojo {
         scanner.setBasedir(outputDirectory);
         scanner.scan();
         for (String file : scanner.getIncludedFiles()) {
-            if (new File(file).delete()) {
-                getLog().error("Can not delete binary style sheet file: " + file);
+            String absolutePath = outputDirectory.getAbsoluteFile() + File.separator + file;
+            if (!new File(absolutePath).delete()) {
+                getLog().error("Can not delete binary style sheet file: " + absolutePath);
             }
         }
     }
