@@ -45,13 +45,13 @@
                         </excludes>
                     </configuration>
                 </plugin>
-                <plugin>
+<!--                <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.6.3.201306030806</version>
+                    <version>0.6.5.201403032054</version>
                     <configuration>
                         <destFile>${sonar.jacoco.itReportPath}</destFile>
-                        <!--<dataFile>${sonar.jacoco.itReportPath}</dataFile>-->
+                        &lt;!&ndash;<dataFile>${sonar.jacoco.itReportPath}</dataFile>&ndash;&gt;
                         <propertyName>jacoco.agent.argLine</propertyName>
                         <append>true</append>
                     </configuration>
@@ -71,7 +71,7 @@
                             </goals>
                         </execution>
                     </executions>
-                </plugin>
+                </plugin>-->
                 <plugin>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>2.16</version>
@@ -84,7 +84,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <argLine>${jacoco.agent.argLine}</argLine>
+                        <!--<argLine>${jacoco.agent.argLine}</argLine>-->
                         <encoding>${project.build.sourceEncoding}</encoding>
                         <includes>
                             <include>**/*SlowTest.java</include>
@@ -110,10 +110,10 @@
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
-            <plugin>
+<!--            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
     <repositories>
