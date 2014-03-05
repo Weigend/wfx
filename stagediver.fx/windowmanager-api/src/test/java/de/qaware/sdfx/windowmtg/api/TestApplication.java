@@ -45,7 +45,10 @@ public class TestApplication extends Application {
      * @throws Exception in case of the application can not be stopped.
      */
     public static void stopTest() throws Exception {
-        TestApplication.getInstance().stop();
+        TestApplication app;
+        if ((app = TestApplication.getInstance()) != null) {
+            app.stop();
+        }
     }
 
     @Override
