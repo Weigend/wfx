@@ -65,7 +65,7 @@
                                 <item>
                                     <groupId>de.qaware.stagediver.fx</groupId>
                                     <artifactId>platform-runner</artifactId>
-                                    <version>${version.stagediver}</version>
+                                    <version>${version.stagediverfx}</version>
                                     <overWrite>true</overWrite>
                                     <destFileName>startup.jar</destFileName>
                                 </item>
