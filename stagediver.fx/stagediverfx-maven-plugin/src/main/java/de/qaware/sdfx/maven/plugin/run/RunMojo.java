@@ -14,6 +14,7 @@ package de.qaware.sdfx.maven.plugin.run;
 
 import de.qaware.sdfx.main.AutoProcessor;
 import de.qaware.sdfx.main.Main;
+import de.qaware.sdfx.main.StartupLogger;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionException;
@@ -107,6 +108,7 @@ public class RunMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException {
         try {
+            StartupLogger.Level.DEBUG.setEnabled(getLog().isDebugEnabled());
             System.setProperty("binary.css", "false");
             initFramework();
             AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
@@ -150,6 +152,7 @@ public class RunMojo extends AbstractMojo {
         for (Object obj : project.getArtifacts()) {
             Artifact dependency = (Artifact) obj;
             if (dependency.getFile().getName().endsWith(BUNDLE_EXTESION)) {
+                getLog().debug("Adding dependency " + dependency.getFile() + " as bundle");
                 bundles.add(dependency.getFile());
             }
         }
@@ -165,6 +168,7 @@ public class RunMojo extends AbstractMojo {
 
         for (File f : resolver.getResolvedFiles()) {
             if (f.getName().endsWith(BUNDLE_EXTESION)) {
+                getLog().debug("Adding dependency " + f + " as automatic platform bundle");
                 bundles.add(f);
             }
         }
@@ -176,8 +180,7 @@ public class RunMojo extends AbstractMojo {
         }
         Map<String, String> props = new HashMap<>(DEFAULT_PROPS);
         for (Map.Entry<String, String> entry : configProps.entrySet()) {
-            props.put(entry.getKey(),
-                    entry.getValue());
+            props.put(entry.getKey(), entry.getValue());
         }
         return props;
     }

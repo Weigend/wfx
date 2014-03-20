@@ -257,7 +257,9 @@ public class AutoProcessor {
             if ((b != null) && !isFragment(b)) {
                 startBundleList.add(b);
                 BundleStartLevel bundleStartLevel = b.adapt(BundleStartLevel.class);
-                bundleStartLevel.setStartLevel(getStartLevel(b));
+                int startLevel = getStartLevel(b);
+                logger.debug("Set startlevel " + startLevel + " for bundle " + b);
+                bundleStartLevel.setStartLevel(startLevel);
             }
         } catch (BundleException ex) {
             logger.error("Error during install or update bundle %s for jar file: %s", bundle, jarFile);
