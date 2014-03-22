@@ -24,7 +24,7 @@ import javafx.stage.*;
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  */
 public final class RootArea extends ViewArea {
-    private final Lookup LOOKUP = new Lookup(RootArea.class);
+    private final Lookup lookup = new Lookup(RootArea.class);
 
     private final Pane box;
     /**
@@ -54,7 +54,7 @@ public final class RootArea extends ViewArea {
         super(dragNDropManager);
         this.closeStage = closeStage;
         this.box = box;
-        ViewArea editorArea = LOOKUP.lookup(ViewConainterAreaFactory.class).getInstance(this, dragNDropManager);
+        ViewArea editorArea = lookup.lookup(ViewConainterAreaFactory.class).getInstance(this, dragNDropManager);
         editorArea.setEditor(true);
         this.box.getChildren().add(editorArea.getNode());
         setFirstChild(editorArea);

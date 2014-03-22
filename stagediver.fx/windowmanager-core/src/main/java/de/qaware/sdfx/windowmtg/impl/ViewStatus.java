@@ -65,7 +65,7 @@ public class ViewStatus {
         this.view = view;
         this.position = view.getDefaultPosition();
         this.defaultPosition = view.getDefaultPosition();
-        this.setStatus(Status.VISIBLE);
+        this.status = Status.VISIBLE;
         this.parent = parent;
         this.initTab();
     }
@@ -121,9 +121,9 @@ public class ViewStatus {
         tab.setOnClosed(new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
-                ViewStatus status = ViewStatus.this;
-                status.getArea().remove(status);
-                status.setStatus(Status.HIDDEN);
+                ViewStatus viewStatus = ViewStatus.this;
+                viewStatus.getArea().remove(viewStatus);
+                viewStatus.setStatus(Status.HIDDEN);
             }
         });
     }
@@ -162,6 +162,8 @@ public class ViewStatus {
             case BOTTOM:
                 splitPane.setDividerPositions(1 - space);
                 break;
+            default:
+                LOGGER.warn("Invalid position {} given for setting divider positions of {}", position, splitPane);
         }
         LOGGER.debug("Set the devider position to {} for position {}", space, position);
     }

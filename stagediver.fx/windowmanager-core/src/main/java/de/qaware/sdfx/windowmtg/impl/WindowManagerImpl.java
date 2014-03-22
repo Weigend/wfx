@@ -149,7 +149,6 @@ public class WindowManagerImpl implements MultiWindowManager {
             remove(subWindow);
         }
         rootPane.getChildren().clear();
-        Map<String, ViewStatus> views = this.views;
         this.views = new LinkedHashMap<>();
         for (ViewStatus view : views.values()) {
             view.restoreDefault();
@@ -282,7 +281,6 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void bringToFront() {
-
         for (RootArea area : subWindows) {
             if (area.getNode().getScene().getWindow() instanceof Stage) {
                 ((Stage) area.getNode().getScene().getWindow()).toFront();
@@ -299,8 +297,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void remove(RootArea area) {
         LOGGER.info("Remove existing window");
-        List<ViewStatus> views = getForRootArea(area);
-        for (ViewStatus view : views) {
+        for (ViewStatus view : getForRootArea(area)) {
             view.getArea().remove(view);
         }
         ((Stage) area.getNode().getScene().getWindow()).close();

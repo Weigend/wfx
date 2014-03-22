@@ -71,7 +71,7 @@ public class ViewArea {
      *
      * @param node Register the event handlers on this node.
      */
-    protected void registerDragEvents(Node node) {
+    protected final void registerDragEvents(Node node) {
         node.setUserData(this);
         node.setOnDragOver(new EventHandler<DragEvent>() {
             @Override
@@ -301,11 +301,11 @@ public class ViewArea {
      * @return The root area of this view.
      */
     public RootArea getRootArea() {
-        ViewArea parent = this;
-        while (parent.getParent() != null) {
-            parent = parent.getParent();
+        ViewArea parentArea = this;
+        while (parentArea.getParent() != null) {
+            parentArea = parentArea.getParent();
         }
-        return (RootArea) parent;
+        return (RootArea) parentArea;
     }
 
     protected DragNDropManager getDragNDropManager() {

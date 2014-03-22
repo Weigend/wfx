@@ -65,9 +65,8 @@ public class Main {
      * The initial main method to start up the platform.
      *
      * @param args The commandline arguments
-     * @throws Exception In any case of problems which can not be handled by the platform.
      */
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args){
         new Main().run();
     }
 
@@ -216,9 +215,9 @@ public class Main {
     /**
      * Initialize the osgi framework.
      *
-     * @throws Exception In case of the framework can not be initialized.
+     * @throws BundleException In case of the framework can not be initialized.
      */
-    protected void initFramework() throws Exception {
+    protected void initFramework() throws BundleException {
         logger.info("Init the framework");
         FrameworkFactory factory = getFrameworkFactory();
         logger.debug("Using framework factory: %s", factory);

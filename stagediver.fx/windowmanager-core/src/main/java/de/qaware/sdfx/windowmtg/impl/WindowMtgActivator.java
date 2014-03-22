@@ -25,13 +25,13 @@ public class WindowMtgActivator implements BundleActivator {
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowMtgActivator.class);
 
     @Override
-    public void start(final BundleContext bundleContext) throws Exception {
+    public void start(final BundleContext bundleContext) {
         LOGGER.info("Starting Bundle {}", bundleContext.getBundle());
 
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    public void stop(BundleContext bundleContext) {
 
     }
 }

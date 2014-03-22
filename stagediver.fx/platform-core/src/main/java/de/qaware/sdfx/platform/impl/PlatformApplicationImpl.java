@@ -16,15 +16,14 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
+import javafx.stage.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -40,7 +39,7 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
     private boolean shouldShowing;
 
     @Override
-    public void init() throws Exception {
+    public void init() {
 
         PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
@@ -56,10 +55,9 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
      * show the primary window for the stagediver.fx platform.
      *
      * @param stage The primary window stage.
-     * @throws IOException In case of any fxml loading failure.
      */
     @Override
-    public void start(final Stage stage) throws IOException {
+    public void start(final Stage stage) {
         LOGGER.info("Run JavaFX application start method");
         mainApplicationStage = stage;
         if (shouldShowing) {
@@ -69,13 +67,16 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
 
     /**
      * Shutdown the JavaFX application and stop the platform bundle.
-     *
-     * @throws BundleException In case of this bundle can not be stopped
      */
     @Override
-    public void stop() throws BundleException {
+    public void stop() {
         LOGGER.info("Stop JavaFX application");
-        FrameworkUtil.getBundle(getClass()).stop();
+        try {
+            FrameworkUtil.getBundle(getClass()).stop();
+        }
+        catch (BundleException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

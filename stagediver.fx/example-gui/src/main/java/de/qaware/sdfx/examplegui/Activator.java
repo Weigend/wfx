@@ -22,7 +22,7 @@ public class Activator implements BundleActivator {
     private Lookup lookup = new Lookup(Activator.class);
 
     @Override
-    public void start(final BundleContext context) throws Exception {
+    public void start(final BundleContext context) {
         LOGGER.info("Starting Bundle {}", context.getBundle());
         final PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         notificationService.sendNotification(context.getBundle(), "Starting example gui", 0);
@@ -50,7 +50,8 @@ public class Activator implements BundleActivator {
                     notificationService.sendNotification(context.getBundle(), "Starting example gui", 1);
                     notificationService.sendNotification(new Preloader.StateChangeNotification(Preloader.StateChangeNotification.Type.BEFORE_START));
 
-                } catch (IOException e) {
+                }
+                catch (IOException e) {
                     LOGGER.error("Can not start module", e);
                 }
             }
@@ -58,7 +59,7 @@ public class Activator implements BundleActivator {
     }
 
     @Override
-    public void stop(BundleContext context) throws Exception {
+    public void stop(BundleContext context) {
 
     }
 }

@@ -22,6 +22,7 @@ import de.qaware.sdfx.windowmtg.windows.DefaultApplicationWindow;
 import javafx.application.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import java.io.IOException;
 
 /**
  * Example main class to demonstrate running without osgi.
@@ -38,7 +39,7 @@ public class NonOsgiMain extends Application {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws IOException {
         stage.setTitle("stagediver.fx Example Application");
         ApplicationWindow mainWindow = new DefaultApplicationWindow();
         mainWindow.setStage(stage);

@@ -12,11 +12,8 @@
 
 package de.qaware.sdfx.platform.impl;
 
-import javafx.application.Preloader;
-import javafx.stage.Stage;
-import org.osgi.framework.BundleException;
-
-import java.io.IOException;
+import javafx.application.*;
+import javafx.stage.*;
 
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for stagediver.fx platform.
@@ -24,26 +21,21 @@ import java.io.IOException;
 public interface PlatformApplication {
     /**
      * Init the platform application
-     *
-     * @throws Exception In case of any init error
      */
-    void init() throws Exception;
+    void init();
 
     /**
      * Start the JavaFX application. This will include the initialization of the content for the first stage and
      * show the primary window for the stagediver.fx platform.
      *
      * @param stage The primary window stage.
-     * @throws java.io.IOException In case of any fxml loading failure.
      */
-    void start(Stage stage) throws IOException;
+    void start(Stage stage);
 
     /**
      * Shutdown the JavaFX application and stop the platform bundle.
-     *
-     * @throws org.osgi.framework.BundleException In case of this bundle can not be stopped
      */
-    void stop() throws BundleException;
+    void stop();
 
     /**
      * Notify the preloader about the preloading progress.

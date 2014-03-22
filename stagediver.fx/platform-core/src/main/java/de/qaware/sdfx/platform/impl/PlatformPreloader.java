@@ -42,7 +42,7 @@ public class PlatformPreloader extends Preloader {
     private PreloaderNotificationServiceImpl notificationService;
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         PreloaderNotificationService pns = lookup.lookup(PreloaderNotificationService.class);
         if (pns instanceof PreloaderNotificationServiceImpl) {
             notificationService = (PreloaderNotificationServiceImpl) pns;
@@ -50,7 +50,7 @@ public class PlatformPreloader extends Preloader {
     }
 
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws IOException {
         LOGGER.info("Starting platform preloader");
 
         URL splashFxmlUrl = findSplashScreen();
