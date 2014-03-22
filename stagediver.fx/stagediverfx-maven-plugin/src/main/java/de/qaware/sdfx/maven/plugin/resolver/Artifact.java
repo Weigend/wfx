@@ -3,9 +3,9 @@
 //           Module: stagediverfx-maven-plugin
 //  ______________________________________________________________________________
 //
-//       created by: christian
+//       created by: christian.fritz
 //    creation date: 22.03.14 11:30
-//      description:
+//      description: Transfer object for artifacts.
 //  ______________________________________________________________________________
 //
 //        Copyright: (c) QAware GmbH, all rights reserved
@@ -21,6 +21,11 @@ import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.io.File;
 
+/**
+ * This is a transfer object for artifact data.
+ *
+ * @author christian.fritz
+ */
 public class Artifact {
 
     private final String groupId;
@@ -37,14 +42,42 @@ public class Artifact {
 
     private final VersionRange versionRange;
 
+    /**
+     * Create a new artifact.
+     *
+     * @param groupId    The group id of the artifact
+     * @param artifactId The artifact id
+     * @param version    The version
+     * @param file       The local file path
+     */
     public Artifact(String groupId, String artifactId, String version, File file) {
         this(groupId, artifactId, VersionRange.createFromVersion(version), "", "", "", file);
     }
 
+    /**
+     * Create a new artifact.
+     *
+     * @param groupId    The group id of the artifact
+     * @param artifactId The artifact id
+     * @param version    The version
+     * @param classifier The classifier for this artifact (eg. test-jar)
+     * @param file       The local file path
+     */
     public Artifact(String groupId, String artifactId, String version, String classifier, File file) {
         this(groupId, artifactId, VersionRange.createFromVersion(version), "", "", classifier, file);
     }
 
+    /**
+     * Create a new artifact.
+     *
+     * @param groupId      The group id of the artifact
+     * @param artifactId   The artifact id
+     * @param versionRange The allowed version rage for this artifact
+     * @param scope        The scope
+     * @param type         The type of this artifact.
+     * @param classifier   The classifier for this artifact (eg. test-jar)
+     * @param file         The local file path
+     */
     public Artifact(String groupId, String artifactId, VersionRange versionRange, String scope, String type, String classifier, File file) {
         this.groupId = groupId;
         this.artifactId = artifactId;
@@ -83,6 +116,11 @@ public class Artifact {
         return versionRange;
     }
 
+    /**
+     * Convert this artifact into an aether artifact.
+     *
+     * @return The converted artifact.
+     */
     public org.sonatype.aether.artifact.Artifact asAetherArtifact() {
         return new DefaultArtifact(
                 getGroupId(),
@@ -95,6 +133,11 @@ public class Artifact {
         );
     }
 
+    /**
+     * Convert this artifact into a maven artifact.
+     *
+     * @return The converted artifact.
+     */
     public org.apache.maven.artifact.Artifact asMavenArtifact() {
         return new org.apache.maven.artifact.DefaultArtifact(
                 getGroupId(),
@@ -107,6 +150,12 @@ public class Artifact {
         );
     }
 
+    /**
+     * Create a artifact from an aether artifact.
+     *
+     * @param artifact The aether artifact.
+     * @return The converted artifact.
+     */
     public static Artifact fromArtifact(org.sonatype.aether.artifact.Artifact artifact) {
         return new Artifact(
                 artifact.getGroupId(),
@@ -117,6 +166,12 @@ public class Artifact {
         );
     }
 
+    /**
+     * Create a artifact from a maven artifact.
+     *
+     * @param artifact The maven artifact.
+     * @return The converted artifact.
+     */
     public static Artifact fromArtifact(org.apache.maven.artifact.Artifact artifact) {
         return new Artifact(
                 artifact.getGroupId(),
@@ -175,6 +230,4 @@ public class Artifact {
                 .append("versionRange", versionRange)
                 .toString();
     }
-
-
 }

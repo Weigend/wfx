@@ -18,8 +18,18 @@ import java.util.List;
 
 /**
  * This maven plugin compiles all css files into bss to use them with javafx.
+ * <p/>
+ * It binds to the process-resources phase and compiles all cascading stylesheets (CSS) to binary style sheets (BSS).
+ * See {@see http://docs.oracle.com/javafx/2/deployment/javafx_ant_task_reference.htm#CIAEFCGA} for more information
+ * about the binary stylesheets.
+ *
+ * @author christian.fritz
  */
-@Mojo(name = "binary-css", defaultPhase = LifecyclePhase.PROCESS_RESOURCES, requiresProject = true)
+@Mojo(
+        name = "binary-css",
+        defaultPhase = LifecyclePhase.PROCESS_RESOURCES,
+        requiresProject = true
+)
 public class BinaryCssMojo extends AbstractMojo {
 
     /**
@@ -27,17 +37,19 @@ public class BinaryCssMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/binary-css", required = true)
     protected File outputDirectory;
+
     /**
      * The list of resources we want to transfer.
      */
-
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
     protected List<Resource> resources;
+
     /**
      * The Maven project.
      */
     @Parameter(defaultValue = "${project}", required = true, readonly = true)
     protected MavenProject project;
+
     protected PackagerLib packager = new PackagerLib();
 
     @Override
@@ -66,6 +78,12 @@ public class BinaryCssMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Add a resource to the bss params for compiling the css file.
+     *
+     * @param bssParams The bss params.
+     * @param resource  The resources they should be included.
+     */
     private void addCssForResource(CreateBSSParams bssParams, Resource resource) {
         DirectoryScanner scanner = new DirectoryScanner();
         scanner.setIncludes(new String[]{"**/*.css"});
@@ -96,7 +114,6 @@ public class BinaryCssMojo extends AbstractMojo {
             }
         }
     }
-
 
     /**
      * Update the Maven project resources.
