@@ -13,10 +13,9 @@
 package de.qaware.sdfx.maven.plugin.run;
 
 import de.qaware.sdfx.main.Main;
-import de.qaware.sdfx.maven.plugin.run.ArtifactResolver;
-import de.qaware.sdfx.maven.plugin.run.RunMojo;
+import de.qaware.sdfx.maven.plugin.resolver.Artifact;
+import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.felix.framework.FrameworkFactory;
-import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Build;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
@@ -40,6 +39,11 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.*;
 
+/**
+ * Test for the stagediver.fx run mojo
+ *
+ * @author christian.fritz
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class RunMojoTest {
 
@@ -82,21 +86,18 @@ public class RunMojoTest {
         when(framework.waitForStop(0)).thenReturn(
                 new FrameworkEvent(FrameworkEvent.STOPPED_UPDATE, mock(Bundle.class), null),
                 new FrameworkEvent(FrameworkEvent.STOPPED, mock(Bundle.class), null));
-        Set<File> resolvedFiles = new HashSet<>();
-        resolvedFiles.add(new File("test.jar"));
-        resolvedFiles.add(new File("test.war"));
+        Set<Artifact> resolvedFiles = new HashSet<>();
+        resolvedFiles.add(new Artifact("group", "artifact", "1.0", new File("test.jar")));
+        resolvedFiles.add(new Artifact("group", "artifact-war", "1.0", new File("test.war")));
 
-        when(resolver.getResolvedFiles()).thenReturn(resolvedFiles);
+        when(resolver.getResolvedArtifacts()).thenReturn(resolvedFiles);
     }
 
 
     @Test
-    //@Ignore
     public void testExecute() throws Exception {
         mojo.execute();
-
         verify(framework).init();
-
         verify(framework, times(2)).start();
         verify(framework, times(2)).waitForStop(0);
     }
@@ -119,8 +120,6 @@ public class RunMojoTest {
 
     @Test
     public void testRunFramework() throws Exception {
-
-
         mojo.runFramework();
         verify(framework, times(2)).start();
         verify(framework, times(2)).waitForStop(0);
@@ -128,11 +127,10 @@ public class RunMojoTest {
 
     @Test
     public void testGetBundles() throws Exception {
-
-        Set<Artifact> artifacts = new HashSet<>();
-        Artifact a1 = mock(Artifact.class);
+        Set<org.apache.maven.artifact.Artifact> artifacts = new HashSet<>();
+        org.apache.maven.artifact.Artifact a1 = mock(org.apache.maven.artifact.Artifact.class);
         when(a1.getFile()).thenReturn(new File("test.jar"));
-        Artifact a2 = mock(Artifact.class);
+        org.apache.maven.artifact.Artifact a2 = mock(org.apache.maven.artifact.Artifact.class);
         when(a2.getFile()).thenReturn(new File("test.war"));
         artifacts.add(a1);
         artifacts.add(a2);
@@ -141,5 +139,4 @@ public class RunMojoTest {
         Set<File> actual = mojo.getBundles();
         assertThat(actual.size(), is(2));
     }
-
 }

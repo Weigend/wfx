@@ -15,9 +15,8 @@ package de.qaware.sdfx.maven.plugin.run;
 import de.qaware.sdfx.main.AutoProcessor;
 import de.qaware.sdfx.main.Main;
 import de.qaware.sdfx.main.StartupLogger;
+import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.maven.artifact.Artifact;
-import org.apache.maven.artifact.resolver.ArtifactNotFoundException;
-import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.*;
@@ -28,9 +27,7 @@ import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.resolution.DependencyResolutionException;
 
 import java.io.File;
 import java.io.IOException;
@@ -107,45 +104,55 @@ public class RunMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
+        StartupLogger.Level.DEBUG.setEnabled(getLog().isDebugEnabled());
+        System.setProperty("binary.css", "false");
+        initFramework();
+        AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
+        bundleProcessor.initStartLevels();
+        bundleProcessor.installBundles(getBundles());
+        bundleProcessor.startBundles();
+        runFramework();
+    }
+
+    protected void runFramework() throws MojoExecutionException {
         try {
-            StartupLogger.Level.DEBUG.setEnabled(getLog().isDebugEnabled());
-            System.setProperty("binary.css", "false");
-            initFramework();
-            AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
-            bundleProcessor.initStartLevels();
-            bundleProcessor.installBundles(getBundles());
-            bundleProcessor.startBundles();
-            runFramework();
-        } catch (Exception e) {
-            throw new MojoExecutionException("Startup failed", e);
+            FrameworkEvent event;
+            do {
+                getLog().info("Start the framework.");
+                framework.start();
+                // Wait for framework to stop to exit the VM.
+                event = framework.waitForStop(0);
+            }
+            // If the framework was updated, then restart it.
+            while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
+            getLog().info("Framework stopped");
+        }
+        catch (InterruptedException e) {
+            throw new MojoExecutionException("Unexpected interrupt while executing stagediver.fx", e);
+        }
+        catch (BundleException e) {
+            throw new MojoExecutionException("Start of stagediver.fx framework was not possible", e);
         }
     }
 
-    protected void runFramework() throws BundleException, InterruptedException {
-        FrameworkEvent event;
-        do {
-            getLog().info("Start the framework.");
-            framework.start();
-            // Wait for framework to stop to exit the VM.
-            event = framework.waitForStop(0);
+    protected void initFramework() throws MojoExecutionException {
+        try {
+            getLog().info("Init the framework");
+            FrameworkFactory factory = defaultRunner.getFrameworkFactory();
+            getLog().debug("Using framework factory: " + factory);
+            framework = factory.newFramework(mergeProperties());
+            initShutdownHook();
+            framework.init();
         }
-        // If the framework was updated, then restart it.
-        while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-        getLog().info("Framework stopped");
+        catch (BundleException e) {
+            throw new MojoExecutionException("Initialisation of osgi framework failed", e);
+        }
     }
 
-    protected void initFramework() throws Exception {
-        getLog().info("Init the framework");
-        FrameworkFactory factory = defaultRunner.getFrameworkFactory();
-        getLog().debug("Using framework factory: " + factory);
-        framework = factory.newFramework(mergeProperties());
-        framework.init();
-        initShutdownHook();
-    }
-
-    protected Set<File> getBundles() throws ArtifactNotFoundException, ArtifactResolutionException, MojoExecutionException, IOException, DependencyResolutionException, DependencyCollectionException {
+    protected Set<File> getBundles() throws MojoExecutionException {
         Set<File> bundles = new HashSet<>();
-        String projectBundle = project.getBuild().getDirectory() + File.separator + project.getBuild().getFinalName() + BUNDLE_EXTESION;
+        String projectBundle = project.getBuild().getDirectory() +
+                File.separator + project.getBuild().getFinalName() + BUNDLE_EXTESION;
 
         bundles.add(new File(projectBundle));
 
@@ -156,21 +163,25 @@ public class RunMojo extends AbstractMojo {
                 bundles.add(dependency.getFile());
             }
         }
-
         addPlatformBundles(bundles);
         return bundles;
     }
 
-    private void addPlatformBundles(Set<File> bundles) throws IOException, DependencyResolutionException, DependencyCollectionException {
-        ArtifactResolver resolver = getArtifactResolver();
-        resolver.addUnresolvedArtifact(ArtifactResolver.resolvePlatformArtifact());
-        resolver.resolveArtifacts();
+    private void addPlatformBundles(Set<File> bundles) throws MojoExecutionException {
+        try {
+            ArtifactResolver resolver = getArtifactResolver();
+            resolver.addPlatformArtifact();
+            resolver.resolveArtifacts();
 
-        for (File f : resolver.getResolvedFiles()) {
-            if (f.getName().endsWith(BUNDLE_EXTESION)) {
-                getLog().debug("Adding dependency " + f + " as automatic platform bundle");
-                bundles.add(f);
+            for (de.qaware.sdfx.maven.plugin.resolver.Artifact f : resolver.getResolvedArtifacts()) {
+                if (f.getFile().getName().endsWith(BUNDLE_EXTESION)) {
+                    getLog().debug("Adding dependency " + f + " as automatic platform bundle");
+                    bundles.add(f.getFile());
+                }
             }
+        }
+        catch (IOException e) {
+            throw new MojoExecutionException("Can not read stagediver.fx platform bundle coordinates", e);
         }
     }
 
@@ -193,7 +204,8 @@ public class RunMojo extends AbstractMojo {
                         framework.stop();
                         framework.waitForStop(0);
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     getLog().error("Error stopping framework", ex);
                 }
             }

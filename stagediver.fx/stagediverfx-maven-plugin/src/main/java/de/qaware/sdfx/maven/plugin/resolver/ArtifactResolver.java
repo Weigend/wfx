@@ -10,11 +10,11 @@
 //        Copyright: (c) QAware GmbH, all rights reserved
 // ______________________________________________________________________________
 
-package de.qaware.sdfx.maven.plugin.run;
+package de.qaware.sdfx.maven.plugin.resolver;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.artifact.Artifact;
 import org.sonatype.aether.collection.CollectRequest;
 import org.sonatype.aether.collection.DependencyCollectionException;
 import org.sonatype.aether.graph.Dependency;
@@ -26,13 +26,14 @@ import org.sonatype.aether.resolution.DependencyResolutionException;
 import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
 /**
  * Resolve the final artifacts including all transitive artifacts from a set of maven artifacts.
+ *
+ * @author christian.fritz
  */
 public class ArtifactResolver {
 
@@ -51,9 +52,9 @@ public class ArtifactResolver {
      */
     private List<RemoteRepository> remoteRepos;
 
-    private Set<File> artifacts = new HashSet<>();
+    private Set<Artifact> artifacts = new HashSet<>();
 
-    private Set<Artifact> artifactsToResolve = new HashSet<>();
+    private Set<org.sonatype.aether.artifact.Artifact> artifactsToResolve = new HashSet<>();
 
     /**
      * Initiate a new artifact resolver.
@@ -74,6 +75,15 @@ public class ArtifactResolver {
      * @param artifact The unresolved artifact
      */
     public void addUnresolvedArtifact(Artifact artifact) {
+        artifactsToResolve.add(artifact.asAetherArtifact());
+    }
+
+    /**
+     * Add a artifact that should be resolved.
+     *
+     * @param artifact The unresolved artifact
+     */
+    public void addUnresolvedArtifact(org.sonatype.aether.artifact.Artifact artifact) {
         artifactsToResolve.add(artifact);
     }
 
@@ -82,7 +92,7 @@ public class ArtifactResolver {
      *
      * @return The resolved file set.
      */
-    public Set<File> getResolvedFiles() {
+    public Set<Artifact> getResolvedArtifacts() {
         return Collections.unmodifiableSet(artifacts);
     }
 
@@ -92,10 +102,15 @@ public class ArtifactResolver {
      * @throws DependencyResolutionException In case of the dependencies can not be resolved.
      * @throws DependencyCollectionException In case of the dependencies can not be collected.
      */
-    public void resolveArtifacts() throws DependencyResolutionException, DependencyCollectionException {
-        for (Artifact artifact : artifactsToResolve) {
-            artifacts.addAll(resolveArtifact(artifact));
-            artifactsToResolve.remove(artifact);
+    public void resolveArtifacts() throws MojoExecutionException {
+        try {
+            for (org.sonatype.aether.artifact.Artifact artifact : artifactsToResolve) {
+                artifacts.addAll(resolveArtifact(artifact));
+                artifactsToResolve.remove(artifact);
+            }
+        }
+        catch (DependencyCollectionException | DependencyResolutionException e) {
+            throw new MojoExecutionException("Dependency Resolution of platform bundle failed", e);
         }
     }
 
@@ -107,7 +122,7 @@ public class ArtifactResolver {
      * @throws DependencyResolutionException In case of the dependencies can not be resolved.
      * @throws DependencyCollectionException In case of the dependencies can not be collected.
      */
-    private List<File> resolveArtifact(Artifact artifact) throws DependencyResolutionException, DependencyCollectionException {
+    private List<Artifact> resolveArtifact(org.sonatype.aether.artifact.Artifact artifact) throws DependencyResolutionException, DependencyCollectionException {
         ArtifactRequest request = new ArtifactRequest();
         request.setArtifact(artifact);
         request.setRepositories(remoteRepos);
@@ -123,14 +138,20 @@ public class ArtifactResolver {
 
         PreorderNodeListGenerator nlg = new PreorderNodeListGenerator();
         node.accept(nlg);
-        return nlg.getFiles();
+
+        List<Artifact> artifactList = new ArrayList<>();
+        for (org.sonatype.aether.artifact.Artifact artifact1 : nlg.getArtifacts(false)) {
+            artifactList.add(Artifact.fromArtifact(artifact1));
+        }
+
+        return artifactList;
     }
 
-    protected static Artifact resolvePlatformArtifact() throws IOException {
+    public void addPlatformArtifact() throws IOException {
         Properties props = new Properties();
         try (InputStream propStream = ArtifactResolver.class.getResourceAsStream("/plugin.properties")) {
             props.load(propStream);
         }
-        return new DefaultArtifact(props.getProperty("platform.coordinate"));
+        addUnresolvedArtifact(new DefaultArtifact(props.getProperty("platform.coordinate")));
     }
 }
