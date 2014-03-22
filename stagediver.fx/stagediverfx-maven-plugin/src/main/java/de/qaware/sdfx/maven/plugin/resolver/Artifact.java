@@ -126,8 +126,8 @@ public class Artifact {
                 getGroupId(),
                 getArtifactId(),
                 getClassifier(),
-                "",
-                getVersionRange().getRecommendedVersion().getQualifier(),
+                getFile() != null ? getFile().getName().substring(getFile().getName().lastIndexOf('.')) : "jar",
+                getVersionRange().getRecommendedVersion().toString(),
                 null,
                 getFile()
         );
@@ -160,7 +160,9 @@ public class Artifact {
         return new Artifact(
                 artifact.getGroupId(),
                 artifact.getArtifactId(),
-                artifact.getVersion(),
+                VersionRange.createFromVersion(artifact.getVersion()),
+                "",
+                "jar",
                 artifact.getClassifier(),
                 artifact.getFile()
         );
@@ -176,7 +178,9 @@ public class Artifact {
         return new Artifact(
                 artifact.getGroupId(),
                 artifact.getArtifactId(),
-                artifact.getVersion(),
+                artifact.getVersionRange(),
+                artifact.getScope(),
+                artifact.getType(),
                 artifact.getClassifier(),
                 artifact.getFile()
         );
