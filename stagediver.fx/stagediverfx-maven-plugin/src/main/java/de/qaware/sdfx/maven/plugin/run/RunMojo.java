@@ -33,7 +33,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-
+/**
+ * The stagediver.fx run goal.
+ * <p/>
+ * The goal "run" is a wrapper to start a single module or the full project within the OSGi Container. Which part of the
+ * full application is started depends on the selected module from where you start the plugin. It always starts current
+ * selected module (current working directory) inclusive all dependencies and the dependencies of the stagediver.fx
+ * platform module (de.qaware.stagediver.fx:platform-full).
+ *
+ * @author christian.fritz
+ */
 @Mojo(
         name = "run",
         defaultPhase = LifecyclePhase.PACKAGE,
@@ -41,7 +50,9 @@ import java.util.*;
         requiresProject = true
 )
 public class RunMojo extends AbstractMojo {
-
+    /**
+     * The default properties which are essentially needed for starting the stagediver.fx within the osgi framework.
+     */
     protected static final Map<String, String> DEFAULT_PROPS = new HashMap<String, String>() {
         {
             put("org.osgi.framework.system.packages.extra", "javafx.animation, javafx.application, javafx.beans, " +
@@ -69,6 +80,11 @@ public class RunMojo extends AbstractMojo {
     };
     private static final String BUNDLE_EXTESION = ".jar";
 
+    /**
+     * Additional configuration properties from the pom.
+     * <p/>
+     * The can override the default properties.
+     */
     @Parameter(alias = "osgiProperties")
     protected Map<String, String> configProps;
 
@@ -78,8 +94,14 @@ public class RunMojo extends AbstractMojo {
     @Component
     protected MavenProject project;
 
+    /**
+     * The osgi framework instance.
+     */
     protected Framework framework;
 
+    /**
+     * The stagediver.fx default runner.
+     */
     protected Main defaultRunner = new Main();
 
     /**
@@ -100,8 +122,16 @@ public class RunMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
     protected List<RemoteRepository> remoteRepos;
 
+    /**
+     * The artifact resolver.
+     */
     protected ArtifactResolver artifactResolver;
 
+    /**
+     * Executes the run mojo.
+     *
+     * @throws MojoExecutionException In case the required artifacts can not be resolved or the framework can not be started.
+     */
     @Override
     public void execute() throws MojoExecutionException {
         StartupLogger.Level.DEBUG.setEnabled(getLog().isDebugEnabled());
@@ -114,6 +144,11 @@ public class RunMojo extends AbstractMojo {
         runFramework();
     }
 
+    /**
+     * Start and wait for stop of the osgi framework.
+     *
+     * @throws MojoExecutionException In case of the starting of framework is not possible.
+     */
     protected void runFramework() throws MojoExecutionException {
         try {
             FrameworkEvent event;
@@ -135,6 +170,11 @@ public class RunMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Initialize the osgi framework.
+     *
+     * @throws MojoExecutionException In case of the initialisation of the osgi framework failed.
+     */
     protected void initFramework() throws MojoExecutionException {
         try {
             getLog().info("Init the framework");
@@ -149,6 +189,12 @@ public class RunMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Get a set of all bundles they should be loaded when starting the osgi framework.
+     *
+     * @return A set of all bundles the should be loaded.
+     * @throws MojoExecutionException In case of the required stagediver.fx platform bundles can not be resolved.
+     */
     protected Set<File> getBundles() throws MojoExecutionException {
         Set<File> bundles = new HashSet<>();
         String projectBundle = project.getBuild().getDirectory() +
@@ -167,6 +213,12 @@ public class RunMojo extends AbstractMojo {
         return bundles;
     }
 
+    /**
+     * Resolve the required stagediver.fx platform bundles and add it to the bundles param.
+     *
+     * @param bundles Add the additional platform bundles to this set.
+     * @throws MojoExecutionException In case of the bundles can not be resolved.
+     */
     private void addPlatformBundles(Set<File> bundles) throws MojoExecutionException {
         try {
             ArtifactResolver resolver = getArtifactResolver();
@@ -185,6 +237,11 @@ public class RunMojo extends AbstractMojo {
         }
     }
 
+    /**
+     * Merge the configurated properties from the pom with the default properties.
+     *
+     * @return The merged properties map.
+     */
     protected Map<String, String> mergeProperties() {
         if (configProps == null) {
             return DEFAULT_PROPS;
@@ -194,6 +251,18 @@ public class RunMojo extends AbstractMojo {
             props.put(entry.getKey(), entry.getValue());
         }
         return props;
+    }
+
+    /**
+     * Get the artifact resolver.
+     *
+     * @return The artifact resolver.
+     */
+    protected ArtifactResolver getArtifactResolver() {
+        if (artifactResolver == null) {
+            artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
+        }
+        return artifactResolver;
     }
 
     private void initShutdownHook() {
@@ -210,12 +279,5 @@ public class RunMojo extends AbstractMojo {
                 }
             }
         });
-    }
-
-    protected ArtifactResolver getArtifactResolver() {
-        if (artifactResolver == null) {
-            artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
-        }
-        return artifactResolver;
     }
 }

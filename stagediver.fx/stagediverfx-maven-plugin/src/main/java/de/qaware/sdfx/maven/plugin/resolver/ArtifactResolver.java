@@ -52,8 +52,14 @@ public class ArtifactResolver {
      */
     private List<RemoteRepository> remoteRepos;
 
+    /**
+     * A set with all artifacts they can be successfully resolved.
+     */
     private Set<Artifact> artifacts = new HashSet<>();
 
+    /**
+     * A set with all artifacts the currently are unresolved.
+     */
     private Set<org.sonatype.aether.artifact.Artifact> artifactsToResolve = new HashSet<>();
 
     /**
@@ -99,8 +105,7 @@ public class ArtifactResolver {
     /**
      * Resolve the added unresolved artifacts.
      *
-     * @throws DependencyResolutionException In case of the dependencies can not be resolved.
-     * @throws DependencyCollectionException In case of the dependencies can not be collected.
+     * @throws MojoExecutionException In case of the dependency resolution failed.
      */
     public void resolveArtifacts() throws MojoExecutionException {
         try {
@@ -147,6 +152,11 @@ public class ArtifactResolver {
         return artifactList;
     }
 
+    /**
+     * Add the stagediver.fx platform meta dependency as additional dependency to the unresolved artifact list.
+     *
+     * @throws IOException In case of the coordinates for the dependency can not be read.
+     */
     public void addPlatformArtifact() throws IOException {
         Properties props = new Properties();
         try (InputStream propStream = ArtifactResolver.class.getResourceAsStream("/plugin.properties")) {
