@@ -276,7 +276,7 @@ public class Main {
      * @return The fully instanciate factory to initialize the osgi container.
      * @throws Exception In case of no factory can be found.
      */
-    public FrameworkFactory getFrameworkFactory() throws Exception {
+    public FrameworkFactory getFrameworkFactory() {
         ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
         return loader.iterator().next();
     }
