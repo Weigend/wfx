@@ -75,7 +75,7 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
             FrameworkUtil.getBundle(getClass()).stop();
         }
         catch (BundleException e) {
-            throw new RuntimeException(e);
+            LOGGER.error("Can not stop bundle", e);
         }
     }
 
