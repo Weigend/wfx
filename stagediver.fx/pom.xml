@@ -216,7 +216,7 @@
                 <type>test-jar</type>
             </dependency>
             <dependency>
-            <groupId>junit</groupId>
+                <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.11</version>
                 <scope>test</scope>
@@ -248,17 +248,10 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.6.5.201403032054</version>
-                    <dependencies>
-                        <dependency>
-                            <groupId>org.ow2.asm</groupId>
-                            <artifactId>asm-all</artifactId>
-                            <version>${version.asm}</version>
-                        </dependency>
-                    </dependencies>
+                    <version>0.7.0.201403182114</version>
                 </plugin>
                 <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.5.1</version>
                     <configuration>
@@ -304,7 +297,7 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
             <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <source>${project.build.version}</source>
