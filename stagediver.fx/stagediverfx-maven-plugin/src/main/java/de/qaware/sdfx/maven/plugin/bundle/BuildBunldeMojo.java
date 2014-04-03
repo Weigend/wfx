@@ -16,24 +16,28 @@ import com.sun.javafx.tools.packager.DeployParams;
 import com.sun.javafx.tools.packager.PackagerException;
 import com.sun.javafx.tools.packager.PackagerLib;
 import com.sun.javafx.tools.packager.bundlers.Bundler;
+import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Resource;
-import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Build a platform dependendend bundle.
  */
-@Mojo(name = "build-bundle", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true)
-public class BuildBunldeMojo extends AbstractMojo {
+@Mojo(name = "build-bundle", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+public class BuildBunldeMojo extends AbstractBundleResolverMojo {
 
     /**
      * The output directory into which to copy the resources.
@@ -46,11 +50,7 @@ public class BuildBunldeMojo extends AbstractMojo {
 
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
     protected List<Resource> resources;
-    /**
-     * The Maven project.
-     */
-    @Parameter(defaultValue = "${project}", required = true, readonly = true)
-    protected MavenProject project;
+
     protected PackagerLib packager = new PackagerLib();
 
     @Override
@@ -68,11 +68,24 @@ public class BuildBunldeMojo extends AbstractMojo {
         deployParams.setOutdir(outputDirectory);
         deployParams.setBundleType(Bundler.BundleType.ALL);
         deployParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
+
+
         try {
+            copyBundles(deployParams);
             packager.generateDeploymentPackages(deployParams);
-        }
-        catch (PackagerException e) {
+        } catch (PackagerException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
+        Set<File> bundles = getBundles();
+        File bundlesDir = new File(outputDirectory, "bundles/");
+        if (!bundlesDir.exists()) bundlesDir.mkdir();
+        for (File file : bundles) {
+            Files.copy(file.toPath(), new File(bundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        deployParams.addResource(outputDirectory, "bundles");
+
     }
 }
