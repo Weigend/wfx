@@ -55,6 +55,7 @@ public class RunMojoTest {
 
     @Mock
     private Framework framework;
+
     @Mock
     private ArtifactResolver resolver;
 
