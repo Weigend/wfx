@@ -21,6 +21,7 @@ import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.osgi.framework.Bundle;
@@ -46,7 +47,7 @@ import static org.mockito.Mockito.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RunMojoTest {
-
+    @InjectMocks
     private RunMojo mojo;
 
     @Mock
@@ -66,14 +67,11 @@ public class RunMojoTest {
     @Mock
     private Build projectBuild;
 
+    @Mock
+    private Main runner;
+
     @Before
     public void setUp() throws Exception {
-        mojo = new RunMojo();
-        mojo.defaultRunner = mock(Main.class);
-        mojo.framework = framework;
-        mojo.artifactResolver = resolver;
-        mojo.project = project;
-
         when(project.getBuild()).thenReturn(projectBuild);
         when(projectBuild.getOutputDirectory()).thenReturn("outputDir");
         when(projectBuild.getFinalName()).thenReturn("finalName");
@@ -123,20 +121,5 @@ public class RunMojoTest {
         mojo.runFramework();
         verify(framework, times(2)).start();
         verify(framework, times(2)).waitForStop(0);
-    }
-
-    @Test
-    public void testGetBundles() throws Exception {
-        Set<org.apache.maven.artifact.Artifact> artifacts = new HashSet<>();
-        org.apache.maven.artifact.Artifact a1 = mock(org.apache.maven.artifact.Artifact.class);
-        when(a1.getFile()).thenReturn(new File("test.jar"));
-        org.apache.maven.artifact.Artifact a2 = mock(org.apache.maven.artifact.Artifact.class);
-        when(a2.getFile()).thenReturn(new File("test.war"));
-        artifacts.add(a1);
-        artifacts.add(a2);
-        when(project.getArtifacts()).thenReturn(artifacts);
-
-        Set<File> actual = mojo.getBundles();
-        assertThat(actual.size(), is(2));
     }
 }

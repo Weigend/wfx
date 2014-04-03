@@ -15,23 +15,19 @@ package de.qaware.sdfx.maven.plugin.run;
 import de.qaware.sdfx.main.AutoProcessor;
 import de.qaware.sdfx.main.Main;
 import de.qaware.sdfx.main.StartupLogger;
-import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
-import org.apache.maven.artifact.Artifact;
-import org.apache.maven.plugin.AbstractMojo;
+import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
 import org.apache.maven.plugin.MojoExecutionException;
-import org.apache.maven.plugins.annotations.*;
-import org.apache.maven.project.MavenProject;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
+import org.apache.maven.plugins.annotations.Mojo;
+import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkEvent;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
-import org.sonatype.aether.RepositorySystem;
-import org.sonatype.aether.RepositorySystemSession;
-import org.sonatype.aether.repository.RemoteRepository;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The stagediver.fx run goal.
@@ -49,7 +45,7 @@ import java.util.*;
         requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
         requiresProject = true
 )
-public class RunMojo extends AbstractMojo {
+public class RunMojo extends AbstractBundleResolverMojo {
     /**
      * The default properties which are essentially needed for starting the stagediver.fx within the osgi framework.
      */
@@ -78,7 +74,6 @@ public class RunMojo extends AbstractMojo {
                     ".stagediver.fx.windowmanager-api@1");
         }
     };
-    private static final String BUNDLE_EXTESION = ".jar";
 
     /**
      * Additional configuration properties from the pom.
@@ -89,12 +84,6 @@ public class RunMojo extends AbstractMojo {
     protected Map<String, String> configProps;
 
     /**
-     * The Maven project.
-     */
-    @Component
-    protected MavenProject project;
-
-    /**
      * The osgi framework instance.
      */
     protected Framework framework;
@@ -103,29 +92,6 @@ public class RunMojo extends AbstractMojo {
      * The stagediver.fx default runner.
      */
     protected Main defaultRunner = new Main();
-
-    /**
-     * The entry point to Aether, i.e. the component doing all the work.
-     */
-    @Component
-    protected RepositorySystem repoSystem;
-
-    /**
-     * The current repository/network configuration of Maven.
-     */
-    @Parameter(defaultValue = "${repositorySystemSession}", readonly = true)
-    protected RepositorySystemSession repoSession;
-
-    /**
-     * The project's remote repositories to use for the resolution.
-     */
-    @Parameter(defaultValue = "${project.remoteProjectRepositories}", readonly = true)
-    protected List<RemoteRepository> remoteRepos;
-
-    /**
-     * The artifact resolver.
-     */
-    protected ArtifactResolver artifactResolver;
 
     /**
      * Executes the run mojo.
@@ -161,11 +127,9 @@ public class RunMojo extends AbstractMojo {
             // If the framework was updated, then restart it.
             while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
             getLog().info("Framework stopped");
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             throw new MojoExecutionException("Unexpected interrupt while executing stagediver.fx", e);
-        }
-        catch (BundleException e) {
+        } catch (BundleException e) {
             throw new MojoExecutionException("Start of stagediver.fx framework was not possible", e);
         }
     }
@@ -183,57 +147,8 @@ public class RunMojo extends AbstractMojo {
             framework = factory.newFramework(mergeProperties());
             initShutdownHook();
             framework.init();
-        }
-        catch (BundleException e) {
+        } catch (BundleException e) {
             throw new MojoExecutionException("Initialisation of osgi framework failed", e);
-        }
-    }
-
-    /**
-     * Get a set of all bundles they should be loaded when starting the osgi framework.
-     *
-     * @return A set of all bundles the should be loaded.
-     * @throws MojoExecutionException In case of the required stagediver.fx platform bundles can not be resolved.
-     */
-    protected Set<File> getBundles() throws MojoExecutionException {
-        Set<File> bundles = new HashSet<>();
-        String projectBundle = project.getBuild().getDirectory() +
-                File.separator + project.getBuild().getFinalName() + BUNDLE_EXTESION;
-
-        bundles.add(new File(projectBundle));
-
-        for (Object obj : project.getArtifacts()) {
-            Artifact dependency = (Artifact) obj;
-            if (dependency.getFile().getName().endsWith(BUNDLE_EXTESION)) {
-                getLog().debug("Adding dependency " + dependency.getFile() + " as bundle");
-                bundles.add(dependency.getFile());
-            }
-        }
-        addPlatformBundles(bundles);
-        return bundles;
-    }
-
-    /**
-     * Resolve the required stagediver.fx platform bundles and add it to the bundles param.
-     *
-     * @param bundles Add the additional platform bundles to this set.
-     * @throws MojoExecutionException In case of the bundles can not be resolved.
-     */
-    private void addPlatformBundles(Set<File> bundles) throws MojoExecutionException {
-        try {
-            ArtifactResolver resolver = getArtifactResolver();
-            resolver.addPlatformArtifact();
-            resolver.resolveArtifacts();
-
-            for (de.qaware.sdfx.maven.plugin.resolver.Artifact f : resolver.getResolvedArtifacts()) {
-                if (f.getFile().getName().endsWith(BUNDLE_EXTESION)) {
-                    getLog().debug("Adding dependency " + f + " as automatic platform bundle");
-                    bundles.add(f.getFile());
-                }
-            }
-        }
-        catch (IOException e) {
-            throw new MojoExecutionException("Can not read stagediver.fx platform bundle coordinates", e);
         }
     }
 
@@ -253,18 +168,6 @@ public class RunMojo extends AbstractMojo {
         return props;
     }
 
-    /**
-     * Get the artifact resolver.
-     *
-     * @return The artifact resolver.
-     */
-    protected ArtifactResolver getArtifactResolver() {
-        if (artifactResolver == null) {
-            artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
-        }
-        return artifactResolver;
-    }
-
     private void initShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
             public void run() {
@@ -273,8 +176,7 @@ public class RunMojo extends AbstractMojo {
                         framework.stop();
                         framework.waitForStop(0);
                     }
-                }
-                catch (Exception ex) {
+                } catch (Exception ex) {
                     getLog().error("Error stopping framework", ex);
                 }
             }
