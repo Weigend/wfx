@@ -109,12 +109,12 @@ public class ArtifactResolver {
      */
     public void resolveArtifacts() throws MojoExecutionException {
         try {
-            for (org.sonatype.aether.artifact.Artifact artifact : artifactsToResolve) {
+            Set<org.sonatype.aether.artifact.Artifact> resolveArtefacts = new HashSet<>(artifactsToResolve);
+            for (org.sonatype.aether.artifact.Artifact artifact : resolveArtefacts) {
                 artifacts.addAll(resolveArtifact(artifact));
                 artifactsToResolve.remove(artifact);
             }
-        }
-        catch (DependencyCollectionException | DependencyResolutionException e) {
+        } catch (DependencyCollectionException | DependencyResolutionException e) {
             throw new MojoExecutionException("Dependency Resolution of platform bundle failed", e);
         }
     }
