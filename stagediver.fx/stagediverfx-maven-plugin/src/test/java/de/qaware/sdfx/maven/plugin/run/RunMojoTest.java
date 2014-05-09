@@ -17,6 +17,7 @@ import de.qaware.sdfx.maven.plugin.resolver.Artifact;
 import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.felix.framework.FrameworkFactory;
 import org.apache.maven.model.Build;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,8 +89,17 @@ public class RunMojoTest {
         Set<Artifact> resolvedFiles = new HashSet<>();
         resolvedFiles.add(new Artifact("group", "artifact", "1.0", new File("test.jar")));
         resolvedFiles.add(new Artifact("group", "artifact-war", "1.0", new File("test.war")));
+        initPluginContext();
 
         when(resolver.getResolvedArtifacts()).thenReturn(resolvedFiles);
+    }
+
+    private void initPluginContext() {
+        PluginDescriptor pluginDescriptor = new PluginDescriptor();
+        HashMap<String, Object> context = new HashMap<>();
+        context.put("pluginDescriptor", pluginDescriptor);
+        pluginDescriptor.setVersion("1.0.0");
+        mojo.setPluginContext(context);
     }
 
 

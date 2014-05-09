@@ -16,6 +16,7 @@ import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
@@ -100,7 +101,7 @@ public abstract class AbstractBundleResolverMojo extends AbstractMojo {
     private void addPlatformBundles(Set<File> bundles) throws MojoExecutionException {
         try {
             ArtifactResolver resolver = getArtifactResolver();
-            resolver.addPlatformArtifact();
+            addPlatformArtifact();
             resolver.resolveArtifacts();
 
             for (de.qaware.sdfx.maven.plugin.resolver.Artifact f : resolver.getResolvedArtifacts()) {
@@ -124,5 +125,19 @@ public abstract class AbstractBundleResolverMojo extends AbstractMojo {
             artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
         }
         return artifactResolver;
+    }
+
+    /**
+     * Add the stagediver.fx platform meta dependency as additional dependency to the unresolved artifact list.
+     *
+     * @throws java.io.IOException In case of the coordinates for the dependency can not be read.
+     */
+    protected void addPlatformArtifact() throws IOException {
+        de.qaware.sdfx.maven.plugin.resolver.Artifact platformArtifact =
+                new de.qaware.sdfx.maven.plugin.resolver.Artifact(
+                        "de.qaware.stagediver.fx", "platform-full",
+                        ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), "pom", null);
+
+        getArtifactResolver().addUnresolvedArtifact(platformArtifact);
     }
 }

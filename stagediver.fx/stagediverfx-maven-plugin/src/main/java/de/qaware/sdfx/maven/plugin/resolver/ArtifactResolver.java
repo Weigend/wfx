@@ -23,11 +23,8 @@ import org.sonatype.aether.repository.RemoteRepository;
 import org.sonatype.aether.resolution.ArtifactRequest;
 import org.sonatype.aether.resolution.DependencyRequest;
 import org.sonatype.aether.resolution.DependencyResolutionException;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 import org.sonatype.aether.util.graph.PreorderNodeListGenerator;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -150,18 +147,5 @@ public class ArtifactResolver {
         }
 
         return artifactList;
-    }
-
-    /**
-     * Add the stagediver.fx platform meta dependency as additional dependency to the unresolved artifact list.
-     *
-     * @throws IOException In case of the coordinates for the dependency can not be read.
-     */
-    public void addPlatformArtifact() throws IOException {
-        Properties props = new Properties();
-        try (InputStream propStream = ArtifactResolver.class.getResourceAsStream("/plugin.properties")) {
-            props.load(propStream);
-        }
-        addUnresolvedArtifact(new DefaultArtifact(props.getProperty("platform.coordinate")));
     }
 }
