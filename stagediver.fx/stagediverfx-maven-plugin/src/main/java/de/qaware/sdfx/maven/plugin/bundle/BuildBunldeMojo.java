@@ -17,10 +17,12 @@ import com.sun.javafx.tools.packager.PackagerException;
 import com.sun.javafx.tools.packager.PackagerLib;
 import com.sun.javafx.tools.packager.bundlers.Bundler;
 import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
+import de.qaware.sdfx.maven.plugin.resolver.Artifact;
 import org.apache.maven.model.License;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -35,6 +37,8 @@ import java.util.Set;
 
 /**
  * Build a platform dependendend bundle.
+ *
+ * @author christian.fritz
  */
 @Mojo(name = "build-bundle", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class BuildBunldeMojo extends AbstractBundleResolverMojo {
@@ -44,10 +48,10 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
      */
     @Parameter(defaultValue = "${project.build.directory}/bundle", required = true)
     protected File outputDirectory;
+
     /**
      * The list of resources we want to transfer.
      */
-
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
     protected List<Resource> resources;
 
@@ -79,13 +83,14 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
     }
 
     private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
+
+        getArtifactResolver().addUnresolvedArtifact(new Artifact("de.qaware.stagediver.fx", "platform-runner", ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), null));
         Set<File> bundles = getBundles();
         File bundlesDir = new File(outputDirectory, "bundles/");
         if (!bundlesDir.exists()) bundlesDir.mkdir();
         for (File file : bundles) {
             Files.copy(file.toPath(), new File(bundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-        deployParams.addResource(outputDirectory, "bundles");
-
+        deployParams.addResource(outputDirectory, "bundles/");
     }
 }
