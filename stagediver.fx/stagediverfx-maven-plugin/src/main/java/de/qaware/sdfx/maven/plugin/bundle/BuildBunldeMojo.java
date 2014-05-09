@@ -44,6 +44,11 @@ import java.util.Set;
 public class BuildBunldeMojo extends AbstractBundleResolverMojo {
 
     /**
+     * The path of all osgi bundles within the installer.
+     */
+    public static final String OSGi_BUNDLES_DIR = "bundles/";
+
+    /**
      * The output directory into which to copy the resources.
      */
     @Parameter(defaultValue = "${project.build.directory}/bundle", required = true)
@@ -73,7 +78,6 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
         deployParams.setBundleType(Bundler.BundleType.ALL);
         deployParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
 
-
         try {
             copyBundles(deployParams);
             packager.generateDeploymentPackages(deployParams);
@@ -86,11 +90,13 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
 
         getArtifactResolver().addUnresolvedArtifact(new Artifact("de.qaware.stagediver.fx", "platform-runner", ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), null));
         Set<File> bundles = getBundles();
-        File bundlesDir = new File(outputDirectory, "bundles/");
-        if (!bundlesDir.exists()) bundlesDir.mkdir();
+        File bundlesDir = new File(outputDirectory, OSGi_BUNDLES_DIR);
+        if (!bundlesDir.exists() && !bundlesDir.mkdir()) {
+            throw new MojoExecutionException("Can not create OSGi bundles directory.");
+        }
         for (File file : bundles) {
             Files.copy(file.toPath(), new File(bundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-        deployParams.addResource(outputDirectory, "bundles/");
+        deployParams.addResource(outputDirectory, OSGi_BUNDLES_DIR);
     }
 }
