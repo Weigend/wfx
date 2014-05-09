@@ -74,7 +74,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
             copyBundles(deployParams);
             packager.generateDeploymentPackages(deployParams);
         } catch (PackagerException | IOException e) {
-            e.printStackTrace();
+            throw new MojoFailureException("Can not build install bundle", e);
         }
     }
 
