@@ -20,14 +20,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.sonatype.aether.RepositorySystem;
 import org.sonatype.aether.RepositorySystemSession;
 import org.sonatype.aether.repository.RemoteRepository;
-import org.sonatype.aether.util.artifact.DefaultArtifact;
 
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.hasSize;
 
 /**
@@ -49,9 +47,9 @@ public class ArtifactResolverTest {
     @Test
     public void testAddUnresolvedArtifact() throws Exception {
         resolver.addUnresolvedArtifact(new Artifact("group", "artifact", "1.0", null));
+        resolver.addUnresolvedArtifact(new Artifact("group", "artifact1", "1.1", null));
         Set<org.sonatype.aether.artifact.Artifact> unresolvedArtifacts = getUnresolvedArtifacts();
-        assertThat(unresolvedArtifacts, hasSize(1));
-        assertThat(unresolvedArtifacts, contains((org.sonatype.aether.artifact.Artifact) new DefaultArtifact("group:artifact:1.0")));
+        assertThat(unresolvedArtifacts, hasSize(2));
     }
 
     private Set<org.sonatype.aether.artifact.Artifact> getUnresolvedArtifacts() throws NoSuchFieldException, IllegalAccessException {
