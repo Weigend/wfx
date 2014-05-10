@@ -13,6 +13,7 @@
 
 package de.qaware.sdfx.maven.plugin.resolver;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -122,15 +123,28 @@ public class Artifact {
      * @return The converted artifact.
      */
     public org.sonatype.aether.artifact.Artifact asAetherArtifact() {
-        return new DefaultArtifact(
-                getGroupId(),
-                getArtifactId(),
-                getClassifier(),
-                getFile() != null ? getFile().getName().substring(getFile().getName().lastIndexOf('.')) : "jar",
-                getVersionRange().getRecommendedVersion().toString(),
-                null,
-                getFile()
-        );
+        if (getFile() == null) {
+            String coords =
+                    getGroupId() + ":" + getArtifactId() + ":";
+            if (StringUtils.isNotBlank(getType())) {
+                coords += getType() + ":";
+                if (StringUtils.isNotBlank(getClassifier())) {
+                    coords += getClassifier() + ":";
+                }
+            }
+            coords += getVersionRange().getRecommendedVersion().toString();
+            return new DefaultArtifact(coords);
+        } else {
+            return new DefaultArtifact(
+                    getGroupId(),
+                    getArtifactId(),
+                    getClassifier(),
+                    getFile().getName().substring(getFile().getName().lastIndexOf('.')),
+                    getVersionRange().getRecommendedVersion().toString(),
+                    null,
+                    getFile()
+            );
+        }
     }
 
     /**
