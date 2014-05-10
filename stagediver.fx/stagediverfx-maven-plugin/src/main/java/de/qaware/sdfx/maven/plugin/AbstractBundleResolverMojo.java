@@ -14,6 +14,7 @@ package de.qaware.sdfx.maven.plugin;
 
 import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.maven.artifact.Artifact;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
@@ -133,11 +134,11 @@ public abstract class AbstractBundleResolverMojo extends AbstractMojo {
      * @throws java.io.IOException In case of the coordinates for the dependency can not be read.
      */
     protected void addPlatformArtifact() throws IOException {
+        String version = ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion();
         de.qaware.sdfx.maven.plugin.resolver.Artifact platformArtifact =
                 new de.qaware.sdfx.maven.plugin.resolver.Artifact(
                         "de.qaware.stagediver.fx", "platform-full",
-                        ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), "pom", null);
-
+                        VersionRange.createFromVersion(version), "runtime", "pom", null, null);
         getArtifactResolver().addUnresolvedArtifact(platformArtifact);
     }
 }
