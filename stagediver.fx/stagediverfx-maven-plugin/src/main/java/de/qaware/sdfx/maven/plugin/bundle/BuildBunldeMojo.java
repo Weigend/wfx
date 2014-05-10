@@ -91,7 +91,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
         getArtifactResolver().addUnresolvedArtifact(new Artifact("de.qaware.stagediver.fx", "platform-runner", ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), null));
         Set<File> bundles = getBundles();
         File bundlesDir = new File(outputDirectory, OSGi_BUNDLES_DIR);
-        if (!bundlesDir.exists() && !bundlesDir.mkdir()) {
+        if (!bundlesDir.exists() && !bundlesDir.mkdirs()) {
             throw new MojoExecutionException("Can not create OSGi bundles directory.");
         }
         for (File file : bundles) {
