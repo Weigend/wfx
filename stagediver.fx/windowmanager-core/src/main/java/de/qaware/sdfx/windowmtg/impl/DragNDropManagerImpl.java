@@ -78,6 +78,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         return dragedViewStatus;
     }
 
+    /**
+     * Set the current view status as draged view.
+     *
+     * @param dragedViewStatus The view to set as current draged view.
+     */
     public static void setDragedViewStatus(ViewStatus dragedViewStatus) {
         DragNDropManagerImpl.dragedViewStatus = dragedViewStatus;
     }
@@ -178,7 +183,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     @Override
     public void onDragDroppedNewStage(DragEvent event, Stage dropStage) {
-
         LOGGER.debug("Dropped: {}\n\tSource:\t{}\n\tGestureSource:\t{}\n\tGestureTarget:\t{}",
                 event, event.getSource(), event.getGestureSource(), event.getGestureTarget());
         if (isInvalidDragboard(event)) {
@@ -332,17 +336,13 @@ public class DragNDropManagerImpl implements DragNDropManager {
         double areaY = event.getY() / source.getHeight();
         if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
             return Position.CENTER;
-        }
-        else if (areaY < 0.25) {
+        } else if (areaY < 0.25) {
             return Position.TOP;
-        }
-        else if (areaY >= 0.75) {
+        } else if (areaY >= 0.75) {
             return Position.BOTTOM;
-        }
-        else if (areaX < 0.25) {
+        } else if (areaX < 0.25) {
             return Position.LEFT;
-        }
-        else {
+        } else {
             return Position.RIGHT;
         }
     }
@@ -409,7 +409,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * Close all the invisible drop stages.
      */
     private void closeDropStages() {
-
         if (dropStage != null) {
             dropStage.close();
             dropStage = null;

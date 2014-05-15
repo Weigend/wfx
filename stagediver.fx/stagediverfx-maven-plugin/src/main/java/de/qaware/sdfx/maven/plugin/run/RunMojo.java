@@ -170,6 +170,9 @@ public class RunMojo extends AbstractBundleResolverMojo {
 
     private void initShutdownHook() {
         Runtime.getRuntime().addShutdownHook(new Thread("Felix Shutdown Hook") {
+            /**
+             * Stop the framework on jvm shutdown.
+             */
             public void run() {
                 try {
                     if (framework != null) {

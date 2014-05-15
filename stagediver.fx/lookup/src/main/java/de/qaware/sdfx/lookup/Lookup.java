@@ -76,8 +76,7 @@ public final class Lookup {
                 return context.getService(reference);
             }
             return null;
-        }
-        else {
+        } else {
             return injector.getInstance(clazz);
         }
     }
@@ -94,10 +93,8 @@ public final class Lookup {
     public <T> List<T> lookupAll(Class<T> clazz) {
         if (withinOsgi) {
             return lookupAllOsgi(clazz);
-        }
-        else {
+        } else {
             List<T> services = new ArrayList<>();
-            //TODO: Guice Implementation
             services.add(injector.getInstance(clazz));
             return services;
         }

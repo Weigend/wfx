@@ -29,6 +29,7 @@ import java.util.*;
  * This is the  stagediver.fx platform runner.
  */
 public class Main {
+
     /**
      * The property name used to specify whether the launcher should
      * install a shutdown hook.
@@ -66,7 +67,7 @@ public class Main {
      *
      * @param args The commandline arguments
      */
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new Main().run();
     }
 
@@ -111,8 +112,7 @@ public class Main {
         logger.debug("Loading properties from url %s", propURL);
         try (InputStream is = propURL.openConnection().getInputStream()) {
             props.load(is);
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             logger.debug("Can not load properties", ex);
             return null;
         }
@@ -141,19 +141,15 @@ public class Main {
         if (custom != null) {
             try {
                 propURL = new URL(custom);
-            }
-            catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
-        }
-        else if (Main.class.getResource(defaultPropertiesFile) != null) {
+        } else if (Main.class.getResource(defaultPropertiesFile) != null) {
             propURL = Main.class.getResource(defaultPropertiesFile);
-        }
-        else if (Main.class.getResource("/" + defaultPropertiesFile) != null) {
+        } else if (Main.class.getResource("/" + defaultPropertiesFile) != null) {
             propURL = Main.class.getResource("/" + defaultPropertiesFile);
-        }
-        else {
+        } else {
             File jarLocation = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
             if (jarLocation.toString().endsWith(".jar")) {
                 jarLocation = jarLocation.getParentFile();
@@ -168,8 +164,7 @@ public class Main {
 
             try {
                 propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            }
-            catch (MalformedURLException ex) {
+            } catch (MalformedURLException ex) {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
@@ -187,8 +182,7 @@ public class Main {
             initFramework();
             new AutoProcessor(getFramework().getBundleContext(), configProps).process();
             runFramework();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             logger.error("Could not create framework", ex);
         }
     }
@@ -237,14 +231,16 @@ public class Main {
         if (!"false".equalsIgnoreCase(enableHook)) {
             logger.debug("Add shutdown hook");
             shutdownThread = new Thread("Felix Shutdown Hook") {
+                /**
+                 * Stop the framework on jvm shutdown.
+                 */
                 public void run() {
                     try {
                         if (getFramework() != null) {
                             getFramework().stop();
                             getFramework().waitForStop(0);
                         }
-                    }
-                    catch (Exception ex) {
+                    } catch (Exception ex) {
                         logger.error("Error stopping framework", ex);
                     }
                 }
