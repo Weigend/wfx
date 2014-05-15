@@ -80,15 +80,25 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
 
         try {
             copyBundles(deployParams);
+            copyRunner(deployParams);
             packager.generateDeploymentPackages(deployParams);
         } catch (PackagerException | IOException e) {
             throw new MojoFailureException("Can not build install bundle", e);
         }
     }
 
-    private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
-
+    private void copyRunner(DeployParams deployParams) throws MojoExecutionException, IOException {
         getArtifactResolver().addUnresolvedArtifact(new Artifact("de.qaware.stagediver.fx", "platform-runner", ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), null));
+        getArtifactResolver().resolveArtifacts();
+
+        for (Artifact artifact : getArtifactResolver().getResolvedArtifacts()) {
+            File file = artifact.getFile();
+            Files.copy(file.toPath(), new File(outputDirectory, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        deployParams.addResource(outputDirectory, "/", "jar");
+    }
+
+    private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
         Set<File> bundles = getBundles();
         File bundlesDir = new File(outputDirectory, OSGI_BUNDLES_DIR);
         if (!bundlesDir.exists() && !bundlesDir.mkdirs()) {
