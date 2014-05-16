@@ -46,7 +46,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
     /**
      * The path of all osgi bundles within the installer.
      */
-    public static final String OSGI_BUNDLES_DIR = "osgi_bundles/";
+    public static final String OSGI_BUNDLES_DIR_NAME = "osgi_bundles/";
 
     /**
      * The output directory into which to copy the resources.
@@ -61,6 +61,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
     protected List<Resource> resources;
 
     protected PackagerLib packager = new PackagerLib();
+    private File osgiBundlesDir;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -79,8 +80,9 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
         deployParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
 
         try {
-            copyBundles(deployParams);
+            createDirectoryStructure();
             copyRunner(deployParams);
+            copyBundles(deployParams);
             packager.generateDeploymentPackages(deployParams);
         } catch (PackagerException | IOException e) {
             throw new MojoFailureException("Can not build install bundle", e);
@@ -95,18 +97,23 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
             File file = artifact.getFile();
             Files.copy(file.toPath(), new File(outputDirectory, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
         }
-        deployParams.addResource(outputDirectory, "/", "jar");
+        deployParams.addResource(outputDirectory, "/");
     }
 
     private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
+        setArtifactResolver(null);
         Set<File> bundles = getBundles();
-        File bundlesDir = new File(outputDirectory, OSGI_BUNDLES_DIR);
-        if (!bundlesDir.exists() && !bundlesDir.mkdirs()) {
+
+        for (File file : bundles) {
+            Files.copy(file.toPath(), new File(osgiBundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+        }
+        deployParams.addResource(outputDirectory, OSGI_BUNDLES_DIR_NAME);
+    }
+
+    private void createDirectoryStructure() throws MojoExecutionException {
+        osgiBundlesDir = new File(outputDirectory, OSGI_BUNDLES_DIR_NAME);
+        if (!osgiBundlesDir.exists() && !osgiBundlesDir.mkdirs()) {
             throw new MojoExecutionException("Can not create OSGi bundles directory.");
         }
-        for (File file : bundles) {
-            Files.copy(file.toPath(), new File(bundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-        }
-        deployParams.addResource(outputDirectory, OSGI_BUNDLES_DIR);
     }
 }

@@ -43,7 +43,7 @@ public abstract class AbstractBundleResolverMojo extends AbstractMojo {
     /**
      * The artifact resolver.
      */
-    protected ArtifactResolver artifactResolver;
+    private ArtifactResolver artifactResolver;
 
     /**
      * The Maven project.
@@ -126,6 +126,10 @@ public abstract class AbstractBundleResolverMojo extends AbstractMojo {
             artifactResolver = new ArtifactResolver(repoSystem, repoSession, remoteRepos);
         }
         return artifactResolver;
+    }
+
+    protected void setArtifactResolver(ArtifactResolver artifactResolver) {
+        this.artifactResolver = artifactResolver;
     }
 
     /**
