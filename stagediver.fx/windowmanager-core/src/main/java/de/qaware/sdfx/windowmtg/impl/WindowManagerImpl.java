@@ -16,15 +16,16 @@ import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.apache.felix.scr.annotations.Component;
 import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -87,8 +88,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             TabArea area = oldView.getArea();
             area.add(v, Position.CENTER);
             area.remove(oldView);
-        }
-        else {
+        } else {
             getMainRootArea().add(v, v.getPosition());
         }
         views.put(view.getViewId(), v);
@@ -154,8 +154,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             view.restoreDefault();
             if (view.getParent() == null) {
                 register(view.getView());
-            }
-            else {
+            } else {
                 register(view.getView(), view.getParent().getView());
             }
         }
@@ -196,7 +195,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
-     * Show a closed view again.
+     * Show a closed or hidden view again.
      * The view will be shown at the same position where it was on close.
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
@@ -209,6 +208,12 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (viewStatus == null || viewStatus.getView() != view) {
             throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
         }
+        if (viewStatus.getStatus() == ViewStatus.Status.VISIBLE && viewStatus.getTab().getTabPane() != null) {
+            viewStatus.getTab().getTabPane().requestFocus();
+            viewStatus.getTab().getTabPane().getSelectionModel().select(viewStatus.getTab());
+            setFocusedView(viewStatus.getView());
+            return;
+        }
         viewStatus.restoreDefault();
 
         ViewStatus parent = viewStatus.getParent();
@@ -217,7 +222,6 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         while (!added && parent != null) {
             if (parent.getStatus() == ViewStatus.Status.VISIBLE) {
-
                 register(view, parent.getView());
                 added = true;
             }
