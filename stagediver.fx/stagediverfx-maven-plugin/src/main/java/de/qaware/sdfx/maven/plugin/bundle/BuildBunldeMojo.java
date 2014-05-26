@@ -12,10 +12,10 @@
 
 package de.qaware.sdfx.maven.plugin.bundle;
 
-import com.sun.javafx.tools.packager.DeployParams;
-import com.sun.javafx.tools.packager.PackagerException;
 import com.sun.javafx.tools.packager.PackagerLib;
+import com.sun.javafx.tools.packager.bundlers.BundleParams;
 import com.sun.javafx.tools.packager.bundlers.Bundler;
+import com.sun.javafx.tools.packager.bundlers.RelativeFileSet;
 import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
 import de.qaware.sdfx.maven.plugin.resolver.Artifact;
 import org.apache.maven.model.License;
@@ -23,15 +23,13 @@ import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,13 +38,13 @@ import java.util.Set;
  *
  * @author christian.fritz
  */
-@Mojo(name = "build-bundle", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
+//@Mojo(name = "build-bundle", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME)
 public class BuildBunldeMojo extends AbstractBundleResolverMojo {
 
     /**
      * The path of all osgi bundles within the installer.
      */
-    public static final String OSGI_BUNDLES_DIR_NAME = "osgi_bundles/";
+    public static final String OSGI_BUNDLES_DIR_NAME = "bundles";
 
     /**
      * The output directory into which to copy the resources.
@@ -54,60 +52,70 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
     @Parameter(defaultValue = "${project.build.directory}/bundle", required = true)
     protected File outputDirectory;
 
+    private File osOutputDirectory = new File(outputDirectory, "osBundles");
+
     /**
      * The list of resources we want to transfer.
      */
     @Parameter(defaultValue = "${project.resources}", required = true, readonly = true)
     protected List<Resource> resources;
 
+    private Set<File> fileResources = new HashSet<>();
+
     protected PackagerLib packager = new PackagerLib();
     private File osgiBundlesDir;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        DeployParams deployParams = new DeployParams();
-        deployParams.setApplicationClass("de.qaware.sdfx.main.Main");
-        deployParams.setVersion(project.getVersion());
-        deployParams.setAppName(project.getName());
-        deployParams.setDescription(project.getDescription());
+        BundleParams bundleParams = new BundleParams();
+        bundleParams.setApplicationClass("de.qaware.sdfx.main.Main");
+        bundleParams.setAppVersion(project.getVersion());
+        bundleParams.setName(project.getName());
+        bundleParams.setDescription(project.getDescription());
         StringBuilder builder = new StringBuilder();
         for (License lic : project.getLicenses()) {
             builder.append(lic.getName()).append(": ").append(lic.getUrl()).append("\n");
         }
-        deployParams.setLicenseType(builder.toString());
-        deployParams.setOutdir(outputDirectory);
-        deployParams.setBundleType(Bundler.BundleType.ALL);
-        deployParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
-
+        bundleParams.setLicenseType(builder.toString());
+        bundleParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
+        bundleParams.setBundleFormat("any");
+        bundleParams.setType(Bundler.BundleType.ALL);
         try {
             createDirectoryStructure();
-            copyRunner(deployParams);
-            copyBundles(deployParams);
-            packager.generateDeploymentPackages(deployParams);
-        } catch (PackagerException | IOException e) {
+            copyRunner();
+            copyBundles();
+            bundleParams.setAppResource(new RelativeFileSet(outputDirectory, fileResources));
+            List<Bundler> bundlers = Bundler.get(bundleParams, true);
+            for (Bundler bundler : bundlers) {
+                bundler.bundle(bundleParams, osOutputDirectory);
+            }
+
+        } catch (IOException e) {
             throw new MojoFailureException("Can not build install bundle", e);
         }
     }
 
-    private void copyRunner(DeployParams deployParams) throws MojoExecutionException, IOException {
+    private void copyRunner() throws MojoExecutionException, IOException {
         getArtifactResolver().addUnresolvedArtifact(new Artifact("de.qaware.stagediver.fx", "platform-runner", ((PluginDescriptor) getPluginContext().get("pluginDescriptor")).getVersion(), null));
         getArtifactResolver().resolveArtifacts();
 
         for (Artifact artifact : getArtifactResolver().getResolvedArtifacts()) {
-            File file = artifact.getFile();
-            Files.copy(file.toPath(), new File(outputDirectory, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            File srcFile = artifact.getFile();
+            File destFile = new File(outputDirectory, srcFile.getName());
+            Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            fileResources.add(destFile);
         }
-        deployParams.addResource(outputDirectory, "/");
     }
 
-    private void copyBundles(DeployParams deployParams) throws MojoExecutionException, IOException {
+    private void copyBundles() throws MojoExecutionException, IOException {
         setArtifactResolver(null);
         Set<File> bundles = getBundles();
 
         for (File file : bundles) {
-            Files.copy(file.toPath(), new File(osgiBundlesDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+            File destFile = new File(osgiBundlesDir, file.getName());
+            Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            fileResources.add(destFile);
         }
-        deployParams.addResource(outputDirectory, OSGI_BUNDLES_DIR_NAME);
     }
 
     private void createDirectoryStructure() throws MojoExecutionException {
