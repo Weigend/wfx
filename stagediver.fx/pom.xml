@@ -66,7 +66,7 @@
         <guava.version>17.0</guava.version>
         <osgi.version>5.0.0</osgi.version>
         <felix.version>4.4.0</felix.version>
-        <version.asm>5.0.2</version.asm>
+        <version.asm>5.0.3</version.asm>
         <version.jfx>8.0</version.jfx>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
     </properties>
