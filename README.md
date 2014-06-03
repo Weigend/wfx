@@ -3,11 +3,11 @@ stagediver.fx is a lightweight Rich Client Platfrom for JavaFX. It is based on [
 
 ## Introduction
 
-The stagediver.fx platfrom provides the following features:
+The stagediver.fx platform provides the following features:
 
 - Window Management with
  - Free layouting at runtime by the end user
- - Multiple sindow support
+ - Multiple window support
  - Editor area
  - Minimal impact to existing JavaFX-based components
 - Module System
