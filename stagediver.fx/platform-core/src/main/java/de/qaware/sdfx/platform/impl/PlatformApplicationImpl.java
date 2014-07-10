@@ -16,14 +16,15 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.util.List;
 
@@ -40,7 +41,6 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
 
     @Override
     public void init() {
-
         PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
