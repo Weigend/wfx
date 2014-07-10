@@ -49,6 +49,11 @@ public class ExampleExplorerController implements Initializable {
         LOGGER.info("treeClicked: {}", event);
     }
 
+    /**
+     * Focus the editor
+     *
+     * @param actionEvent the event to focus the editor.
+     */
     public void focusEditor(ActionEvent actionEvent) {
         LOGGER.info("focus editor");
         WindowManager windowManager = lookup.lookup(WindowManager.class);
