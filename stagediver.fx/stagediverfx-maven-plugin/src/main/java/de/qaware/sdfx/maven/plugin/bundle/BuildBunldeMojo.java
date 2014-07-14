@@ -74,7 +74,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
         bundleParams.setDescription(project.getDescription());
         StringBuilder builder = new StringBuilder();
         for (License lic : project.getLicenses()) {
-            builder.append(lic.getName()).append(": ").append(lic.getUrl()).append("\n");
+            builder.append(lic.getName()).append(": ").append(lic.getUrl()).append('\n');
         }
         bundleParams.setLicenseType(builder.toString());
         bundleParams.setVendor(project.getOrganization().getName() + "\n" + project.getOrganization().getUrl());
