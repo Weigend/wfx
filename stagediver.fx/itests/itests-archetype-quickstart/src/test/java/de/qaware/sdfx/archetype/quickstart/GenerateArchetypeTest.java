@@ -34,6 +34,7 @@ public class GenerateArchetypeTest {
     private static final String TEST_GROUP_ID = "de.qaware.sdfx";
     private static final String TEST_ARTIFACT_ID = "archetypeTest";
     private static final String TEST_VERSION = "0.1-SNAPSHOT";
+    public static final String ARCHETYPE_CATALOG = "local,https://www.qaware.de/nexus/content/repositories/QAWARE-STAGEDIVER-FX-SNAPSHOTS/archetype-catalog.xml";
 
     @Before
     public void setUp() throws VerificationException, IOException {
@@ -76,6 +77,7 @@ public class GenerateArchetypeTest {
         props.put("groupId", TEST_GROUP_ID);
         props.put("artifactId", TEST_ARTIFACT_ID);
         props.put("version", TEST_VERSION);
+        props.put("archetypeCatalog", ARCHETYPE_CATALOG);
         props.put("interactiveMode", "false");
 
         return props;
