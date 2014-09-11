@@ -63,9 +63,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.version>7</project.build.version>
-        <guava.version>17.0</guava.version>
+        <guava.version>18.0</guava.version>
         <osgi.version>5.0.0</osgi.version>
-        <felix.version>4.4.0</felix.version>
+        <felix.version>4.4.1</felix.version>
         <version.asm>5.0.3</version.asm>
         <version.jfx>8.0</version.jfx>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
@@ -169,12 +169,12 @@
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-api</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.3</version>
             </dependency>
             <dependency>
                 <groupId>org.ops4j.pax.logging</groupId>
                 <artifactId>pax-logging-service</artifactId>
-                <version>1.7.2</version>
+                <version>1.7.3</version>
             </dependency>
 
             <!-- Google Guava -->
