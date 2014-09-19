@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * This is the  stagediver.fx platform runner.
  */
-public class Main {
+public class MainOsgi {
 
     /**
      * The property name used to specify whether the launcher should
@@ -57,7 +57,7 @@ public class Main {
      * Name of the configuration directory.
      */
     public static final String CONFIG_DIRECTORY = "config";
-    private static StartupLogger logger = new StartupLogger(Main.class);
+    private static StartupLogger logger = new StartupLogger(MainOsgi.class);
     protected Map<String, String> configProps;
     protected Thread shutdownThread;
     private Framework framework;
@@ -68,7 +68,7 @@ public class Main {
      * @param args The commandline arguments
      */
     public static void main(String[] args) {
-        new Main().run();
+        new MainOsgi().run();
     }
 
     /**
@@ -145,12 +145,14 @@ public class Main {
                 logger.error("Malformed URL given for loading properties", ex);
                 return null;
             }
-        } else if (Main.class.getResource(defaultPropertiesFile) != null) {
-            propURL = Main.class.getResource(defaultPropertiesFile);
-        } else if (Main.class.getResource("/" + defaultPropertiesFile) != null) {
-            propURL = Main.class.getResource("/" + defaultPropertiesFile);
+        }
+        else if (MainOsgi.class.getResource(defaultPropertiesFile) != null) {
+            propURL = MainOsgi.class.getResource(defaultPropertiesFile);
+        }
+        else if (MainOsgi.class.getResource("/" + defaultPropertiesFile) != null) {
+            propURL = MainOsgi.class.getResource("/" + defaultPropertiesFile);
         } else {
-            File jarLocation = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+            File jarLocation = new File(MainOsgi.class.getProtectionDomain().getCodeSource().getLocation().getPath());
             if (jarLocation.toString().endsWith(".jar")) {
                 jarLocation = jarLocation.getParentFile();
             }

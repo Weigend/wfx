@@ -13,7 +13,7 @@
 package de.qaware.sdfx.maven.plugin.run;
 
 import de.qaware.sdfx.main.AutoProcessor;
-import de.qaware.sdfx.main.Main;
+import de.qaware.sdfx.main.MainOsgi;
 import de.qaware.sdfx.main.StartupLogger;
 import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * The stagediver.fx run goal.
- * <p/>
+ * <p>
  * The goal "run" is a wrapper to start a single module or the full project within the OSGi Container. Which part of the
  * full application is started depends on the selected module from where you start the plugin. It always starts current
  * selected module (current working directory) inclusive all dependencies and the dependencies of the stagediver.fx
@@ -77,7 +77,7 @@ public class RunMojo extends AbstractBundleResolverMojo {
 
     /**
      * Additional configuration properties from the pom.
-     * <p/>
+     * <p>
      * The can override the default properties.
      */
     @Parameter(alias = "osgiProperties")
@@ -91,7 +91,7 @@ public class RunMojo extends AbstractBundleResolverMojo {
     /**
      * The stagediver.fx default runner.
      */
-    protected Main defaultRunner = new Main();
+    protected MainOsgi defaultRunner = new MainOsgi();
 
     /**
      * Executes the run mojo.
@@ -127,9 +127,11 @@ public class RunMojo extends AbstractBundleResolverMojo {
             // If the framework was updated, then restart it.
             while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
             getLog().info("Framework stopped");
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             throw new MojoExecutionException("Unexpected interrupt while executing stagediver.fx", e);
-        } catch (BundleException e) {
+        }
+        catch (BundleException e) {
             throw new MojoExecutionException("Start of stagediver.fx framework was not possible", e);
         }
     }
@@ -147,7 +149,8 @@ public class RunMojo extends AbstractBundleResolverMojo {
             framework = factory.newFramework(mergeProperties());
             initShutdownHook();
             framework.init();
-        } catch (BundleException e) {
+        }
+        catch (BundleException e) {
             throw new MojoExecutionException("Initialisation of osgi framework failed", e);
         }
     }
@@ -179,7 +182,8 @@ public class RunMojo extends AbstractBundleResolverMojo {
                         framework.stop();
                         framework.waitForStop(0);
                     }
-                } catch (Exception ex) {
+                }
+                catch (Exception ex) {
                     getLog().error("Error stopping framework", ex);
                 }
             }

@@ -12,7 +12,7 @@
 
 package de.qaware.sdfx.maven.plugin.run;
 
-import de.qaware.sdfx.main.Main;
+import de.qaware.sdfx.main.MainOsgi;
 import de.qaware.sdfx.maven.plugin.resolver.Artifact;
 import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
 import org.apache.felix.framework.FrameworkFactory;
@@ -70,7 +70,7 @@ public class RunMojoTest {
     private Build projectBuild;
 
     @Mock
-    private Main runner;
+    private MainOsgi runner;
 
     @Before
     public void setUp() throws Exception {
