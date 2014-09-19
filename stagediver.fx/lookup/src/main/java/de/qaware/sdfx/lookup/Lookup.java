@@ -61,6 +61,15 @@ public final class Lookup {
     }
 
     /**
+     * Init the lookup if the module is not running within an osgi container.
+     *
+     * @param modules A list of guice modules.
+     */
+    public static void init(Iterable<Module> modules) {
+        injector = Guice.createInjector(modules);
+    }
+
+    /**
      * Lookup a class from the registry.
      * <p/>
      * The returned service is that service that have the highest service ranking.
@@ -76,7 +85,8 @@ public final class Lookup {
                 return context.getService(reference);
             }
             return null;
-        } else {
+        }
+        else {
             return injector.getInstance(clazz);
         }
     }
@@ -93,7 +103,8 @@ public final class Lookup {
     public <T> List<T> lookupAll(Class<T> clazz) {
         if (withinOsgi) {
             return lookupAllOsgi(clazz);
-        } else {
+        }
+        else {
             List<T> services = new ArrayList<>();
             services.add(injector.getInstance(clazz));
             return services;
@@ -118,7 +129,8 @@ public final class Lookup {
                 services.add(context.getService(reference));
             }
             return services;
-        } catch (InvalidSyntaxException e) {
+        }
+        catch (InvalidSyntaxException e) {
             return null;
         }
     }
