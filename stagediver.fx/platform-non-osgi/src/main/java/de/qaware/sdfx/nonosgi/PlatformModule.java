@@ -15,6 +15,7 @@ import de.qaware.sdfx.windowmtg.windows.DefaultApplicationWindow;
  */
 public class PlatformModule extends AbstractModule {
     protected void configure() {
+        //OptionalBinder.newOptionalBinder(binder(),ApplicationWindow.class).setDefault()
         bind(WindowManager.class).to(WindowManagerImpl.class).asEagerSingleton();
         bind(PreloaderNotificationService.class).to(PreloaderNotificationServiceImpl.class).asEagerSingleton();
         bind(ApplicationWindow.class).to(DefaultApplicationWindow.class).asEagerSingleton();
