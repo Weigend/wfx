@@ -19,9 +19,6 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,9 +42,7 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }
-
-        Bundle bundle = FrameworkUtil.getBundle(PlatformApplicationImpl.class);
-        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 0);
+        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 0);
     }
 
     /**
@@ -70,13 +65,6 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
      */
     @Override
     public void stop() {
-        LOGGER.info("Stop JavaFX application");
-        try {
-            FrameworkUtil.getBundle(getClass()).stop();
-        }
-        catch (BundleException e) {
-            LOGGER.error("Can not stop bundle", e);
-        }
     }
 
     /**
@@ -103,8 +91,7 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
 
                         // Send Init Message
                         PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
-                        Bundle bundle = FrameworkUtil.getBundle(PlatformApplicationImpl.class);
-                        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 1);
+                        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 1);
                         break;
                     }
                     catch (IOException e) {
