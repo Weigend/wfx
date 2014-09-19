@@ -69,6 +69,7 @@
         <version.asm>5.0.3</version.asm>
         <version.jfx>8.0</version.jfx>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
+        <guice.version>3.0</guice.version>
     </properties>
 
     <dependencyManagement>
@@ -188,7 +189,7 @@
             <dependency>
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
-                <version>3.0</version>
+                <version>${guice.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>aopalliance</groupId>
@@ -200,6 +201,12 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-multibindings</artifactId>
+                <version>${guice.version}</version>
+            </dependency>
+
 
             <!-- Apache ServiceMix OSGi Bundles as replaces to aopalliance and javax.inject -->
             <dependency>
