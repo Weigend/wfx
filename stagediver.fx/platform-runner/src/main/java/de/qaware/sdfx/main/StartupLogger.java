@@ -17,6 +17,7 @@ import java.io.PrintStream;
 /**
  * This is a simple logger for the startup of stagediver.fx.
  */
+@Deprecated
 public class StartupLogger {
 
     private static PrintStream writer = System.err;

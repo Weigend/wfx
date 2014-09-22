@@ -28,6 +28,7 @@ import java.util.*;
 /**
  * Processor for auto deployment.
  */
+@Deprecated
 public class AutoProcessor {
 
     /**
@@ -110,7 +111,8 @@ public class AutoProcessor {
         }
         try {
             frameworkStartLevel = Integer.parseInt(configProps.get(AUTO_DEPLOY_STARTLEVEL_PROPERY));
-        } catch (NumberFormatException ex) {
+        }
+        catch (NumberFormatException ex) {
             // Retrieve the Start Level service, since it will be needed
             // to set the start level of the installed bundles.
             FrameworkStartLevel fwStartLevel = context.getBundle(0).adapt(FrameworkStartLevel.class);
@@ -191,7 +193,7 @@ public class AutoProcessor {
 
     /**
      * Get the absolute path of the bundle directory.
-     * <p/>
+     * <p>
      * It try also to find the bundle directory if it was started from an ide (like intellij).
      *
      * @param bundleDir The bundle dir path directly form the config.
@@ -223,7 +225,8 @@ public class AutoProcessor {
             if (b.getBundleId() != 0) {
                 try {
                     b.uninstall();
-                } catch (BundleException ex) {
+                }
+                catch (BundleException ex) {
                     logger.error("Auto-deploy uninstall", ex);
                 }
             }
@@ -232,7 +235,7 @@ public class AutoProcessor {
 
     /**
      * Install or update the given jar bundle combination.
-     * <p/>
+     * <p>
      * If {@param bundle} is null than the bundle will be installed otherwise the bundle is updated.
      * In the case of updateing the bundle the bundle id will be the same.
      *
@@ -261,7 +264,8 @@ public class AutoProcessor {
                 logger.debug("Set startlevel " + startLevel + " for bundle " + b);
                 bundleStartLevel.setStartLevel(startLevel);
             }
-        } catch (BundleException ex) {
+        }
+        catch (BundleException ex) {
             logger.error("Error during install or update bundle %s for jar file: %s", bundle, jarFile);
             logger.error("Auto-deploy install ", ex);
         }
@@ -276,7 +280,8 @@ public class AutoProcessor {
             if (b.getState() != Bundle.ACTIVE) {
                 try {
                     b.start();
-                } catch (BundleException ex) {
+                }
+                catch (BundleException ex) {
                     logger.error("Auto-deploy start", ex);
                 }
             }

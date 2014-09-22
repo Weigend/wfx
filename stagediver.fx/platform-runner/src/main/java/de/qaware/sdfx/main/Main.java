@@ -28,6 +28,7 @@ import java.util.*;
 /**
  * This is the  stagediver.fx platform runner.
  */
+@Deprecated
 public class Main {
 
     /**
