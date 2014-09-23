@@ -8,29 +8,5 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>platform-api</artifactId>
-    <packaging>bundle</packaging>
-
     <name>stagediver.fx - Platform API</name>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-    </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Private-Package>de.qaware.sdfx.platform.*</Private-Package>
-                        <Export-Package>de.qaware.sdfx.platform.api</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>
