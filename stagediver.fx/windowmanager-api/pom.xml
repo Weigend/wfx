@@ -8,7 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>windowmanager-api</artifactId>
-    <packaging>bundle</packaging>
 
     <name>stagediver.fx - Window Manager API</name>
     <dependencies>
@@ -24,7 +23,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-        <groupId>junit</groupId>
+            <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
@@ -36,17 +35,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Private-Package>de.qaware.sdfx.windowmtg.*</Private-Package>
-                        <Export-Package>de.qaware.sdfx.windowmtg.api</Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
