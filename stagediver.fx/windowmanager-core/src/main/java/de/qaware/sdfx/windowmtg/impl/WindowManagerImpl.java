@@ -15,14 +15,11 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +31,6 @@ import java.util.Map;
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
  */
-@Component
-@Service(value = {WindowManager.class, MultiWindowManager.class})
 public class WindowManagerImpl implements MultiWindowManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
@@ -65,7 +60,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Register a new view within this window manager.
-     * <p/>
+     * <p>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
@@ -88,7 +83,8 @@ public class WindowManagerImpl implements MultiWindowManager {
             TabArea area = oldView.getArea();
             area.add(v, Position.CENTER);
             area.remove(oldView);
-        } else {
+        }
+        else {
             getMainRootArea().add(v, v.getPosition());
         }
         views.put(view.getViewId(), v);
@@ -138,7 +134,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Restore the layout to default.
-     * <p/>
+     * <p>
      * The layout is recreated in the same way as it was the first time initialized.
      */
     @Override
@@ -154,7 +150,8 @@ public class WindowManagerImpl implements MultiWindowManager {
             view.restoreDefault();
             if (view.getParent() == null) {
                 register(view.getView());
-            } else {
+            }
+            else {
                 register(view.getView(), view.getParent().getView());
             }
         }
@@ -162,7 +159,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Close the specified view.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -180,9 +177,9 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Clone the specified view.
-     * <p/>
+     * <p>
      * The cloned view will be placed next to the given view in the same tab area.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -234,7 +231,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Find a view with the assigned view id.
-     * <p/>
+     * <p>
      * This returns that view that has the given unique view id. If there is no view found it returns null.
      *
      * @param viewID The view id to search.
