@@ -10,7 +10,7 @@
     <artifactId>itests-windowmanager</artifactId>
     <packaging>jar</packaging>
 
-    <name>stagediver.fx - Window Manager UI Integration Tests </name>
+    <name>stagediver.fx - Window Manager UI Integration Tests</name>
 
 
     <dependencies>
@@ -33,16 +33,6 @@
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.javax-inject</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
             <scope>test</scope>
         </dependency>
 

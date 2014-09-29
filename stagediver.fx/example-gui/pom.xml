@@ -8,7 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>example-gui</artifactId>
-    <packaging>bundle</packaging>
 
     <name>stagediver.fx Example-GUI</name>
     <description>Example GUI Implementation for stagediver.fx</description>
@@ -42,29 +41,10 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.examplegui.Activator</Bundle-Activator>
-                        <Private-Package>de.qaware.sdfx.examplegui.*</Private-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>
