@@ -12,32 +12,29 @@
 
 package de.qaware.sdfx.platform.impl;
 
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import de.qaware.sdfx.platform.api.ModuleActivator;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
+import java.util.List;
 
 import static com.sun.javafx.application.LauncherImpl.launchApplication;
 
 /**
  * Activates and deactivates the stagediver.fx platform bundle.
  */
-public class PlatformActivator implements BundleActivator {
+public class PlatformModuleActivator implements ModuleActivator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformActivator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlatformModuleActivator.class);
 
     /**
      * Starts the stagediver.fx platform bundle.
      * <p/>
      * When starting the platform bundle it will start the JavaFX application and show the main window.
-     *
-     * @param context The bundle context.
      */
     @Override
-    public void start(BundleContext context) {
+    public void start() {
         LOGGER.info("Activate platform core bundle");
         Platform.setImplicitExit(true);
         Thread platformThread = new Thread(new Runnable() {
@@ -51,17 +48,17 @@ public class PlatformActivator implements BundleActivator {
         platformThread.start();
     }
 
-    /**
-     * Stops the the complete platform.
-     * <p/>
-     * The platform bundle is a essential part of the stagediver.fx platform so it is required to shutdown the whole
-     * osgi platform when this bundle was stoped.
-     *
-     * @param context The bundle context.
-     * @throws BundleException In case of the bundle can not be stopped.
-     */
     @Override
-    public void stop(BundleContext context) throws BundleException {
-        context.getBundle(0).stop();
+    public void stop() {
+    }
+
+    @Override
+    public List<Class<? extends ModuleActivator>> getDependsOnStart() {
+        return null;
+    }
+
+    @Override
+    public List<Class<? extends ModuleActivator>> dependsOnStop() {
+        return null;
     }
 }
