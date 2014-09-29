@@ -15,28 +15,24 @@ package de.qaware.sdfx.windowmtg.windows;
 
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
-import javafx.collections.*;
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 import java.io.IOException;
 
 /**
  * This is the main window of the stagediver.fx platform. It supports the window management
  * and the default bars like menu, tool and status bar.
  */
-@Component(name = "defaultAppWindow", immediate = true)
-@Service(ApplicationWindow.class)
-@Properties({
-        @Property(name = "service.ranking", intValue = Integer.MIN_VALUE)
-})
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     @FXML

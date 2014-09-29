@@ -1,7 +1,6 @@
 package de.qaware.sdfx.lookup;
 
 import com.google.inject.Injector;
-import org.osgi.framework.BundleContext;
 
 import java.lang.reflect.Field;
 
@@ -29,9 +28,9 @@ public class LookupContextHelper {
         injectorField.set(null, injector);
     }
 
-    public static void setContext(BundleContext context, Lookup lookupInstance) throws IllegalAccessException, NoSuchFieldException {
+    /*public static void setContext(BundleContext context, Lookup lookupInstance) throws IllegalAccessException, NoSuchFieldException {
         Field contextField = Lookup.class.getDeclaredField("context");
         contextField.setAccessible(true);
         contextField.set(lookupInstance, context);
-    }
+    }*/
 }

@@ -12,19 +12,13 @@
 
 package de.qaware.sdfx.maven.plugin.run;
 
-import de.qaware.sdfx.main.AutoProcessor;
-import de.qaware.sdfx.main.MainOsgi;
-import de.qaware.sdfx.main.StartupLogger;
+import de.qaware.sdfx.main.Main;
 import de.qaware.sdfx.maven.plugin.AbstractBundleResolverMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,14 +78,9 @@ public class RunMojo extends AbstractBundleResolverMojo {
     protected Map<String, String> configProps;
 
     /**
-     * The osgi framework instance.
-     */
-    protected Framework framework;
-
-    /**
      * The stagediver.fx default runner.
      */
-    protected MainOsgi defaultRunner = new MainOsgi();
+    protected Main defaultRunner = new Main();
 
     /**
      * Executes the run mojo.
@@ -100,13 +89,8 @@ public class RunMojo extends AbstractBundleResolverMojo {
      */
     @Override
     public void execute() throws MojoExecutionException {
-        StartupLogger.Level.DEBUG.setEnabled(getLog().isDebugEnabled());
         System.setProperty("binary.css", "false");
         initFramework();
-        AutoProcessor bundleProcessor = new AutoProcessor(framework.getBundleContext(), mergeProperties());
-        bundleProcessor.initStartLevels();
-        bundleProcessor.installBundles(getBundles());
-        bundleProcessor.startBundles();
         runFramework();
     }
 
@@ -116,24 +100,7 @@ public class RunMojo extends AbstractBundleResolverMojo {
      * @throws MojoExecutionException In case of the starting of framework is not possible.
      */
     protected void runFramework() throws MojoExecutionException {
-        try {
-            FrameworkEvent event;
-            do {
-                getLog().info("Start the framework.");
-                framework.start();
-                // Wait for framework to stop to exit the VM.
-                event = framework.waitForStop(0);
-            }
-            // If the framework was updated, then restart it.
-            while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-            getLog().info("Framework stopped");
-        }
-        catch (InterruptedException e) {
-            throw new MojoExecutionException("Unexpected interrupt while executing stagediver.fx", e);
-        }
-        catch (BundleException e) {
-            throw new MojoExecutionException("Start of stagediver.fx framework was not possible", e);
-        }
+
     }
 
     /**
@@ -142,17 +109,6 @@ public class RunMojo extends AbstractBundleResolverMojo {
      * @throws MojoExecutionException In case of the initialisation of the osgi framework failed.
      */
     protected void initFramework() throws MojoExecutionException {
-        try {
-            getLog().info("Init the framework");
-            FrameworkFactory factory = defaultRunner.getFrameworkFactory();
-            getLog().debug("Using framework factory: " + factory);
-            framework = factory.newFramework(mergeProperties());
-            initShutdownHook();
-            framework.init();
-        }
-        catch (BundleException e) {
-            throw new MojoExecutionException("Initialisation of osgi framework failed", e);
-        }
     }
 
     /**
@@ -177,15 +133,6 @@ public class RunMojo extends AbstractBundleResolverMojo {
              * Stop the framework on jvm shutdown.
              */
             public void run() {
-                try {
-                    if (framework != null) {
-                        framework.stop();
-                        framework.waitForStop(0);
-                    }
-                }
-                catch (Exception ex) {
-                    getLog().error("Error stopping framework", ex);
-                }
             }
         });
     }
