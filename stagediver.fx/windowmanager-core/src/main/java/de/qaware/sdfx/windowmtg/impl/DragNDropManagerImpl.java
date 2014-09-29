@@ -12,6 +12,7 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import com.google.inject.Inject;
 import de.qaware.sdfx.windowmtg.api.Position;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -70,6 +71,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      *
      * @param windowManager The window manager which handles the views and sub windows.
      */
+    @Inject
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
     }
@@ -336,13 +338,17 @@ public class DragNDropManagerImpl implements DragNDropManager {
         double areaY = event.getY() / source.getHeight();
         if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
             return Position.CENTER;
-        } else if (areaY < 0.25) {
+        }
+        else if (areaY < 0.25) {
             return Position.TOP;
-        } else if (areaY >= 0.75) {
+        }
+        else if (areaY >= 0.75) {
             return Position.BOTTOM;
-        } else if (areaX < 0.25) {
+        }
+        else if (areaX < 0.25) {
             return Position.LEFT;
-        } else {
+        }
+        else {
             return Position.RIGHT;
         }
     }
