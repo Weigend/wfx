@@ -13,11 +13,10 @@
 
 package de.qaware.sdfx.lookup;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
+import de.qaware.sdfx.lookup.impl.GuiceLookupStrategy;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,9 +26,7 @@ import java.util.List;
  */
 public final class Lookup {
 
-    private static final String SERVICE_RANKING_PROP = "service.ranking";
-    private static boolean withinOsgi;
-    private static Injector injector;
+    private static LookupStrategy lookupStrategy;
 
     /**
      * Init the lookup for the given class.
@@ -45,8 +42,9 @@ public final class Lookup {
      *
      * @param modules A list of guice modules.
      */
+    @Deprecated
     public static void init(Module... modules) {
-        injector = Guice.createInjector(modules);
+        lookupStrategy = new GuiceLookupStrategy(modules);
     }
 
     /**
@@ -54,8 +52,18 @@ public final class Lookup {
      *
      * @param modules A list of guice modules.
      */
+    @Deprecated
     public static void init(Iterable<Module> modules) {
-        injector = Guice.createInjector(modules);
+        lookupStrategy = new GuiceLookupStrategy(modules);
+    }
+
+    /**
+     * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
+     *
+     * @param lookupStrategy Use this strategy to lookup for instances.
+     */
+    public static void init(LookupStrategy lookupStrategy) {
+        Lookup.lookupStrategy = lookupStrategy;
     }
 
     /**
@@ -67,8 +75,8 @@ public final class Lookup {
      * @param <T>   The type of the class to search.
      * @return A instance of the requested class or null if not found.
      */
-    public <T> T lookup(Class<T> clazz) {
-        return injector.getInstance(clazz);
+    public static <T> T lookup(Class<T> clazz) {
+        return getLookupStrategy().lookup(clazz);
     }
 
     /**
@@ -80,9 +88,20 @@ public final class Lookup {
      * @param <T>   The type of the class to search.
      * @return A list with all found service instances for the searched class.
      */
-    public <T> List<T> lookupAll(Class<T> clazz) {
-        List<T> services = new ArrayList<>();
-        services.add(injector.getInstance(clazz));
-        return services;
+    public static <T> List<T> lookupAll(Class<T> clazz) {
+        return getLookupStrategy().lookupAll(clazz);
+    }
+
+    /**
+     * Get the current {@link de.qaware.sdfx.lookup.LookupStrategy}. If no lookup strategy found, it initialize the
+     * {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} as default.
+     *
+     * @return The current lookup strategy or a new instance of the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} if anyone exists.
+     */
+    public static LookupStrategy getLookupStrategy() {
+        if (lookupStrategy == null) {
+            lookupStrategy = new ServiceLoaderLookupStrategy();
+        }
+        return lookupStrategy;
     }
 }
