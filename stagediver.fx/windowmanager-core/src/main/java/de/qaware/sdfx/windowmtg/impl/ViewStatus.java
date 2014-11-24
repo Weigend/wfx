@@ -14,11 +14,10 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.event.*;
-import javafx.scene.control.*;
 
 /**
  * Stores the current status and additional metadata of an window manager view.
@@ -118,13 +117,10 @@ public class ViewStatus {
         //tab.setTooltip(new Tooltip(view.getToolTipInfo()));
         tab.setUserData(this);
 
-        tab.setOnClosed(new EventHandler<Event>() {
-            @Override
-            public void handle(Event event) {
-                ViewStatus viewStatus = ViewStatus.this;
-                viewStatus.getArea().remove(viewStatus);
-                viewStatus.setStatus(Status.HIDDEN);
-            }
+        tab.setOnClosed(event -> {
+            ViewStatus viewStatus = ViewStatus.this;
+            viewStatus.getArea().remove(viewStatus);
+            viewStatus.setStatus(Status.HIDDEN);
         });
     }
 

@@ -58,7 +58,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
         ));
         loader.setClassLoader(classLoader);
         loader.setController(this);
-        BorderPane rootPane = (BorderPane) loader.load();
+        BorderPane rootPane = loader.load();
         stage.setScene(new Scene(rootPane));
         rootPane.setCenter(windowManager.getRootPane());
     }

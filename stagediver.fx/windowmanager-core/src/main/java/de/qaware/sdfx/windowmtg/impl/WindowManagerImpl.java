@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
@@ -48,12 +49,9 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void init() {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                for (ViewStatus status : views.values()) {
-                    status.setDeviderPositions();
-                }
+        Platform.runLater(() -> {
+            for (ViewStatus status : views.values()) {
+                status.setDeviderPositions();
             }
         });
     }
@@ -68,12 +66,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    register(view);
-                }
-            });
+            Platform.runLater(() -> register(view));
             return;
         }
 
@@ -99,12 +92,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, final View parent) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    register(view, parent);
-                }
-            });
+            Platform.runLater(() -> register(view, parent));
             return;
         }
 
@@ -141,9 +129,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void restoreDefaultLayout() {
         mainArea = null;
         List<RootArea> immuteAbleSubWindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
-        for (RootArea subWindow : immuteAbleSubWindows) {
-            remove(subWindow);
-        }
+        immuteAbleSubWindows.forEach(this::remove);
         rootPane.getChildren().clear();
         this.views = new LinkedHashMap<>();
         for (ViewStatus view : views.values()) {
@@ -282,11 +268,9 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void bringToFront() {
-        for (RootArea area : subWindows) {
-            if (area.getNode().getScene().getWindow() instanceof Stage) {
-                ((Stage) area.getNode().getScene().getWindow()).toFront();
-            }
-        }
+        subWindows.stream()
+                .filter(area -> area.getNode().getScene().getWindow() instanceof Stage)
+                .forEach(area -> ((Stage) area.getNode().getScene().getWindow()).toFront());
         ((Stage) mainArea.getNode().getScene().getWindow()).toFront();
     }
 
@@ -334,12 +318,8 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @return A list with all views which are registered under the given area.
      */
     private List<ViewStatus> getForRootArea(final RootArea area) {
-        List<ViewStatus> areaViews = new ArrayList<>();
-        for (ViewStatus view : views.values()) {
-            if (view.getArea() != null && view.getArea().getRootArea() == area) {
-                areaViews.add(view);
-            }
-        }
-        return areaViews;
+        return views.values().stream()
+                .filter(view -> view.getArea() != null && view.getArea().getRootArea() == area)
+                .collect(Collectors.toList());
     }
 }
