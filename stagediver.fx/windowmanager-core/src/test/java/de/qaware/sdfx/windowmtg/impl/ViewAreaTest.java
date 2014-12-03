@@ -12,8 +12,8 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import com.google.inject.AbstractModule;
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.geometry.Orientation;
@@ -62,12 +62,7 @@ public class ViewAreaTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        Lookup.init(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ViewConainterAreaFactory.class).to(ViewConainterAreaFactoryMockImpl.class).asEagerSingleton();
-            }
-        });
+        Lookup.init((LookupStrategy) null);
     }
 
     @Before
@@ -222,7 +217,6 @@ public class ViewAreaTest {
         viewArea.replace(secondArea, editorArea);
         assertThat(viewArea.getSecondChild(), is((ViewArea) editorArea));
     }
-
 
     @Test
     public void testGetRootArea() throws Exception {
