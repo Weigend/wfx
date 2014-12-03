@@ -14,14 +14,19 @@ package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
+import javafx.application.Platform;
+import javafx.application.Preloader;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -32,7 +37,6 @@ import java.net.URL;
 public class PlatformPreloader extends Preloader {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformPreloader.class);
-    private static Lookup lookup = new Lookup(PlatformPreloader.class);
     @FXML
     private ProgressBar progressBar;
     @FXML
@@ -43,7 +47,7 @@ public class PlatformPreloader extends Preloader {
 
     @Override
     public void init() {
-        PreloaderNotificationService pns = lookup.lookup(PreloaderNotificationService.class);
+        PreloaderNotificationService pns = Lookup.lookup(PreloaderNotificationService.class);
         if (pns instanceof PreloaderNotificationServiceImpl) {
             notificationService = (PreloaderNotificationServiceImpl) pns;
         }
@@ -114,12 +118,7 @@ public class PlatformPreloader extends Preloader {
             if (notificationService != null) {
                 notificationService.getApplication().showMainStage();
             }
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    stage.hide();
-                }
-            });
+            Platform.runLater(stage::hide);
         }
     }
 }

@@ -32,13 +32,12 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
 
     public static final String INIT_WINSYSTEM_MSG = "Initialize Window System";
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
-    private static Lookup lookup = new Lookup(PlatformApplicationImpl.class);
     private Stage mainApplicationStage;
     private boolean shouldShowing;
 
     @Override
     public void init() {
-        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
+        PreloaderNotificationService notificationService = Lookup.lookup(PreloaderNotificationService.class);
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }
@@ -76,27 +75,24 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
             shouldShowing = true;
             return;
         }
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                WindowManager windowManager = lookup.lookup(WindowManager.class);
-                List<ApplicationWindow> windowList = lookup.lookupAll(ApplicationWindow.class);
-                for (ApplicationWindow window : windowList) {
-                    try {
-                        window.setStage(mainApplicationStage);
-                        window.setWindowManager(windowManager);
-                        window.init();
-                        window.getStage().show();
-                        windowManager.init();
+        Platform.runLater(() -> {
+            WindowManager windowManager = Lookup.lookup(WindowManager.class);
+            List<ApplicationWindow> windowList = Lookup.lookupAll(ApplicationWindow.class);
+            for (ApplicationWindow window : windowList) {
+                try {
+                    window.setStage(mainApplicationStage);
+                    window.setWindowManager(windowManager);
+                    window.init();
+                    window.getStage().show();
+                    windowManager.init();
 
-                        // Send Init Message
-                        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
-                        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 1);
-                        break;
-                    }
-                    catch (IOException e) {
-                        LOGGER.debug("Can not load Application Window", e);
-                    }
+                    // Send Init Message
+                    PreloaderNotificationService notificationService = Lookup.lookup(PreloaderNotificationService.class);
+                    notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 1);
+                    break;
+                }
+                catch (IOException e) {
+                    LOGGER.debug("Can not load Application Window", e);
                 }
             }
         });
