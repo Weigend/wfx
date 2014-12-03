@@ -29,6 +29,15 @@ public final class Lookup {
     private static LookupStrategy lookupStrategy;
 
     /**
+     * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
+     *
+     * @param lookupStrategy Use this strategy to lookup for instances.
+     */
+    public static void init(LookupStrategy lookupStrategy) {
+        Lookup.lookupStrategy = lookupStrategy;
+    }
+
+    /**
      * Init the lookup for the given class.
      *
      * @param forClazz The class which want to use the lookup.
@@ -55,15 +64,6 @@ public final class Lookup {
     @Deprecated
     public static void init(Iterable<Module> modules) {
         lookupStrategy = new GuiceLookupStrategy(modules);
-    }
-
-    /**
-     * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
-     *
-     * @param lookupStrategy Use this strategy to lookup for instances.
-     */
-    public static void init(LookupStrategy lookupStrategy) {
-        Lookup.lookupStrategy = lookupStrategy;
     }
 
     /**
