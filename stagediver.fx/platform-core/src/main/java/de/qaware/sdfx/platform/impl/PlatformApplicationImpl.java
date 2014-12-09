@@ -64,7 +64,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
         if (notificationService instanceof PreloaderNotificationServiceImpl) {
             ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
         }
-        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 0);
+//        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 0);
     }
 
     /**
@@ -83,6 +83,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
     @Override
     public void showPreloader(Stage stage) throws IOException {
         new PlatformPreloader().start(stage);
+        preloaderStage = stage;
     }
 
     /**
@@ -90,7 +91,9 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public void hidePreloader() {
-        preloaderStage.close();
+        if (preloaderStage != null) {
+            preloaderStage.close();
+        }
     }
 
     /**
