@@ -12,12 +12,8 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.collections.ObservableList;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +21,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javafx.collections.*;
+import javafx.scene.control.*;
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,7 +56,7 @@ public class TabAreaTest {
 
     @Before
     public void setUp() throws Exception {
-        Lookup.init(lookupStrategy);
+        //Lookup.init(lookupStrategy);
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         when(parent.getParent()).thenReturn(rootArea);
 

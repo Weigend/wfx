@@ -92,6 +92,11 @@
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>platform-full</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>lookup</artifactId>
                 <version>${project.version}</version>
             </dependency>

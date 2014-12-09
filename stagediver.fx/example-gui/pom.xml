@@ -30,7 +30,14 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-runner</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-full</artifactId>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
