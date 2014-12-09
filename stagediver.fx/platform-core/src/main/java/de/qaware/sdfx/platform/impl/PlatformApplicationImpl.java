@@ -14,7 +14,6 @@ package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PlatformApplication;
-import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
@@ -60,11 +59,6 @@ public class PlatformApplicationImpl implements PlatformApplication {
 
     @Override
     public void start() {
-        PreloaderNotificationService notificationService = Lookup.lookup(PreloaderNotificationService.class);
-        if (notificationService instanceof PreloaderNotificationServiceImpl) {
-            ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
-        }
-//        notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 0);
     }
 
     /**
@@ -126,10 +120,6 @@ public class PlatformApplicationImpl implements PlatformApplication {
                 window.init();
                 window.getStage().show();
                 windowManager.init();
-
-                // Send Init Message
-                PreloaderNotificationService notificationService = Lookup.lookup(PreloaderNotificationService.class);
-                notificationService.sendNotification(PlatformNotificationKeys.CORE, INIT_WINSYSTEM_MSG, 1);
                 break;
             }
             catch (IOException e) {
