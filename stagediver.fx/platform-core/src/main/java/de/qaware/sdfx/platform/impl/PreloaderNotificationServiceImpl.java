@@ -13,12 +13,13 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.NotificationKey;
+import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.platform.api.ProgressNotification;
-import javafx.application.Preloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
