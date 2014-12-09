@@ -12,12 +12,14 @@
 
 package de.qaware.sdfx.platform.impl;
 
-import javafx.application.Preloader;
+import de.qaware.sdfx.platform.api.PlatformApplication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import javafx.application.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
