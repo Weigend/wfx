@@ -1,9 +1,8 @@
 package de.qaware.sdfx.lookup.impl;
 
+import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -13,23 +12,28 @@ import java.util.ServiceLoader;
  * @author christian.fritz
  */
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
-    @Override
+
+    private ArrayListMultimap<Class, Object> lookupCache = ArrayListMultimap.create();
+
     public <T> T lookup(Class<T> clazz) {
-        ServiceLoader<T> load = ServiceLoader.load(clazz);
-        Iterator<T> iterator = load.iterator();
-        if (iterator.hasNext()) {
-            return iterator.next();
+        List<T> objects = lookupAll(clazz);
+        if (objects.size() > 0) {
+            return objects.get(0);
         }
-        return null;
+        else {
+            return null;
+        }
     }
 
     @Override
     public <T> List<T> lookupAll(Class<T> clazz) {
-        List<T> instances = new ArrayList<>();
-        ServiceLoader<T> load = ServiceLoader.load(clazz);
-        for (T aLoad : load) {
-            instances.add(aLoad);
+        if (lookupCache.containsKey(clazz)) {
+            return (List<T>) lookupCache.get(clazz);
         }
-        return instances;
+        ServiceLoader<T> load = ServiceLoader.load(clazz);
+        for (T instance : load) {
+            lookupCache.put(clazz, instance);
+        }
+        return (List<T>) lookupCache.get(clazz);
     }
 }
