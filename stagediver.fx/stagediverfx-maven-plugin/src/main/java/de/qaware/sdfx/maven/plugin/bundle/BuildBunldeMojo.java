@@ -85,10 +85,7 @@ public class BuildBunldeMojo extends AbstractBundleResolverMojo {
             copyRunner();
             copyBundles();
             bundleParams.setAppResource(new RelativeFileSet(outputDirectory, fileResources));
-            List<Bundler> bundlers = Bundler.get(bundleParams, true);
-            for (Bundler bundler : bundlers) {
-                bundler.bundle(bundleParams, osOutputDirectory);
-            }
+
 
         } catch (IOException e) {
             throw new MojoFailureException("Can not build install bundle", e);
