@@ -13,9 +13,9 @@
 package de.qaware.sdfx.platform.api;
 
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
+import javafx.application.Preloader;
+import javafx.stage.Stage;
 
-import javafx.application.*;
-import javafx.stage.*;
 import java.io.IOException;
 
 /**
@@ -58,12 +58,15 @@ public interface PlatformApplication extends Module {
      * Notify the preloader about the preloading progress.
      *
      * @param preloaderNotification The preloader notification
+     * @deprecated only for compatibility
      */
     @Deprecated
     void notifyPreloader(Preloader.PreloaderNotification preloaderNotification);
 
     /**
      * Request the platform to show the main window.
+     *
+     * @deprecated only for compatibility
      */
     @Deprecated
     void showMainStage();

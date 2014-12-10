@@ -26,8 +26,6 @@ import javafx.stage.Stage;
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  */
 public final class RootArea extends ViewArea {
-    private final Lookup lookup = new Lookup(RootArea.class);
-
     private final Pane box;
     /**
      * Close the stage containing this area when removing the child.
@@ -66,7 +64,7 @@ public final class RootArea extends ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -96,7 +94,7 @@ public final class RootArea extends ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p/>
+     * <p>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *

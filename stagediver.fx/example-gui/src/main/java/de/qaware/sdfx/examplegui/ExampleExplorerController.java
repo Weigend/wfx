@@ -22,8 +22,6 @@ public class ExampleExplorerController implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleExplorerController.class);
 
-    private Lookup lookup = new Lookup(ExampleExplorerController.class);
-
     @FXML
     protected TreeView<String> tree;
 
@@ -56,7 +54,7 @@ public class ExampleExplorerController implements Initializable {
      */
     public void focusEditor(ActionEvent actionEvent) {
         LOGGER.info("focus editor");
-        WindowManager windowManager = lookup.lookup(WindowManager.class);
+        WindowManager windowManager = Lookup.lookup(WindowManager.class);
         View editorView = windowManager.findView("example-1");
         windowManager.showView(editorView);
     }
