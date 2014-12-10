@@ -12,13 +12,17 @@
 
 package de.qaware.sdfx.platform.impl;
 
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -36,6 +40,12 @@ public class PlatformPreloader {
     private boolean noLoadingProgress = true;
     private PreloaderNotificationServiceImpl notificationService;
 
+    /**
+     * Show the platform preloader within given stage.
+     *
+     * @param stage the stage where the preloader should shown
+     * @throws IOException in case of the preloader fxml can not found.
+     */
     public void start(Stage stage) throws IOException {
         LOGGER.info("Starting platform preloader");
 

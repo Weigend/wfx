@@ -15,6 +15,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
     private ArrayListMultimap<Class, Object> lookupCache = ArrayListMultimap.create();
 
+    @Override
     public <T> T lookup(Class<T> clazz) {
         List<T> objects = lookupAll(clazz);
         if (objects.size() > 0) {

@@ -39,7 +39,7 @@ public class ExampleGuiModule implements Module {
 
     /**
      * Preload the module while starting the application.
-     * <p/>
+     * <p>
      * It will be executed in an separate thread while showing the splash screen.
      */
     @Override
@@ -67,6 +67,7 @@ public class ExampleGuiModule implements Module {
         }
     }
 
+    @Override
     public void start() {
 
     }
@@ -74,7 +75,7 @@ public class ExampleGuiModule implements Module {
 
     /**
      * Stop the module.
-     * <p/>
+     * <p>
      * This method will be called while platform shutdown.
      */
     @Override
