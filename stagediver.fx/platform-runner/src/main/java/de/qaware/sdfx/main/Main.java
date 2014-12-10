@@ -4,11 +4,11 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
+import javafx.application.Application;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class Main extends Application {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
     private List<Module> modules = new ArrayList<>();
     private PlatformApplication platformApplication;
 
@@ -34,7 +34,7 @@ public class Main extends Application {
 
     /**
      * Start the application.
-     * <p/>
+     * <p>
      * First it shows within the {@code primaryStage} the preloader and executes parallel the
      * {@link de.qaware.sdfx.platform.api.Module#preload()} method of all modules. After initializing the modules the
      * preloader stage will be closed and it creates the main application window with the window system. Then the
@@ -71,7 +71,7 @@ public class Main extends Application {
 
     /**
      * Shutdown the application.
-     * <p/>
+     * <p>
      * It first calls the {@link de.qaware.sdfx.platform.api.Module#stop()} method of all modules, close all stages and
      * shutdown the application.
      *

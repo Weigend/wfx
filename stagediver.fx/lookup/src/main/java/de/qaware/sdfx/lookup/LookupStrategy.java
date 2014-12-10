@@ -3,6 +3,10 @@ package de.qaware.sdfx.lookup;
 import java.util.List;
 
 /**
+ * The {@code LookupStrategy} is used by the {@link de.qaware.sdfx.lookup.Lookup} class to get a concrete instance of
+ * of the given {@link java.lang.Class} object. It allows you to use our own registry, service locator or dependency
+ * injection container.
+ *
  * @author christian.fritz
  */
 public interface LookupStrategy {
@@ -15,7 +19,7 @@ public interface LookupStrategy {
      * @param <T>   The type of the class to search.
      * @return A instance of the requested class or null if not found.
      */
-    public <T> T lookup(Class<T> clazz);
+    <T> T lookup(Class<T> clazz);
 
     /**
      * Lookup all services for one class from the registry.
@@ -26,5 +30,5 @@ public interface LookupStrategy {
      * @param <T>   The type of the class to search.
      * @return A list with all found service instances for the searched class.
      */
-    public <T> List<T> lookupAll(Class<T> clazz);
+    <T> List<T> lookupAll(Class<T> clazz);
 }

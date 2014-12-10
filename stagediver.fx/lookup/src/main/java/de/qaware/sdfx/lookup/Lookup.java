@@ -16,6 +16,8 @@ package de.qaware.sdfx.lookup;
 import com.google.inject.Module;
 import de.qaware.sdfx.lookup.impl.GuiceLookupStrategy;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -25,7 +27,7 @@ import java.util.List;
  * It can work with the osgi registry or with google guice if this module is not loaded with osgi.
  */
 public final class Lookup {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
     private static LookupStrategy lookupStrategy;
 
     /**
@@ -37,19 +39,25 @@ public final class Lookup {
         Lookup.lookupStrategy = lookupStrategy;
     }
 
+    private Lookup() {
+    }
+
     /**
      * Init the lookup for the given class.
      *
      * @param forClazz The class which want to use the lookup.
+     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)}
      */
     @Deprecated
     public Lookup(Class forClazz) {
+        LOGGER.warn("Do not use 'new Lookup(Class forClazz)'. Use instead 'Lookup.init(LookupStrategy)'.");
     }
 
     /**
      * Init the lookup if the module is not running within an osgi container.
      *
      * @param modules A list of guice modules.
+     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)} with a {@link de.qaware.sdfx.lookup.impl.GuiceLookupStrategy}
      */
     @Deprecated
     public static void init(Module... modules) {
@@ -60,6 +68,7 @@ public final class Lookup {
      * Init the lookup if the module is not running within an osgi container.
      *
      * @param modules A list of guice modules.
+     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)} with a {@link de.qaware.sdfx.lookup.impl.GuiceLookupStrategy}
      */
     @Deprecated
     public static void init(Iterable<Module> modules) {
