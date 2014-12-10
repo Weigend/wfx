@@ -53,7 +53,6 @@
         <module>lookup</module>
         <module>windowmanager-api</module>
         <module>windowmanager-core</module>
-        <module>platform-non-osgi</module>
         <module>stagediverfx-maven-plugin</module>
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
