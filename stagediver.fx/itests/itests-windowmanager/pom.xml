@@ -16,23 +16,32 @@
     <dependencies>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-api</artifactId>
         </dependency>
-
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-core</artifactId>
         </dependency>
+
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-core</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
         </dependency>
-
+        
         <dependency>
             <groupId>org.loadui</groupId>
             <artifactId>testFx</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
