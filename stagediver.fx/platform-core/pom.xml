@@ -8,7 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>platform-core</artifactId>
-    <packaging>bundle</packaging>
 
     <name>stagediver.fx - Platform Core</name>
     <dependencies>
@@ -31,23 +30,6 @@
             <artifactId>slf4j-api</artifactId>
         </dependency>
 
-        <!-- OSGi Container -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-        </dependency>
-
         <!-- Logging -->
         <dependency>
             <groupId>junit</groupId>
@@ -68,20 +50,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.platform.impl.PlatformActivator</Bundle-Activator>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
-            <plugin>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>
                 <version>${project.version}</version>
@@ -94,7 +62,6 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
 </project>

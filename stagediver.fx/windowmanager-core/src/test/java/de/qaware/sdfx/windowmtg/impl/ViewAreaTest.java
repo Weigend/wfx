@@ -12,14 +12,13 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import com.google.inject.AbstractModule;
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -60,18 +59,9 @@ public class ViewAreaTest {
     @Mock
     private MultiWindowManager windowManager;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Lookup.init(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ViewConainterAreaFactory.class).to(ViewConainterAreaFactoryMockImpl.class).asEagerSingleton();
-            }
-        });
-    }
-
     @Before
     public void setUp() throws Exception {
+        Lookup.init(new ServiceLoaderLookupStrategy());
         View v = new TestView("initial", Position.CENTER);
 
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
@@ -222,7 +212,6 @@ public class ViewAreaTest {
         viewArea.replace(secondArea, editorArea);
         assertThat(viewArea.getSecondChild(), is((ViewArea) editorArea));
     }
-
 
     @Test
     public void testGetRootArea() throws Exception {

@@ -13,56 +13,52 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.platform.api.PreloaderNotificationService;
+import de.qaware.sdfx.platform.api.PlatformApplication;
+import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.stage.Stage;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
+import javafx.stage.*;
 import java.io.IOException;
 import java.util.List;
 
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for stagediver.fx platform.
+ *
+ * @author christian.fritz
  */
-public class PlatformApplicationImpl extends Application implements PlatformApplication {
+public class PlatformApplicationImpl implements PlatformApplication {
 
     public static final String INIT_WINSYSTEM_MSG = "Initialize Window System";
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
-    private static Lookup lookup = new Lookup(PlatformApplicationImpl.class);
     private Stage mainApplicationStage;
-    private boolean shouldShowing;
+    private Stage preloaderStage;
 
+    /**
+     * Get the human readable module name.
+     *
+     * @return The module name.
+     */
     @Override
-    public void init() {
-        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
-        if (notificationService instanceof PreloaderNotificationServiceImpl) {
-            ((PreloaderNotificationServiceImpl) notificationService).setApplication(this);
-        }
-
-        Bundle bundle = FrameworkUtil.getBundle(PlatformApplicationImpl.class);
-        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 0);
+    public String getName() {
+        return "Platform Core Application.";
     }
 
     /**
-     * Start the JavaFX application. This will include the initialization of the content for the first stage and
-     * show the primary window for the stagediver.fx platform.
+     * Get the version of this module.
      *
-     * @param stage The primary window stage.
+     * @return The version of the module.
      */
     @Override
-    public void start(final Stage stage) {
-        LOGGER.info("Run JavaFX application start method");
-        mainApplicationStage = stage;
-        if (shouldShowing) {
-            showMainStage();
-        }
+    public String getVersion() {
+        return "";
+    }
+
+    @Override
+    public void start() {
     }
 
     /**
@@ -70,13 +66,75 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
      */
     @Override
     public void stop() {
-        LOGGER.info("Stop JavaFX application");
-        try {
-            FrameworkUtil.getBundle(getClass()).stop();
+        mainApplicationStage.close();
+    }
+
+    /**
+     * Show the preloader screen within the given stage.
+     *
+     * @param stage The stage where the preloader should be shown.
+     */
+    @Override
+    public void showPreloader(Stage stage) throws IOException {
+        new PlatformPreloader().start(stage);
+        preloaderStage = stage;
+    }
+
+    /**
+     * Hide the preloader if it is currently visible.
+     */
+    @Override
+    public void hidePreloader() {
+        if (preloaderStage != null) {
+            preloaderStage.close();
         }
-        catch (BundleException e) {
-            LOGGER.error("Can not stop bundle", e);
+    }
+
+    /**
+     * Preload the module while starting the application.
+     * <p/>
+     * It will be executed in an separate thread while showing the splash screen.
+     */
+    @Override
+    public void preload() {
+    }
+
+    /**
+     * Request the platform to show the main window.
+     *
+     * @param stage The stage where the main window will be shown.
+     */
+    @Override
+    public void showMainApplicationWindow(Stage stage) throws PlatformException {
+        if (preloaderStage != null && preloaderStage.isShowing()) {
+            throw new PlatformException("Can not show main application window while the preloader is visible");
         }
+        preloaderStage = null;
+        mainApplicationStage = stage;
+        WindowManager windowManager = Lookup.lookup(WindowManager.class);
+        List<ApplicationWindow> windowList = Lookup.lookupAll(ApplicationWindow.class);
+        for (ApplicationWindow window : windowList) {
+            try {
+                window.setStage(stage);
+                window.setWindowManager(windowManager);
+                window.init();
+                window.getStage().show();
+                windowManager.init();
+                break;
+            }
+            catch (IOException e) {
+                LOGGER.debug("Can not load Application Window", e);
+            }
+        }
+    }
+
+    /**
+     * Notify the preloader about the preloading progress.
+     *
+     * @param preloaderNotification The preloader notification
+     */
+    @Override
+    public void notifyPreloader(Preloader.PreloaderNotification preloaderNotification) {
     }
 
     /**
@@ -84,34 +142,5 @@ public class PlatformApplicationImpl extends Application implements PlatformAppl
      */
     @Override
     public void showMainStage() {
-        if (mainApplicationStage == null || mainApplicationStage.isShowing()) {
-            shouldShowing = true;
-            return;
-        }
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                WindowManager windowManager = lookup.lookup(WindowManager.class);
-                List<ApplicationWindow> windowList = lookup.lookupAll(ApplicationWindow.class);
-                for (ApplicationWindow window : windowList) {
-                    try {
-                        window.setStage(mainApplicationStage);
-                        window.setWindowManager(windowManager);
-                        window.init();
-                        window.getStage().show();
-                        windowManager.init();
-
-                        // Send Init Message
-                        PreloaderNotificationService notificationService = lookup.lookup(PreloaderNotificationService.class);
-                        Bundle bundle = FrameworkUtil.getBundle(PlatformApplicationImpl.class);
-                        notificationService.sendNotification(bundle, INIT_WINSYSTEM_MSG, 1);
-                        break;
-                    }
-                    catch (IOException e) {
-                        LOGGER.debug("Can not load Application Window", e);
-                    }
-                }
-            }
-        });
     }
 }

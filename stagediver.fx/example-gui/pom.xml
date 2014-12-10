@@ -8,7 +8,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>example-gui</artifactId>
-    <packaging>bundle</packaging>
 
     <name>stagediver.fx Example-GUI</name>
     <description>Example GUI Implementation for stagediver.fx</description>
@@ -18,11 +17,6 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>windowmanager-core</artifactId>
-        </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup</artifactId>
@@ -31,7 +25,15 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-runner</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-full</artifactId>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -42,27 +44,17 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
-                    <instructions>
-                        <Bundle-Activator>de.qaware.sdfx.examplegui.Activator</Bundle-Activator>
-                        <Private-Package>de.qaware.sdfx.examplegui.*</Private-Package>
-                    </instructions>
+                    <usedDependencies>
+                        <usedDependency>de.qaware.stagediver.fx:platform-full</usedDependency>
+                    </usedDependencies>
                 </configuration>
             </plugin>
             <plugin>

@@ -1,300 +1,88 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 14.06.13 13:23
-//     description: This is the  stagediver.fx platform runner.
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
 package de.qaware.sdfx.main;
 
-import org.apache.felix.framework.util.Util;
-import org.osgi.framework.BundleException;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.platform.api.Module;
+import de.qaware.sdfx.platform.api.PlatformApplication;
+import de.qaware.sdfx.platform.api.exceptions.PlatformException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import javafx.application.*;
+import javafx.stage.*;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * This is the  stagediver.fx platform runner.
+ * stagediver.fx application startup class. It controls the full application lifecycle beginning with showing the
+ * preloader over bootstrapping the modules, showing the main application window and shutdown the application inclusive
+ * all modules.
+ *
+ * @author christian.fritz
  */
-@Deprecated
-public class Main {
+public class Main extends Application {
 
-    /**
-     * The property name used to specify whether the launcher should
-     * install a shutdown hook.
-     */
-    public static final String SHUTDOWN_HOOK_PROP = "stagediver.shutdown.hook";
-    /**
-     * The property name used to specify an URL to the system
-     * property file.
-     */
-    public static final String SYSTEM_PROPERTIES_PROP = "stagediver.system.properties";
-    /**
-     * The default name used for the system properties file.
-     */
-    public static final String SYSTEM_PROPERTIES_FILE_VALUE = "system.properties";
-    /**
-     * The property name used to specify an URL to the configuration
-     * property file to be used for the created the framework instance.
-     */
-    public static final String CONFIG_PROPERTIES_PROP = "stagediver.config.properties";
-    /**
-     * The default name used for the configuration properties file.
-     */
-    public static final String CONFIG_PROPERTIES_FILE_VALUE = "config.properties";
-    /**
-     * Name of the configuration directory.
-     */
-    public static final String CONFIG_DIRECTORY = "config";
-    private static StartupLogger logger = new StartupLogger(Main.class);
-    protected Map<String, String> configProps;
-    protected Thread shutdownThread;
-    private Framework framework;
+    private static Logger LOGGER = LoggerFactory.getLogger(Main.class);
+    private List<Module> modules = new ArrayList<>();
+    private PlatformApplication platformApplication;
 
-    /**
-     * The initial main method to start up the platform.
-     *
-     * @param args The commandline arguments
-     */
-    public static void main(String[] args) {
-        new Main().run();
+    @Override
+    public void init() throws Exception {
+        modules = Lookup.lookupAll(Module.class);
+        platformApplication = Lookup.lookup(PlatformApplication.class);
     }
 
     /**
-     * Load the porperties from a given file.
-     *
-     * @param propertiesProp        The system propery where the filename can be found.
-     * @param defaultPropertiesFile The default file name.
-     * @return A property map of the loaded file.
-     */
-    protected static Map<String, String> loadProperties(String propertiesProp, String defaultPropertiesFile) {
-        URL propURL = getPropertyFileUrl(propertiesProp, defaultPropertiesFile);
-        if (propURL == null) {
-            return null;
-        }
-        return loadProperties(propURL);
-    }
-
-    /**
-     * <p>
-     * Loads the configuration properties in the configuration property file
-     * associated with the framework installation; these properties
-     * are accessible to the framework and to bundles and are intended
-     * for configuration purposes. By default, the configuration property
-     * file is located in the <tt>conf/</tt> directory of the Felix
-     * installation directory and is called "<tt>config.properties</tt>".
-     * The installation directory of Felix is assumed to be the parent
-     * directory of the <tt>felix.jar</tt> file as found on the system class
-     * path property. The precise file from which to load configuration
-     * properties can be set by initializing the "<tt>felix.config.properties</tt>"
-     * system property to an arbitrary URL.
-     * </p>
-     *
-     * @return A <tt>Properties</tt> instance or <tt>null</tt> if there was an error.
-     */
-    protected static Map<String, String> loadProperties(URL propURL) {
-
-        logger.info("Loading properties file");
-
-        // Read the properties file.
-        Properties props = new Properties();
-        logger.debug("Loading properties from url %s", propURL);
-        try (InputStream is = propURL.openConnection().getInputStream()) {
-            props.load(is);
-        } catch (IOException ex) {
-            logger.debug("Can not load properties", ex);
-            return null;
-        }
-
-        // Perform variable substitution for system properties and
-        // convert to dictionary.
-        Map<String, String> map = new HashMap<>();
-        for (Map.Entry entry : props.entrySet()) {
-            String name = (String) entry.getKey();
-            map.put(name, Util.substVars((String) entry.getValue(), name, null, props));
-        }
-        return map;
-    }
-
-    /**
-     * Get the url of a property file.
-     *
-     * @param propertiesProp        The systme property name where the property file name can be found
-     * @param defaultPropertiesFile The default file name if the file from "propertiesProp" can not
-     *                              be found or is empty.
-     * @return Return the full qualified url the searched property file.
-     */
-    protected static URL getPropertyFileUrl(String propertiesProp, String defaultPropertiesFile) {
-        URL propURL;
-        String custom = System.getProperty(propertiesProp);
-        if (custom != null) {
-            try {
-                propURL = new URL(custom);
-            } catch (MalformedURLException ex) {
-                logger.error("Malformed URL given for loading properties", ex);
-                return null;
-            }
-        } else if (Main.class.getResource(defaultPropertiesFile) != null) {
-            propURL = Main.class.getResource(defaultPropertiesFile);
-        } else if (Main.class.getResource("/" + defaultPropertiesFile) != null) {
-            propURL = Main.class.getResource("/" + defaultPropertiesFile);
-        } else {
-            File jarLocation = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-            if (jarLocation.toString().endsWith(".jar")) {
-                jarLocation = jarLocation.getParentFile();
-            }
-
-            File confDir = new File(jarLocation, CONFIG_DIRECTORY);
-            logger.debug("confDir: %s", confDir);
-            if (!confDir.exists()) {
-                // Can't figure it out so use the current directory as default.
-                confDir = new File(System.getProperty("user.dir"), CONFIG_DIRECTORY);
-            }
-
-            try {
-                propURL = new File(confDir, defaultPropertiesFile).toURI().toURL();
-            } catch (MalformedURLException ex) {
-                logger.error("Malformed URL given for loading properties", ex);
-                return null;
-            }
-        }
-        return propURL;
-    }
-
-    /**
-     * Run the platform.
-     */
-    public void run() {
-        loadProperties();
-        addShutdownHook();
-        try {
-            initFramework();
-            new AutoProcessor(getFramework().getBundleContext(), configProps).process();
-            runFramework();
-        } catch (Exception ex) {
-            logger.error("Could not create framework", ex);
-        }
-    }
-
-    /**
-     * Run the initialized framework until it stops.
-     *
-     * @throws BundleException      In case of any bundle failures.
-     * @throws InterruptedException In case of the thread is interuppted unexpected.
-     */
-    protected void runFramework() throws BundleException, InterruptedException {
-        FrameworkEvent event;
-        do {
-            logger.info("Start the framework.");
-            getFramework().start();
-            // Wait for framework to stop to exit the VM.
-            event = getFramework().waitForStop(0);
-        }
-        // If the framework was updated, then restart it.
-        while (event.getType() == FrameworkEvent.STOPPED_UPDATE);
-        logger.info("Framework stopped");
-    }
-
-    /**
-     * Initialize the osgi framework.
-     *
-     * @throws BundleException In case of the framework can not be initialized.
-     */
-    protected void initFramework() throws BundleException {
-        logger.info("Init the framework");
-        FrameworkFactory factory = getFrameworkFactory();
-        logger.debug("Using framework factory: %s", factory);
-        framework = factory.newFramework(configProps);
-        getFramework().init();
-    }
-
-    /**
-     * Add the osgi framework shutdown hook.
+     * Start the application.
      * <p/>
-     * The shutdown hook will shutdown all active bundles and stop the framework when the jvm is requested to stop.
-     */
-    protected void addShutdownHook() {
-        // If enabled, register a shutdown hook to make sure the framework is
-        // cleanly shutdown when the VM exits.
-        String enableHook = configProps.get(SHUTDOWN_HOOK_PROP);
-        if (!"false".equalsIgnoreCase(enableHook)) {
-            logger.debug("Add shutdown hook");
-            shutdownThread = new Thread("Felix Shutdown Hook") {
-                /**
-                 * Stop the framework on jvm shutdown.
-                 */
-                public void run() {
-                    try {
-                        if (getFramework() != null) {
-                            getFramework().stop();
-                            getFramework().waitForStop(0);
-                        }
-                    } catch (Exception ex) {
-                        logger.error("Error stopping framework", ex);
-                    }
-                }
-            };
-            Runtime.getRuntime().addShutdownHook(shutdownThread);
-        }
-    }
-
-    /**
-     * Load all property files that are needed to startup the framework successfully.
-     */
-    protected void loadProperties() {
-        Map<String, String> systemProps = loadProperties(SYSTEM_PROPERTIES_PROP, SYSTEM_PROPERTIES_FILE_VALUE);
-        if (systemProps != null) {
-            System.getProperties().putAll(systemProps);
-        }
-
-        configProps = loadProperties(CONFIG_PROPERTIES_PROP, CONFIG_PROPERTIES_FILE_VALUE);
-        if (configProps == null) {
-            logger.warn("No %s found.", CONFIG_PROPERTIES_FILE_VALUE);
-            configProps = new HashMap<>();
-        }
-        copySystemProperties();
-    }
-
-    /**
-     * Load the framework factory to initialize the osgi container.
-     * <p/>
-     * It will choose the first factory within the classpath that are named within
-     * "services/org.osgi.framework.launch.FrameworkFactory".
-     * For more information see {@link java.util.ServiceLoader#load(Class)}.
+     * First it shows within the {@code primaryStage} the preloader and executes parallel the
+     * {@link de.qaware.sdfx.platform.api.Module#preload()} method of all modules. After initializing the modules the
+     * preloader stage will be closed and it creates the main application window with the window system. Then the
+     * {@link de.qaware.sdfx.platform.api.Module#start()} method is executed sequential to finalize the modules startup.
      *
-     * @return The fully instanciate factory to initialize the osgi container.
+     * @param primaryStage The primary stage which shows the preloader.
+     * @throws de.qaware.sdfx.platform.api.exceptions.PlatformException In case of the preloader was not closed before
+     *                                                                  the application window should be shown.
      */
-    public FrameworkFactory getFrameworkFactory() {
-        ServiceLoader<FrameworkFactory> loader = ServiceLoader.load(FrameworkFactory.class);
-        return loader.iterator().next();
+    @Override
+    public void start(Stage primaryStage) throws PlatformException, IOException {
+        LOGGER.info("Show preloader");
+
+        platformApplication.preload();
+        platformApplication.showPreloader(primaryStage);
+
+        modules.parallelStream().forEach((module) -> {
+            try {
+                LOGGER.info("Startup module {}:{}", module.getName(), module.getVersion());
+                module.preload();
+                LOGGER.debug("Finished startup of module {}:{}", module.getName(), module.getVersion());
+            }
+            catch (Exception e) {
+                LOGGER.warn("Can not start module: " + module.getName(), e);
+            }
+        });
+
+        LOGGER.info("Hide preloader and show main window.");
+        platformApplication.hidePreloader();
+        platformApplication.showMainApplicationWindow(new Stage());
+        platformApplication.start();
+        modules.forEach(Module::start);
     }
 
     /**
-     * Copy all framework related system properties into the framework initialize properties.
+     * Shutdown the application.
+     * <p/>
+     * It first calls the {@link de.qaware.sdfx.platform.api.Module#stop()} method of all modules, close all stages and
+     * shutdown the application.
+     *
+     * @throws java.lang.Exception In case of any erros while stopping the application.
      */
-    protected void copySystemProperties() {
-        for (Enumeration e = System.getProperties().propertyNames();
-             e.hasMoreElements(); ) {
-            String key = (String) e.nextElement();
-            if (key.startsWith("felix.") || key.startsWith("org.osgi.framework.") || key.startsWith("stagediver.")) {
-                configProps.put(key, System.getProperty(key));
-            }
-        }
-    }
-
-    protected Framework getFramework() {
-        return framework;
+    @Override
+    public void stop() throws Exception {
+        LOGGER.info("Begin shtudown of platform. Stop modules.");
+        modules.forEach(Module::stop);
+        platformApplication.stop();
+        super.stop();
+        LOGGER.info("Stop application");
     }
 }

@@ -13,42 +13,37 @@
 
 package de.qaware.sdfx.lookup;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import com.google.inject.Module;
-import org.osgi.framework.*;
+import de.qaware.sdfx.lookup.impl.GuiceLookupStrategy;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
  * The general service lookup for the platform.
- * <p/>
+ * <p>
  * It can work with the osgi registry or with google guice if this module is not loaded with osgi.
  */
 public final class Lookup {
 
-    private static final String SERVICE_RANKING_PROP = "service.ranking";
-    private static boolean withinOsgi;
-    private static Injector injector;
+    private static LookupStrategy lookupStrategy;
 
-    static {
-        withinOsgi = Lookup.class.getClassLoader() instanceof BundleReference;
+    /**
+     * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
+     *
+     * @param lookupStrategy Use this strategy to lookup for instances.
+     */
+    public static void init(LookupStrategy lookupStrategy) {
+        Lookup.lookupStrategy = lookupStrategy;
     }
-
-    private BundleContext context;
 
     /**
      * Init the lookup for the given class.
      *
      * @param forClazz The class which want to use the lookup.
      */
+    @Deprecated
     public Lookup(Class forClazz) {
-        if (withinOsgi) {
-            context = FrameworkUtil.getBundle(forClazz).getBundleContext();
-        }
     }
 
     /**
@@ -56,70 +51,57 @@ public final class Lookup {
      *
      * @param modules A list of guice modules.
      */
+    @Deprecated
     public static void init(Module... modules) {
-        injector = Guice.createInjector(modules);
+        lookupStrategy = new GuiceLookupStrategy(modules);
+    }
+
+    /**
+     * Init the lookup if the module is not running within an osgi container.
+     *
+     * @param modules A list of guice modules.
+     */
+    @Deprecated
+    public static void init(Iterable<Module> modules) {
+        lookupStrategy = new GuiceLookupStrategy(modules);
     }
 
     /**
      * Lookup a class from the registry.
-     * <p/>
+     * <p>
      * The returned service is that service that have the highest service ranking.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
      * @return A instance of the requested class or null if not found.
      */
-    public <T> T lookup(Class<T> clazz) {
-        if (withinOsgi) {
-            ServiceReference<T> reference = context.getServiceReference(clazz);
-            if (reference != null) {
-                return context.getService(reference);
-            }
-            return null;
-        } else {
-            return injector.getInstance(clazz);
-        }
+    public static <T> T lookup(Class<T> clazz) {
+        return getLookupStrategy().lookup(clazz);
     }
 
     /**
      * Lookup all services for one class from the registry.
-     * <p/>
+     * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
      * @return A list with all found service instances for the searched class.
      */
-    public <T> List<T> lookupAll(Class<T> clazz) {
-        if (withinOsgi) {
-            return lookupAllOsgi(clazz);
-        } else {
-            List<T> services = new ArrayList<>();
-            services.add(injector.getInstance(clazz));
-            return services;
-        }
+    public static <T> List<T> lookupAll(Class<T> clazz) {
+        return getLookupStrategy().lookupAll(clazz);
     }
 
-    private <T> List<T> lookupAllOsgi(Class<T> clazz) {
-        try {
-            List<T> services = new ArrayList<>();
-            List<ServiceReference<T>> references = new ArrayList<>(context.getServiceReferences(clazz, null));
-
-            Collections.sort(references, new Comparator<ServiceReference<T>>() {
-                @Override
-                public int compare(ServiceReference<T> o1, ServiceReference<T> o2) {
-                    Integer r1 = (Integer) (o1.getProperty(SERVICE_RANKING_PROP) == null ? 0 : o1.getProperty(SERVICE_RANKING_PROP));
-                    Integer r2 = (Integer) (o2.getProperty(SERVICE_RANKING_PROP) == null ? 0 : o2.getProperty(SERVICE_RANKING_PROP));
-                    return r2.compareTo(r1);
-                }
-            });
-
-            for (ServiceReference<T> reference : references) {
-                services.add(context.getService(reference));
-            }
-            return services;
-        } catch (InvalidSyntaxException e) {
-            return null;
+    /**
+     * Get the current {@link de.qaware.sdfx.lookup.LookupStrategy}. If no lookup strategy found, it initialize the
+     * {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} as default.
+     *
+     * @return The current lookup strategy or a new instance of the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} if anyone exists.
+     */
+    public static LookupStrategy getLookupStrategy() {
+        if (lookupStrategy == null) {
+            lookupStrategy = new ServiceLoaderLookupStrategy();
         }
+        return lookupStrategy;
     }
 }

@@ -12,11 +12,10 @@
 
 package de.qaware.sdfx.platform.impl;
 
+import de.qaware.sdfx.platform.api.NotificationKey;
+import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.platform.api.ProgressNotification;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
-import org.osgi.framework.Bundle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +28,10 @@ import java.util.Map;
 /**
  * Implements the preloader notification service.
  */
-@Component
-@Service
 public class PreloaderNotificationServiceImpl implements PreloaderNotificationService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PreloaderNotificationServiceImpl.class);
     private PlatformApplication application;
-    private Map<Bundle, Double> values = new HashMap<>();
+    private Map<NotificationKey, Double> values = new HashMap<>();
     private List<Preloader.PreloaderNotification> notifications = new ArrayList<>();
 
     protected PlatformApplication getApplication() {
@@ -54,8 +51,8 @@ public class PreloaderNotificationServiceImpl implements PreloaderNotificationSe
     }
 
     @Override
-    public boolean sendNotification(Bundle bundle, String message, double progress) {
-        values.put(bundle, progress);
+    public boolean sendNotification(NotificationKey key, String message, double progress) {
+        values.put(key, progress);
         double sum = 0;
         for (Double val : values.values()) {
             sum += val;

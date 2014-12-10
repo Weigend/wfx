@@ -15,7 +15,6 @@ package de.qaware.sdfx.maven.plugin.run;
 import de.qaware.sdfx.main.Main;
 import de.qaware.sdfx.maven.plugin.resolver.Artifact;
 import de.qaware.sdfx.maven.plugin.resolver.ArtifactResolver;
-import org.apache.felix.framework.FrameworkFactory;
 import org.apache.maven.model.Build;
 import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.project.MavenProject;
@@ -25,11 +24,6 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkEvent;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.startlevel.FrameworkStartLevel;
 
 import java.io.File;
 import java.util.HashMap;
@@ -38,8 +32,7 @@ import java.util.Set;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for the stagediver.fx run mojo
@@ -52,16 +45,8 @@ public class RunMojoTest {
     private RunMojo mojo;
 
     @Mock
-    private FrameworkFactory factory;
-
-    @Mock
-    private Framework framework;
-
-    @Mock
     private ArtifactResolver resolver;
 
-    @Mock
-    private BundleContext frameworkContext;
 
     @Mock
     private MavenProject project;
@@ -77,15 +62,7 @@ public class RunMojoTest {
         when(project.getBuild()).thenReturn(projectBuild);
         when(projectBuild.getOutputDirectory()).thenReturn("outputDir");
         when(projectBuild.getFinalName()).thenReturn("finalName");
-        when(mojo.defaultRunner.getFrameworkFactory()).thenReturn(factory);
-        when(factory.newFramework(anyMap())).thenReturn(framework);
-        when(framework.getBundleContext()).thenReturn(frameworkContext);
-        when(frameworkContext.getBundle(0)).thenReturn(framework);
-        when(frameworkContext.getBundles()).thenReturn(new Bundle[]{framework});
-        when(framework.adapt(FrameworkStartLevel.class)).thenReturn(mock(FrameworkStartLevel.class));
-        when(framework.waitForStop(0)).thenReturn(
-                new FrameworkEvent(FrameworkEvent.STOPPED_UPDATE, mock(Bundle.class), null),
-                new FrameworkEvent(FrameworkEvent.STOPPED, mock(Bundle.class), null));
+
         Set<Artifact> resolvedFiles = new HashSet<>();
         resolvedFiles.add(new Artifact("group", "artifact", "1.0", new File("test.jar")));
         resolvedFiles.add(new Artifact("group", "artifact-war", "1.0", new File("test.war")));
@@ -106,9 +83,7 @@ public class RunMojoTest {
     @Test
     public void testExecute() throws Exception {
         mojo.execute();
-        verify(framework).init();
-        verify(framework, times(2)).start();
-        verify(framework, times(2)).waitForStop(0);
+
     }
 
     @Test
@@ -124,13 +99,12 @@ public class RunMojoTest {
     @Test
     public void testInitFramework() throws Exception {
         mojo.initFramework();
-        verify(framework, times(1)).init();
+
     }
 
     @Test
     public void testRunFramework() throws Exception {
         mojo.runFramework();
-        verify(framework, times(2)).start();
-        verify(framework, times(2)).waitForStop(0);
+
     }
 }

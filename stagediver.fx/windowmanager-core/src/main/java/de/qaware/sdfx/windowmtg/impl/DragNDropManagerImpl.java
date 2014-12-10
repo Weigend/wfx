@@ -24,7 +24,6 @@ import javafx.scene.effect.ColorInput;
 import javafx.scene.input.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -396,12 +395,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         stage.setHeight(dropStage.getHeight());
         stage.setX(dropStage.getX());
         stage.setY(dropStage.getY());
-        stage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-            @Override
-            public void handle(WindowEvent event) {
-                windowManager.remove(area);
-            }
-        });
+        stage.setOnCloseRequest(event -> windowManager.remove(area));
         return stage;
     }
 

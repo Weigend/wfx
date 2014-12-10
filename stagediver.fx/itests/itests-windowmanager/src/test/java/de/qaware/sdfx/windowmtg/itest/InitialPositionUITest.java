@@ -1,20 +1,17 @@
 package de.qaware.sdfx.windowmtg.itest;
 
 
-import com.google.inject.AbstractModule;
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.TestView;
-import de.qaware.sdfx.windowmtg.impl.ViewConainterAreaFactory;
-import de.qaware.sdfx.windowmtg.impl.ViewConainterAreaFactoryMockImpl;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
 import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
@@ -34,18 +31,10 @@ public class InitialPositionUITest extends GuiTest {
 
     private View top = new TestView("Top", Position.TOP);
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        Lookup.init(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(ViewConainterAreaFactory.class).to(ViewConainterAreaFactoryMockImpl.class).asEagerSingleton();
-            }
-        });
-    }
 
     @Before
     public void setUp() throws Exception {
+        Lookup.init(new ServiceLoaderLookupStrategy());
         windowManager.register(center);
         windowManager.register(left);
         windowManager.register(bottom, center);

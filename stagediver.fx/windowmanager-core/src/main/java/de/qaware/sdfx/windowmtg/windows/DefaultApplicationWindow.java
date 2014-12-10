@@ -15,10 +15,6 @@ package de.qaware.sdfx.windowmtg.windows;
 
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Properties;
-import org.apache.felix.scr.annotations.Property;
-import org.apache.felix.scr.annotations.Service;
 
 import javafx.collections.*;
 import javafx.fxml.*;
@@ -32,11 +28,6 @@ import java.io.IOException;
  * This is the main window of the stagediver.fx platform. It supports the window management
  * and the default bars like menu, tool and status bar.
  */
-@Component(name = "defaultAppWindow", immediate = true)
-@Service(ApplicationWindow.class)
-@Properties({
-        @Property(name = "service.ranking", intValue = Integer.MIN_VALUE)
-})
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     @FXML
@@ -58,11 +49,11 @@ public class DefaultApplicationWindow implements ApplicationWindow {
 
         ClassLoader classLoader = getClass().getClassLoader();
         FXMLLoader loader = new FXMLLoader(classLoader.getResource(
-                "/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
+                "de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
         ));
         loader.setClassLoader(classLoader);
         loader.setController(this);
-        BorderPane rootPane = (BorderPane) loader.load();
+        BorderPane rootPane = loader.load();
         stage.setScene(new Scene(rootPane));
         rootPane.setCenter(windowManager.getRootPane());
     }

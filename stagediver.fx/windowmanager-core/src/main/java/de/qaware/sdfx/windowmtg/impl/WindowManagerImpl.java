@@ -15,14 +15,11 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,12 +27,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
  */
-@Component
-@Service(value = {WindowManager.class, MultiWindowManager.class})
 public class WindowManagerImpl implements MultiWindowManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
@@ -53,19 +49,16 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void init() {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                for (ViewStatus status : views.values()) {
-                    status.setDeviderPositions();
-                }
+        Platform.runLater(() -> {
+            for (ViewStatus status : views.values()) {
+                status.setDeviderPositions();
             }
         });
     }
 
     /**
      * Register a new view within this window manager.
-     * <p/>
+     * <p>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
@@ -73,12 +66,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    register(view);
-                }
-            });
+            Platform.runLater(() -> register(view));
             return;
         }
 
@@ -88,7 +76,8 @@ public class WindowManagerImpl implements MultiWindowManager {
             TabArea area = oldView.getArea();
             area.add(v, Position.CENTER);
             area.remove(oldView);
-        } else {
+        }
+        else {
             getMainRootArea().add(v, v.getPosition());
         }
         views.put(view.getViewId(), v);
@@ -103,12 +92,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, final View parent) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
-                    register(view, parent);
-                }
-            });
+            Platform.runLater(() -> register(view, parent));
             return;
         }
 
@@ -138,23 +122,22 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Restore the layout to default.
-     * <p/>
+     * <p>
      * The layout is recreated in the same way as it was the first time initialized.
      */
     @Override
     public void restoreDefaultLayout() {
         mainArea = null;
         List<RootArea> immuteAbleSubWindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
-        for (RootArea subWindow : immuteAbleSubWindows) {
-            remove(subWindow);
-        }
+        immuteAbleSubWindows.forEach(this::remove);
         rootPane.getChildren().clear();
         this.views = new LinkedHashMap<>();
         for (ViewStatus view : views.values()) {
             view.restoreDefault();
             if (view.getParent() == null) {
                 register(view.getView());
-            } else {
+            }
+            else {
                 register(view.getView(), view.getParent().getView());
             }
         }
@@ -162,7 +145,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Close the specified view.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -180,9 +163,9 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Clone the specified view.
-     * <p/>
+     * <p>
      * The cloned view will be placed next to the given view in the same tab area.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -234,7 +217,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Find a view with the assigned view id.
-     * <p/>
+     * <p>
      * This returns that view that has the given unique view id. If there is no view found it returns null.
      *
      * @param viewID The view id to search.
@@ -285,11 +268,9 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void bringToFront() {
-        for (RootArea area : subWindows) {
-            if (area.getNode().getScene().getWindow() instanceof Stage) {
-                ((Stage) area.getNode().getScene().getWindow()).toFront();
-            }
-        }
+        subWindows.stream()
+                .filter(area -> area.getNode().getScene().getWindow() instanceof Stage)
+                .forEach(area -> ((Stage) area.getNode().getScene().getWindow()).toFront());
         ((Stage) mainArea.getNode().getScene().getWindow()).toFront();
     }
 
@@ -337,12 +318,8 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @return A list with all views which are registered under the given area.
      */
     private List<ViewStatus> getForRootArea(final RootArea area) {
-        List<ViewStatus> areaViews = new ArrayList<>();
-        for (ViewStatus view : views.values()) {
-            if (view.getArea() != null && view.getArea().getRootArea() == area) {
-                areaViews.add(view);
-            }
-        }
-        return areaViews;
+        return views.values().stream()
+                .filter(view -> view.getArea() != null && view.getArea().getRootArea() == area)
+                .collect(Collectors.toList());
     }
 }
