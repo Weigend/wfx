@@ -25,6 +25,10 @@ import java.util.List;
  * The general service lookup for the platform.
  * <p>
  * It can work with the osgi registry or with google guice if this module is not loaded with osgi.
+ * <p>
+ * This class is thread-safe.
+ *
+ * @author christian.fritz
  */
 public final class Lookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
@@ -107,7 +111,7 @@ public final class Lookup {
      *
      * @return The current lookup strategy or a new instance of the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} if anyone exists.
      */
-    public static LookupStrategy getLookupStrategy() {
+    public synchronized static LookupStrategy getLookupStrategy() {
         if (lookupStrategy == null) {
             lookupStrategy = new ServiceLoaderLookupStrategy();
         }
