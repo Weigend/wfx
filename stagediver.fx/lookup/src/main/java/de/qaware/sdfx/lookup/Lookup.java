@@ -111,7 +111,7 @@ public final class Lookup {
      *
      * @return The current lookup strategy or a new instance of the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} if anyone exists.
      */
-    public synchronized static LookupStrategy getLookupStrategy() {
+    public static synchronized LookupStrategy getLookupStrategy() {
         if (lookupStrategy == null) {
             lookupStrategy = new ServiceLoaderLookupStrategy();
         }
