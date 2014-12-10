@@ -93,6 +93,7 @@
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>platform-full</artifactId>
                 <version>${project.version}</version>
+                <type>pom</type>
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>

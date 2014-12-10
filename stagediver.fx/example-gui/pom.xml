@@ -17,11 +17,6 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>windowmanager-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>windowmanager-core</artifactId>
-        </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup</artifactId>
@@ -37,6 +32,7 @@
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-full</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
