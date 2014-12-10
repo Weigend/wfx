@@ -27,12 +27,6 @@
     </prerequisites>
 
     <dependencies>
-        <!-- stagediver.fx dependencies -->
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-runner</artifactId>
-        </dependency>
-
         <!-- Maven dependencies -->
         <dependency>
             <groupId>org.apache.maven</groupId>
