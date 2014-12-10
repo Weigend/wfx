@@ -49,6 +49,15 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <configuration>
+                    <usedDependencies>
+                        <usedDependency>de.qaware.stagediver.fx:platform-full</usedDependency>
+                    </usedDependencies>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>
                 <version>${project.parent.version}</version>
