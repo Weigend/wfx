@@ -12,15 +12,15 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.scene.control.Label;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import javafx.scene.control.*;
 
 import static org.mockito.Mockito.*;
 
@@ -41,13 +41,9 @@ public class RootAreaTest {
     @Mock
     private MultiWindowManager windowManager;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        //Lookup.init((LookupStrategy) null);
-    }
-
     @Before
     public void setUp() throws Exception {
+        Lookup.init(new ServiceLoaderLookupStrategy());
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         when(firstChild.getNode()).thenReturn(new Label("abc"));
         rootArea = new RootArea(dragNDropManager, false);

@@ -12,18 +12,19 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.geometry.Orientation;
+import javafx.scene.Parent;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.geometry.*;
-import javafx.scene.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -58,13 +59,9 @@ public class ViewAreaTest {
     @Mock
     private MultiWindowManager windowManager;
 
-    @BeforeClass
-    public static void setUpClass() throws Exception {
-        //Lookup.init((LookupStrategy) null);
-    }
-
     @Before
     public void setUp() throws Exception {
+        Lookup.init(new ServiceLoaderLookupStrategy());
         View v = new TestView("initial", Position.CENTER);
 
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
