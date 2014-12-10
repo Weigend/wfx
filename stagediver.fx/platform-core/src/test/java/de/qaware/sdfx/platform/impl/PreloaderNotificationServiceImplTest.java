@@ -13,13 +13,13 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.platform.api.PlatformApplication;
+import javafx.application.Preloader;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-
-import javafx.application.*;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -35,6 +35,7 @@ import static org.mockito.Mockito.verify;
  * is final.
  */
 @RunWith(MockitoJUnitRunner.class)
+@Ignore("Currently no preloader notifications available")
 public class PreloaderNotificationServiceImplTest {
 
     @Mock
