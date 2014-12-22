@@ -50,6 +50,7 @@
         <dependency>
             <groupId>org.loadui</groupId>
             <artifactId>testFx</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
