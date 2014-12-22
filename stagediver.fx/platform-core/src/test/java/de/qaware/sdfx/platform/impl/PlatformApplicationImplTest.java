@@ -59,6 +59,7 @@ public class PlatformApplicationImplTest {
 
     @Test
     public void testShowHidePreloader() throws Exception {
+        //TODO Refactor it due to test fail but it is not reported
         Platform.runLater(() -> {
             try {
                 application.showPreloader(stage);
@@ -74,6 +75,7 @@ public class PlatformApplicationImplTest {
 
     @Test
     public void testShowMainApplicationWindowAndStop() throws Exception {
+        //TODO Refactor it due to test fail but it is not reported
         Platform.runLater(() -> {
             try {
                 application.showMainApplicationWindow(stage);
