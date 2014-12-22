@@ -27,6 +27,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T> List<T> lookupAll(Class<T> clazz) {
         if (lookupCache.containsKey(clazz)) {
             return (List<T>) lookupCache.get(clazz);

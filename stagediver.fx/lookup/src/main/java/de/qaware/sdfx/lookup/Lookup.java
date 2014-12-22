@@ -53,6 +53,7 @@ public final class Lookup {
      * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)}
      */
     @Deprecated
+    @SuppressWarnings("UtilityClassWithPublicConstructor")
     public Lookup(Class forClazz) {
         LOGGER.warn("Do not use 'new Lookup(Class forClazz)'. Use instead 'Lookup.init(LookupStrategy)'.");
     }
