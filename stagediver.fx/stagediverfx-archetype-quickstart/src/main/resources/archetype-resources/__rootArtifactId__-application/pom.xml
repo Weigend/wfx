@@ -13,19 +13,16 @@
         <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>${rootArtifactId}-editor</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${groupId}</groupId>
             <artifactId>${rootArtifactId}-branding</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-full</artifactId>
             <version>${version.stagediverfx}</version>
             <type>pom</type>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>

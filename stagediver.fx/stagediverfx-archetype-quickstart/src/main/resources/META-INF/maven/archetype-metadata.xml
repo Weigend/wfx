@@ -41,6 +41,11 @@
                     <includes>
                         <include>**/*.fxml</include>
                         <include>**/*.properties</include>
+                    </includes>
+                </fileSet>
+                <fileSet filtered="true" packaged="false" encoding="UTF-8">
+                    <directory>src/main/resources</directory>
+                    <includes>
                         <include>META-INF/**</include>
                     </includes>
                 </fileSet>
