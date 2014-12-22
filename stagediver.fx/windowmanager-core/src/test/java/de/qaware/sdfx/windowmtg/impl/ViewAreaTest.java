@@ -13,7 +13,7 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
+import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.geometry.Orientation;
@@ -59,9 +59,13 @@ public class ViewAreaTest {
     @Mock
     private MultiWindowManager windowManager;
 
+    @Mock
+    private LookupStrategy lookupStrategy;
+
     @Before
     public void setUp() throws Exception {
-        Lookup.init(new ServiceLoaderLookupStrategy());
+        Lookup.init(lookupStrategy);
+        when(lookupStrategy.lookup(ViewConainterAreaFactory.class)).thenReturn(new ViewConainterAreaFactoryMockImpl());
         View v = new TestView("initial", Position.CENTER);
 
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
