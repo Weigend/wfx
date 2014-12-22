@@ -47,7 +47,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public String getName() {
-        return "Platform Core Application.";
+        return "Platform Core Application";
     }
 
     /**
