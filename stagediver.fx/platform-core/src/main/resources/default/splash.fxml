@@ -2,10 +2,13 @@
 
 <?scenebuilder-stylesheet splash.css?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml">
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="de.qaware.sdfx.platform.impl.PreloaderController">
     <children>
         <ImageView id="splash.png" fitHeight="399.9999694824219" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
             <image>

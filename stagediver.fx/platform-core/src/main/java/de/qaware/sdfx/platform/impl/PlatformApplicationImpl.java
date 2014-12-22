@@ -17,12 +17,17 @@ import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.application.Preloader;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.stage.*;
 import java.io.IOException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -76,7 +81,12 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public void showPreloader(Stage stage) throws IOException {
-        new PlatformPreloader().start(stage);
+        URL splashFxmlUrl = findSplashScreen();
+        Parent parent = FXMLLoader.load(splashFxmlUrl);
+        Scene scene = new Scene(parent);
+        stage.setScene(scene);
+        stage.initStyle(StageStyle.UNDECORATED);
+        stage.show();
         preloaderStage = stage;
     }
 
@@ -92,7 +102,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
 
     /**
      * Preload the module while starting the application.
-     * <p/>
+     * <p>
      * It will be executed in an separate thread while showing the splash screen.
      */
     @Override
@@ -142,5 +152,23 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public void showMainStage() {
+    }
+
+    /**
+     * Find the splash screen.
+     * It first try to find the application specific splashscreen under {@code /splash/splash.fxml}
+     * and if it can not found it uses the default stagediver.fx splash screen.
+     *
+     * @return the url of the found splash screen fxml.
+     */
+    private URL findSplashScreen() {
+        URL url;
+        url = getClass().getResource("/splash/splash.fxml");
+        if (url == null) {
+            return getClass().getResource("/default/splash.fxml");
+        }
+        else {
+            return url;
+        }
     }
 }
