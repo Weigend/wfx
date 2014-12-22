@@ -28,7 +28,33 @@ public class ServiceLoaderLookupStrategyTest {
     }
 
     @Test
+    public void testLookupTwice() throws Exception {
+        TestService actual1 = lookupStrategy.lookup(TestService.class);
+        TestService actual2 = lookupStrategy.lookup(TestService.class);
+        assertThat(actual1, is(notNullValue()));
+        assertThat(actual2, is(notNullValue()));
+        assertThat(actual1, instanceOf(TestServiceImpl.class));
+        assertThat(actual2, instanceOf(TestServiceImpl.class));
+        assertThat(actual1, is(actual2));
+    }
+
+    @Test
+    public void testLookupInvalidService() throws Exception {
+        ServiceLoaderLookupStrategyTest actual = lookupStrategy.lookup(ServiceLoaderLookupStrategyTest.class);
+        assertThat(actual, is(nullValue()));
+    }
+
+    @Test
     public void testLookupAll() throws Exception {
+        List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
+        assertThat(actual, hasSize(2));
+        assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
+        assertThat(actual.get(1), instanceOf(GuiceLookupStrategyTest.TestServiceImpl.class));
+    }
+
+    @Test
+    public void testLookupAllTwice() throws Exception {
+        lookupStrategy.lookupAll(TestService.class);
         List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
         assertThat(actual, hasSize(2));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
