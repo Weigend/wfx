@@ -12,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
@@ -30,10 +31,13 @@ public class InitialPositionUITest extends GuiTest {
 
     private View top = new TestView("Top", Position.TOP);
 
+    @BeforeClass
+    public static void setUpClass() throws Exception {
+        Lookup.init(new ServiceLoaderLookupStrategy());
+    }
 
     @Before
     public void setUp() throws Exception {
-        Lookup.init(new ServiceLoaderLookupStrategy());
         windowManager.register(center);
         windowManager.register(left);
         windowManager.register(bottom, center);
