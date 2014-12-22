@@ -1,8 +1,5 @@
 package de.qaware.sdfx.lookup;
 
-import com.google.inject.Module;
-import de.qaware.sdfx.lookup.impl.GuiceLookupStrategy;
-import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,7 +11,8 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit test for the {@link de.qaware.sdfx.lookup.Lookup} class.
@@ -36,20 +34,6 @@ public class LookupTest {
     }
 
     @Test
-    public void testInit() throws Exception {
-        Lookup.init(mock(Module.class));
-        LookupStrategy actual = Lookup.getLookupStrategy();
-        assertThat(actual, instanceOf(GuiceLookupStrategy.class));
-    }
-
-    @Test
-    public void testInit1() throws Exception {
-        Lookup.init(Arrays.asList(mock(Module.class), mock(Module.class)));
-        LookupStrategy actual = Lookup.getLookupStrategy();
-        assertThat(actual, instanceOf(GuiceLookupStrategy.class));
-    }
-
-    @Test
     public void testLookup() throws Exception {
         TestService actual = Lookup.lookup(TestService.class);
         assertThat(actual, is(service));
@@ -67,6 +51,6 @@ public class LookupTest {
     public void testGetLookupStrategy() throws Exception {
         Lookup.init((LookupStrategy) null);
         LookupStrategy actual = Lookup.getLookupStrategy();
-        assertThat(actual, instanceOf(ServiceLoaderLookupStrategy.class));
+        assertThat(actual, is(nullValue()));
     }
 }
