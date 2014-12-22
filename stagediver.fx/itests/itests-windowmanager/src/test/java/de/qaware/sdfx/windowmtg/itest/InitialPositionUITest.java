@@ -12,7 +12,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TabPane;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
@@ -39,12 +38,11 @@ public class InitialPositionUITest extends GuiTest {
         windowManager.register(left);
         windowManager.register(bottom, center);
         windowManager.register(top, left);
-        windowManager.init();
     }
 
     @Test
-    @Ignore
     public void testPositions() throws Exception {
+        windowManager.init();
         sleep(500);
         Parent center = find("#center");
         assertThat(center, notNullValue());
