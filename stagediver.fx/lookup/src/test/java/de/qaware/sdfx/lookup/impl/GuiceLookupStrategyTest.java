@@ -5,6 +5,7 @@ import de.qaware.sdfx.lookup.TestService;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
@@ -33,6 +34,14 @@ public class GuiceLookupStrategyTest {
         assertThat(actual, hasSize(1));
         assertThat(actual.get(0), is(notNullValue()));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
+    }
+
+    @Test
+    public void testListConstructor() throws Exception {
+        lookupStrategy = new GuiceLookupStrategy(Arrays.asList(new TestModule()));
+        TestService actual = lookupStrategy.lookup(TestService.class);
+        assertThat(actual, is(notNullValue()));
+        assertThat(actual, instanceOf(TestServiceImpl.class));
     }
 
     private static class TestModule extends AbstractModule {
