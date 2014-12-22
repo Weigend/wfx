@@ -30,7 +30,7 @@ import java.util.List;
 public final class Lookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
     private static LookupStrategy lookupStrategy;
-    private static final Object lock = new Object();
+    private static final Object LOCK = new Object();
 
     /**
      * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
@@ -38,7 +38,7 @@ public final class Lookup {
      * @param lookupStrategy Use this strategy to lookup for instances.
      */
     public static void init(LookupStrategy lookupStrategy) {
-        synchronized (lock) {
+        synchronized (LOCK) {
             Lookup.lookupStrategy = lookupStrategy;
         }
     }
@@ -90,7 +90,7 @@ public final class Lookup {
      * @return The current lookup strategy.
      */
     public static synchronized LookupStrategy getLookupStrategy() {
-        synchronized (lock) {
+        synchronized (LOCK) {
             return lookupStrategy;
         }
     }
