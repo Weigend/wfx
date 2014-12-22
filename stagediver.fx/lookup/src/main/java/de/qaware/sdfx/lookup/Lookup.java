@@ -13,9 +13,6 @@
 
 package de.qaware.sdfx.lookup;
 
-import com.google.inject.Module;
-import de.qaware.sdfx.lookup.impl.GuiceLookupStrategy;
-import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +30,7 @@ import java.util.List;
 public final class Lookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
     private static LookupStrategy lookupStrategy;
+    private static final Object lock = new Object();
 
     /**
      * Initialize {@link de.qaware.sdfx.lookup.Lookup} with the given {@link de.qaware.sdfx.lookup.LookupStrategy}.
@@ -40,7 +38,9 @@ public final class Lookup {
      * @param lookupStrategy Use this strategy to lookup for instances.
      */
     public static void init(LookupStrategy lookupStrategy) {
-        Lookup.lookupStrategy = lookupStrategy;
+        synchronized (lock) {
+            Lookup.lookupStrategy = lookupStrategy;
+        }
     }
 
     private Lookup() {
@@ -56,28 +56,6 @@ public final class Lookup {
     @SuppressWarnings("UtilityClassWithPublicConstructor")
     public Lookup(Class forClazz) {
         LOGGER.warn("Do not use 'new Lookup(Class forClazz)'. Use instead 'Lookup.init(LookupStrategy)'.");
-    }
-
-    /**
-     * Init the lookup if the module is not running within an osgi container.
-     *
-     * @param modules A list of guice modules.
-     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)} with a {@link de.qaware.sdfx.lookup.impl.GuiceLookupStrategy}
-     */
-    @Deprecated
-    public static void init(Module... modules) {
-        lookupStrategy = new GuiceLookupStrategy(modules);
-    }
-
-    /**
-     * Init the lookup if the module is not running within an osgi container.
-     *
-     * @param modules A list of guice modules.
-     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)} with a {@link de.qaware.sdfx.lookup.impl.GuiceLookupStrategy}
-     */
-    @Deprecated
-    public static void init(Iterable<Module> modules) {
-        lookupStrategy = new GuiceLookupStrategy(modules);
     }
 
     /**
@@ -107,15 +85,13 @@ public final class Lookup {
     }
 
     /**
-     * Get the current {@link de.qaware.sdfx.lookup.LookupStrategy}. If no lookup strategy found, it initialize the
-     * {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} as default.
+     * Get the current {@link de.qaware.sdfx.lookup.LookupStrategy}.
      *
-     * @return The current lookup strategy or a new instance of the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy} if anyone exists.
+     * @return The current lookup strategy.
      */
     public static synchronized LookupStrategy getLookupStrategy() {
-        if (lookupStrategy == null) {
-            lookupStrategy = new ServiceLoaderLookupStrategy();
+        synchronized (lock) {
+            return lookupStrategy;
         }
-        return lookupStrategy;
     }
 }

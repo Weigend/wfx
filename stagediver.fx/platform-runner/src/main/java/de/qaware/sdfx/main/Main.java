@@ -1,6 +1,7 @@
 package de.qaware.sdfx.main;
 
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
@@ -28,6 +29,9 @@ public class Main extends Application {
 
     @Override
     public void init() throws Exception {
+        if (Lookup.getLookupStrategy() == null) {
+            Lookup.init(new ServiceLoaderLookupStrategy());
+        }
         modules = Lookup.lookupAll(Module.class);
         platformApplication = Lookup.lookup(PlatformApplication.class);
     }
