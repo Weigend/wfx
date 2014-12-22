@@ -9,7 +9,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>${artifactId}</artifactId>
-    <packaging>bundle</packaging>
 
     <dependencies>
         <!-- stagediver.fx Platform Dependencies -->
@@ -25,47 +24,14 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup</artifactId>
         </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-non-osgi</artifactId>
-        </dependency>
-        <!-- OSGi Framework Dependencies -->
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
         <!-- Logging Dependencies -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!-- Build Dependencies - Felix -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.scr.annotations</artifactId>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-Activator>${package}.application.ApplicationActivator</Bundle-Activator>
-                        <Import-Package>!de.qaware.sdfx.nonosgi,*</Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-scr-plugin</artifactId>
-            </plugin>
             <plugin>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>

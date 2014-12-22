@@ -5,22 +5,23 @@ package ${package}.application;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.ToolBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
-import javafx.collections.*;
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.net.URL;
 
-@Component(immediate = true)
-@Service(de.qaware.sdfx.windowmtg.api.ApplicationWindow.class)
 public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.ApplicationWindow {
-    private static Lookup lookup = new Lookup(ApplicationWindow.class);
 
     @FXML
     private MenuBar menuBar;
@@ -47,7 +48,7 @@ public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.Applicati
         loader.setController(this);
         Parent parent = (Parent) loader.load();
         stage.setScene(new Scene(parent));
-        root.setCenter(lookup.lookup(WindowManager.class).getRootPane());
+        root.setCenter(Lookup.lookup(WindowManager.class).getRootPane());
     }
 
     /**
@@ -92,7 +93,7 @@ public class ApplicationWindow implements de.qaware.sdfx.windowmtg.api.Applicati
 
     @FXML
     protected void restoreDefaultLayout() {
-        lookup.lookup(WindowManager.class).restoreDefaultLayout();
+        Lookup.lookup(WindowManager.class).restoreDefaultLayout();
     }
 
     @Override
