@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?scenebuilder-stylesheet splash.css?>
+<?scenebuilder-stylesheet @splash.css?>
 
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
@@ -10,15 +10,15 @@
 <Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="de.qaware.sdfx.platform.impl.PreloaderController">
     <children>
-        <ImageView id="splash.png" fitHeight="399.9999694824219" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
+        <ImageView id="splash.png" fitHeight="400" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
             <image>
                 <Image url="@splash.png" preserveRatio="true" smooth="true"/>
             </image>
         </ImageView>
         <ProgressBar fx:id="progressBar" id="splash-progress-bar" layoutX="14.0" layoutY="312.0"
-                     prefWidth="561.9998779296875"
+                     prefWidth="562"
                      progress="0.0" styleClass="splash-progress-bar"/>
         <Label fx:id="progressText" id="splash-progress-text" blendMode="HARD_LIGHT" layoutX="14.0" layoutY="322.0"
-               prefWidth="561.9998779296875" styleClass="splash-progress-text" text="Loading..."/>
+               prefWidth="562" styleClass="splash-progress-text" text="Loading..."/>
     </children>
 </Pane>

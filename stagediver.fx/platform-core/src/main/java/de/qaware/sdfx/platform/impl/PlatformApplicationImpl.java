@@ -17,7 +17,6 @@ import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -37,7 +36,6 @@ import java.util.List;
  */
 public class PlatformApplicationImpl implements PlatformApplication {
 
-    public static final String INIT_WINSYSTEM_MSG = "Initialize Window System";
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
     private Stage mainApplicationStage;
     private Stage preloaderStage;
@@ -136,22 +134,6 @@ public class PlatformApplicationImpl implements PlatformApplication {
                 LOGGER.debug("Can not load Application Window", e);
             }
         }
-    }
-
-    /**
-     * Notify the preloader about the preloading progress.
-     *
-     * @param preloaderNotification The preloader notification
-     */
-    @Override
-    public void notifyPreloader(Preloader.PreloaderNotification preloaderNotification) {
-    }
-
-    /**
-     * Request the platform to show the main window.
-     */
-    @Override
-    public void showMainStage() {
     }
 
     /**
