@@ -14,7 +14,6 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
-import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.Position;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Tab;
@@ -53,13 +52,14 @@ public class TabAreaTest {
 
     @Mock
     private ViewArea parent;
+
     @Mock
     private LookupStrategy lookupStrategy;
 
 
     @Before
     public void setUp() throws Exception {
-        Lookup.init(new ServiceLoaderLookupStrategy());
+        Lookup.init(lookupStrategy);
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         when(parent.getParent()).thenReturn(rootArea);
 
