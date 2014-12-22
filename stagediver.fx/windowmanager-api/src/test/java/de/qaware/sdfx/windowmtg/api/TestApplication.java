@@ -30,11 +30,8 @@ public class TestApplication extends Application {
      */
     public static void launchTest() {
         if (TestApplication.getInstance() == null) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Application.launch(TestApplication.class);
-                }
+            new Thread(() -> {
+                Application.launch(TestApplication.class);
             }).start();
         }
     }
