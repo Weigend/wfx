@@ -13,24 +13,30 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import com.google.common.collect.ImmutableList;
+import javafx.event.EventHandler;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.event.*;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.stage.*;
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The DropStage is a container which handles the drop events of views outside the the application windows.
- * <p/>
+ * <p>
  * This drop events are captured by one undecorated and transparent stage per screen. This stages covers the whole screen.
  */
+@Singleton
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);
     /**

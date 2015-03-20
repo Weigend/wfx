@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
  */
+@Singleton
 public class WindowManagerImpl implements MultiWindowManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
