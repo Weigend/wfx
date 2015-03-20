@@ -11,6 +11,10 @@
 
     <name>stagediver.fx - Window Manager API</name>
     <dependencies>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup</artifactId>
+        </dependency>
         <!-- Google Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>

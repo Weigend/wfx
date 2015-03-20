@@ -24,6 +24,10 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup</artifactId>
         </dependency>
+        <dependency>
+            <groupId>javax.enterprise</groupId>
+            <artifactId>cdi-api</artifactId>
+        </dependency>
 
         <!-- Logging -->
         <dependency>
