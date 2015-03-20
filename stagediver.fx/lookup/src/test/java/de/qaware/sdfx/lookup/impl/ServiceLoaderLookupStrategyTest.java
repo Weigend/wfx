@@ -49,7 +49,7 @@ public class ServiceLoaderLookupStrategyTest {
         List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
         assertThat(actual, hasSize(2));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
-        assertThat(actual.get(1), instanceOf(GuiceLookupStrategyTest.TestServiceImpl.class));
+        assertThat(actual.get(1), instanceOf(TestServiceImpl2.class));
     }
 
     @Test
@@ -58,13 +58,20 @@ public class ServiceLoaderLookupStrategyTest {
         List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
         assertThat(actual, hasSize(2));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
-        assertThat(actual.get(1), instanceOf(GuiceLookupStrategyTest.TestServiceImpl.class));
+        assertThat(actual.get(1), instanceOf(TestServiceImpl2.class));
     }
 
     public static class TestServiceImpl implements TestService {
         @Override
         public String sayHello() {
             return "World";
+        }
+    }
+
+    public static class TestServiceImpl2 implements TestService {
+        @Override
+        public String sayHello() {
+            return "World2";
         }
     }
 }
