@@ -57,6 +57,7 @@
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
         <module>platform-full</module>
+        <module>lookup-cdi</module>
         <module>lookup-guice</module>
     </modules>
 
@@ -109,6 +110,11 @@
             </dependency>
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>lookup-cdi</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>lookup-guice</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -142,6 +148,24 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.3.2</version>
+            </dependency>
+
+            <!--CDI & WELD-->
+            <dependency>
+                <groupId>javax.enterprise</groupId>
+                <artifactId>cdi-api</artifactId>
+                <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld.se</groupId>
+                <artifactId>weld-se</artifactId>
+                <version>2.2.9.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.weld</groupId>
+                <artifactId>weld-core</artifactId>
+                <version>2.2.9.Final</version>
             </dependency>
 
             <!-- Logging -->
