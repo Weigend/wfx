@@ -1,4 +1,4 @@
-package de.qaware.sdfx.lookup.impl;
+package de.qaware.sdfx.lookup.guice;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

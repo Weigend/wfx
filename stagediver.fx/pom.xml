@@ -57,6 +57,7 @@
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
         <module>platform-full</module>
+        <module>lookup-guice</module>
     </modules>
 
     <properties>
@@ -97,6 +98,18 @@
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>lookup</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>lookup</artifactId>
+                <version>${project.version}</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>lookup-guice</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Window Management -->
