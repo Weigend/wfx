@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>stagediverfx-archetype-quickstart</artifactId>
-    <name>stagedirver.fx - Quickstart Archetype</name>
+    <name>stagediver.fx - Quickstart Archetype</name>
     <description>This is the easy and fast start with the stagediver.fx platform.</description>
     <packaging>maven-archetype</packaging>
 

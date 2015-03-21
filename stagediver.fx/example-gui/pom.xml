@@ -9,7 +9,7 @@
 
     <artifactId>example-gui</artifactId>
 
-    <name>stagediver.fx Example-GUI</name>
+    <name>stagediver.fx - Example-GUI</name>
     <description>Example GUI Implementation for stagediver.fx</description>
 
     <dependencies>

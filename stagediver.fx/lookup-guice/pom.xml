@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>lookup-guice</artifactId>
-    <name>stageiver.fx - Google Guice Lookup Module</name>
+    <name>stagediver.fx - Google Guice Lookup Module</name>
     <dependencies>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
@@ -22,18 +22,8 @@
             <type>test-jar</type>
         </dependency>
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <!-- Testing dependencies -->

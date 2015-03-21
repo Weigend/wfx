@@ -51,14 +51,14 @@
         <module>platform-api</module>
         <module>platform-core</module>
         <module>lookup</module>
+        <module>lookup-cdi</module>
+        <module>lookup-guice</module>
         <module>windowmanager-api</module>
         <module>windowmanager-core</module>
         <module>stagediverfx-maven-plugin</module>
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
         <module>platform-full</module>
-        <module>lookup-cdi</module>
-        <module>lookup-guice</module>
     </modules>
 
     <properties>
@@ -155,6 +155,12 @@
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
                 <version>1.2</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>javax.inject</groupId>
+                <artifactId>javax.inject</artifactId>
+                <version>1</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
