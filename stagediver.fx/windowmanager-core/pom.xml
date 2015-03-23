@@ -45,6 +45,18 @@
             <artifactId>guava</artifactId>
         </dependency>
         <!-- Test -->
+
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-api</artifactId>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup-cdi</artifactId>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
@@ -59,14 +71,8 @@
             <artifactId>mockito-all</artifactId>
         </dependency>
         <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>windowmanager-api</artifactId>
-            <scope>test</scope>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>lookup-cdi</artifactId>
+            <groupId>org.jboss.weld.se</groupId>
+            <artifactId>weld-se</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
