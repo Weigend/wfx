@@ -44,6 +44,22 @@ public class FXMLView<C> implements View {
      * <p>
      * The resulted view will not have a tooltip.
      *
+     * @param id    The view id.
+     * @param title The view title.
+     * @param pos   The initial position of the view.
+     * @param file  The path to the fxml file.
+     * @throws IOException           In case of the view can not be loaded.
+     * @throws ViewNotFoundException In case of the view can not be found.
+     */
+    public FXMLView(String id, String title, Position pos, String file) throws IOException {
+        this(id, title, pos, file, FXMLView.class.getClassLoader());
+    }
+
+    /**
+     * Get a new view with the specified values.
+     * <p>
+     * The resulted view will not have a tooltip.
+     *
      * @param id          The view id.
      * @param title       The view title.
      * @param pos         The initial position of the view.
@@ -53,7 +69,24 @@ public class FXMLView<C> implements View {
      * @throws ViewNotFoundException In case of the view can not be found.
      */
     public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws IOException {
-        this(id, title, pos, file, null, DEFAULT_VIEW_AREA_SIZE, classLoader);
+        this(id, title, pos, file, null, classLoader);
+    }
+
+    /**
+     * Get a new view with the specified values.
+     * <p>
+     * The resulted view will not have a tooltip.
+     *
+     * @param id           The view id.
+     * @param title        The view title.
+     * @param pos          The initial position of the view.
+     * @param file         The path to the fxml file.
+     * @param viewAreaSize The view area size. See {@link de.qaware.sdfx.windowmtg.api.View#getViewAreaSize()}.
+     * @throws IOException           In case of the view can not be loaded.
+     * @throws ViewNotFoundException In case of the view can not be found.
+     */
+    public FXMLView(String id, String title, Position pos, String file, double viewAreaSize) throws IOException {
+        this(id, title, pos, file, viewAreaSize, FXMLView.class.getClassLoader());
     }
 
     /**
@@ -92,6 +125,7 @@ public class FXMLView<C> implements View {
             throws IOException {
         this(id, title, pos, file, toolTipInfo, DEFAULT_VIEW_AREA_SIZE, classLoader);
     }
+
 
     /**
      * Get a new view with the specified values.

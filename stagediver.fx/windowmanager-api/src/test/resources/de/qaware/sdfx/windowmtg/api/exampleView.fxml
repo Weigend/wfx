@@ -17,9 +17,10 @@
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.text.Font?>
-<BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml">
+<BorderPane prefHeight="180.0" prefWidth="414.0" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="de.qaware.sdfx.windowmtg.api.FXMLViewTest$TestController">
     <center>
-        <Label text="Content">
+        <Label text="Content" fx:id="label" id="label">
             <font>
                 <Font name="System Bold" size="20.0"/>
             </font>
