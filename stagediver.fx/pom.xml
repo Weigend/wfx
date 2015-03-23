@@ -315,8 +315,7 @@
                     <source>${project.build.version}</source>
                     <target>${project.build.version}</target>
                 </configuration>
-            </plugin
-                    >
+            </plugin>
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
