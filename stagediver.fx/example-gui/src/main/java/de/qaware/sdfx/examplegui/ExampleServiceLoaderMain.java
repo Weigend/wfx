@@ -16,8 +16,10 @@ package de.qaware.sdfx.examplegui;
 import de.qaware.sdfx.main.Main;
 
 /**
- * Example main class to demonstrate running without osgi.
+ * Example main class to demonstrate running the application with the service loader lookup strategy.
+ *
+ * @author christian.fritz
  */
-public class NonOsgiMain extends Main {
+public class ExampleServiceLoaderMain extends Main {
 
 }

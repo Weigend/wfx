@@ -6,6 +6,7 @@ import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +31,9 @@ public class Main extends Application {
     @Override
     public void init() throws Exception {
         if (Lookup.getLookupStrategy() == null) {
-            Lookup.init(new ServiceLoaderLookupStrategy());
+            ServiceLoaderLookupStrategy lookupStrategy = new ServiceLoaderLookupStrategy();
+            lookupStrategy.init(new Object[][]{{FXMLLoader.class, (ServiceLoaderLookupStrategy.Producer<FXMLLoader>) FXMLLoader::new}});
+            Lookup.init(lookupStrategy);
         }
         modules = Lookup.lookupAll(Module.class);
         platformApplication = Lookup.lookup(PlatformApplication.class);

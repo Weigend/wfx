@@ -22,13 +22,16 @@
             <artifactId>platform-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup-cdi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.7</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

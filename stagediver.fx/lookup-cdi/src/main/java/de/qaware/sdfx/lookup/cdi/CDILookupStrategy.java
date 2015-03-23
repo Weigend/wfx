@@ -25,7 +25,14 @@ public class CDILookupStrategy implements LookupStrategy {
      * Initialize the Lookup module.
      */
     public static void initLookup() {
-        WeldContainer container = new Weld().initialize();
+        Weld weld = new Weld();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                weld.shutdown();
+            }
+        });
+        WeldContainer container = weld.initialize();
         Lookup.init(container.instance().select(CDILookupStrategy.class).get());
     }
 
