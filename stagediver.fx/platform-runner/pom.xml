@@ -62,9 +62,6 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <configuration>
                     <usedDependencies>
-                        <usedDependency>de.qaware.stagediver.fx:platform-api</usedDependency>
-                        <usedDependency>org.slf4j:slf4j-api</usedDependency>
-                        <usedDependency>de.qaware.stagediver.fx:lookup</usedDependency>
                         <usedDependency>com.google.guava:guava</usedDependency>
                     </usedDependencies>
                 </configuration>
