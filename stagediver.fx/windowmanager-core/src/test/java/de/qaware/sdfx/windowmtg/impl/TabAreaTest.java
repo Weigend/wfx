@@ -75,7 +75,7 @@ public class TabAreaTest {
         Field tabPaneField = TabArea.class.getDeclaredField("tabPane");
         tabPaneField.setAccessible(true);
         tabPaneField.set(tabArea, tabPane);
-        when(lookupStrategy.lookup(ViewConainterAreaFactory.class)).thenReturn(new ViewConainterAreaFactoryMockImpl());
+        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
     }
 
     @Test

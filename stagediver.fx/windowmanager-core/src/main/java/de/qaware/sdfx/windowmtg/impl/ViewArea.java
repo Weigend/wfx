@@ -98,7 +98,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -124,7 +124,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as second child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -137,7 +137,7 @@ public class ViewArea {
 
     /**
      * Split this area by {@param orientation}.
-     * <p/>
+     * <p>
      * Either the parameter {@param first} or {@param second} must be this area. Otherwise a
      * {@link IllegalArgumentException} is thrown.
      *
@@ -163,7 +163,7 @@ public class ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p/>
+     * <p>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *
@@ -172,7 +172,7 @@ public class ViewArea {
      */
     public void add(ViewStatus view, Position position) {
         LOGGER.debug("Add view {} on {} to area {}", view.getView().getViewId(), position, this);
-        ViewConainterAreaFactory viewContainerFactory = Lookup.lookup(ViewConainterAreaFactory.class);
+        ViewContainerAreaFactory viewContainerFactory = Lookup.lookup(ViewContainerAreaFactory.class);
         switch (position) {
             case CENTER:
                 getEditorArea().add(view, position);
@@ -224,11 +224,14 @@ public class ViewArea {
 
     /**
      * Remove the given area as child from this area.
-     * <p/>
+     * <p>
      * In case of a underflow this area will also be removed.
+     * <p>
+     * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param area The area that should be removed.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void remove(ViewArea area) {
         if (area == firstChild) {
             getParent().replace(this, secondChild);
@@ -240,10 +243,13 @@ public class ViewArea {
 
     /**
      * Replace the {@param oldArea} with the {@param newArea}.
+     * <p>
+     * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param oldArea The old area.
      * @param newArea The new area.
      */
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     protected void replace(ViewArea oldArea, ViewArea newArea) {
         if (oldArea == firstChild) {
             setFirstChild(newArea);

@@ -15,7 +15,7 @@ package de.qaware.sdfx.windowmtg.impl;
 /**
  * Implementation for the view container areas. This Implementation will show the added views as tabs within a TabPane.
  */
-public class ViewConainterAreaFactoryImpl implements ViewConainterAreaFactory {
+public class ViewContainerAreaFactoryImpl implements ViewContainerAreaFactory {
 
     @Override
     public ViewArea getInstance(DragNDropManager dragNDropManager) {

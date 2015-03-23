@@ -19,7 +19,7 @@ package de.qaware.sdfx.windowmtg.impl;
  * For example an implementation will produce {@link de.qaware.sdfx.windowmtg.impl.TabArea}. Thats a ViewArea that will
  * show the added views as tabs within a tabpane.
  */
-public interface ViewConainterAreaFactory {
+public interface ViewContainerAreaFactory {
     /**
      * Create a new view area.
      *

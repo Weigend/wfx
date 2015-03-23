@@ -65,7 +65,7 @@ public class ViewAreaTest {
     @Before
     public void setUp() throws Exception {
         Lookup.init(lookupStrategy);
-        when(lookupStrategy.lookup(ViewConainterAreaFactory.class)).thenReturn(new ViewConainterAreaFactoryMockImpl());
+        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
         View v = new TestView("initial", Position.CENTER);
 
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);

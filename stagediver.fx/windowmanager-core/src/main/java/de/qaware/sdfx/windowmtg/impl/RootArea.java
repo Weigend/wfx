@@ -54,7 +54,7 @@ public final class RootArea extends ViewArea {
         super(dragNDropManager);
         this.closeStage = closeStage;
         this.box = box;
-        ViewArea editorArea = Lookup.lookup(ViewConainterAreaFactory.class).getInstance(this, dragNDropManager);
+        ViewArea editorArea = Lookup.lookup(ViewContainerAreaFactory.class).getInstance(this, dragNDropManager);
         editorArea.setEditor(true);
         this.box.getChildren().add(editorArea.getNode());
         setFirstChild(editorArea);
@@ -119,6 +119,11 @@ public final class RootArea extends ViewArea {
         throw new UnsupportedOperationException("Root Areas can not have any parent area");
     }
 
+    /**
+     * Whether or not the stage will be closed when removing the child.
+     *
+     * @return true, close the stage when removing the child.
+     */
     public boolean isCloseStage() {
         return closeStage;
     }

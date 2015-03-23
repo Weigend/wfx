@@ -12,10 +12,9 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import javafx.scene.control.Label;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-
-import javafx.scene.control.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.when;
 /**
  * Mock Implementations for the view container areas.
  */
-public class ViewConainterAreaFactoryMockImpl implements ViewConainterAreaFactory {
+public class ViewContainerAreaFactoryMockImpl implements ViewContainerAreaFactory {
 
     @Override
     public ViewArea getInstance(DragNDropManager dragNDropManager) {
