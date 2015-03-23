@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.loadui.testfx.GuiTest;
@@ -55,6 +56,7 @@ public class PreloaderControllerTest extends GuiTest {
     }
 
     @Test
+    @Ignore()
     public void testProgress() throws Exception {
         assertThat(getProgressText(), hasText("Loading..."));
         assertThat(getProgressBar().progressProperty().get(), is(equalTo(0.0)));
