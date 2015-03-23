@@ -16,8 +16,10 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 
 /**
  * A multi window manager.
- * <p/>
+ * <p>
  * This is a window manager which is able to handle the views within one or more windows.
+ *
+ * @author Christian Fritz
  */
 public interface MultiWindowManager extends WindowManager {
 

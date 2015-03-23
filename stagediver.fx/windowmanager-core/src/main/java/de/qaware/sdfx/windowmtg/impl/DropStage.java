@@ -12,7 +12,6 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import com.google.common.collect.ImmutableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -27,8 +26,8 @@ import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -36,7 +35,6 @@ import java.util.List;
  * <p>
  * This drop events are captured by one undecorated and transparent stage per screen. This stages covers the whole screen.
  */
-@Singleton
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);
     /**
@@ -156,10 +154,8 @@ class DropStage {
      */
     public void close() {
         LOGGER.debug("close");
-        List<Stage> immuteAbleStages = new ImmutableList.Builder<Stage>().addAll(stages).build();
-        for (Stage stage : immuteAbleStages) {
-            stage.close();
-            stages.remove(stage);
-        }
+        List<Stage> stagesList = Collections.synchronizedList(stages);
+        stagesList.forEach(Stage::close);
+        stagesList.clear();
     }
 }

@@ -12,7 +12,6 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.application.Platform;
@@ -24,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -130,11 +126,14 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void restoreDefaultLayout() {
         mainArea = null;
-        List<RootArea> immuteAbleSubWindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
-        immuteAbleSubWindows.forEach(this::remove);
+        List<RootArea> currentSubwindows = Collections.synchronizedList(subWindows);
+        currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
+        //save the old views
+        LinkedHashMap<String, ViewStatus> oldViews = new LinkedHashMap<>();
+        oldViews.putAll(views);
         this.views = new LinkedHashMap<>();
-        for (ViewStatus view : views.values()) {
+        for (ViewStatus view : oldViews.values()) {
             view.restoreDefault();
             if (view.getParent() == null) {
                 register(view.getView());

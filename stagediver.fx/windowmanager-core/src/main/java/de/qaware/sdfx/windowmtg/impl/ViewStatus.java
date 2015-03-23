@@ -69,30 +69,65 @@ public class ViewStatus {
         this.initTab();
     }
 
+    /**
+     * Getter for property parent.
+     *
+     * @return Value for property parent.
+     */
     public ViewStatus getParent() {
         return parent;
     }
 
+    /**
+     * Getter for property status.
+     *
+     * @return Value for property status.
+     */
     public Status getStatus() {
         return status;
     }
 
+    /**
+     * Setter for property status.
+     *
+     * @param status Value to set for property status.
+     */
     public void setStatus(Status status) {
         this.status = status;
     }
 
+    /**
+     * Getter for property view.
+     *
+     * @return Value for property view.
+     */
     public View getView() {
         return view;
     }
 
+    /**
+     * Getter for property position.
+     *
+     * @return Value for property position.
+     */
     public Position getPosition() {
         return position;
     }
 
+    /**
+     * Setter for property position.
+     *
+     * @param position Value to set for property position.
+     */
     public void setPosition(Position position) {
         this.position = position;
     }
 
+    /**
+     * Getter for property tab.
+     *
+     * @return Value for property tab.
+     */
     public Tab getTab() {
         return tab;
     }
@@ -124,10 +159,20 @@ public class ViewStatus {
         });
     }
 
+    /**
+     * Getter for property area.
+     *
+     * @return Value for property area.
+     */
     public TabArea getArea() {
         return area;
     }
 
+    /**
+     * Setter for property area.
+     *
+     * @param area Value to set for property area.
+     */
     public void setArea(TabArea area) {
         this.area = area;
     }

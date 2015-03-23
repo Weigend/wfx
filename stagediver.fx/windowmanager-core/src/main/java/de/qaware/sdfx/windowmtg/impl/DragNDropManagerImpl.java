@@ -73,6 +73,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         this.windowManager = windowManager;
     }
 
+    /**
+     * Getter for property dragedViewStatus.
+     *
+     * @return Value for property dragedViewStatus.
+     */
     public static ViewStatus getDragedViewStatus() {
         return dragedViewStatus;
     }
@@ -249,10 +254,13 @@ public class DragNDropManagerImpl implements DragNDropManager {
 
     /**
      * Handle the drag over event. It draws the drop position for the current cursor position.
+     * <p>
+     * Identity check is required here for applying the effect (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param event The drag event.
      */
     @Override
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void onDragOver(DragEvent event) {
         if (!(event.getSource() instanceof Control)) {
             return;
@@ -335,13 +343,17 @@ public class DragNDropManagerImpl implements DragNDropManager {
         double areaY = event.getY() / source.getHeight();
         if (0.25 <= areaX && areaX < 0.75 && 0.25 <= areaY && areaY < 0.75) {
             return Position.CENTER;
-        } else if (areaY < 0.25) {
+        }
+        else if (areaY < 0.25) {
             return Position.TOP;
-        } else if (areaY >= 0.75) {
+        }
+        else if (areaY >= 0.75) {
             return Position.BOTTOM;
-        } else if (areaX < 0.25) {
+        }
+        else if (areaX < 0.25) {
             return Position.LEFT;
-        } else {
+        }
+        else {
             return Position.RIGHT;
         }
     }
