@@ -89,7 +89,7 @@ public final class Lookup {
      *
      * @return The current lookup strategy.
      */
-    public static synchronized LookupStrategy getLookupStrategy() {
+    public static LookupStrategy getLookupStrategy() {
         synchronized (LOCK) {
             return lookupStrategy;
         }
