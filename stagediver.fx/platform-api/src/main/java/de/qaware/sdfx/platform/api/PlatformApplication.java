@@ -22,7 +22,36 @@ import java.io.IOException;
  *
  * @author christian.fritz
  */
-public interface PlatformApplication extends Module {
+public interface PlatformApplication {
+
+    /**
+     * Get the human readable module name.
+     *
+     * @return The module name.
+     */
+    String getName();
+
+    /**
+     * Get the version of this module.
+     *
+     * @return The version of the module.
+     */
+    String getVersion();
+
+    /**
+     * Preload the module while starting the application.
+     * <p>
+     * It will be executed in an separate thread while showing the splash screen.
+     */
+    void preload();
+
+    /**
+     * Finally start the application.
+     * <p>
+     * It is called from the java fx platform thread in an non specific order, while the platform is initializing the main
+     * application window. This includes that all modules have executed there preload phase.
+     */
+    void start();
 
     /**
      * Show the preloader screen within the given stage.
