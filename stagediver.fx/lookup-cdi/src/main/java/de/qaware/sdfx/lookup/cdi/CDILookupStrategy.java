@@ -1,6 +1,9 @@
 package de.qaware.sdfx.lookup.cdi;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
+import org.jboss.weld.environment.se.Weld;
+import org.jboss.weld.environment.se.WeldContainer;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -17,6 +20,14 @@ import java.util.List;
 public class CDILookupStrategy implements LookupStrategy {
     @Inject
     private Instance<Object> weldInstance;
+
+    /**
+     * Initialize the Lookup module.
+     */
+    public static void initLookup() {
+        WeldContainer container = new Weld().initialize();
+        Lookup.init(container.instance().select(CDILookupStrategy.class).get());
+    }
 
     @Override
     public <T> T lookup(Class<T> clazz) {

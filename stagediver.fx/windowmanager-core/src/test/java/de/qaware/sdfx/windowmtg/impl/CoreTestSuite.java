@@ -20,11 +20,11 @@ import org.junit.runners.Suite;
 
 /**
  * Test suite for windowmanager core tests.
- * <p/>
+ * <p>
  * It starts the javafx application before each testclass and terminates it after the test.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({RootAreaTest.class, TabAreaTest.class, ViewAreaTest.class, ViewStatusTest.class})
+@Suite.SuiteClasses({RootAreaTest.class, TabAreaTest.class, ViewAreaTest.class, ViewStatusTest.class, FXMLLoaderProducerTest.class})
 public class CoreTestSuite {
     @BeforeClass
     public static void setUp() {

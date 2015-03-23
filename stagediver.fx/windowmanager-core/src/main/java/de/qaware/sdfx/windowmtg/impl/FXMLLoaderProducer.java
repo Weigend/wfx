@@ -5,6 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javax.enterprise.inject.Instance;
 import javax.enterprise.inject.Produces;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.nio.charset.StandardCharsets;
 
 /**
@@ -12,6 +13,7 @@ import java.nio.charset.StandardCharsets;
  *
  * @author christian.fritz
  */
+@Singleton
 public class FXMLLoaderProducer {
 
     @Inject
