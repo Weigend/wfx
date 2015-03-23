@@ -13,11 +13,18 @@ import java.nio.charset.StandardCharsets;
  * @author christian.fritz
  */
 public class FXMLLoaderProducer {
-    @Inject
-    Instance<Object> instance;
 
+    @Inject
+    private Instance<Object> instance;
+
+    /**
+     * Producer method to create new instances of the {@link javafx.fxml.FXMLLoader} which initializes the controllers
+     * with cdi.
+     *
+     * @return The cdi specific fxml loader.
+     */
     @Produces
     public FXMLLoader createLoader() {
-        return new FXMLLoader(null, null, null, param -> instance.select(param).get(), StandardCharsets.UTF_8);
+        return new FXMLLoader(null, null, null, controllerClass -> instance.select(controllerClass).get(), StandardCharsets.UTF_8);
     }
 }
