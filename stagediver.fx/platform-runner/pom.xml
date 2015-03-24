@@ -13,6 +13,7 @@
     <packaging>jar</packaging>
 
     <dependencies>
+        <!-- stagediver.fx dependencies -->
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup</artifactId>
@@ -25,6 +26,8 @@
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>lookup-cdi</artifactId>
         </dependency>
+
+        <!-- Commons -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
@@ -33,18 +36,31 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+
+        <!-- Test dependencies -->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-api</artifactId>
             <scope>test</scope>
+            <type>test-jar</type>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
         </dependency>
         <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.loadui</groupId>
+            <artifactId>testFx</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

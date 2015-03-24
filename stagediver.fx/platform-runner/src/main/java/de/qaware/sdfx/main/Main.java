@@ -2,15 +2,16 @@ package de.qaware.sdfx.main;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
-import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
+import javafx.fxml.*;
+import javafx.stage.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Main extends Application {
     public void init() throws Exception {
         if (Lookup.getLookupStrategy() == null) {
             ServiceLoaderLookupStrategy lookupStrategy = new ServiceLoaderLookupStrategy();
-            lookupStrategy.init(new Object[][]{{FXMLLoader.class, (ServiceLoaderLookupStrategy.Producer<FXMLLoader>) FXMLLoader::new}});
+            lookupStrategy.init(FXMLLoader.class, (Producer<FXMLLoader>) FXMLLoader::new);
             Lookup.init(lookupStrategy);
         }
         modules = Lookup.lookupAll(Module.class);
@@ -41,7 +42,7 @@ public class Main extends Application {
 
     /**
      * Start the application.
-     * <p>
+     * <p/>
      * First it shows within the {@code primaryStage} the preloader and executes parallel the
      * {@link de.qaware.sdfx.platform.api.Module#preload()} method of all modules. After initializing the modules the
      * preloader stage will be closed and it creates the main application window with the window system. Then the
@@ -78,7 +79,7 @@ public class Main extends Application {
 
     /**
      * Shutdown the application.
-     * <p>
+     * <p/>
      * It first calls the {@link de.qaware.sdfx.platform.api.Module#stop()} method of all modules, close all stages and
      * shutdown the application.
      *
