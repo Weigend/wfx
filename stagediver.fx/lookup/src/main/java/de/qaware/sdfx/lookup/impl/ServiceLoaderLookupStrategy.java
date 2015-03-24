@@ -31,7 +31,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     /**
-     * Add a new instance to the lookup. If override is true, all existing instances are removed previous.
+     * Add a new instance to the lookup. Existing instances are not overridden.
      *
      * @param clazz    The target class.
      * @param instance The added instance.
