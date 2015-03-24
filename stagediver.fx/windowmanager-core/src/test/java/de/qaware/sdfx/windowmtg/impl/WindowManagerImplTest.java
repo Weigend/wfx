@@ -13,6 +13,8 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -54,12 +57,11 @@ public class WindowManagerImplTest {
     private WindowManagerImpl windowManager;
     private Map<String, ViewStatus> views;
 
-
     @Before
     public void setUp() throws Exception {
         Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
         views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
-
+        Lookup.init(new ServiceLoaderLookupStrategy());
     }
 
     @Test
@@ -89,6 +91,12 @@ public class WindowManagerImplTest {
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }
 
+    @Test
+    public void testGetMainRootArea() throws Exception {
+        assertThat(windowManager.getMainRootArea(), is(mainWindow));
+        Whitebox.setInternalState(windowManager, "mainArea", null);
+        assertThat(windowManager.getMainRootArea(), is(notNullValue()));
+    }
 
     private ViewStatus mockView(String id, String title) {
         View view = mock(View.class);
