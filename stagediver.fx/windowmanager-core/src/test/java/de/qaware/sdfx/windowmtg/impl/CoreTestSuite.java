@@ -12,27 +12,19 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import de.qaware.sdfx.windowmtg.api.TestApplication;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
+import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
 /**
  * Test suite for windowmanager core tests.
- * <p>
+ * <p/>
  * It starts the javafx application before each testclass and terminates it after the test.
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({RootAreaTest.class, TabAreaTest.class, ViewAreaTest.class, ViewStatusTest.class, FXMLLoaderProducerTest.class})
 public class CoreTestSuite {
-    @BeforeClass
-    public static void setUp() {
-        TestApplication.launchTest();
-    }
-
-    @AfterClass
-    public static void tearDown() throws Exception {
-        TestApplication.stopTest();
-    }
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
 }
