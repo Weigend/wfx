@@ -116,6 +116,34 @@ public class ServiceLoaderLookupStrategyTest {
         assertThat(actual1.get(2), is(not(actual2.get(2))));
     }
 
+    @Test
+    public void testInit() throws Exception {
+        lookupStrategy.init(TestService.class, new TestServiceImpl());
+        lookupStrategy.init(TestService.class, new TestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(2));
+        lookupStrategy.init(TestService.class, new TestServiceImpl(), true);
+        assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(1));
+    }
+
+    @Test
+    public void testInitProducer() throws Exception {
+        lookupStrategy.init(TestService.class, new TestServiceImpl());
+        lookupStrategy.init(TestService.class, new TestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(2));
+        lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new, true);
+        assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(1));
+    }
+
+    @Test
+    public void testInitArray() throws Exception {
+        lookupStrategy.init(new Object[][]{
+                {TestService.class, new TestServiceImpl()},
+                {TestService.class, new TestServiceImpl2()},
+        });
+        assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(2));
+    }
+
+
     public static class TestServiceImpl implements TestService {
         @Override
         public String sayHello() {
