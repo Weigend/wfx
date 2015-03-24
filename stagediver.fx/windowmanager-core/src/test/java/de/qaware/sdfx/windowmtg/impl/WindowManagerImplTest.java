@@ -15,11 +15,9 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
-import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -72,6 +70,12 @@ public class WindowManagerImplTest {
         verify(view2).setDeviderPositions();
     }
 
+    @Test
+    public void testGetRootPane() throws Exception {
+        Parent parent = mock(Parent.class);
+        when(mainWindow.getNode()).thenReturn(parent);
+        assertThat(windowManager.getRootPane(), is(parent));
+    }
 
     @Test
     public void testCloseView() throws Exception {
