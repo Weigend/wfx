@@ -14,14 +14,13 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.application.Platform;
-import javafx.scene.Parent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 import javax.inject.Singleton;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -47,11 +46,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void init() {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
-        Platform.runLater(() -> {
-            for (ViewStatus status : views.values()) {
-                status.setDeviderPositions();
-            }
-        });
+        Platform.runLater(() -> views.values().forEach(de.qaware.sdfx.windowmtg.impl.ViewStatus::setDeviderPositions));
     }
 
     /**

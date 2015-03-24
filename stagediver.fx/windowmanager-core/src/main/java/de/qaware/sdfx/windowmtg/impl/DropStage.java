@@ -12,20 +12,15 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
-import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.scene.paint.*;
+import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -113,40 +108,26 @@ class DropStage {
      * @param stage The stage.
      */
     private void initSceneEvents(final Scene scene, final Stage stage) {
-        scene.setOnDragEntered(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                owner.requestFocus();
-                dndManager.getWindowManager().bringToFront();
+        scene.setOnDragEntered(event -> {
+            owner.requestFocus();
+            dndManager.getWindowManager().bringToFront();
+            event.consume();
+        });
+        scene.setOnDragOver(event -> {
+            Dragboard dragboard = event.getDragboard();
+            if (!dragboard.hasContent(DragNDropManager.DATAFORMAT)) {
                 event.consume();
+                return;
             }
+            event.acceptTransferModes(TransferMode.MOVE);
+            event.consume();
         });
-        scene.setOnDragOver(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                Dragboard dragboard = event.getDragboard();
-                if (!dragboard.hasContent(DragNDropManager.DATAFORMAT)) {
-                    event.consume();
-                    return;
-                }
-                event.acceptTransferModes(TransferMode.MOVE);
-                event.consume();
-            }
+        scene.setOnDragExited(event -> {
+            owner.requestFocus();
+            dndManager.getWindowManager().bringToFront();
+            event.consume();
         });
-        scene.setOnDragExited(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                owner.requestFocus();
-                dndManager.getWindowManager().bringToFront();
-                event.consume();
-            }
-        });
-        scene.setOnDragDropped(new EventHandler<DragEvent>() {
-            @Override
-            public void handle(DragEvent event) {
-                dndManager.onDragDroppedNewStage(event, stage);
-            }
-        });
+        scene.setOnDragDropped(event -> dndManager.onDragDroppedNewStage(event, stage));
     }
 
     /**
