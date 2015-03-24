@@ -92,6 +92,17 @@ public class WindowManagerImplTest {
     }
 
     @Test
+    public void testFindView() throws Exception {
+        views.put("view1", view1);
+        assertThat(windowManager.findView("view1"), is(view1.getView()));
+    }
+
+    @Test
+    public void testFindViewNotFound() throws Exception {
+        assertThat(windowManager.findView("not found"), is(nullValue()));
+    }
+
+    @Test
     public void testSetGetFocusedView() throws Exception {
         assertThat(windowManager.getFocusedView(), is(nullValue()));
         assertThat(windowManager.getLastFocusedView(), is(nullValue()));
