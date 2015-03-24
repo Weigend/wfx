@@ -40,9 +40,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class WindowManagerImplTest {
 
-    @ClassRule
-    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
-
     @Mock
     private DragNDropManager dragNDropManager;
 

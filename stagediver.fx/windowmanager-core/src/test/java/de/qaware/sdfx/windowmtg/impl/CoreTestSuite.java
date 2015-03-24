@@ -23,7 +23,14 @@ import org.junit.runners.Suite;
  * It starts the javafx application before each testclass and terminates it after the test.
  */
 @RunWith(Suite.class)
-@Suite.SuiteClasses({RootAreaTest.class, TabAreaTest.class, ViewAreaTest.class, ViewStatusTest.class, FXMLLoaderProducerTest.class})
+@Suite.SuiteClasses({
+        RootAreaTest.class,
+        TabAreaTest.class,
+        ViewAreaTest.class,
+        ViewStatusTest.class,
+        FXMLLoaderProducerTest.class,
+        WindowManagerImplTest.class
+})
 public class CoreTestSuite {
     @ClassRule
     public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
