@@ -1,0 +1,103 @@
+//  ______________________________________________________________________________
+//          Project: stagediver.fx
+//           Module: windowmanager-core
+//  ______________________________________________________________________________
+//
+//       created by: christian
+//    creation date: 24.03.15 20:33
+//      description:
+//  ______________________________________________________________________________
+//
+//        Copyright: (c) QAware GmbH, all rights reserved
+//  ______________________________________________________________________________
+
+package de.qaware.sdfx.windowmtg.impl;
+
+import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
+import de.qaware.sdfx.windowmtg.api.Position;
+import de.qaware.sdfx.windowmtg.api.View;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
+import org.mockito.runners.MockitoJUnitRunner;
+
+import javafx.scene.*;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.*;
+
+/**
+ * @author christian.fritz
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class WindowManagerImplTest {
+
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+
+    @Mock
+    private DragNDropManager dragNDropManager;
+
+    @Mock
+    private RootArea mainWindow;
+
+    private ViewStatus view1 = mockView("view1", "view1");
+    private ViewStatus view2 = mockView("view2", "view2");
+
+    @InjectMocks
+    private WindowManagerImpl windowManager;
+    private Map<String, ViewStatus> views;
+
+
+    @Before
+    public void setUp() throws Exception {
+        Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
+        views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
+
+    }
+
+    @Test
+    public void testInit() throws Exception {
+        ViewStatus view1 = mock(ViewStatus.class);
+        views.put("view1", view1);
+        ViewStatus view2 = mock(ViewStatus.class);
+        views.put("view2", view2);
+        windowManager.init();
+        verify(dragNDropManager).init();
+        verify(view1).setDeviderPositions();
+        verify(view2).setDeviderPositions();
+    }
+
+
+    @Test
+    public void testCloseView() throws Exception {
+        views.put("view1", view1);
+        views.put("view2", view2);
+        windowManager.closeView(view1.getView());
+        assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCloseViewNotExists() throws Exception {
+        windowManager.closeView(mock(View.class));
+        assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+    }
+
+
+    private ViewStatus mockView(String id, String title) {
+        View view = mock(View.class);
+        when(view.getViewId()).thenReturn(id);
+        when(view.getTitle()).thenReturn(title);
+        when(view.getDefaultPosition()).thenReturn(Position.CENTER);
+        when(view.getRootNode()).thenReturn(mock(Parent.class));
+        ViewStatus status = new ViewStatus(view);
+        status.setArea(mock(TabArea.class));
+        return spy(status);
+    }
+}
