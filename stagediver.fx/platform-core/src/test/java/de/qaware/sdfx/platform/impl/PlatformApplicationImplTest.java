@@ -4,6 +4,7 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.PlatformApplication;
+import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import javafx.stage.*;
+import java.io.IOException;
 import java.util.Arrays;
 
 import static de.qaware.sdfx.windowmtg.api.GuiTestHelper.getStage;
@@ -34,6 +36,8 @@ public class PlatformApplicationImplTest {
     @Mock
     private ApplicationWindow applicationWindow;
     @Mock
+    private ApplicationWindow failingApplicationWindow;
+    @Mock
     private LookupStrategy lookupStrategy;
 
     private PlatformApplication application;
@@ -42,7 +46,10 @@ public class PlatformApplicationImplTest {
     public void setUp() throws Exception {
         Lookup.init(lookupStrategy);
         when(lookupStrategy.lookup(WindowManager.class)).thenReturn(windowManager);
-        when(lookupStrategy.lookupAll(ApplicationWindow.class)).thenReturn(Arrays.asList(applicationWindow));
+        when(lookupStrategy.lookupAll(ApplicationWindow.class)).thenReturn(
+                Arrays.asList(failingApplicationWindow, applicationWindow));
+
+        doThrow(IOException.class).when(failingApplicationWindow).setStage(any(Stage.class));
         when(applicationWindow.getStage()).thenAnswer(invocationOnMock -> getStage());
         when(lookupStrategy.lookup(EventBus.class)).thenReturn(mock(EventBus.class));
         application = new PlatformApplicationImpl();
@@ -64,10 +71,21 @@ public class PlatformApplicationImplTest {
     public void testShowHidePreloader() throws Exception {
         Stage stage = new Stage();
         stage.initOwner(getStage());
+        application.hidePreloader();
         application.showPreloader(stage);
         assertThat(stage.isShowing(), is(equalTo(true)));
         application.hidePreloader();
         assertThat(stage.isShowing(), is(equalTo(false)));
+    }
+
+    @Test(expected = PlatformException.class)
+    public void testShowMainApplicationWindowOpenPreloader() throws Exception {
+        Stage stage = new Stage();
+        stage.initOwner(getStage());
+        application.showPreloader(stage);
+        stage = new Stage();
+        stage.initOwner(getStage());
+        application.showMainApplicationWindow(stage);
     }
 
     @Test
