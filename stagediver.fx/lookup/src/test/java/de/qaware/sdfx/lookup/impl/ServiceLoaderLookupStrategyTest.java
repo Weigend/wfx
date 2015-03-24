@@ -1,7 +1,7 @@
 package de.qaware.sdfx.lookup.impl;
 
-import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.TestService;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -10,10 +10,11 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
 public class ServiceLoaderLookupStrategyTest {
 
-    private LookupStrategy lookupStrategy;
+    private ServiceLoaderLookupStrategy lookupStrategy;
 
     @Before
     public void setUp() throws Exception {
@@ -59,6 +60,60 @@ public class ServiceLoaderLookupStrategyTest {
         assertThat(actual, hasSize(2));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
         assertThat(actual.get(1), instanceOf(TestServiceImpl2.class));
+    }
+
+    @Test
+    public void testLookupProducer() throws Exception {
+        lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new);
+        TestService actual = lookupStrategy.lookup(TestService.class);
+        assertThat(actual, is(notNullValue()));
+        assertThat(actual, instanceOf(TestServiceImpl.class));
+    }
+
+    @Test
+    public void testLookupProducerTwice() throws Exception {
+        lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new);
+
+        TestService actual1 = lookupStrategy.lookup(TestService.class);
+        TestService actual2 = lookupStrategy.lookup(TestService.class);
+        assertThat(actual1, is(notNullValue()));
+        assertThat(actual2, is(notNullValue()));
+        assertThat(actual1, instanceOf(TestServiceImpl.class));
+        assertThat(actual2, instanceOf(TestServiceImpl.class));
+        assertThat(actual1, is(not(actual2)));
+    }
+
+    @Test
+    public void testLookupAllProducer() throws Exception {
+        lookupStrategy.lookup(TestService.class);
+        lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new);
+        List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
+        assertThat(actual, hasSize(3));
+        assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
+        assertThat(actual.get(1), instanceOf(TestServiceImpl2.class));
+        assertThat(actual.get(2), instanceOf(TestServiceImpl.class));
+    }
+
+    @Test
+    public void testLookupAllProducerTwice() throws Exception {
+        lookupStrategy.lookup(TestService.class);
+        lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new);
+        List<TestService> actual1 = lookupStrategy.lookupAll(TestService.class);
+        List<TestService> actual2 = lookupStrategy.lookupAll(TestService.class);
+        assertThat(actual1, hasSize(3));
+        assertThat(actual2, hasSize(3));
+
+        assertThat(actual1.get(0), instanceOf(TestServiceImpl.class));
+        assertThat(actual1.get(1), instanceOf(TestServiceImpl2.class));
+        assertThat(actual1.get(2), instanceOf(TestServiceImpl.class));
+
+        assertThat(actual2.get(0), instanceOf(TestServiceImpl.class));
+        assertThat(actual2.get(1), instanceOf(TestServiceImpl2.class));
+        assertThat(actual2.get(2), instanceOf(TestServiceImpl.class));
+
+        assertThat(actual1.get(0), is(actual2.get(0)));
+        assertThat(actual1.get(1), is(actual2.get(1)));
+        assertThat(actual1.get(2), is(not(actual2.get(2))));
     }
 
     public static class TestServiceImpl implements TestService {
