@@ -31,8 +31,7 @@ import javafx.scene.*;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -89,6 +88,20 @@ public class WindowManagerImplTest {
     public void testCloseViewNotExists() throws Exception {
         windowManager.closeView(mock(View.class));
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+    }
+
+    @Test
+    public void testSetGetFocusedView() throws Exception {
+        assertThat(windowManager.getFocusedView(), is(nullValue()));
+        assertThat(windowManager.getLastFocusedView(), is(nullValue()));
+        View v1 = mock(View.class);
+        View v2 = mock(View.class);
+        windowManager.setFocusedView(v1);
+        assertThat(windowManager.getFocusedView(), is(v1));
+        assertThat(windowManager.getLastFocusedView(), is(nullValue()));
+        windowManager.setFocusedView(v2);
+        assertThat(windowManager.getFocusedView(), is(v2));
+        assertThat(windowManager.getLastFocusedView(), is(v1));
     }
 
     @Test
