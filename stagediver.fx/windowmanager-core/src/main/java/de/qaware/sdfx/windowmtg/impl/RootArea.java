@@ -14,18 +14,16 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.geometry.Orientation;
-import javafx.scene.Parent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+
+import javafx.geometry.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 
 /**
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  */
-public final class RootArea extends ViewArea {
+public class RootArea extends ViewArea {
     private final Pane box;
     /**
      * Close the stage containing this area when removing the child.
