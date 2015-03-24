@@ -5,17 +5,16 @@ import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
 import de.qaware.sdfx.platform.impl.eventbus.SimpleEventBus;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import org.junit.Ignore;
+import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.loadui.testfx.GuiTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -32,6 +31,10 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class PreloaderControllerTest extends GuiTest {
+
+    static {
+        stage = GuiTestHelper.getStage();
+    }
 
     private PreloaderController preloaderController;
 
@@ -56,7 +59,6 @@ public class PreloaderControllerTest extends GuiTest {
     }
 
     @Test
-    @Ignore()
     public void testProgress() throws Exception {
         assertThat(getProgressText(), hasText("Loading..."));
         assertThat(getProgressBar().progressProperty().get(), is(equalTo(0.0)));
