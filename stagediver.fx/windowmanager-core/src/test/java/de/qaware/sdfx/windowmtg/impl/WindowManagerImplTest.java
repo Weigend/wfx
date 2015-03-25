@@ -22,6 +22,7 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -35,6 +36,7 @@ import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -59,6 +61,7 @@ public class WindowManagerImplTest {
     private Map<String, ViewStatus> views;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
         views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
@@ -75,6 +78,35 @@ public class WindowManagerImplTest {
         verify(dragNDropManager).init();
         verify(view1).setDeviderPositions();
         verify(view2).setDeviderPositions();
+    }
+
+    @Test
+    public void testRegisterViewWithoutParent() throws Exception {
+        ViewStatus view = mockView("newView", "new View");
+        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
+        assertThat(views.size(), is(equalTo(0)));
+        windowManager.register(view.getView());
+
+        verify(mainWindow).add(captor.capture(), any(Position.class));
+        assertThat(captor.getValue().getView(), is(equalTo(view.getView())));
+        assertThat(views.size(), is(equalTo(1)));
+    }
+
+    @Test
+    public void testRegisterViewWithoutParentViewExists() throws Exception {
+        views.put("view1", view1);
+        views.put("view2", view2);
+        TabArea targetArea = view2.getArea();
+        ViewStatus view = mockView("view2", "new View");
+
+        assertThat(views.size(), is(equalTo(2)));
+
+        windowManager.register(view.getView());
+
+        ViewStatus newViewStatus = views.get("view2");
+        verify(targetArea).add(newViewStatus, Position.CENTER);
+        verify(targetArea).remove(view2);
+        assertThat(views.size(), is(equalTo(2)));
     }
 
     @Test
@@ -146,6 +178,7 @@ public class WindowManagerImplTest {
         verify(stage).close();
     }
 
+    @SuppressWarnings("unchecked")
     private Stage mockStageForArea(ViewArea area) {
         Parent parent = new Label();
         Scene scene = new Scene(parent);
