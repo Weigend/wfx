@@ -15,13 +15,13 @@ package de.qaware.sdfx.windowmtg.api;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
+
+import javafx.fxml.*;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -35,17 +35,14 @@ import static org.mockito.Mockito.when;
  */
 public class FXMLViewTest {
 
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+
     @BeforeClass
     public static void setUpClass() throws Exception {
-        TestApplication.launchTest();
         LookupStrategy strategy = mock(LookupStrategy.class);
         when(strategy.lookup(FXMLLoader.class)).thenAnswer(invocationOnMock -> new FXMLLoader());
         Lookup.init(strategy);
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-        TestApplication.stopTest();
     }
 
     @Test(expected = ViewNotFoundException.class)
