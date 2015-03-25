@@ -25,7 +25,10 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javafx.beans.property.*;
 import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.stage.*;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -114,6 +117,41 @@ public class WindowManagerImplTest {
         windowManager.setFocusedView(v2);
         assertThat(windowManager.getFocusedView(), is(v2));
         assertThat(windowManager.getLastFocusedView(), is(v1));
+    }
+
+    @Test
+    public void testRemove() throws Exception {
+        ViewStatus view3 = mockView("view3", "view3");
+        views.put("view1", view1);
+        views.put("view2", view2);
+        views.put("view3", view3);
+
+        RootArea rootArea1 = mock(RootArea.class);
+        TabArea tabArea = mock(TabArea.class);
+        when(rootArea1.getFirstChild()).thenReturn(tabArea);
+        when(tabArea.getRootArea()).thenReturn(rootArea1);
+        when(view2.getArea()).thenReturn(tabArea);
+        when(view3.getArea()).thenReturn(tabArea);
+
+        Stage stage = mockStageForArea(rootArea1);
+
+        windowManager.remove(rootArea1);
+        assertThat(views.size(), is(equalTo(3)));
+        verify(view2.getArea()).remove(view2);
+        verify(view3.getArea()).remove(view3);
+        verify(stage).close();
+    }
+
+    private Stage mockStageForArea(ViewArea area) {
+        Parent parent = new Label();
+        Scene scene = new Scene(parent);
+        when(area.getNode()).thenReturn(parent);
+
+        Stage stage = mock(Stage.class);
+        scene.windowProperty();
+        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
+        Whitebox.setInternalState(stageProperty, "value", stage);
+        return stage;
     }
 
     @Test
