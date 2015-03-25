@@ -33,6 +33,8 @@ import static org.mockito.Mockito.*;
 
 /**
  * Test the root area.
+ *
+ * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class RootAreaTest {

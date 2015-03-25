@@ -36,7 +36,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
- * Test for the view area.
+ * Test for the {@link ViewArea}.
+ *
+ * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ViewAreaTest {

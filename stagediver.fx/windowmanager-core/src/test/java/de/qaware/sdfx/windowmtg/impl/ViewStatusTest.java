@@ -30,7 +30,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
- * test for view status
+ * test for {@link ViewStatus}
+ *
+ * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ViewStatusTest {

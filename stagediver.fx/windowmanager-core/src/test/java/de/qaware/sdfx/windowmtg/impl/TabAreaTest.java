@@ -33,7 +33,9 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
 /**
- * Test for tab area.
+ * Test for {@link TabArea}.
+ *
+ * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TabAreaTest {
