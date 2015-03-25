@@ -43,6 +43,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
+ * Unit test for the {@link WindowManagerImpl}.
+ *
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -192,6 +194,20 @@ public class WindowManagerImplTest {
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }
 
+    @Test
+    public void testShowView() throws Exception {
+        TabPane tabPane = new TabPane();
+        views.put("view1", view1);
+        views.put("view2", view2);
+        view1.setStatus(ViewStatus.Status.VISIBLE);
+        tabPane.getTabs().add(view2.getTab());
+        tabPane.getTabs().add(view1.getTab());
+        assertThat(tabPane.getSelectionModel().getSelectedItem(), is(equalTo(view2.getTab())));
+        windowManager.showView(view1.getView());
+        assertThat(tabPane.getSelectionModel().getSelectedItem(), is(equalTo(view1.getTab())));
+        assertThat(windowManager.getFocusedView(), is(view1.getView()));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testShowViewUnregistered() throws Exception {
         windowManager.showView(view1.getView());
@@ -270,19 +286,6 @@ public class WindowManagerImplTest {
         verify(stage).close();
     }
 
-    @SuppressWarnings("unchecked")
-    private Stage mockStageForArea(ViewArea area) {
-        Parent parent = new Label();
-        Scene scene = new Scene(parent);
-        when(area.getNode()).thenReturn(parent);
-
-        Stage stage = mock(Stage.class);
-        scene.windowProperty();
-        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
-        Whitebox.setInternalState(stageProperty, "value", stage);
-        return stage;
-    }
-
     @Test
     public void testGetMainRootArea() throws Exception {
         assertThat(windowManager.getMainRootArea(), is(mainWindow));
@@ -301,6 +304,19 @@ public class WindowManagerImplTest {
         windowManager.redrawAreas();
         verify(mainWindow.getNode()).requestLayout();
         verify(rootArea1.getNode()).requestLayout();
+    }
+
+    @SuppressWarnings("unchecked")
+    private Stage mockStageForArea(ViewArea area) {
+        Parent parent = new Label();
+        Scene scene = new Scene(parent);
+        when(area.getNode()).thenReturn(parent);
+
+        Stage stage = mock(Stage.class);
+        scene.windowProperty();
+        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
+        Whitebox.setInternalState(stageProperty, "value", stage);
+        return stage;
     }
 
     private ViewStatus mockView(String id, String title) {
