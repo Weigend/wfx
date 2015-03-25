@@ -32,9 +32,11 @@ import javafx.beans.property.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.stage.*;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -53,18 +55,22 @@ public class WindowManagerImplTest {
     @Mock
     private RootArea mainWindow;
 
+    private Stage mainStage;
     private ViewStatus view1 = mockView("view1", "view1");
     private ViewStatus view2 = mockView("view2", "view2");
 
     @InjectMocks
     private WindowManagerImpl windowManager;
     private Map<String, ViewStatus> views;
+    private List<RootArea> subWindows;
 
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
         views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
+        subWindows = (List<RootArea>) Whitebox.getInternalState(windowManager, "subWindows");
+        mainStage = mockStageForArea(mainWindow);
         Lookup.init(new ServiceLoaderLookupStrategy());
     }
 
@@ -156,6 +162,25 @@ public class WindowManagerImplTest {
     }
 
     @Test
+    public void testRegisterArea() throws Exception {
+        RootArea rootArea1 = mock(RootArea.class);
+        assertThat(subWindows, hasSize(0));
+        windowManager.register(rootArea1);
+        assertThat(subWindows, hasSize(1));
+        assertThat(subWindows, contains(rootArea1));
+    }
+
+    @Test
+    public void testBringToFront() throws Exception {
+        RootArea rootArea1 = mock(RootArea.class);
+        Stage stage1 = mockStageForArea(rootArea1);
+        windowManager.register(rootArea1);
+        windowManager.bringToFront();
+        verify(mainStage).toFront();
+        verify(stage1).toFront();
+    }
+
+    @Test
     public void testRemove() throws Exception {
         ViewStatus view3 = mockView("view3", "view3");
         views.put("view1", view1);
@@ -196,6 +221,19 @@ public class WindowManagerImplTest {
         assertThat(windowManager.getMainRootArea(), is(mainWindow));
         Whitebox.setInternalState(windowManager, "mainArea", null);
         assertThat(windowManager.getMainRootArea(), is(notNullValue()));
+    }
+
+    @Test
+    public void testRedrawAreas() throws Exception {
+        RootArea rootArea1 = mock(RootArea.class);
+        Parent mainParent = mock(Parent.class);
+        Parent parent1 = mock(Parent.class);
+        when(mainWindow.getNode()).thenReturn(mainParent);
+        when(rootArea1.getNode()).thenReturn(parent1);
+        windowManager.register(rootArea1);
+        windowManager.redrawAreas();
+        verify(mainWindow.getNode()).requestLayout();
+        verify(rootArea1.getNode()).requestLayout();
     }
 
     private ViewStatus mockView(String id, String title) {
