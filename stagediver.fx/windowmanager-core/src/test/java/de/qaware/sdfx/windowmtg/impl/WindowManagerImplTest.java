@@ -20,6 +20,7 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -116,6 +117,37 @@ public class WindowManagerImplTest {
     }
 
     @Test
+    public void testRegisterParent() throws Exception {
+        views.put("view2", view2);
+        windowManager.register(view1.getView(), view2.getView());
+        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
+        verify(view2.getArea()).add(captor.capture(), any(Position.class));
+        ViewStatus viewStatus = captor.getValue();
+        assertThat(views.size(), is(equalTo(2)));
+        assertThat(views, hasEntry("view1", viewStatus));
+    }
+
+    @Test
+    @Ignore("Ignored until correctness of removing the new view is checked")
+    public void testRegisterParentUnregistered() throws Exception {
+        views.put("view1", view1);
+        views.put("view2", view2);
+        windowManager.register(view1.getView(), view2.getView());
+        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
+        verify(view2.getArea()).add(captor.capture(), any(Position.class));
+        ViewStatus viewStatus = captor.getValue();
+        verify(view1.getArea()).remove(view1);
+
+        assertThat(views.size(), is(equalTo(2)));
+        assertThat(views, hasEntry("view1", viewStatus));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRegisterParentNoParentFound() throws Exception {
+        windowManager.register(view1.getView(), view2.getView());
+    }
+
+    @Test
     public void testGetRootPane() throws Exception {
         Parent parent = mock(Parent.class);
         when(mainWindow.getNode()).thenReturn(parent);
@@ -134,6 +166,17 @@ public class WindowManagerImplTest {
     public void testCloseViewNotExists() throws Exception {
         windowManager.closeView(mock(View.class));
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowViewUnregistered() throws Exception {
+        windowManager.showView(view1.getView());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testShowViewWrongView() throws Exception {
+        views.put("view1", view2);
+        windowManager.showView(view1.getView());
     }
 
     @Test

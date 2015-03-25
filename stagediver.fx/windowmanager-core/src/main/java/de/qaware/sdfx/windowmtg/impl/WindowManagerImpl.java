@@ -102,6 +102,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
+            // TODO: Check for correctness: removing the new view status instead the old
             oldView.getArea().remove(viewStatus);
         }
         parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
