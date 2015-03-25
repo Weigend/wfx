@@ -72,6 +72,7 @@ public class WindowManagerImplTest {
         views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
         subWindows = (List<RootArea>) Whitebox.getInternalState(windowManager, "subWindows");
         mainStage = mockStageForArea(mainWindow);
+        when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         Lookup.init(new ServiceLoaderLookupStrategy());
     }
 
@@ -152,6 +153,29 @@ public class WindowManagerImplTest {
         Parent parent = mock(Parent.class);
         when(mainWindow.getNode()).thenReturn(parent);
         assertThat(windowManager.getRootPane(), is(parent));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRestoreDefaultLayout() throws Exception {
+        RootArea area = mock(RootArea.class);
+        mockStageForArea(area);
+        subWindows.add(area);
+        views.put("view1", view1);
+        views.put("view2", view2);
+        Whitebox.setInternalState(view2, "parent", view1);
+
+        windowManager.restoreDefaultLayout();
+        assertThat(subWindows, hasSize(0));
+
+        views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
+        assertThat(views.size(), is(equalTo(2)));
+        assertThat(views.get("view1"), is(not(equalTo(view1))));
+        assertThat(views.get("view1").getView(), is(equalTo(view1.getView())));
+        assertThat(views.get("view1").getParent(), is(nullValue()));
+        assertThat(views.get("view2"), is(not(equalTo(view2))));
+        assertThat(views.get("view2").getView(), is(equalTo(view2.getView())));
+        assertThat(views.get("view2").getParent(), is(equalTo(views.get("view1"))));
     }
 
     @Test

@@ -12,6 +12,7 @@
 
 package de.qaware.sdfx.windowmtg.impl;
 
+import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import org.slf4j.Logger;
@@ -127,7 +128,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void restoreDefaultLayout() {
         mainArea = null;
-        List<RootArea> currentSubwindows = Collections.synchronizedList(subWindows);
+        List<RootArea> currentSubwindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
         currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
         //save the old views
