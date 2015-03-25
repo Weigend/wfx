@@ -17,7 +17,7 @@
     <packaging>maven-plugin</packaging>
 
     <properties>
-        <mavenPluginPluginVersion>3.3</mavenPluginPluginVersion>
+        <mavenPluginPluginVersion>3.4</mavenPluginPluginVersion>
         <mavenVersion>3.0</mavenVersion>
         <aetherVersion>1.12</aetherVersion>
     </properties>
