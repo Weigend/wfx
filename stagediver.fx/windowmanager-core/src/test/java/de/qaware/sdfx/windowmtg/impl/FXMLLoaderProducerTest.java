@@ -4,13 +4,14 @@ package de.qaware.sdfx.windowmtg.impl;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
+import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
+import javafx.fxml.*;
+import javafx.scene.control.*;
 import javax.annotation.PostConstruct;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -22,6 +23,8 @@ import static org.hamcrest.Matchers.*;
  * @author christian.fritz
  */
 public class FXMLLoaderProducerTest {
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
 
     @BeforeClass
     public static void setUp() throws Exception {
