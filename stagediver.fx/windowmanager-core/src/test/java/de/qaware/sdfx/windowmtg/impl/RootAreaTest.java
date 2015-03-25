@@ -21,9 +21,13 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javafx.beans.property.*;
+import javafx.scene.*;
 import javafx.scene.control.*;
+import javafx.stage.*;
 
 import static org.mockito.Mockito.*;
 
@@ -85,6 +89,20 @@ public class RootAreaTest {
     @Test(expected = UnsupportedOperationException.class)
     public void testRemoveCloseNoClose() throws Exception {
         rootArea.remove(firstChild);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testRemoveArea() throws Exception {
+        Whitebox.setInternalState(rootArea, "closeStage", true);
+        Scene scene = new Scene(rootArea.getNode());
+        Stage stage = mock(Stage.class);
+        scene.windowProperty();
+        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
+        Whitebox.setInternalState(stageProperty, "value", stage);
+
+        rootArea.remove(firstChild);
+        verify(stage).close();
     }
 
     @Test(expected = UnsupportedOperationException.class)
