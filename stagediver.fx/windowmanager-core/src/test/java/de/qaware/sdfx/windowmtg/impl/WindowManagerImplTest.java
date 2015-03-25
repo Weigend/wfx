@@ -195,7 +195,7 @@ public class WindowManagerImplTest {
     }
 
     @Test
-    public void testShowView() throws Exception {
+    public void testShowViewWithinTabPane() throws Exception {
         TabPane tabPane = new TabPane();
         views.put("view1", view1);
         views.put("view2", view2);
@@ -206,6 +206,38 @@ public class WindowManagerImplTest {
         windowManager.showView(view1.getView());
         assertThat(tabPane.getSelectionModel().getSelectedItem(), is(equalTo(view1.getTab())));
         assertThat(windowManager.getFocusedView(), is(view1.getView()));
+    }
+
+    @Test
+    public void testShowViewNoParent() throws Exception {
+        views.put("view1", view1);
+        views.put("view2", view2);
+        view1.setStatus(ViewStatus.Status.HIDDEN);
+
+        windowManager.showView(view1.getView());
+
+        assertThat(views.size(), is(equalTo(2)));
+        assertThat(views.get("view1"), is(not(equalTo(view1))));
+        assertThat(views.get("view1").getView(), is(equalTo(view1.getView())));
+        assertThat(views.get("view1").getParent(), is(nullValue()));
+    }
+
+    @Test
+    public void testShowViewParents() throws Exception {
+        views.put("view1", view1);
+        views.put("view2", view2);
+        ViewStatus view3 = mockView("view3", "view3");
+        views.put("view3", view3);
+        Whitebox.setInternalState(view1, "parent", view2);
+        Whitebox.setInternalState(view2, "parent", view3);
+        view2.setStatus(ViewStatus.Status.HIDDEN);
+
+        windowManager.showView(view1.getView());
+
+        assertThat(views.size(), is(equalTo(3)));
+        assertThat(views.get("view1"), is(not(equalTo(view1))));
+        assertThat(views.get("view1").getView(), is(equalTo(view1.getView())));
+        assertThat(views.get("view1").getParent(), is(view3));
     }
 
     @Test(expected = IllegalArgumentException.class)
