@@ -43,10 +43,11 @@ public class PreloaderController implements Initializable {
      */
     @EventSubscriber(eventClass = ProgressEvent.class)
     public boolean progress(final ProgressEvent event) {
-        Platform.runLater(() -> {
-            progressBar.progressProperty().setValue(event.getProgress());
-            progressText.textProperty().setValue(event.getMessage());
-        });
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> progress(event));
+        }
+        progressBar.progressProperty().setValue(event.getProgress());
+        progressText.textProperty().setValue(event.getMessage());
         return true;
     }
 }
