@@ -3,11 +3,13 @@ package de.qaware.sdfx.platform.impl.eventbus;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.EventBusListener;
 
+import javax.inject.Singleton;
 import java.util.*;
 
 /**
  * @author christian.fritz
  */
+@Singleton
 public class SimpleEventBus implements EventBus {
     private Map<Class, List<EventBusListener>> subscriptions = new WeakHashMap<>();
 
