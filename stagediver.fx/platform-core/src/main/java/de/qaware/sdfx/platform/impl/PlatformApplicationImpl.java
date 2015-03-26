@@ -17,12 +17,15 @@ import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.stage.*;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
@@ -32,6 +35,7 @@ import java.util.List;
  *
  * @author christian.fritz
  */
+@Singleton
 public class PlatformApplicationImpl implements PlatformApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
@@ -98,7 +102,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
 
     /**
      * Preload the module while starting the application.
-     * <p/>
+     * <p>
      * It will be executed in an separate thread while showing the splash screen.
      */
     @Override

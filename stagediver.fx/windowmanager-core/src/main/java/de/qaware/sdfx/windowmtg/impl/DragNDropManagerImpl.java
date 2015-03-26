@@ -13,19 +13,26 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Control;
+import javafx.scene.control.TabPane;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorInput;
+import javafx.scene.input.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.effect.*;
-import javafx.scene.input.*;
-import javafx.scene.paint.*;
-import javafx.stage.*;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Handles the full drag&drop gestures for the window and view management.
  */
+@Singleton
 public class DragNDropManagerImpl implements DragNDropManager {
     /**
      * The logger.
@@ -65,6 +72,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      *
      * @param windowManager The window manager which handles the views and sub windows.
      */
+    @Inject
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
     }
