@@ -57,9 +57,9 @@ public interface PlatformApplication {
      * Show the preloader screen within the given stage.
      *
      * @param stage The stage where the preloader should be shown.
-     * @throws java.io.IOException In case of any io error. ie. while loading the fxml.
+     * @throws Exception In case of any error. ie. while loading the fxml.
      */
-    void showPreloader(Stage stage) throws IOException;
+    void showPreloader(Stage stage) throws Exception;
 
     /**
      * Hide the preloader if it is currently visible.

@@ -25,8 +25,10 @@ public interface Module {
      * Preload the module while starting the application.
      * <p>
      * It will be executed in an separate thread while showing the splash screen.
+     *
+     * @throws Exception in case of any error while preloading the module.
      */
-    void preload();
+    void preload() throws Exception;
 
     /**
      * Finally start the application.
