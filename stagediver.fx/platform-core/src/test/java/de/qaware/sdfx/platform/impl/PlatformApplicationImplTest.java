@@ -8,6 +8,8 @@ import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -15,7 +17,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.stage.*;
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -45,6 +46,7 @@ public class PlatformApplicationImplTest {
     @Before
     public void setUp() throws Exception {
         Lookup.init(lookupStrategy);
+        when(lookupStrategy.lookup(FXMLLoader.class)).thenAnswer(invocationOnMock1 -> new FXMLLoader());
         when(lookupStrategy.lookup(WindowManager.class)).thenReturn(windowManager);
         when(lookupStrategy.lookupAll(ApplicationWindow.class)).thenReturn(
                 Arrays.asList(failingApplicationWindow, applicationWindow));

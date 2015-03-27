@@ -78,15 +78,20 @@ public class PlatformApplicationImpl implements PlatformApplication {
      * Show the preloader screen within the given stage.
      *
      * @param stage The stage where the preloader should be shown.
+     * @throws Exception In case of errors while loading the fxml.
      */
     @Override
-    public void showPreloader(Stage stage) throws IOException {
+    public void showPreloader(Stage stage) throws Exception {
         URL splashFxmlUrl = findSplashScreen();
-        Parent parent = FXMLLoader.load(splashFxmlUrl);
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(splashFxmlUrl);
+        Parent parent = loader.load();
         Scene scene = new Scene(parent);
         stage.setScene(scene);
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
+        stage.toBack();
+        stage.toFront();
         preloaderStage = stage;
     }
 
