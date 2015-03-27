@@ -15,9 +15,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
+import org.loadui.testfx.utils.UserInputDetector;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public class InitialPositionUITest extends GuiTest {
 
@@ -38,6 +40,8 @@ public class InitialPositionUITest extends GuiTest {
 
     @Before
     public void setUp() throws Exception {
+        UserInputDetector.instance.setTestThread(mock(Thread.class));
+
         windowManager.register(center);
         windowManager.register(left);
         windowManager.register(bottom, center);
