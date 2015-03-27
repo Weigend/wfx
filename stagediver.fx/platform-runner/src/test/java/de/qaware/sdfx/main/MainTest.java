@@ -53,7 +53,6 @@ public class MainTest {
     private PlatformApplication platformApplication;
 
     private List<Module> modules;
-    private Exception rethrownException;
 
     @Before
     public void setUp() throws Exception {
@@ -67,6 +66,7 @@ public class MainTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testInit() throws Exception {
         main.init();
         assertThat(Lookup.getLookupStrategy(), is(lookupStrategy));
