@@ -16,11 +16,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class BinaryCssMojoTest {
@@ -77,13 +77,17 @@ public class BinaryCssMojoTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testExecuteNotExists() throws Exception {
-
         initTest("/", "/DidNotExists");
+        when(mojo.project.getResources()).thenReturn(Arrays.asList(getResource(mojo.outputDirectory)));
         mojo.execute();
 
         // Verify the project resources
-        verify(mojo.project).addResource(resourceCaptor.capture());
-        assertEquals(1, resourceCaptor.getAllValues().size());
-        assertEquals(mojo.outputDirectory.getAbsolutePath(), resourceCaptor.getValue().getDirectory());
+        verify(mojo.project, never()).addResource(any(Resource.class));
+    }
+
+    private Resource getResource(File file) {
+        Resource resource = new Resource();
+        resource.setDirectory(file.getAbsolutePath());
+        return resource;
     }
 }

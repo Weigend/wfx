@@ -120,11 +120,11 @@ public class BinaryCssMojo extends AbstractMojo {
      */
     private void updateProjectResources() {
         // now add the descriptor directory to the maven resources
-        final String ourRsrcPath = this.outputDirectory.getAbsolutePath();
+        final String outputResourceDir = this.outputDirectory.getAbsolutePath();
         boolean found = false;
 
         for (Object resource : project.getResources()) {
-            found = ((Resource) resource).getDirectory().equals(ourRsrcPath);
+            found = ((Resource) resource).getDirectory().equals(outputResourceDir);
         }
         if (!found) {
             final Resource resource = new Resource();
