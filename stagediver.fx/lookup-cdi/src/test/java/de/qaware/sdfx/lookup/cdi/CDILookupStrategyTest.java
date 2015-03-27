@@ -1,9 +1,11 @@
 package de.qaware.sdfx.lookup.cdi;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.TestService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,11 +22,18 @@ import static org.hamcrest.Matchers.*;
 public class CDILookupStrategyTest {
 
     private LookupStrategy strategy;
+    private Weld weld;
 
     @Before
     public void setUp() throws Exception {
-        WeldContainer container = new Weld().initialize();
+        weld = new Weld();
+        WeldContainer container = weld.initialize();
         strategy = container.instance().select(CDILookupStrategy.class).get();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        weld.shutdown();
     }
 
     @Test
@@ -47,7 +56,14 @@ public class CDILookupStrategyTest {
         assertThat(service, instanceOf(Service1.class));
     }
 
-    public static interface TestService1 {
+    @Test
+    public void testInit() throws Exception {
+        Lookup.init(null);
+        CDILookupStrategy.initLookup();
+        assertThat(Lookup.getLookupStrategy(), is(instanceOf(CDILookupStrategy.class)));
+    }
+
+    public interface TestService1 {
         String sayGoodbye();
     }
 
