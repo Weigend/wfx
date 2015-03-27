@@ -6,12 +6,13 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.fxml.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Main extends Application {
 
     /**
      * Start the application.
-     * <p/>
+     * <p>
      * First it shows within the {@code primaryStage} the preloader and executes parallel the
      * {@link de.qaware.sdfx.platform.api.Module#preload()} method of all modules. After initializing the modules the
      * preloader stage will be closed and it creates the main application window with the window system. Then the
@@ -55,10 +56,25 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws PlatformException, IOException {
         LOGGER.info("Show preloader");
-
         platformApplication.preload();
-        platformApplication.showPreloader(primaryStage);
+        try {
+            Stage preloaderStage = new Stage();
+            preloaderStage.initOwner(primaryStage);
+            platformApplication.showPreloader(preloaderStage);
+            new Thread(() -> {
+                startupModules();
+                Platform.runLater(() -> finishStartup(primaryStage));
+            }, "Background Startup").start();
+        }
+        catch (Exception e) {
+            LOGGER.warn("Can not show preloader!", e);
+        }
+    }
 
+    /**
+     * Startup all modules.
+     */
+    private void startupModules() {
         modules.parallelStream().forEach((module) -> {
             try {
                 LOGGER.info("Startup module {}:{}", module.getName(), module.getVersion());
@@ -69,17 +85,30 @@ public class Main extends Application {
                 LOGGER.warn("Can not start module: " + module.getName(), e);
             }
         });
+    }
 
-        LOGGER.info("Hide preloader and show main window.");
-        platformApplication.hidePreloader();
-        platformApplication.showMainApplicationWindow(new Stage());
-        platformApplication.start();
-        modules.forEach(Module::start);
+    /**
+     * Finish the startup.
+     *
+     * @param primaryStage The primary stage where the main window should be shown.
+     */
+    private void finishStartup(Stage primaryStage) {
+        try {
+            LOGGER.info("Hide preloader and show main window.");
+            platformApplication.hidePreloader();
+            platformApplication.showMainApplicationWindow(primaryStage);
+            platformApplication.start();
+            modules.forEach(Module::start);
+        }
+        catch (PlatformException | IOException e) {
+            LOGGER.warn("Can not start application", e);
+            Platform.exit();
+        }
     }
 
     /**
      * Shutdown the application.
-     * <p/>
+     * <p>
      * It first calls the {@link de.qaware.sdfx.platform.api.Module#stop()} method of all modules, close all stages and
      * shutdown the application.
      *
