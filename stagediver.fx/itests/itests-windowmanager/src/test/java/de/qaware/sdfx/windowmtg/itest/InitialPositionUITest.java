@@ -33,6 +33,11 @@ public class InitialPositionUITest extends GuiTest {
 
     private View top = new TestView("Top", Position.TOP);
 
+    public InitialPositionUITest() {
+        super();
+        UserInputDetector.instance.setTestThread(mock(Thread.class));
+    }
+
     @BeforeClass
     public static void setUpClass() throws Exception {
         Lookup.init(new ServiceLoaderLookupStrategy());
@@ -40,8 +45,6 @@ public class InitialPositionUITest extends GuiTest {
 
     @Before
     public void setUp() throws Exception {
-        UserInputDetector.instance.setTestThread(mock(Thread.class));
-
         windowManager.register(center);
         windowManager.register(left);
         windowManager.register(bottom, center);
