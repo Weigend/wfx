@@ -61,6 +61,15 @@
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-maven-plugin</artifactId>
                 <version>${project.parent.version}</version>
+                <executions>
+                    <execution>
+                        <id>build bss</id>
+                        <goals>
+                            <goal>binary-css</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

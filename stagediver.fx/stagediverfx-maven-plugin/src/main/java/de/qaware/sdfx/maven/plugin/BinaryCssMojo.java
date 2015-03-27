@@ -35,7 +35,7 @@ public class BinaryCssMojo extends AbstractMojo {
     /**
      * The output directory into which to copy the resources.
      */
-    @Parameter(defaultValue = "${project.build.directory}/binary-css", required = true)
+    @Parameter(defaultValue = "${project.build.outputDirectory}", required = true)
     protected File outputDirectory;
 
     /**
