@@ -4,6 +4,8 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -18,6 +20,9 @@ import java.util.List;
  */
 @Singleton
 public class CDILookupStrategy implements LookupStrategy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CDILookupStrategy.class);
+
     @Inject
     private Instance<Object> weldInstance;
 
@@ -29,11 +34,13 @@ public class CDILookupStrategy implements LookupStrategy {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
+                LOGGER.info("Shutdown Weld");
                 weld.shutdown();
             }
         });
         WeldContainer container = weld.initialize();
         Lookup.init(container.instance().select(CDILookupStrategy.class).get());
+        LOGGER.info("Successfully initialized Weld/CDI and Lookup");
     }
 
     @Override
