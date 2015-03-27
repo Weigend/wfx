@@ -4,6 +4,7 @@ import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import org.junit.Before;
@@ -17,7 +18,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test for the {@link DragNDropManagerImpl}.
@@ -58,5 +59,34 @@ public class DragNDropManagerImplTest {
             assertThat(dragEvent.isConsumed(), is(true));
         });
         rootPane.fireEvent(event);
+    }
+
+    @Test
+    public void testOnDragDetectedWrongSource() throws Exception {
+        MouseEvent mouseEvent = mock(MouseEvent.class);
+        when(mouseEvent.getSource()).thenReturn(new Pane());
+        dragNDropManager.onDragDetected(mouseEvent);
+        verify(mouseEvent, never()).consume();
+    }
+
+    @Test
+    public void testOnDragDoneWrongSource() throws Exception {
+        DragEvent event = new DragEvent(new Pane(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        dragNDropManager.onDragDone(event);
+        assertThat(event.isConsumed(), is(false));
+    }
+
+    @Test
+    public void testOnDragExitedWrongSource() throws Exception {
+        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        dragNDropManager.onDragExited(event);
+        assertThat(event.isConsumed(), is(false));
+    }
+
+    @Test
+    public void testOnDragOverWrongSource() throws Exception {
+        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(event.isConsumed(), is(false));
     }
 }

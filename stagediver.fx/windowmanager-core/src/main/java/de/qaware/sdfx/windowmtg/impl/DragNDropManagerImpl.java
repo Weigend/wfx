@@ -159,7 +159,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     @Override
     public void onDragDone(DragEvent event) {
-        if (!(event.getSource() instanceof TabPane) && ((TabPane) event.getSource()).getUserData() instanceof TabArea) {
+        if (!(event.getSource() instanceof TabPane) || !(((TabPane) event.getSource()).getUserData() instanceof TabArea)) {
             return;
         }
         LOGGER.debug("Handle drag done: {}", event);
