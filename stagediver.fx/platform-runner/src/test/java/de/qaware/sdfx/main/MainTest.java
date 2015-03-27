@@ -19,9 +19,8 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
-import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
+import javafx.stage.Stage;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -29,7 +28,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,9 +44,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class MainTest {
 
-    @ClassRule
-    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
-
     @InjectMocks
     private Main main;
 
@@ -58,6 +53,7 @@ public class MainTest {
     private PlatformApplication platformApplication;
 
     private List<Module> modules;
+    private Exception rethrownException;
 
     @Before
     public void setUp() throws Exception {
@@ -91,15 +87,15 @@ public class MainTest {
     @Test
     public void testStart() throws Exception {
         Stage stage = GuiTestHelper.getStage();
-        main.start(stage);
-
+        GuiTestHelper.runInJavaFxThreadAndWait(() -> main.start(stage));
+        Thread.sleep(1000);
         verify(platformApplication).preload();
-        verify(platformApplication).showPreloader(stage);
+        verify(platformApplication).showPreloader(any(Stage.class));
         for (Module module : modules) {
             verify(module).preload();
         }
         verify(platformApplication).hidePreloader();
-        verify(platformApplication).showMainApplicationWindow(any(Stage.class));
+        verify(platformApplication).showMainApplicationWindow(stage);
         verify(platformApplication).start();
         for (Module module : modules) {
             verify(module).start();
