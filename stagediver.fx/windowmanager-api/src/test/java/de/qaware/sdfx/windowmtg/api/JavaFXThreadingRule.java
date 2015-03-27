@@ -13,24 +13,21 @@
 
 package de.qaware.sdfx.windowmtg.api;
 
+import javafx.stage.Stage;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import javafx.application.*;
-import javafx.stage.*;
-import java.util.concurrent.CountDownLatch;
-
 /**
  * A JUnit {@link Rule} for running tests on the JavaFX thread and performing
  * JavaFX initialisation. To include in your test case, add the following code:
- * <p/>
+ * <p>
  * <pre>
  * {@literal @}Rule
  * public JavaFXThreadingRule jfxRule = new JavaFXThreadingRule();
  * </pre>
- * <p/>
+ * <p>
  * This rule is adopted from the following blog entry:
  * {@see http://andrewtill.blogspot.de/2012/10/junit-rule-for-javafx-controller-testing.html}
  *
@@ -41,33 +38,24 @@ public class JavaFXThreadingRule implements TestRule {
     @Override
     public Statement apply(Statement statement, Description description) {
         return new Statement() {
-            private Throwable rethrownException = null;
-
             @Override
             public void evaluate() throws Throwable {
                 final Stage stage = GuiTestHelper.getStage();
-                final CountDownLatch countDownLatch = new CountDownLatch(1);
-                Platform.runLater(() -> {
+                GuiTestHelper.runInJavaFxThreadAndWait(() -> {
                     try {
                         if (!stage.isShowing()) {
                             stage.show();
                         }
                         statement.evaluate();
                     }
-                    catch (Throwable e) {
-                        rethrownException = e;
+                    catch (Exception e) {
+                        throw e;
                     }
-                    finally {
-                        countDownLatch.countDown();
+
+                    catch (Throwable throwable) {
+                        new Exception(throwable);
                     }
                 });
-                countDownLatch.await();
-
-                // if an exception was thrown by the statement during evaluation,
-                // then re-throw it to fail the test
-                if (rethrownException != null) {
-                    throw rethrownException;
-                }
             }
         };
     }

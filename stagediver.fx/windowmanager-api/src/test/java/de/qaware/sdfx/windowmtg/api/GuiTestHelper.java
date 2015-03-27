@@ -14,10 +14,13 @@
 package de.qaware.sdfx.windowmtg.api;
 
 import com.google.common.util.concurrent.SettableFuture;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.loadui.testfx.utils.FXTestUtils;
 
-import javafx.application.*;
-import javafx.stage.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,5 +62,56 @@ public class GuiTestHelper {
             }
         }
         return stage;
+    }
+
+    /**
+     * Executes the argument in the JavaFX Application thread and wait until the execution is finished.
+     *
+     * @param runnable The executed action.
+     * @throws Exception In case the execution of the argument causes an exception.
+     */
+    public static void runInJavaFxThreadAndWait(Runnable runnable) throws Exception {
+        new JfxExecutor(runnable).execute();
+    }
+
+    /**
+     * Functional interface to execute something within the application thread.
+     */
+    @FunctionalInterface
+    public interface Runnable {
+        void run() throws Exception;
+    }
+
+    /**
+     * Actual implementation of {@link GuiTestHelper#runInJavaFxThreadAndWait(Runnable)}.
+     */
+    private static class JfxExecutor {
+
+        private Runnable runnable;
+        private Exception rethrownException;
+
+        public JfxExecutor(Runnable runnable) {
+            this.runnable = runnable;
+        }
+
+        private void execute() throws Exception {
+            final CountDownLatch countDownLatch = new CountDownLatch(1);
+
+            Platform.runLater(() -> {
+                try {
+                    runnable.run();
+                }
+                catch (Exception e) {
+                    rethrownException = e;
+                }
+                finally {
+                    countDownLatch.countDown();
+                }
+            });
+            countDownLatch.await();
+            if (rethrownException != null) {
+                throw rethrownException;
+            }
+        }
     }
 }
