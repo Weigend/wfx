@@ -17,14 +17,12 @@ import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.stage.*;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
@@ -78,21 +76,26 @@ public class PlatformApplicationImpl implements PlatformApplication {
      * Show the preloader screen within the given stage.
      *
      * @param stage The stage where the preloader should be shown.
-     * @throws Exception In case of errors while loading the fxml.
+     * @throws PlatformException In case of errors while loading the fxml.
      */
     @Override
-    public void showPreloader(Stage stage) throws Exception {
-        URL splashFxmlUrl = findSplashScreen();
-        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
-        loader.setLocation(splashFxmlUrl);
-        Parent parent = loader.load();
-        Scene scene = new Scene(parent);
-        stage.setScene(scene);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.show();
-        stage.toBack();
-        stage.toFront();
-        preloaderStage = stage;
+    public void showPreloader(Stage stage) throws PlatformException {
+        try {
+            URL splashFxmlUrl = findSplashScreen();
+            FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+            loader.setLocation(splashFxmlUrl);
+            Parent parent = loader.load();
+            Scene scene = new Scene(parent);
+            stage.setScene(scene);
+            stage.initStyle(StageStyle.UNDECORATED);
+            stage.show();
+            stage.toBack();
+            stage.toFront();
+            preloaderStage = stage;
+        }
+        catch (IOException e) {
+            throw new PlatformException(e);
+        }
     }
 
     /**
@@ -107,7 +110,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
 
     /**
      * Preload the module while starting the application.
-     * <p>
+     * <p/>
      * It will be executed in an separate thread while showing the splash screen.
      */
     @Override

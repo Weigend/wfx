@@ -1,5 +1,7 @@
 package de.qaware.sdfx.platform.api;
 
+import de.qaware.sdfx.platform.api.exceptions.PlatformException;
+
 /**
  * Module interface to implement the initialization and the shutdown of a module while the platform starts and stops.
  *
@@ -23,16 +25,16 @@ public interface Module {
 
     /**
      * Preload the module while starting the application.
-     * <p>
+     * <p/>
      * It will be executed in an separate thread while showing the splash screen.
      *
-     * @throws Exception in case of any error while preloading the module.
+     * @throws PlatformException in case of any error while preloading the module.
      */
-    void preload() throws Exception;
+    void preload() throws PlatformException;
 
     /**
      * Finally start the application.
-     * <p>
+     * <p/>
      * It is called from the java fx platform thread in an non specific order, while the platform is initializing the main
      * application window. This includes that all modules have executed there preload phase.
      */
@@ -40,7 +42,7 @@ public interface Module {
 
     /**
      * Stop the module.
-     * <p>
+     * <p/>
      * This method will be called while platform shutdown.
      */
     void stop();

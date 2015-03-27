@@ -3,11 +3,9 @@ package de.qaware.sdfx.main;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
 import de.qaware.sdfx.platform.api.PlatformApplication;
-import de.qaware.sdfx.platform.api.exceptions.PlatformException;
-import javafx.stage.Stage;
 import org.junit.Test;
 
-import java.io.IOException;
+import javafx.stage.*;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
@@ -40,32 +38,26 @@ public class CDIMainTest {
 
         @Override
         public void preload() {
-
         }
 
         @Override
         public void start() {
-
         }
 
         @Override
-        public void showPreloader(Stage stage) throws IOException {
-
+        public void showPreloader(Stage stage) {
         }
 
         @Override
         public void hidePreloader() {
-
         }
 
         @Override
-        public void showMainApplicationWindow(Stage stage) throws PlatformException, IOException {
-
+        public void showMainApplicationWindow(Stage stage) {
         }
 
         @Override
         public void stop() {
-
         }
     }
 }

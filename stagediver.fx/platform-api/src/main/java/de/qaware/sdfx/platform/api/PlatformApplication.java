@@ -13,9 +13,8 @@
 package de.qaware.sdfx.platform.api;
 
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
-import javafx.stage.Stage;
 
-import java.io.IOException;
+import javafx.stage.*;
 
 /**
  * The platform application. It implements the concrete views of preloader and main application window.
@@ -40,18 +39,18 @@ public interface PlatformApplication {
 
     /**
      * Preload the module while starting the application.
-     * <p>
+     * <p/>
      * It will be executed in an separate thread while showing the splash screen.
      */
-    void preload();
+    void preload() throws PlatformException;
 
     /**
      * Finally start the application.
-     * <p>
+     * <p/>
      * It is called from the java fx platform thread in an non specific order, while the platform is initializing the main
      * application window. This includes that all modules have executed there preload phase.
      */
-    void start();
+    void start() throws PlatformException;
 
     /**
      * Show the preloader screen within the given stage.
@@ -59,12 +58,12 @@ public interface PlatformApplication {
      * @param stage The stage where the preloader should be shown.
      * @throws Exception In case of any error. ie. while loading the fxml.
      */
-    void showPreloader(Stage stage) throws Exception;
+    void showPreloader(Stage stage) throws PlatformException;
 
     /**
      * Hide the preloader if it is currently visible.
      */
-    void hidePreloader();
+    void hidePreloader() throws PlatformException;
 
     /**
      * Show the main application window within the given stage.
@@ -75,10 +74,10 @@ public interface PlatformApplication {
      * @throws de.qaware.sdfx.platform.api.exceptions.PlatformException In case of the preloader is visible.
      * @throws java.io.IOException                                      In case of io errors, ie. loading the fxml.
      */
-    void showMainApplicationWindow(Stage stage) throws PlatformException, IOException;
+    void showMainApplicationWindow(Stage stage) throws PlatformException;
 
     /**
      * Shutdown the JavaFX application and stop the platform bundle.
      */
-    void stop();
+    void stop() throws PlatformException;
 }

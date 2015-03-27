@@ -6,14 +6,12 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
+import javafx.application.*;
+import javafx.fxml.*;
+import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +41,7 @@ public class Main extends Application {
 
     /**
      * Start the application.
-     * <p>
+     * <p/>
      * First it shows within the {@code primaryStage} the preloader and executes parallel the
      * {@link de.qaware.sdfx.platform.api.Module#preload()} method of all modules. After initializing the modules the
      * preloader stage will be closed and it creates the main application window with the window system. Then the
@@ -54,7 +52,7 @@ public class Main extends Application {
      *                                                                  the application window should be shown.
      */
     @Override
-    public void start(Stage primaryStage) throws PlatformException, IOException {
+    public void start(Stage primaryStage) throws PlatformException {
         LOGGER.info("Show preloader");
         platformApplication.preload();
         try {
@@ -81,7 +79,7 @@ public class Main extends Application {
                 module.preload();
                 LOGGER.debug("Finished startup of module {}:{}", module.getName(), module.getVersion());
             }
-            catch (Exception e) {
+            catch (PlatformException e) {
                 LOGGER.warn("Can not start module: " + module.getName(), e);
             }
         });
@@ -100,7 +98,7 @@ public class Main extends Application {
             platformApplication.start();
             modules.forEach(Module::start);
         }
-        catch (PlatformException | IOException e) {
+        catch (PlatformException e) {
             LOGGER.warn("Can not start application", e);
             Platform.exit();
         }
@@ -108,7 +106,7 @@ public class Main extends Application {
 
     /**
      * Shutdown the application.
-     * <p>
+     * <p/>
      * It first calls the {@link de.qaware.sdfx.platform.api.Module#stop()} method of all modules, close all stages and
      * shutdown the application.
      *
