@@ -15,15 +15,19 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.application.Platform;
+import javafx.scene.Parent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.application.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -104,7 +108,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
             // TODO: Check for correctness: removing the new view status instead the old
-            oldView.getArea().remove(viewStatus);
+            oldView.getArea().remove(oldView);
         }
         parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
         views.put(view.getViewId(), viewStatus);

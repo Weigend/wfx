@@ -18,9 +18,14 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
+import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -29,10 +34,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.beans.property.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
 import java.util.List;
 import java.util.Map;
 
@@ -131,7 +132,6 @@ public class WindowManagerImplTest {
     }
 
     @Test
-    @Ignore("Ignored until correctness of removing the new view is checked")
     public void testRegisterParentUnregistered() throws Exception {
         views.put("view1", view1);
         views.put("view2", view2);
