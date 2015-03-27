@@ -87,8 +87,8 @@ public class WindowManagerImplTest {
         views.put("view2", view2);
         windowManager.init();
         verify(dragNDropManager).init();
-        verify(view1).setDeviderPositions();
-        verify(view2).setDeviderPositions();
+        verify(view1).setDividerPositions();
+        verify(view2).setDividerPositions();
     }
 
     @Test

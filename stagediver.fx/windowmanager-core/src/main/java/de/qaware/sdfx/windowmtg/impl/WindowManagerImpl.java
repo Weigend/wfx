@@ -321,7 +321,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      * Set the divider positions for all current views.
      */
     private void setDeviderPositions() {
-        views.values().forEach(de.qaware.sdfx.windowmtg.impl.ViewStatus::setDeviderPositions);
+        views.values().forEach(ViewStatus::setDividerPositions);
     }
 
     /**

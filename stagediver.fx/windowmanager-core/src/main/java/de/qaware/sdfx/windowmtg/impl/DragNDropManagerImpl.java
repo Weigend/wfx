@@ -173,7 +173,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         if (event.getTransferMode() == TransferMode.MOVE && db.hasContent(DATAFORMAT)) {
             area.handleEmpty();
             closeDropStages();
-            getDragedViewStatus().setDeviderPositions();
+            getDragedViewStatus().setDividerPositions();
             setDragedViewStatus(null);
         }
         windowManager.redrawAreas();

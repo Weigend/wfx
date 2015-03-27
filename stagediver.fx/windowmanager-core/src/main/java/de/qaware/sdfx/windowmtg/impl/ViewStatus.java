@@ -179,8 +179,18 @@ public class ViewStatus {
 
     /**
      * Resize the area of this view to the defined value.
+     *
+     * @deprecated Use {@link ViewStatus#setDividerPositions()} instead.
      */
+    @Deprecated
     public void setDeviderPositions() {
+        setDividerPositions();
+    }
+
+    /**
+     * Resize the area of this view to the defined value.
+     */
+    public void setDividerPositions() {
         SplitPane splitPane;
         final double space = getView().getViewAreaSize();
 
@@ -199,14 +209,14 @@ public class ViewStatus {
             case TOP:
                 splitPane.setDividerPositions(space);
                 break;
-            case RIGHT:     // all trough
+            case RIGHT:     // fall trough
             case BOTTOM:
                 splitPane.setDividerPositions(1 - space);
                 break;
             default:
                 LOGGER.warn("Invalid position {} given for setting divider positions of {}", position, splitPane);
         }
-        LOGGER.debug("Set the devider position to {} for position {}", space, position);
+        LOGGER.debug("Set the divider position to {} for position {}", space, position);
     }
 
     @Override
