@@ -3,6 +3,7 @@ package de.qaware.sdfx.windowmtg.itest;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
+import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
@@ -22,7 +23,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public class InitialPositionUITest extends GuiTest {
-
+    static {
+        stage = GuiTestHelper.getStage();
+        stage.setHeight(500);
+        stage.setWidth(500);
+    }
     private WindowManager windowManager = new WindowManagerImpl();
 
     private View center = new TestView("Center", Position.CENTER);
@@ -54,7 +59,7 @@ public class InitialPositionUITest extends GuiTest {
     @Test
     public void testPositions() throws Exception {
         windowManager.init();
-        sleep(500);
+        sleep(1000);
         Parent center = find("#center");
         assertThat(center, notNullValue());
         Parent p = getLogicalParent(getLogicalParent(center));
