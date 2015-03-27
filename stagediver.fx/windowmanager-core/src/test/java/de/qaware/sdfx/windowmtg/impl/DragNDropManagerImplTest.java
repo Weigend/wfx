@@ -3,6 +3,7 @@ package de.qaware.sdfx.windowmtg.impl;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
@@ -72,6 +73,15 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDoneWrongSource() throws Exception {
         DragEvent event = new DragEvent(new Pane(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        dragNDropManager.onDragDone(event);
+        assertThat(event.isConsumed(), is(false));
+    }
+
+    @Test
+    public void testOnDragDoneWrongUserData() throws Exception {
+        TabPane source = new TabPane();
+        source.setUserData(new Object());
+        DragEvent event = new DragEvent(source, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
         dragNDropManager.onDragDone(event);
         assertThat(event.isConsumed(), is(false));
     }
