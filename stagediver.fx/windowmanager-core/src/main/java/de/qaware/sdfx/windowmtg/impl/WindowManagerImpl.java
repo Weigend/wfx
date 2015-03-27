@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
+ *
+ * @author christian.fritz
  */
 @Singleton
 public class WindowManagerImpl implements MultiWindowManager {
@@ -52,16 +54,16 @@ public class WindowManagerImpl implements MultiWindowManager {
         LOGGER.info("Initialize the WindowManager");
         dragNDropManager.init();
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(this::setDeviderPositions);
+            Platform.runLater(this::setDividerPositions);
         }
         else {
-            setDeviderPositions();
+            setDividerPositions();
         }
     }
 
     /**
      * Register a new view within this window manager.
-     * <p/>
+     * <p>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
@@ -125,7 +127,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Restore the layout to default.
-     * <p/>
+     * <p>
      * The layout is recreated in the same way as it was the first time initialized.
      */
     @Override
@@ -151,7 +153,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Close the specified view.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -169,9 +171,9 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Clone the specified view.
-     * <p/>
+     * <p>
      * The cloned view will be placed next to the given view in the same tab area.
-     * <p/>
+     * <p>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -223,7 +225,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Find a view with the assigned view id.
-     * <p/>
+     * <p>
      * This returns that view that has the given unique view id. If there is no view found it returns null.
      *
      * @param viewID The view id to search.
@@ -317,10 +319,18 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
     }
 
+    @Override
+    public List<View> getVisibleViews() {
+        return views.values().stream()
+                .filter(viewStatus -> viewStatus.getTab().isSelected())
+                .map(ViewStatus::getView)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Set the divider positions for all current views.
      */
-    private void setDeviderPositions() {
+    private void setDividerPositions() {
         views.values().forEach(ViewStatus::setDividerPositions);
     }
 

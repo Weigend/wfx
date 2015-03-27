@@ -338,6 +338,25 @@ public class WindowManagerImplTest {
         verify(rootArea1.getNode()).requestLayout();
     }
 
+    @Test
+    public void testGetVisibleViews() throws Exception {
+        ViewStatus view3 = mockView("view3", "view3");
+        ViewStatus view4 = mockView("view4", "view4");
+        views.put("view1", view1);
+        views.put("view2", view2);
+        views.put("view3", view3);
+        views.put("view4", view4);
+
+        view1.getTab().selectedProperty();
+        view4.getTab().selectedProperty();
+        Whitebox.setInternalState(Whitebox.getInternalState(view1.getTab(), "selected"), "value", true);
+        Whitebox.setInternalState(Whitebox.getInternalState(view4.getTab(), "selected"), "value", true);
+
+        List<View> visibleViews = windowManager.getVisibleViews();
+        assertThat(visibleViews, hasSize(2));
+        assertThat(visibleViews, containsInAnyOrder(view1.getView(), view4.getView()));
+    }
+
     @SuppressWarnings("unchecked")
     private Stage mockStageForArea(ViewArea area) {
         Parent parent = new Label();
