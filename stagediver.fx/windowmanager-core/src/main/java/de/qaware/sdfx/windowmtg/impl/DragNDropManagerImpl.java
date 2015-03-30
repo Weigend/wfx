@@ -329,7 +329,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
     private boolean isInvalidDragboard(DragEvent event) {
         // Check if dropped content is valid for dropping here
         Dragboard dragboard = event.getDragboard();
-        return !dragboard.hasContent(DATAFORMAT)
+        return dragboard == null || !dragboard.hasContent(DATAFORMAT)
                 || !dragboard.getContent(DATAFORMAT).equals(getDragedViewStatus().getView().getViewId());
     }
 
