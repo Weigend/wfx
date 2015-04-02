@@ -18,10 +18,7 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import org.junit.Before;
@@ -37,6 +34,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.List;
 import java.util.Map;
 
+import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.*;
@@ -347,37 +345,11 @@ public class WindowManagerImplTest {
         views.put("view3", view3);
         views.put("view4", view4);
 
-        view1.getTab().selectedProperty();
-        view4.getTab().selectedProperty();
-        Whitebox.setInternalState(Whitebox.getInternalState(view1.getTab(), "selected"), "value", true);
-        Whitebox.setInternalState(Whitebox.getInternalState(view4.getTab(), "selected"), "value", true);
+        mockReadOnlyProperty(view1.getTab(), "selected", true);
+        mockReadOnlyProperty(view4.getTab(), "selected", true);
 
         List<View> visibleViews = windowManager.getVisibleViews();
         assertThat(visibleViews, hasSize(2));
         assertThat(visibleViews, containsInAnyOrder(view1.getView(), view4.getView()));
-    }
-
-    @SuppressWarnings("unchecked")
-    public static Stage mockStageForArea(ViewArea area) {
-        Parent parent = new Label();
-        Scene scene = new Scene(parent);
-        when(area.getNode()).thenReturn(parent);
-
-        Stage stage = mock(Stage.class);
-        scene.windowProperty();
-        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
-        Whitebox.setInternalState(stageProperty, "value", stage);
-        return stage;
-    }
-
-    public static ViewStatus mockView(String id, String title) {
-        View view = mock(View.class);
-        when(view.getViewId()).thenReturn(id);
-        when(view.getTitle()).thenReturn(title);
-        when(view.getDefaultPosition()).thenReturn(Position.CENTER);
-        when(view.getRootNode()).thenReturn(mock(Parent.class));
-        ViewStatus status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
-        return spy(status);
     }
 }

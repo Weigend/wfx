@@ -1,11 +1,11 @@
 package de.qaware.sdfx.windowmtg.impl;
 
-import com.sun.javafx.tk.Toolkit;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.*;
@@ -20,10 +20,8 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
+import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.mockView;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -59,8 +57,7 @@ public class DragNDropManagerImplTest {
         when(windowManager.getRootPane()).thenReturn(rootPane);
         Whitebox.setInternalState(dragNDropManager, "dropStage", dropStage);
         Lookup.init(lookupStrategy);
-        ViewContainerAreaFactory containerAreaFactory = mock(ViewContainerAreaFactory.class);
-        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(containerAreaFactory);
+        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
     }
 
     @Test
@@ -134,7 +131,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedNewStageDragBoardInvalid() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, JavaFxTestUtils.mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
         Stage stage = mock(Stage.class);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(false));
@@ -156,15 +153,6 @@ public class DragNDropManagerImplTest {
         assertThat(event.isDropCompleted(), is(false));
     }
 
-    private Dragboard mockDragboard(DataFormat dateFormat, String viewId) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        Constructor<Dragboard> constructor = Dragboard.class.getDeclaredConstructor(com.sun.javafx.tk.TKClipboard.class);
-        constructor.setAccessible(true);
-        Dragboard dragboard = constructor.newInstance(Toolkit.getToolkit().createLocalClipboard());
 
-        ClipboardContent content = new ClipboardContent();
-        content.put(dateFormat, viewId);
 
-        dragboard.setContent(content);
-        return dragboard;
-    }
 }
