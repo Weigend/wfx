@@ -163,6 +163,19 @@ public class DragNDropManagerImplTest {
         dragNDropManager.onDragDropped(event);
         verify(target).add(eq(view), any());
         assertThat(event.isDropCompleted(), is(true));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
+    public void testOnDragDroppedWrongTarget() throws Exception {
+        Control control = mock(Control.class);
+        ViewStatus view = mockView("abc", "abc");
+        when(control.getUserData()).thenReturn(mock(Object.class));
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, control, null);
+        setDragedViewStatus(view);
+        dragNDropManager.onDragDropped(event);
+        assertThat(event.isDropCompleted(), is(false));
+        assertThat(event.isConsumed(), is(true));
     }
 
     @Test
@@ -172,6 +185,7 @@ public class DragNDropManagerImplTest {
         setDragedViewStatus(mockView("abc", "abc"));
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
+        assertThat(event.isConsumed(), is(false));
     }
 
     @Test
@@ -181,6 +195,7 @@ public class DragNDropManagerImplTest {
         setDragedViewStatus(mockView("abc", "abc"));
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
+        assertThat(event.isConsumed(), is(false));
     }
 
     @Test
@@ -189,6 +204,7 @@ public class DragNDropManagerImplTest {
         DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
+        assertThat(event.isConsumed(), is(false));
     }
 
 
