@@ -15,6 +15,7 @@ package de.qaware.sdfx.archetype.quickstart;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -33,7 +34,7 @@ public class GenerateArchetypeTest {
     private static final String ARCHETYPE_ARTEFACT_ID = "stagediverfx-archetype-quickstart";
     private static final String TEST_GROUP_ID = "de.qaware.sdfx";
     private static final String TEST_ARTIFACT_ID = "archetypeTest";
-    private static final String TEST_VERSION = "0.1-SNAPSHOT";
+    private static final String TEST_VERSION = getVersion();
     public static final String ARCHETYPE_CATALOG = "local";
 
     @Before
@@ -55,6 +56,7 @@ public class GenerateArchetypeTest {
     }
 
     @Test
+    @Ignore
     public void testGenerateAndBuildArchetypeArtefact() throws VerificationException {
         Verifier verifier = new Verifier(ROOT.getAbsolutePath());
         verifier.setSystemProperties(getSystemProperties());
