@@ -9,6 +9,28 @@
         <format>dir</format>
         <format>zip</format>
     </formats>
+    <dependencySets>
+        <dependencySet>
+            <excludes>
+                <exclude>${groupId}:${artifactId}</exclude>
+            </excludes>
+            <scope>runtime</scope>
+            <outputDirectory>/lib</outputDirectory>
+        </dependencySet>
+    </dependencySets>
+    <moduleSets>
+        <moduleSet>
+            <useAllReactorProjects>true</useAllReactorProjects>
+            <includes>
+                <include>${groupId}:${artifactId}</include>
+            </includes>
+            <binaries>
+                <outputDirectory>/</outputDirectory>
+                <unpack>false</unpack>
+                <includeDependencies>false</includeDependencies>
+            </binaries>
+        </moduleSet>
+    </moduleSets>
     <fileSets>
         <fileSet>
             <directory>${symbol_dollar}{project.basedir}</directory>
@@ -19,25 +41,5 @@
                 <include>NOTICE*</include>
             </includes>
         </fileSet>
-        <fileSet>
-            <directory>${symbol_dollar}{project.build.directory}</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>startup.jar</include>
-            </includes>
-        </fileSet>
-        <fileSet>
-            <directory>${symbol_dollar}{project.build.directory}/bundles</directory>
-            <outputDirectory>/bundles</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${symbol_dollar}{project.basedir}/src/main/resources</directory>
-            <outputDirectory>/</outputDirectory>
-            <includes>
-                <include>*.*</include>
-            </includes>
-            <filtered>true</filtered>
-        </fileSet>
     </fileSets>
-
 </assembly>
