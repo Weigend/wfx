@@ -25,7 +25,7 @@ You can create a new stagediver.fx based project easy through the maven archetyp
 	mvn archetype:generate                                    \
 	  -DarchetypeGroupId=de.qaware.stagediver.fx              \
 	  -DarchetypeArtifactId=stagediverfx-archetype-quickstart \
-	  -DarchetypeVersion=0.1-SNAPSHOT  			   			  \
+	  -DarchetypeVersion=0.1        			   			  \
 	  -DgroupId=YOUR_GROUPID                       		   	  \
 	  -DartifactId=YOUR_ARTIFACTID			   			      \
 	  -Dversion=1.0-SNAPSHOT				          		  \
