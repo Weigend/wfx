@@ -229,8 +229,8 @@ public class DragNDropManagerImpl implements DragNDropManager {
         if (targetNode.getUserData() instanceof ViewArea) {
             ViewArea target = (ViewArea) targetNode.getUserData();
             getDragedViewStatus().getArea().remove(getDragedViewStatus(), false);
-            getDragedViewStatus().setPosition(detectPosition(event, targetNode));
             Position position = detectPosition(event, targetNode);
+            getDragedViewStatus().setPosition(position);
             target.add(getDragedViewStatus(), position);
             success = true;
         }
