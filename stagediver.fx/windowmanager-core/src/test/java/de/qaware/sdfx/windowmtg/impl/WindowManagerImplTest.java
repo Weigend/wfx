@@ -358,7 +358,7 @@ public class WindowManagerImplTest {
     }
 
     @SuppressWarnings("unchecked")
-    private Stage mockStageForArea(ViewArea area) {
+    public static Stage mockStageForArea(ViewArea area) {
         Parent parent = new Label();
         Scene scene = new Scene(parent);
         when(area.getNode()).thenReturn(parent);
@@ -370,7 +370,7 @@ public class WindowManagerImplTest {
         return stage;
     }
 
-    private ViewStatus mockView(String id, String title) {
+    public static ViewStatus mockView(String id, String title) {
         View view = mock(View.class);
         when(view.getViewId()).thenReturn(id);
         when(view.getTitle()).thenReturn(title);
