@@ -188,6 +188,20 @@ public class DragNDropManagerImplTest {
     }
 
     @Test
+    public void testOnDragOverToCenter() throws Exception {
+        Control control = new Label();
+        ViewArea viewArea = mock(ViewArea.class);
+        when(viewArea.dropToCenter()).thenReturn(true);
+        control.setUserData(viewArea);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        DragEvent event = new DragEvent(control, scene, DragEvent.DRAG_EXITED, null, 5, 5, 0, 0, MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(Whitebox.getInternalState(dragNDropManager, "effectTarget"), is(control));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
     public void testOnDragOverExistingEffectTarget() throws Exception {
         Control control = new Label();
         control.setUserData(mock(ViewArea.class));
