@@ -3,10 +3,12 @@ package de.qaware.sdfx.windowmtg.impl;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
+import de.qaware.sdfx.windowmtg.api.Position;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
@@ -154,18 +156,78 @@ public class DragNDropManagerImplTest {
 
     @Test
     public void testOnDragDropped() throws Exception {
-        Control control = mock(Control.class);
+        Control control = new Label();
         ViewStatus view = mockView("abc", "abc");
         ViewArea target = mock(ViewArea.class);
-        when(control.getUserData()).thenReturn(target);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, control, null);
+        control.setUserData(target);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 5, 0, 0, TransferMode.MOVE, null, control, null);
         setDragedViewStatus(view);
         Whitebox.setInternalState(dragNDropManager, "effectTarget", control);
         dragNDropManager.onDragDropped(event);
-        verify(target).add(eq(view), any());
+        verify(target).add(view, Position.CENTER);
         assertThat(event.isDropCompleted(), is(true));
         assertThat(event.isConsumed(), is(true));
     }
+
+
+    @Test
+    public void testOnDragDroppedTop() throws Exception {
+        Control control = new Label();
+        ViewStatus view = mockView("abc", "abc");
+        ViewArea target = mock(ViewArea.class);
+        control.setUserData(target);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        setDragedViewStatus(view);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 2, 0, 0, TransferMode.MOVE, null, control, null);
+        dragNDropManager.onDragDropped(event);
+        verify(target).add(view, Position.TOP);
+    }
+
+    @Test
+    public void testOnDragDroppedBottom() throws Exception {
+        Control control = new Label();
+        ViewStatus view = mockView("abc", "abc");
+        ViewArea target = mock(ViewArea.class);
+        control.setUserData(target);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        setDragedViewStatus(view);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 8, 0, 0, TransferMode.MOVE, null, control, null);
+        dragNDropManager.onDragDropped(event);
+        verify(target).add(view, Position.BOTTOM);
+    }
+
+    @Test
+    public void testOnDragDroppedRight() throws Exception {
+        Control control = new Label();
+        ViewStatus view = mockView("abc", "abc");
+        ViewArea target = mock(ViewArea.class);
+        control.setUserData(target);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        setDragedViewStatus(view);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 8, 5, 0, 0, TransferMode.MOVE, null, control, null);
+        dragNDropManager.onDragDropped(event);
+        verify(target).add(view, Position.RIGHT);
+    }
+
+    @Test
+    public void testOnDragDroppedLeft() throws Exception {
+        Control control = new Label();
+        ViewStatus view = mockView("abc", "abc");
+        ViewArea target = mock(ViewArea.class);
+        control.setUserData(target);
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        setDragedViewStatus(view);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 2, 5, 0, 0, TransferMode.MOVE, null, control, null);
+        dragNDropManager.onDragDropped(event);
+        verify(target).add(view, Position.LEFT);
+    }
+
 
     @Test
     public void testOnDragDroppedWrongTarget() throws Exception {
