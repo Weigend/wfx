@@ -5,10 +5,13 @@ import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Control;
 import javafx.scene.control.TabPane;
-import javafx.scene.input.*;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.Before;
@@ -22,8 +25,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
-import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.mockReadOnlyProperty;
-import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.mockView;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -137,7 +138,7 @@ public class DragNDropManagerImplTest {
         Stage stage = new Stage();
         setDragedViewStatus(mockView("abc", "abc"));
         mockReadOnlyProperty(stage, "width", 10);
-        mockReadOnlyProperty(stage,"height",10);
+        mockReadOnlyProperty(stage, "height", 10);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(true));
     }
@@ -145,16 +146,39 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedNewStageDragBoardInvalid() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
         Stage stage = mock(Stage.class);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(false));
     }
 
     @Test
+    public void testOnDragDropped() throws Exception {
+        Control control = mock(Control.class);
+        ViewStatus view = mockView("abc", "abc");
+        ViewArea target = mock(ViewArea.class);
+        when(control.getUserData()).thenReturn(target);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, control, null);
+        setDragedViewStatus(view);
+        dragNDropManager.onDragDropped(event);
+        verify(target).add(eq(view), any());
+        assertThat(event.isDropCompleted(), is(true));
+    }
+
+    @Test
     public void testOnDragDroppedWrongGestureTarget() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        setDragedViewStatus(mockView("abc", "abc"));
+        dragNDropManager.onDragDropped(event);
+        assertThat(event.isDropCompleted(), is(false));
+    }
+
+    @Test
+    public void testOnDragDroppedDragBoardInvalid() throws Exception {
+        Node node = mock(Node.class);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abcd"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        setDragedViewStatus(mockView("abc", "abc"));
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
     }
