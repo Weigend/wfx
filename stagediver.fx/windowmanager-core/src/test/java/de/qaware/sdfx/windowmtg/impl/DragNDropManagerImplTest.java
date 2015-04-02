@@ -97,6 +97,8 @@ public class DragNDropManagerImplTest {
         dragNDropManager.onDragDone(event);
 
         verify(view).setDividerPositions();
+        verify(dropStage).close();
+        assertThat(Whitebox.getInternalState(dragNDropManager, "dropStage"), is(nullValue()));
         assertThat(event.isConsumed(), is(true));
         assertThat(getDragedViewStatus(), is(nullValue()));
     }
@@ -161,6 +163,57 @@ public class DragNDropManagerImplTest {
     }
 
     @Test
+    public void testOnDragOver() throws Exception {
+        Control control = new Label();
+        control.setUserData(mock(ViewArea.class));
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        DragEvent event = new DragEvent(control, scene, DragEvent.DRAG_EXITED, null, 1, 1, 0, 0, MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(Whitebox.getInternalState(dragNDropManager, "effectTarget"), is(control));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
+    public void testOnDragOverToInvalidCenter() throws Exception {
+        Control control = new Label();
+        control.setUserData(mock(ViewArea.class));
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        DragEvent event = new DragEvent(control, scene, DragEvent.DRAG_EXITED, null, 5, 5, 0, 0, MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(Whitebox.getInternalState(dragNDropManager, "effectTarget"), is(nullValue()));
+        assertThat(control.getEffect(), is(nullValue()));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
+    public void testOnDragOverExistingEffectTarget() throws Exception {
+        Control control = new Label();
+        control.setUserData(mock(ViewArea.class));
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        Whitebox.setInternalState(dragNDropManager, "effectTarget", control);
+        DragEvent event = new DragEvent(control, scene, DragEvent.DRAG_EXITED, null, 1, 1, 0, 0, MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(control.getEffect(), is(nullValue()));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
+    public void testOnDragOverOtherEffectTarget() throws Exception {
+        Control control = new Label();
+        control.setUserData(mock(ViewArea.class));
+        mockReadOnlyProperty(control, "width", 10);
+        mockReadOnlyProperty(control, "height", 10);
+        Whitebox.setInternalState(dragNDropManager, "effectTarget", mock(Control.class));
+        DragEvent event = new DragEvent(control, scene, DragEvent.DRAG_EXITED, null, 8, 8, 0, 0, MOVE, null, rootPane, null);
+        dragNDropManager.onDragOver(event);
+        assertThat(Whitebox.getInternalState(dragNDropManager, "effectTarget"), is(control));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
     public void testOnDragOverWrongSource() throws Exception {
         DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragOver(event);
@@ -213,7 +266,6 @@ public class DragNDropManagerImplTest {
         assertThat(event.isDropCompleted(), is(true));
         assertThat(event.isConsumed(), is(true));
     }
-
 
     @Test
     public void testOnDragDroppedTop() throws Exception {
@@ -271,7 +323,6 @@ public class DragNDropManagerImplTest {
         verify(target).add(view, Position.LEFT);
     }
 
-
     @Test
     public void testOnDragDroppedWrongTarget() throws Exception {
         Control control = mock(Control.class);
@@ -312,6 +363,4 @@ public class DragNDropManagerImplTest {
         assertThat(event.isDropCompleted(), is(false));
         assertThat(event.isConsumed(), is(false));
     }
-
-
 }
