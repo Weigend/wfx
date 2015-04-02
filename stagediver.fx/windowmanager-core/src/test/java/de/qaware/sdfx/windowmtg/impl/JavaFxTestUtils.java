@@ -37,7 +37,7 @@ public final class JavaFxTestUtils {
      */
     @SuppressWarnings("unchecked")
     public static <T> void mockReadOnlyProperty(Object target, String property, T value) throws ReflectiveOperationException {
-        Method getPropertyMethod = target.getClass().getDeclaredMethod(property + "Property");
+        Method getPropertyMethod = target.getClass().getMethod(property + "Property");
         getPropertyMethod.setAccessible(true);
         getPropertyMethod.invoke(target);
 

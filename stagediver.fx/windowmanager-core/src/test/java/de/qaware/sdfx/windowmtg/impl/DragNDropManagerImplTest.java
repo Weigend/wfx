@@ -21,6 +21,8 @@ import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
+import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
+import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.mockReadOnlyProperty;
 import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.mockView;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -129,9 +131,21 @@ public class DragNDropManagerImplTest {
     }
 
     @Test
+    public void testOnDragDroppedNewStage() throws Exception {
+        Node node = mock(Node.class);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        Stage stage = new Stage();
+        setDragedViewStatus(mockView("abc", "abc"));
+        mockReadOnlyProperty(stage, "width", 10);
+        mockReadOnlyProperty(stage,"height",10);
+        dragNDropManager.onDragDroppedNewStage(event, stage);
+        assertThat(event.isDropCompleted(), is(true));
+    }
+
+    @Test
     public void testOnDragDroppedNewStageDragBoardInvalid() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, JavaFxTestUtils.mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
         Stage stage = mock(Stage.class);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(false));
