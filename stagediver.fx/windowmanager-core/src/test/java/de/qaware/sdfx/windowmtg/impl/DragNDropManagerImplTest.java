@@ -160,6 +160,7 @@ public class DragNDropManagerImplTest {
         when(control.getUserData()).thenReturn(target);
         DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, control, null);
         setDragedViewStatus(view);
+        Whitebox.setInternalState(dragNDropManager, "effectTarget", control);
         dragNDropManager.onDragDropped(event);
         verify(target).add(eq(view), any());
         assertThat(event.isDropCompleted(), is(true));
