@@ -10,9 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TabPane;
-import javafx.scene.input.DataFormat;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.input.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.Before;
@@ -77,6 +75,14 @@ public class DragNDropManagerImplTest {
             assertThat(dragEvent.isConsumed(), is(true));
         });
         rootPane.fireEvent(event);
+    }
+
+    @Test
+    public void testOnDragDetectedNotWithinHeader() throws Exception {
+        TabPane tabPane = new TabPane();
+        MouseEvent event = new MouseEvent(tabPane, tabPane, MouseEvent.DRAG_DETECTED, 1, 1, 0, 0, MouseButton.PRIMARY, 1, false, false, false, false, false, false, false, false, false, false, mock(PickResult.class));
+        dragNDropManager.onDragDetected(event);
+        assertThat(event.isConsumed(), is(false));
     }
 
     @Test
