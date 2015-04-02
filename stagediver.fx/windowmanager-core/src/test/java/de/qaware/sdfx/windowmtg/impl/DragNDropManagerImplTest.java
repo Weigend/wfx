@@ -13,7 +13,6 @@ import javafx.scene.control.TabPane;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.TransferMode;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import org.junit.Before;
@@ -25,11 +24,14 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import static de.qaware.sdfx.windowmtg.impl.DragNDropManager.DATAFORMAT;
+import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.getDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
+import static javafx.scene.input.TransferMode.COPY;
+import static javafx.scene.input.TransferMode.MOVE;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -68,7 +70,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testInit() throws Exception {
         dragNDropManager.init();
-        DragEvent event = new DragEvent(null, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(null, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         EventHandler<? super DragEvent> onDragExited = scene.getOnDragExited();
         scene.setOnDragExited(dragEvent -> {
             onDragExited.handle(dragEvent);
@@ -86,8 +88,49 @@ public class DragNDropManagerImplTest {
     }
 
     @Test
+    public void testOnDragDone() throws Exception {
+        TabPane tabPane = new TabPane();
+        tabPane.setUserData(mock(TabArea.class));
+        DragEvent event = new DragEvent(tabPane, scene, DragEvent.DRAG_DONE, mockDragboard(DATAFORMAT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
+        ViewStatus view = mock(ViewStatus.class);
+        setDragedViewStatus(view);
+        dragNDropManager.onDragDone(event);
+
+        verify(view).setDividerPositions();
+        assertThat(event.isConsumed(), is(true));
+        assertThat(getDragedViewStatus(), is(nullValue()));
+    }
+
+    @Test
+    public void testOnDragDoneInvalidDragBoard() throws Exception {
+        TabPane tabPane = new TabPane();
+        tabPane.setUserData(mock(TabArea.class));
+        DragEvent event = new DragEvent(tabPane, scene, DragEvent.DRAG_DONE, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
+        ViewStatus view = mock(ViewStatus.class);
+        setDragedViewStatus(view);
+        dragNDropManager.onDragDone(event);
+        verify(view, never()).setDividerPositions();
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
+    public void testOnDragDoneWrongModeWithDroppedStage() throws Exception {
+        TabPane tabPane = new TabPane();
+        tabPane.setUserData(mock(TabArea.class));
+        DragEvent event = new DragEvent(tabPane, scene, DragEvent.DRAG_DONE, mockDragboard(DATAFORMAT, "abc"), 0, 0, 0, 0, COPY, null, rootPane, null);
+
+        Stage droppedStage = new Stage();
+        mockReadOnlyProperty(droppedStage, "width", 10);
+        Whitebox.setInternalState(dragNDropManager, "droppedStage", droppedStage);
+        dragNDropManager.onDragDone(event);
+        assertThat(Whitebox.getInternalState(dragNDropManager, "droppedStage"), is(nullValue()));
+        assertThat(droppedStage.getWidth(), is(equalTo(9.0)));
+        assertThat(event.isConsumed(), is(true));
+    }
+
+    @Test
     public void testOnDragDoneWrongSource() throws Exception {
-        DragEvent event = new DragEvent(new Pane(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(new Pane(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragDone(event);
         assertThat(event.isConsumed(), is(false));
     }
@@ -96,7 +139,7 @@ public class DragNDropManagerImplTest {
     public void testOnDragDoneWrongUserData() throws Exception {
         TabPane source = new TabPane();
         source.setUserData(new Object());
-        DragEvent event = new DragEvent(source, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(source, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragDone(event);
         assertThat(event.isConsumed(), is(false));
     }
@@ -104,7 +147,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragExited() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragExited(event);
         assertThat(node.getEffect(), is(nullValue()));
         assertThat(event.isConsumed(), is(true));
@@ -112,14 +155,14 @@ public class DragNDropManagerImplTest {
 
     @Test
     public void testOnDragExitedWrongSource() throws Exception {
-        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragExited(event);
         assertThat(event.isConsumed(), is(false));
     }
 
     @Test
     public void testOnDragOverWrongSource() throws Exception {
-        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(new Object(), scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragOver(event);
         assertThat(event.isConsumed(), is(false));
     }
@@ -127,7 +170,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedNewStageDragBoardNull() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         Stage stage = mock(Stage.class);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(false));
@@ -136,7 +179,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedNewStage() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
         Stage stage = new Stage();
         setDragedViewStatus(mockView("abc", "abc"));
         mockReadOnlyProperty(stage, "width", 10);
@@ -148,7 +191,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedNewStageDragBoardInvalid() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DataFormat.PLAIN_TEXT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
         Stage stage = mock(Stage.class);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(false));
@@ -162,7 +205,7 @@ public class DragNDropManagerImplTest {
         control.setUserData(target);
         mockReadOnlyProperty(control, "width", 10);
         mockReadOnlyProperty(control, "height", 10);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 5, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 5, 0, 0, MOVE, null, control, null);
         setDragedViewStatus(view);
         Whitebox.setInternalState(dragNDropManager, "effectTarget", control);
         dragNDropManager.onDragDropped(event);
@@ -181,7 +224,7 @@ public class DragNDropManagerImplTest {
         mockReadOnlyProperty(control, "width", 10);
         mockReadOnlyProperty(control, "height", 10);
         setDragedViewStatus(view);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 2, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 2, 0, 0, MOVE, null, control, null);
         dragNDropManager.onDragDropped(event);
         verify(target).add(view, Position.TOP);
     }
@@ -195,7 +238,7 @@ public class DragNDropManagerImplTest {
         mockReadOnlyProperty(control, "width", 10);
         mockReadOnlyProperty(control, "height", 10);
         setDragedViewStatus(view);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 8, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 5, 8, 0, 0, MOVE, null, control, null);
         dragNDropManager.onDragDropped(event);
         verify(target).add(view, Position.BOTTOM);
     }
@@ -209,7 +252,7 @@ public class DragNDropManagerImplTest {
         mockReadOnlyProperty(control, "width", 10);
         mockReadOnlyProperty(control, "height", 10);
         setDragedViewStatus(view);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 8, 5, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 8, 5, 0, 0, MOVE, null, control, null);
         dragNDropManager.onDragDropped(event);
         verify(target).add(view, Position.RIGHT);
     }
@@ -223,7 +266,7 @@ public class DragNDropManagerImplTest {
         mockReadOnlyProperty(control, "width", 10);
         mockReadOnlyProperty(control, "height", 10);
         setDragedViewStatus(view);
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 2, 5, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 2, 5, 0, 0, MOVE, null, control, null);
         dragNDropManager.onDragDropped(event);
         verify(target).add(view, Position.LEFT);
     }
@@ -234,7 +277,7 @@ public class DragNDropManagerImplTest {
         Control control = mock(Control.class);
         ViewStatus view = mockView("abc", "abc");
         when(control.getUserData()).thenReturn(mock(Object.class));
-        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, control, null);
+        DragEvent event = new DragEvent(mock(Node.class), scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, MOVE, null, control, null);
         setDragedViewStatus(view);
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
@@ -244,7 +287,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedWrongGestureTarget() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
         setDragedViewStatus(mockView("abc", "abc"));
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
@@ -254,7 +297,7 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedDragBoardInvalid() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abcd"), 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abcd"), 0, 0, 0, 0, MOVE, null, rootPane, null);
         setDragedViewStatus(mockView("abc", "abc"));
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
@@ -264,12 +307,11 @@ public class DragNDropManagerImplTest {
     @Test
     public void testOnDragDroppedDragBoardNull() throws Exception {
         Node node = mock(Node.class);
-        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, TransferMode.MOVE, null, rootPane, null);
+        DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_EXITED, null, 0, 0, 0, 0, MOVE, null, rootPane, null);
         dragNDropManager.onDragDropped(event);
         assertThat(event.isDropCompleted(), is(false));
         assertThat(event.isConsumed(), is(false));
     }
-
 
 
 }
