@@ -4,9 +4,9 @@
 package ${package}.application;
 
 /**
- * Demonstration of the startup with java6 service loader as lookup mechanism.
+ * Demonstration of the stagediver.fx start with CDI/Weld as lookup mechanism.
  *
  * @author christian.fritz
  */
-public class Main extends de.qaware.sdfx.main.Main {
+public class CdiMain extends de.qaware.sdfx.main.CDIMain {
 }

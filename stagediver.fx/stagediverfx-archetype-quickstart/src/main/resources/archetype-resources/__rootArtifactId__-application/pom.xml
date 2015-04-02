@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>${rootArtifactId}</artifactId>
         <groupId>${groupId}</groupId>
@@ -15,14 +16,17 @@
             <artifactId>${rootArtifactId}-editor</artifactId>
         </dependency>
         <dependency>
-            <groupId>${groupId}</groupId>
-            <artifactId>${rootArtifactId}-branding</artifactId>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>platform-full</artifactId>
+            <type>pom</type>
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-full</artifactId>
-            <version>${version.stagediverfx}</version>
-            <type>pom</type>
+            <artifactId>lookup-cdi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup-guice</artifactId>
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
@@ -31,48 +35,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.8</version>
-                <executions>
-                    <execution>
-                        <id>copy-osgi-bundles</id>
-                        <goals>
-                            <goal>copy-dependencies</goal>
-                        </goals>
-                        <phase>prepare-package</phase>
-                        <configuration>
-                            <excludeScope>system</excludeScope>
-                            <excludeScope>compile</excludeScope>
-                            <excludeScope>test</excludeScope>
-                            <includeScope>runtime</includeScope>
-                            <includeScope>provided</includeScope>
-                            <outputDirectory>${project.build.directory}/bundles</outputDirectory>
-                            <useRepositoryLayout>true</useRepositoryLayout>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>copy-osgi-startup</id>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <item>
-                                    <groupId>de.qaware.stagediver.fx</groupId>
-                                    <artifactId>platform-runner</artifactId>
-                                    <version>${version.stagediverfx}</version>
-                                    <overWrite>true</overWrite>
-                                    <destFileName>startup.jar</destFileName>
-                                </item>
-                            </artifactItems>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
