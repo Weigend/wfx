@@ -48,6 +48,7 @@
                     <directory>src/main/resources</directory>
                     <includes>
                         <include>META-INF/**</include>
+                        <include>splash/**</include>
                     </includes>
                 </fileSet>
             </fileSets>
