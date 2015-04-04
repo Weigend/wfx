@@ -301,6 +301,11 @@
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.6</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>license-maven-plugin</artifactId>
+                    <version>1.4</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -352,9 +357,55 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.1</version>
                 <configuration>
                     <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>license-maven-plugin</artifactId>
+                <configuration>
+                    <licenseName>apache_v2</licenseName>
+                    <projectName>${project.description}</projectName>
+                    <inceptionYear>2013</inceptionYear>
+                    <organizationName>QAware GmbH</organizationName>
+                    <!-- only add license to *.java files -->
+                    <includes>
+                        <include>**/*.java</include>
+                    </includes>
+                    <!-- insert the license at the top of the file-->
+                    <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>update-license-headers</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>update-file-header</goal>
+                        </goals>
+                        <configuration>
+                            <!-- only auto-update generated code files-->
+                            <roots>
+                                <root>target/generated-sources</root>
+                                <root>target/processed-sources</root>
+                            </roots>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>check-license-headers</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>check-file-header</goal>
+                        </goals>
+                        <configuration>
+                            <!-- fail build if license headers are not up-to-date-->
+                            <failOnMissingHeader>true</failOnMissingHeader>
+                            <failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
