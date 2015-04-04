@@ -2,6 +2,7 @@ package de.qaware.sdfx.lookup.cdi;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
+import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.lookup.TestService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -48,12 +49,12 @@ public class CDILookupStrategyTest {
         List<TestService> testServices = strategy.lookupAll(TestService.class);
         assertThat(testServices, hasSize(2));
         TestService service = testServices.get(0);
-        assertThat(service.sayHello(), is(equalTo("Hello Alternative")));
-        assertThat(service, instanceOf(Service2.class));
-
-        service = testServices.get(1);
         assertThat(service.sayHello(), is(equalTo("Hello CDI")));
         assertThat(service, instanceOf(Service1.class));
+
+        service = testServices.get(1);
+        assertThat(service.sayHello(), is(equalTo("Hello Alternative")));
+        assertThat(service, instanceOf(Service2.class));
     }
 
     @Test
@@ -74,6 +75,7 @@ public class CDILookupStrategyTest {
         }
     }
 
+    @Priority(-1000)
     public static class Service2 implements TestService {
         @Override
         public String sayHello() {
