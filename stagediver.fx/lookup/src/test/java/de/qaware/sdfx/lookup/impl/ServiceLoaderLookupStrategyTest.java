@@ -1,5 +1,6 @@
 package de.qaware.sdfx.lookup.impl;
 
+import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.lookup.TestService;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import org.junit.Before;
@@ -12,6 +13,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
+/**
+ * Unit test for the {@link ServiceLoaderLookupStrategy}.
+ *
+ * @author christian.fritz
+ */
 public class ServiceLoaderLookupStrategyTest {
 
     private ServiceLoaderLookupStrategy lookupStrategy;
@@ -90,8 +96,8 @@ public class ServiceLoaderLookupStrategyTest {
         List<TestService> actual = lookupStrategy.lookupAll(TestService.class);
         assertThat(actual, hasSize(3));
         assertThat(actual.get(0), instanceOf(TestServiceImpl.class));
-        assertThat(actual.get(1), instanceOf(TestServiceImpl2.class));
-        assertThat(actual.get(2), instanceOf(TestServiceImpl.class));
+        assertThat(actual.get(1), instanceOf(TestServiceImpl.class));
+        assertThat(actual.get(2), instanceOf(TestServiceImpl2.class));
     }
 
     @Test
@@ -104,16 +110,16 @@ public class ServiceLoaderLookupStrategyTest {
         assertThat(actual2, hasSize(3));
 
         assertThat(actual1.get(0), instanceOf(TestServiceImpl.class));
-        assertThat(actual1.get(1), instanceOf(TestServiceImpl2.class));
-        assertThat(actual1.get(2), instanceOf(TestServiceImpl.class));
+        assertThat(actual1.get(1), instanceOf(TestServiceImpl.class));
+        assertThat(actual1.get(2), instanceOf(TestServiceImpl2.class));
 
         assertThat(actual2.get(0), instanceOf(TestServiceImpl.class));
-        assertThat(actual2.get(1), instanceOf(TestServiceImpl2.class));
-        assertThat(actual2.get(2), instanceOf(TestServiceImpl.class));
+        assertThat(actual2.get(1), instanceOf(TestServiceImpl.class));
+        assertThat(actual2.get(2), instanceOf(TestServiceImpl2.class));
 
         assertThat(actual1.get(0), is(actual2.get(0)));
-        assertThat(actual1.get(1), is(actual2.get(1)));
-        assertThat(actual1.get(2), is(not(actual2.get(2))));
+        assertThat(actual1.get(1), is(not(actual2.get(1))));
+        assertThat(actual1.get(2), is(actual2.get(2)));
     }
 
     @Test
@@ -151,6 +157,7 @@ public class ServiceLoaderLookupStrategyTest {
         }
     }
 
+    @Priority(-1000)
     public static class TestServiceImpl2 implements TestService {
         @Override
         public String sayHello() {

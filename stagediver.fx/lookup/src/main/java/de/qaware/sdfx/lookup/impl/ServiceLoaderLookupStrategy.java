@@ -2,10 +2,13 @@ package de.qaware.sdfx.lookup.impl;
 
 import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
+import de.qaware.sdfx.lookup.Priority;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.stream.Collectors;
 
 /**
  * Use the javas {@link java.util.ServiceLoader} to lookup the actual instances.
@@ -105,16 +108,24 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (!lookupCache.containsKey(clazz)) {
             loadInstances(clazz);
         }
-        List<T> instances = new ArrayList<>();
-        for (Object instance : lookupCache.get(clazz)) {
-            if (instance instanceof Producer) {
-                instances.add(((Producer<T>) instance).getInstance());
+        Map<T, Integer> instances = new HashMap<>();
+        for (Object object : lookupCache.get(clazz)) {
+            T instance;
+            if (object instanceof Producer) {
+                instance = ((Producer<T>) object).getInstance();
             }
             else {
-                instances.add((T) instance);
+                instance = (T) object;
             }
+            Class<?> c = instance.getClass();
+            instances.put(instance,
+                    c.isAnnotationPresent(Priority.class) ? c.getAnnotation(Priority.class).value() : 0);
         }
-        return instances;
+        return instances.entrySet()
+                .stream()
+                .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
     /**
