@@ -13,6 +13,7 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
@@ -34,6 +35,7 @@ import java.util.List;
  * @author christian.fritz
  */
 @Singleton
+@Priority(Integer.MIN_VALUE)
 public class PlatformApplicationImpl implements PlatformApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
