@@ -1,15 +1,22 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 23.05.13 08:57
-//     description: A view.
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.api;
 
 import javafx.scene.*;
@@ -17,6 +24,8 @@ import javafx.scene.*;
 /**
  * Defines a View. A view is an object that could be registered within the
  * {@link WindowManager} and displayed as a tab.
+ *
+ * @author christian.fritz
  */
 public interface View {
 
