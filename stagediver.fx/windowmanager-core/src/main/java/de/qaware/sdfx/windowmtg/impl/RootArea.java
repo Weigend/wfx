@@ -1,15 +1,22 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 23.05.13 10:53
-//     description: Defines the root view area.
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
@@ -22,6 +29,8 @@ import javafx.stage.*;
 
 /**
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
+ *
+ * @author christian.fritz
  */
 public class RootArea extends ViewArea {
     private final Pane box;
@@ -62,7 +71,7 @@ public class RootArea extends ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p>
+     * <p/>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -92,7 +101,7 @@ public class RootArea extends ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p>
+     * <p/>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *

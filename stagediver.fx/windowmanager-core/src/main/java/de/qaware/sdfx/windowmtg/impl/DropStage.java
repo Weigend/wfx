@@ -1,15 +1,22 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 20.06.13 14:23
-//     description: Defines the drop stages for dropping views to the desktop.
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.impl;
 
 import org.slf4j.Logger;
@@ -27,8 +34,10 @@ import java.util.List;
 
 /**
  * The DropStage is a container which handles the drop events of views outside the the application windows.
- * <p>
+ * <p/>
  * This drop events are captured by one undecorated and transparent stage per screen. This stages covers the whole screen.
+ *
+ * @author christian.fritz
  */
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);

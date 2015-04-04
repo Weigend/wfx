@@ -1,18 +1,28 @@
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.*;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -22,12 +32,18 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
+
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManager.DATAFORMAT;
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.getDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
-import static javafx.scene.input.TransferMode.COPY;
-import static javafx.scene.input.TransferMode.MOVE;
+import static javafx.scene.input.TransferMode.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;

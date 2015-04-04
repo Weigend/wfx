@@ -1,28 +1,34 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 21.06.13 10:05
-//     description: Implementation for the window manager
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.impl;
 
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.application.Platform;
-import javafx.scene.Parent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javafx.application.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.stage.*;
 import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -63,7 +69,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Register a new view within this window manager.
-     * <p>
+     * <p/>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
@@ -127,7 +133,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Restore the layout to default.
-     * <p>
+     * <p/>
      * The layout is recreated in the same way as it was the first time initialized.
      */
     @Override
@@ -153,7 +159,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Close the specified view.
-     * <p>
+     * <p/>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -171,9 +177,9 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Clone the specified view.
-     * <p>
+     * <p/>
      * The cloned view will be placed next to the given view in the same tab area.
-     * <p>
+     * <p/>
      * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -225,7 +231,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Find a view with the assigned view id.
-     * <p>
+     * <p/>
      * This returns that view that has the given unique view id. If there is no view found it returns null.
      *
      * @param viewID The view id to search.

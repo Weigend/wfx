@@ -1,15 +1,22 @@
-// ______________________________________________________________________________
-//         Project: stagediver.fx
-// ______________________________________________________________________________
-//
-//      created by: christian.fritz
-//   creation date: 11.06.13 20:19
-//     description: Defines a regular view area.
-// ______________________________________________________________________________
-//
-//       Copyright: (c) QAware GmbH, all rights reserved
-// ______________________________________________________________________________
-
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
@@ -24,6 +31,8 @@ import javafx.scene.layout.*;
 
 /**
  * A ViewArea is a node within the area tree. It has two children which are self view areas.
+ *
+ * @author christian.fritz
  */
 public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);
@@ -81,7 +90,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p>
+     * <p/>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -107,7 +116,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as second child of this view area.
-     * <p>
+     * <p/>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -120,7 +129,7 @@ public class ViewArea {
 
     /**
      * Split this area by {@param orientation}.
-     * <p>
+     * <p/>
      * Either the parameter {@param first} or {@param second} must be this area. Otherwise a
      * {@link IllegalArgumentException} is thrown.
      *
@@ -146,7 +155,7 @@ public class ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p>
+     * <p/>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *
@@ -207,9 +216,9 @@ public class ViewArea {
 
     /**
      * Remove the given area as child from this area.
-     * <p>
+     * <p/>
      * In case of a underflow this area will also be removed.
-     * <p>
+     * <p/>
      * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param area The area that should be removed.
@@ -226,7 +235,7 @@ public class ViewArea {
 
     /**
      * Replace the {@param oldArea} with the {@param newArea}.
-     * <p>
+     * <p/>
      * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param oldArea The old area.
