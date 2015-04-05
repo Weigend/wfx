@@ -22,8 +22,9 @@ package de.qaware.sdfx.lookup.impl;
 import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.Priority;
+import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -127,7 +128,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (!lookupCache.containsKey(clazz)) {
             loadInstances(clazz);
         }
-        Map<T, Integer> instances = new HashMap<>();
+        List<Pair<T, Integer>> instances = new ArrayList<>();
         for (Object object : lookupCache.get(clazz)) {
             T instance;
             if (object instanceof Producer) {
@@ -137,11 +138,10 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
                 instance = (T) object;
             }
             Class<?> c = instance.getClass();
-            instances.put(instance,
-                    c.isAnnotationPresent(Priority.class) ? c.getAnnotation(Priority.class).value() : 0);
+            instances.add(Pair.of(instance,
+                    c.isAnnotationPresent(Priority.class) ? c.getAnnotation(Priority.class).value() : 0));
         }
-        return instances.entrySet()
-                .stream()
+        return instances.stream()
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
