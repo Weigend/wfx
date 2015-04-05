@@ -27,9 +27,12 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -136,9 +139,7 @@ public class ServiceLoaderLookupStrategyTest {
         assertThat(actual2.get(1), instanceOf(TestServiceImpl.class));
         assertThat(actual2.get(2), instanceOf(TestServiceImpl2.class));
 
-        assertThat(actual1.get(0), is(actual2.get(0)));
-        assertThat(actual1.get(1), is(not(actual2.get(1))));
-        assertThat(actual1.get(2), is(actual2.get(2)));
+        assertThat(actual1, containsInAnyOrder(is(actual2.get(0)), is(not(actual2.get(1))), is(actual2.get(2))));
     }
 
     @Test

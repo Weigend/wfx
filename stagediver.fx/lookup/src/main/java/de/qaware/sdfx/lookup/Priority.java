@@ -35,8 +35,6 @@ public @interface Priority {
 
     /**
      * The priority.
-     *
-     * @return The priority for the bean.
      */
     int value() default 0;
 }
