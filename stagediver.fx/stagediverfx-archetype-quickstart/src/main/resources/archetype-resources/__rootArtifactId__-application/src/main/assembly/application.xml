@@ -15,7 +15,7 @@
                 <exclude>${groupId}:${artifactId}</exclude>
             </excludes>
             <scope>runtime</scope>
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>${symbol_dollar}{file.separator}lib</outputDirectory>
         </dependencySet>
     </dependencySets>
     <moduleSets>
@@ -25,7 +25,7 @@
                 <include>${groupId}:${artifactId}</include>
             </includes>
             <binaries>
-                <outputDirectory>/</outputDirectory>
+                <outputDirectory>${symbol_dollar}{file.separator}</outputDirectory>
                 <unpack>false</unpack>
                 <includeDependencies>false</includeDependencies>
             </binaries>
@@ -34,7 +34,7 @@
     <fileSets>
         <fileSet>
             <directory>${symbol_dollar}{project.basedir}</directory>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>${symbol_dollar}{file.separator}</outputDirectory>
             <includes>
                 <include>README*</include>
                 <include>LICENSE*</include>

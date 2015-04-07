@@ -32,7 +32,7 @@ public class GuiceMain extends de.qaware.sdfx.main.Main {
         @Override
         protected void configure() {
             bind(de.qaware.sdfx.windowmtg.api.ApplicationWindow.class).to(ApplicationWindow.class).asEagerSingleton();
-            bind(Module.class).to(testModule.class).asEagerSingleton();
+            bind(Module.class).to(${package}.application.${rootArtifactId}Module.class).asEagerSingleton();
             bind(PlatformApplication.class).to(PlatformApplicationImpl.class).asEagerSingleton();
             bind(EventBus.class).to(SimpleEventBus.class).asEagerSingleton();
             bind(WindowManager.class).to(WindowManagerImpl.class).asEagerSingleton();

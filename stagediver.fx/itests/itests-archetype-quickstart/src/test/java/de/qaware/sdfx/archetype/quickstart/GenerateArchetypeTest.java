@@ -22,12 +22,12 @@ package de.qaware.sdfx.archetype.quickstart;
 import org.apache.maven.it.VerificationException;
 import org.apache.maven.it.Verifier;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -63,7 +63,6 @@ public class GenerateArchetypeTest {
     }
 
     @Test
-    @Ignore
     public void testGenerateAndBuildArchetypeArtefact() throws VerificationException {
         Verifier verifier = new Verifier(ROOT.getAbsolutePath());
         verifier.setSystemProperties(getSystemProperties());
@@ -71,7 +70,7 @@ public class GenerateArchetypeTest {
         verifier.executeGoal("archetype:generate");
         verifier.verifyErrorFreeLog();
 
-        verifier = new Verifier(ROOT.getAbsolutePath() + "/" + TEST_ARTIFACT_ID);
+        verifier = new Verifier(Paths.get(ROOT.getAbsolutePath(), TEST_ARTIFACT_ID).toString());
         verifier.setAutoclean(true);
         verifier.executeGoal("verify");
         verifier.verifyErrorFreeLog();
