@@ -25,12 +25,14 @@ import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.stage.*;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
@@ -66,7 +68,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public String getVersion() {
-        return "";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override

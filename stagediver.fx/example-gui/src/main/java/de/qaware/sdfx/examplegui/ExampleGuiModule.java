@@ -55,7 +55,7 @@ public class ExampleGuiModule implements Module {
      */
     @Override
     public String getVersion() {
-        return "";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     /**
