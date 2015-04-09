@@ -27,6 +27,8 @@ import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,15 +36,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.fxml.*;
-import javafx.stage.*;
 import java.io.IOException;
 import java.util.Arrays;
 
 import static de.qaware.sdfx.windowmtg.api.GuiTestHelper.getStage;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -90,7 +90,7 @@ public class PlatformApplicationImplTest {
     @Test
     public void testGetVersion() throws Exception {
         String actual = application.getVersion();
-        assertThat(actual, is(equalTo("")));
+        assertThat(actual, is(nullValue()));
     }
 
     @Test
