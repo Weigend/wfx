@@ -25,7 +25,7 @@ public class ${rootArtifactId}Module implements Module {
 
     @Override
     public String getVersion() {
-        return "${version}";
+        return getClass().getPackage().getImplementationVersion();
     }
 
     @Override
