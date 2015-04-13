@@ -25,17 +25,16 @@ import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
 import de.qaware.sdfx.platform.impl.eventbus.SimpleEventBus;
 import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
-import org.junit.Before;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.utils.UserInputDetector;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -43,7 +42,6 @@ import java.net.URL;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.loadui.testfx.controls.Commons.hasText;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
@@ -63,11 +61,6 @@ public class PreloaderControllerTest extends GuiTest {
     @Mock
     private LookupStrategy lookupStrategy;
     private EventBus eventBus = new SimpleEventBus();
-
-    @Before
-    public void setUp() throws Exception {
-        UserInputDetector.instance.setTestThread(mock(Thread.class));
-    }
 
     @Override
     protected Parent getRootNode() {
