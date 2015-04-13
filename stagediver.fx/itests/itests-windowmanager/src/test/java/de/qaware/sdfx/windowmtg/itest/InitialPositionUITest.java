@@ -27,18 +27,16 @@ import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import de.qaware.sdfx.windowmtg.impl.TestView;
 import de.qaware.sdfx.windowmtg.impl.WindowManagerImpl;
+import javafx.scene.Parent;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
-import org.loadui.testfx.utils.UserInputDetector;
-
-import javafx.scene.*;
-import javafx.scene.control.*;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Integration test to test the initial positions of views within the window manager.
@@ -61,11 +59,6 @@ public class InitialPositionUITest extends GuiTest {
     private View bottom = new TestView("Bottom", Position.BOTTOM);
 
     private View top = new TestView("Top", Position.TOP);
-
-    public InitialPositionUITest() {
-        super();
-        UserInputDetector.instance.setTestThread(mock(Thread.class));
-    }
 
     @BeforeClass
     public static void setUpClass() throws Exception {
