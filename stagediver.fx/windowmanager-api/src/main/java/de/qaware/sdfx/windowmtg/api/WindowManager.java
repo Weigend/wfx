@@ -19,6 +19,7 @@
  */
 package de.qaware.sdfx.windowmtg.api;
 
+import javafx.beans.property.*;
 import javafx.scene.*;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public interface WindowManager {
 
     /**
      * Register a new view within this window manager.
-     * <p>
+     * <p/>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
@@ -45,7 +46,7 @@ public interface WindowManager {
 
     /**
      * Register a new view within this window manager using a parent view to define the exact position.
-     * <p>
+     * <p/>
      * It use the given parent view with the views position to exactly define the displayed position. If the position is
      * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
      * value the area which contains the parent view will be split according to the value of position of the new view.
@@ -69,7 +70,7 @@ public interface WindowManager {
 
     /**
      * Close the specified view.
-     * <p>
+     * <p/>
      * The given view must be registered within the {@link WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -79,9 +80,9 @@ public interface WindowManager {
 
     /**
      * Clone the specified view.
-     * <p>
+     * <p/>
      * The cloned view will be placed next to the given view in the same tab area.
-     * <p>
+     * <p/>
      * The given view must be registered within the {@link WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
@@ -102,7 +103,7 @@ public interface WindowManager {
 
     /**
      * Find a view with the assigned view id.
-     * <p>
+     * <p/>
      * This returns that view that has the given unique view id. If there is no view found it returns null.
      *
      * @param viewID The view id to search.
@@ -130,6 +131,13 @@ public interface WindowManager {
      * @param view The view that should hold the focus.
      */
     void setFocusedView(View view);
+
+    /**
+     * Get the focused view property.
+     *
+     * @return the focused view property.
+     */
+    ObjectProperty<View> focusedViewProperty();
 
     /**
      * Get all views that are visible at the moment.

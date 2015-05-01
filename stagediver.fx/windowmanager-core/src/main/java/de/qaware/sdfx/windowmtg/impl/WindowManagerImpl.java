@@ -26,11 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javafx.application.*;
+import javafx.beans.property.*;
+import javafx.collections.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +48,18 @@ public class WindowManagerImpl implements MultiWindowManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
     protected Pane rootPane = new HBox();
     private final DragNDropManager dragNDropManager = new DragNDropManagerImpl(this);
-    private final List<RootArea> subWindows = new ArrayList<>();
+    private final ReadOnlyListWrapper<RootArea> subWindows = new ReadOnlyListWrapper<>();
+    private final ReadOnlyObjectWrapper<RootArea> mainRootArea = new ReadOnlyObjectWrapper<>();
+    private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>();
     private Map<String, ViewStatus> views = new LinkedHashMap<>();
-    private RootArea mainArea;
-    private View focusedView;
     private View lastFocusedView;
+
+    /**
+     * Initialize a new window manager.
+     */
+    public WindowManagerImpl() {
+        subWindows.set(FXCollections.observableArrayList());
+    }
 
     /**
      * Called to initialize a controller after its root element has been completely processed.
@@ -138,7 +146,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void restoreDefaultLayout() {
-        mainArea = null;
+        mainRootArea.set(null);
         List<RootArea> currentSubwindows = new ImmutableList.Builder<RootArea>().addAll(subWindows).build();
         currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
@@ -247,7 +255,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     @Override
     public View getFocusedView() {
-        return focusedView;
+        return focusedView.get();
     }
 
     @Override
@@ -262,8 +270,13 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void setFocusedView(View focusedView) {
-        this.lastFocusedView = this.focusedView;
-        this.focusedView = focusedView;
+        this.lastFocusedView = this.focusedView.get();
+        this.focusedView.set(focusedView);
+    }
+
+    @Override
+    public ObjectProperty<View> focusedViewProperty() {
+        return focusedView;
     }
 
     /**
@@ -285,7 +298,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         subWindows.stream()
                 .filter(area -> area.getNode().getScene().getWindow() instanceof Stage)
                 .forEach(area -> ((Stage) area.getNode().getScene().getWindow()).toFront());
-        ((Stage) mainArea.getNode().getScene().getWindow()).toFront();
+        ((Stage) mainRootArea.get().getNode().getScene().getWindow()).toFront();
     }
 
     /**
@@ -310,10 +323,20 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public RootArea getMainRootArea() {
-        if (mainArea == null) {
-            mainArea = new RootArea(rootPane, dragNDropManager, false);
+        if (mainRootArea.get() == null) {
+            mainRootArea.set(new RootArea(rootPane, dragNDropManager, false));
         }
-        return mainArea;
+        return mainRootArea.get();
+    }
+
+    @Override
+    public ReadOnlyObjectProperty<RootArea> mainRootAreaProperty() {
+        return mainRootArea.getReadOnlyProperty();
+    }
+
+    @Override
+    public ObservableList<RootArea> getRootAreas() {
+        return subWindows.getReadOnlyProperty();
     }
 
     @Override

@@ -21,9 +21,12 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 
+import javafx.beans.property.*;
+import javafx.collections.*;
+
 /**
  * A multi window manager.
- * <p>
+ * <p/>
  * This is a window manager which is able to handle the views within one or more windows.
  *
  * @author Christian Fritz
@@ -55,6 +58,20 @@ public interface MultiWindowManager extends WindowManager {
      * @return The root area of the main window
      */
     RootArea getMainRootArea();
+
+    /**
+     * Get the property to observe the main root area.
+     *
+     * @return The main root area property.
+     */
+    ReadOnlyObjectProperty<RootArea> mainRootAreaProperty();
+
+    /**
+     * Get the observable list of root areas.
+     *
+     * @return The root areas list.
+     */
+    ObservableList<RootArea> getRootAreas();
 
     /**
      * Request the redrawing of all areas.

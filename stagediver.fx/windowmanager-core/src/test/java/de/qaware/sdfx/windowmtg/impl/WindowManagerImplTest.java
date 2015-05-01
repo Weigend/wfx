@@ -75,6 +75,7 @@ public class WindowManagerImplTest {
     @Before
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
+        mockReadOnlyProperty(windowManager, "mainRootArea", mainWindow);
         Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
         views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
         subWindows = (List<RootArea>) Whitebox.getInternalState(windowManager, "subWindows");
@@ -325,7 +326,7 @@ public class WindowManagerImplTest {
     @Test
     public void testGetMainRootArea() throws Exception {
         assertThat(windowManager.getMainRootArea(), is(mainWindow));
-        Whitebox.setInternalState(windowManager, "mainArea", null);
+        mockReadOnlyProperty(windowManager, "mainRootArea", null);
         assertThat(windowManager.getMainRootArea(), is(notNullValue()));
     }
 

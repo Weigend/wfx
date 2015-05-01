@@ -1,0 +1,127 @@
+/*
+ * #%L
+ * stagediver.fx is a rich-client-platform for JavaFX.
+ * %%
+ * Copyright (C) 2013 - 2015 QAware GmbH
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package de.qaware.sdfx.windowmtg.impl;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javafx.beans.value.*;
+import javafx.collections.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Handles the View focus based on the {@link Scene#focusOwnerProperty()}.
+ *
+ * @author christian.fritz
+ */
+public class ViewFocusHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ViewFocusHandler.class);
+
+    private final Set<Scene> registeredScenes = new HashSet<>();
+
+    private final MultiWindowManager windowManager;
+
+    /**
+     * Init the ViewFocusHandler for the given {@link MultiWindowManager}.
+     *
+     * @param windowManager Observe this window manager.
+     */
+    public ViewFocusHandler(MultiWindowManager windowManager) {
+        this.windowManager = windowManager;
+        init();
+    }
+
+    /**
+     * Initialize the focus handler.
+     */
+    private void init() {
+        windowManager.mainRootAreaProperty().addListener((observable, oldValue, newValue) -> registerRootArea(newValue));
+        windowManager.getRootAreas().addListener((ListChangeListener<RootArea>) c -> {
+            if (!c.next()) {
+                return;
+            }
+            c.getAddedSubList().forEach(this::registerRootArea);
+            c.getRemoved().forEach(registeredScenes::remove);
+        });
+    }
+
+    /**
+     * Register a given {@link RootArea}.
+     *
+     * @param rootArea The root area to register.
+     */
+    private void registerRootArea(RootArea rootArea) {
+        rootArea.getNode().sceneProperty().addListener(this::registerScene);
+    }
+
+    /**
+     * Listener to register scenes.
+     *
+     * @param observable ignored
+     * @param oldValue   ignored
+     * @param newValue   The scene register.
+     */
+    private void registerScene(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
+        if (newValue == null || registeredScenes.contains(newValue)) {
+            return;
+        }
+        newValue.focusOwnerProperty().addListener(this::focusHandler);
+        registeredScenes.add(newValue);
+    }
+
+    /**
+     * Listener when focus has changed.
+     *
+     * @param observable ignored
+     * @param oldValue   ignored
+     * @param newValue   The node which owns the focus.
+     */
+    private void focusHandler(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
+        if (newValue == null) {
+            return;
+        }
+        ViewStatus viewStatus = findView(newValue);
+        if (viewStatus != null && windowManager.getFocusedView() != viewStatus.getView()) {
+            windowManager.setFocusedView(viewStatus.getView());
+            LOGGER.debug("Set current focused view to: {}", viewStatus.getView().getViewId());
+        }
+    }
+
+    /**
+     * Find the {@link ViewStatus} for the given node.
+     *
+     * @param focusOwner The node which owns the focus.
+     * @return The ViewStatus of the given node.
+     */
+    private ViewStatus findView(Node focusOwner) {
+        while (focusOwner != null) {
+            if (focusOwner.getUserData() instanceof TabArea) {
+                TabArea area = (TabArea) focusOwner.getUserData();
+                return (ViewStatus) ((TabPane) area.getNode()).getSelectionModel().getSelectedItem().getUserData();
+            }
+            focusOwner = focusOwner.getParent();
+        }
+        return null;
+    }
+}
