@@ -21,9 +21,8 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-
-import javafx.scene.*;
-import javafx.scene.control.*;
+import javafx.scene.Parent;
+import javafx.scene.control.Label;
 
 /**
  * A generic Testview.
@@ -35,10 +34,13 @@ public class TestView implements View {
     private String id;
 
     private Position position;
+    private Label rootNode;
 
     public TestView(String id, Position position) {
         this.id = id;
         this.position = position;
+        rootNode = new Label("View ID: " + id);
+        rootNode.setId(id.toLowerCase());
     }
 
     @Override
@@ -63,9 +65,7 @@ public class TestView implements View {
 
     @Override
     public Parent getRootNode() {
-        Label l = new Label("View ID: " + id);
-        l.setId(id.toLowerCase());
-        return l;
+        return rootNode;
     }
 
     @Override
