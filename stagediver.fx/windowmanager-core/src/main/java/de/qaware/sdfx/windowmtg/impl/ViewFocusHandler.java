@@ -19,13 +19,15 @@
  */
 package de.qaware.sdfx.windowmtg.impl;
 
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.beans.value.*;
-import javafx.collections.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -118,7 +120,13 @@ public class ViewFocusHandler {
         while (focusOwner != null) {
             if (focusOwner.getUserData() instanceof TabArea) {
                 TabArea area = (TabArea) focusOwner.getUserData();
-                return (ViewStatus) ((TabPane) area.getNode()).getSelectionModel().getSelectedItem().getUserData();
+                TabPane tabPane = (TabPane) area.getNode();
+                if (tabPane != null) {
+                    Tab tab = tabPane.getSelectionModel().getSelectedItem();
+                    if (tab != null) {
+                        return (ViewStatus) tab.getUserData();
+                    }
+                }
             }
             focusOwner = focusOwner.getParent();
         }
