@@ -24,6 +24,9 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.scene.Parent;
+import javafx.scene.control.TabPane;
+import javafx.scene.input.MouseButton;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -31,14 +34,16 @@ import org.junit.runner.RunWith;
 import org.loadui.testfx.GuiTest;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.scene.*;
-import javafx.scene.input.*;
-
 import static de.qaware.sdfx.windowmtg.api.GuiTestHelper.runInJavaFxThreadAndWait;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
+ * Test for the {@link ViewFocusHandler}.
+ *
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
@@ -52,18 +57,25 @@ public class ViewFocusHandlerTest extends GuiTest {
     }
 
     private WindowManagerImpl windowManager = new WindowManagerImpl();
+    private ViewFocusHandler focusHandler = new ViewFocusHandler(windowManager);
+
     private View view1 = new TestView("Test1", Position.CENTER);
     private View view2 = new TestView("Test2", Position.LEFT);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
-        Lookup.init(new ServiceLoaderLookupStrategy());
+        ServiceLoaderLookupStrategy lookupStrategy = new ServiceLoaderLookupStrategy();
+        ViewContainerAreaFactory factory = mock(ViewContainerAreaFactory.class);
+        when(factory.getInstance(any(ViewArea.class), any(DragNDropManager.class)))
+                .thenAnswer(i -> new TabAreaMock((ViewArea) i.getArguments()[0], (DragNDropManager) i.getArguments()[1]));
+        when(factory.getInstance(any(DragNDropManager.class)))
+                .thenAnswer(i -> new TabAreaMock((DragNDropManager) i.getArguments()[0]));
+        lookupStrategy.init(ViewContainerAreaFactory.class, factory);
+        Lookup.init(lookupStrategy);
     }
 
     @Before
     public void setUp() throws Exception {
-        new ViewFocusHandler(windowManager);
-
         windowManager.register(view1);
         windowManager.register(view2, view1);
     }
@@ -71,6 +83,7 @@ public class ViewFocusHandlerTest extends GuiTest {
     @Test
     public void testSingleWindow() throws Exception {
         runInJavaFxThreadAndWait(windowManager::init);
+        sleep(1000);
         click(view1.getRootNode(), MouseButton.PRIMARY);
         assertThat(windowManager.getFocusedView(), is(view1));
         click(view2.getRootNode(), MouseButton.PRIMARY);
@@ -80,5 +93,35 @@ public class ViewFocusHandlerTest extends GuiTest {
     @Override
     protected Parent getRootNode() {
         return windowManager.getRootPane();
+    }
+
+    private static class TabAreaMock extends TabArea {
+        private TabPane node = new TabPane();
+
+        protected TabAreaMock(ViewArea parent, DragNDropManager dragNDropManager) {
+            super(parent, dragNDropManager);
+            node.setUserData(this);
+        }
+
+        protected TabAreaMock(DragNDropManager dragNDropManager) {
+            super(dragNDropManager);
+            node.setUserData(this);
+        }
+
+        @Override
+        public void add(ViewStatus view, Position position) {
+            if (position != Position.CENTER) {
+                super.add(view, position);
+                return;
+            }
+            view.setArea(this);
+            view.setPosition(position);
+            node.getTabs().add(view.getTab());
+        }
+
+        @Override
+        public Parent getNode() {
+            return node;
+        }
     }
 }
