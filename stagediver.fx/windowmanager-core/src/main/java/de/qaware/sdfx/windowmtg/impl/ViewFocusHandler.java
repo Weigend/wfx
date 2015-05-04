@@ -84,6 +84,7 @@ public class ViewFocusHandler {
      * @param oldValue   ignored
      * @param newValue   The scene register.
      */
+    @SuppressWarnings("unused")
     private void registerScene(ObservableValue<? extends Scene> observable, Scene oldValue, Scene newValue) {
         if (newValue == null || registeredScenes.contains(newValue)) {
             return;
@@ -99,6 +100,7 @@ public class ViewFocusHandler {
      * @param oldValue   ignored
      * @param newValue   The node which owns the focus.
      */
+    @SuppressWarnings("unused")
     private void focusHandler(ObservableValue<? extends Node> observable, Node oldValue, Node newValue) {
         if (newValue == null) {
             return;
@@ -117,9 +119,10 @@ public class ViewFocusHandler {
      * @return The ViewStatus of the given node.
      */
     private ViewStatus findView(Node focusOwner) {
-        while (focusOwner != null) {
-            if (focusOwner.getUserData() instanceof TabArea) {
-                TabArea area = (TabArea) focusOwner.getUserData();
+        Node owner = focusOwner;
+        while (owner != null) {
+            if (owner.getUserData() instanceof TabArea) {
+                TabArea area = (TabArea) owner.getUserData();
                 TabPane tabPane = (TabPane) area.getNode();
                 if (tabPane != null) {
                     Tab tab = tabPane.getSelectionModel().getSelectedItem();
@@ -128,7 +131,7 @@ public class ViewFocusHandler {
                     }
                 }
             }
-            focusOwner = focusOwner.getParent();
+            owner = owner.getParent();
         }
         return null;
     }
