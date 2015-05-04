@@ -19,7 +19,8 @@
  */
 package de.qaware.sdfx.windowmtg.impl;
 
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import org.mockito.stubbing.Answer;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -31,11 +32,21 @@ import static org.mockito.Mockito.when;
  */
 public class ViewContainerAreaFactoryMockImpl implements ViewContainerAreaFactory {
 
+    private Answer<?> nodeAnswer = invocationOnMock -> new Label("Mock");
+
+    public Answer<?> getNodeAnswer() {
+        return nodeAnswer;
+    }
+
+    public void setNodeAnswer(Answer<?> nodeAnswer) {
+        this.nodeAnswer = nodeAnswer;
+    }
+
     @Override
     public ViewArea getInstance(DragNDropManager dragNDropManager) {
         ViewArea ret = mock(ViewArea.class);
         when(ret.getDragNDropManager()).thenReturn(dragNDropManager);
-        when(ret.getNode()).then(invocationOnMock -> new Label("Mock"));
+        when(ret.getNode()).then(nodeAnswer);
         return ret;
     }
 
@@ -44,7 +55,7 @@ public class ViewContainerAreaFactoryMockImpl implements ViewContainerAreaFactor
         ViewArea ret = mock(ViewArea.class);
         when(ret.getDragNDropManager()).thenReturn(dragNDropManager);
         when(ret.getParent()).thenReturn(parent);
-        when(ret.getNode()).then(invocationOnMock -> new Label("Mock"));
+        when(ret.getNode()).then(nodeAnswer);
         return ret;
     }
 }
