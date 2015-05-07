@@ -121,7 +121,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
 
     /**
      * Preload the module while starting the application.
-     * <p/>
+     * <p>
      * It will be executed in an separate thread while showing the splash screen.
      */
     @Override
@@ -152,7 +152,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
                 break;
             }
             catch (IOException e) {
-                LOGGER.debug("Can not load Application Window", e);
+                LOGGER.warn("Can not load Application Window", e);
             }
         }
     }
