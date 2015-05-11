@@ -22,10 +22,9 @@ package de.qaware.sdfx.windowmtg.api;
 import com.google.common.base.Preconditions;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 
-import javafx.fxml.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
 import java.io.IOException;
 import java.net.URL;
 
@@ -42,14 +41,14 @@ public class FXMLView<C> implements View {
     private final String id;
     private final String title;
     private final Position defaultPosition;
-    private final Pane rootPane;
+    private final Parent rootPane;
     private final String toolTipInfo;
     private final double viewAreaSize;
     private final C controller;
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The resulted view will not have a tooltip.
      *
      * @param id    The view id.
@@ -65,7 +64,7 @@ public class FXMLView<C> implements View {
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The resulted view will not have a tooltip.
      *
      * @param id          The view id.
@@ -82,7 +81,7 @@ public class FXMLView<C> implements View {
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The resulted view will not have a tooltip.
      *
      * @param id           The view id.
@@ -99,7 +98,7 @@ public class FXMLView<C> implements View {
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The resulted view will not have a tooltip.
      *
      * @param id           The view id.
@@ -117,7 +116,7 @@ public class FXMLView<C> implements View {
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The view will show a tooltip info on mouse over.
      *
      * @param id          The view id.
@@ -137,7 +136,7 @@ public class FXMLView<C> implements View {
 
     /**
      * Get a new view with the specified values.
-     * <p/>
+     * <p>
      * The view will show a tooltip info on mouse over.
      *
      * @param id           The view id.
