@@ -36,5 +36,5 @@ public @interface EventSubscriber {
     /**
      * Method for getting the class.
      */
-    Class eventClass();
+    Class[] eventClass();
 }

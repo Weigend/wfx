@@ -23,6 +23,7 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.EventSubscriber;
+import de.qaware.sdfx.platform.api.events.ProgressEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,9 +32,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 
-import static org.junit.Assert.assertFalse;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
@@ -43,6 +48,7 @@ import static org.mockito.Mockito.when;
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
+@SuppressWarnings("unchecked")
 public class AnnotationProcessorTest {
 
     @Mock
@@ -63,7 +69,7 @@ public class AnnotationProcessorTest {
         EventBus bus = Lookup.lookup(EventBus.class);
         boolean isEventStillValid = bus.publish(new EventObject(""));
 
-        assertTrue(isEventStillValid);
+        assertThat(isEventStillValid, is(true));
     }
 
     /**
@@ -75,7 +81,18 @@ public class AnnotationProcessorTest {
         EventBus bus = Lookup.lookup(EventBus.class);
         boolean isEventStillValid = bus.publish(new EventObject(""));
 
-        assertFalse(isEventStillValid);
+        assertThat(isEventStillValid, is(false));
+    }
+
+    @Test
+    public void testMultipleEventsOnSameListner() {
+        ListenForMultipleEventsEventListener listener = new ListenForMultipleEventsEventListener();
+        AnnotationProcessor.process(listener);
+        EventBus bus = Lookup.lookup(EventBus.class);
+        bus.publish(new EventObject(""));
+        bus.publish(new ProgressEvent("", 0, this));
+
+        assertThat(listener.getInvocationTypes(), contains(EventObject.class, ProgressEvent.class));
     }
 
     /**
@@ -135,6 +152,20 @@ public class AnnotationProcessorTest {
         @EventSubscriber(eventClass = EventObject.class)
         public String notConsumeEvent(EventObject event) {
             return "I am totally wrong";
+        }
+    }
+
+    private static class ListenForMultipleEventsEventListener {
+        private List<Class<? extends EventObject>> invocationTypes = new ArrayList<>();
+
+        public List<Class<? extends EventObject>> getInvocationTypes() {
+            return invocationTypes;
+        }
+
+        @EventSubscriber(eventClass = {EventObject.class, ProgressEvent.class})
+        public boolean notConsumeEvent(EventObject event) {
+            invocationTypes.add(event.getClass());
+            return true;
         }
     }
 }

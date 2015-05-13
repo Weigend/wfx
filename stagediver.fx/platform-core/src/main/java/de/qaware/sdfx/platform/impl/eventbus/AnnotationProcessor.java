@@ -51,14 +51,16 @@ public final class AnnotationProcessor {
         for (final Method method : methods) {
             if (method.isAnnotationPresent(EventSubscriber.class)) {
                 EventSubscriber s = method.getAnnotation(EventSubscriber.class);
-                Lookup.lookup(EventBus.class).subscribe(s.eventClass(), event -> {
-                    try {
-                        return (Boolean) method.invoke(object, event);
-                    }
-                    catch (Exception e) {
-                        throw new IllegalStateException(e);
-                    }
-                });
+                for (Class eventClass : s.eventClass()) {
+                    Lookup.lookup(EventBus.class).subscribe(eventClass, event -> {
+                        try {
+                            return (Boolean) method.invoke(object, event);
+                        }
+                        catch (Exception e) {
+                            throw new IllegalStateException(e);
+                        }
+                    });
+                }
             }
         }
     }
