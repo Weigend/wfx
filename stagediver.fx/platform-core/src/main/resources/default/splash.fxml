@@ -8,17 +8,13 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="de.qaware.sdfx.platform.impl.PreloaderController">
-    <children>
-        <ImageView id="splash.png" fitHeight="400" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
-            <image>
-                <Image url="@splash.png" preserveRatio="true" smooth="true"/>
-            </image>
-        </ImageView>
-        <ProgressBar fx:id="progressBar" id="splash-progress-bar" layoutX="14.0" layoutY="312.0"
-                     prefWidth="562"
-                     progress="0.0" styleClass="splash-progress-bar"/>
-        <Label fx:id="progressText" id="splash-progress-text" blendMode="HARD_LIGHT" layoutX="14.0" layoutY="322.0"
-               prefWidth="562" styleClass="splash-progress-text" text="Loading..."/>
-    </children>
+      fx:controller="de.qaware.sdfx.platform.impl.ProgressController">
+    <ImageView id="splash.png" fitHeight="400" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
+        <Image url="@splash.png" preserveRatio="true" smooth="true"/>
+    </ImageView>
+    <ProgressBar fx:id="progressBar" id="splash-progress-bar" layoutX="14.0" layoutY="312.0"
+                 prefWidth="562"
+                 progress="0.0" styleClass="splash-progress-bar"/>
+    <Label fx:id="progressText" id="splash-progress-text" blendMode="HARD_LIGHT" layoutX="14.0" layoutY="322.0"
+           prefWidth="562" styleClass="splash-progress-text" text="Loading..."/>
 </Pane>

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import java.net.URL?>
 <Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2"
-      fx:controller="de.qaware.sdfx.platform.impl.PreloaderController">
+      fx:controller="de.qaware.sdfx.platform.impl.ProgressController">
     <children>
         <ImageView id="splash.png" fitHeight="399.9999694824219" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
             <image>

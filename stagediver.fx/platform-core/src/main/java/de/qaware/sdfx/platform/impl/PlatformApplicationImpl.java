@@ -21,7 +21,10 @@ package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.Priority;
+import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.PlatformApplication;
+import de.qaware.sdfx.platform.api.events.ProgressEvent;
+import de.qaware.sdfx.platform.api.events.StartupProgressEvent;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
@@ -50,6 +53,8 @@ public class PlatformApplicationImpl implements PlatformApplication {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlatformApplicationImpl.class);
     private Stage mainApplicationStage;
     private Stage preloaderStage;
+    private ProgressController progressController;
+    private EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
 
     /**
      * Get the human readable module name.
@@ -96,6 +101,8 @@ public class PlatformApplicationImpl implements PlatformApplication {
             FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
             loader.setLocation(splashFxmlUrl);
             Parent parent = loader.load();
+            progressController = loader.getController();
+            eventBus.subscribe(StartupProgressEvent.class, progressController::progress);
             Scene scene = new Scene(parent);
             stage.setScene(scene);
             stage.initStyle(StageStyle.UNDECORATED);
@@ -116,6 +123,10 @@ public class PlatformApplicationImpl implements PlatformApplication {
     public void hidePreloader() {
         if (preloaderStage != null) {
             preloaderStage.close();
+        }
+        if (progressController != null) {
+            eventBus.unsubscribe(ProgressEvent.class, progressController::progress);
+            eventBus.unsubscribe(StartupProgressEvent.class, progressController::progress);
         }
     }
 
