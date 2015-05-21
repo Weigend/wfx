@@ -27,8 +27,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,7 +37,6 @@ import java.util.ResourceBundle;
  * @author christian.fritz
  */
 public class ProgressController implements Initializable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProgressController.class);
 
     @FXML
     private ProgressBar progressBar;
