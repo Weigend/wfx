@@ -4,7 +4,7 @@
 
     <groupId>de.qaware.stagediver.fx</groupId>
     <artifactId>stagediver.fx</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.3</version>
     <name>stagediver.fx</name>
     <description>stagediver.fx is a rich-client-platform for JavaFX.</description>
     <packaging>pom</packaging>
@@ -28,7 +28,7 @@
         <connection>scm:git:git@github.com:qaware/stagediver.fx.git</connection>
         <developerConnection>scm:git:git@github.com:qaware/stagediver.fx.git</developerConnection>
         <url>https://github.com/qaware/stagediver.fx</url>
-      <tag>HEAD</tag>
+      <tag>stagediver.fx-0.3</tag>
   </scm>
 
     <issueManagement>
