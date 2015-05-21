@@ -22,6 +22,7 @@ package de.qaware.sdfx.platform.impl.eventbus;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
+import de.qaware.sdfx.platform.api.EventBusListener;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.EventObject;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
@@ -54,7 +57,7 @@ public class SimpleEventBusTest {
     public void testGetBus() {
         EventBus bus = Lookup.lookup(EventBus.class);
 
-        assertNotNull(bus);
+        assertThat(bus, is(notNullValue()));
     }
 
     /**
@@ -62,15 +65,13 @@ public class SimpleEventBusTest {
      */
     @Test
     public void testPublishWithTwoSubscribersOneConsumingEvent() {
-        EventBus bus = Lookup.lookup(EventBus.class);
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
 
         // Register subscriber at the bus
         bus.subscribe(EventObject.class, event -> true);
         bus.subscribe(EventObject.class, event -> false);
 
-        boolean isEventStillValid = bus.publish(new EventObject("message"));
-
-        assertFalse(isEventStillValid);
+        assertThat(bus.publish(new EventObject("message")), is(false));
     }
 
     /**
@@ -78,10 +79,8 @@ public class SimpleEventBusTest {
      */
     @Test
     public void testPublishWithNoSubscriber() {
-        EventBus bus = Lookup.lookup(EventBus.class);
-        boolean isEventStillValid = bus.publish(new EventObject("message"));
-
-        assertTrue(isEventStillValid);
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
+        assertThat(bus.publish(new EventObject("message")), is(true));
     }
 
     /**
@@ -89,13 +88,11 @@ public class SimpleEventBusTest {
      */
     @Test
     public void testPublishWithOneSubscriberNotConsumingEvent() {
-        EventBus bus = Lookup.lookup(EventBus.class);
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
         // Register subscriber at the bus
         bus.subscribe(EventObject.class, event -> true);
 
-        boolean isEventStillValid = bus.publish(new EventObject("message"));
-
-        assertTrue(isEventStillValid);
+        assertThat(bus.publish(new EventObject("message")), is(true));
     }
 
     /**
@@ -103,12 +100,23 @@ public class SimpleEventBusTest {
      */
     @Test
     public void testPublishWithOneSubscriberConsumingEvent() {
-        EventBus bus = Lookup.lookup(EventBus.class);
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
         // Register subscriber at the bus
         bus.subscribe(EventObject.class, event -> false);
 
-        boolean isEventStillValid = bus.publish(new EventObject("message"));
+        assertThat(bus.publish(new EventObject("message")), is(false));
+    }
 
-        assertFalse(isEventStillValid);
+    @Test
+    public void testUnSubscribe() throws Exception {
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
+        EventBusListener<EventObject> listener = event -> false;
+
+        // Register subscriber at the bus
+
+        bus.subscribe(EventObject.class, listener);
+        assertThat(bus.publish(new EventObject("messsage")), is(false));
+        bus.unsubscribe(EventObject.class, listener);
+        assertThat(bus.publish(new EventObject("messsage")), is(true));
     }
 }

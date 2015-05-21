@@ -56,4 +56,10 @@ public class SimpleEventBus implements EventBus {
         }
         subscriptionsForType.add(listener);
     }
+
+    @Override
+    public boolean unsubscribe(Class type, EventBusListener listener) {
+        List<EventBusListener> subscriptionsForType = subscriptions.get(type);
+        return subscriptionsForType != null && subscriptionsForType.remove(listener);
+    }
 }
