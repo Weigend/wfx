@@ -2,7 +2,7 @@
     <parent>
         <artifactId>stagediver.fx</artifactId>
         <groupId>de.qaware.stagediver.fx</groupId>
-        <version>0.3</version>
+        <version>0.4-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
