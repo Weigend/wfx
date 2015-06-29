@@ -128,6 +128,15 @@ public class AnnotationProcessorTest {
         assertThat(bus.publish(new EventObject("")), is(equalTo(true)));
     }
 
+    @Test
+    public void testVoidResultListener() throws Exception {
+        VoidResultEventListener listener = new VoidResultEventListener();
+        AnnotationProcessor.process(listener);
+        EventBus bus = Lookup.lookup(EventBus.class);
+        assertThat(bus.publish(new EventObject("")), is(equalTo(true)));
+        assertThat(listener.executed, is(equalTo(true)));
+    }
+
     /**
      * EventListener which does not consume the event.
      */
@@ -179,6 +188,15 @@ public class AnnotationProcessorTest {
         @EventSubscriber(eventClass = {EventObject.class, ProgressEvent.class})
         public boolean notConsumeEvent() {
             return true;
+        }
+    }
+
+    private static class VoidResultEventListener {
+        public boolean executed;
+
+        @EventSubscriber(eventClass = {EventObject.class, ProgressEvent.class})
+        public void notConsumeEvent() {
+            executed = true;
         }
     }
 }
