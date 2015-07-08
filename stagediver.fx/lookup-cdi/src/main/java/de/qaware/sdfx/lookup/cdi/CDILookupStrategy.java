@@ -22,6 +22,7 @@ package de.qaware.sdfx.lookup.cdi;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.Priority;
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -71,9 +73,46 @@ public class CDILookupStrategy implements LookupStrategy {
     }
 
     @Override
+    public <U> U lookup(TypeLiteral<U> type) {
+        return weldInstance.select(new CdiTypeLiteral<>(type)).get();
+    }
+
+    @Override
     public <T> List<T> lookupAll(Class<T> clazz) {
         Instance<T> select = weldInstance.select(clazz);
-        return StreamSupport.stream(select.spliterator(), false)
+        return lookupAll(select);
+    }
+
+    /**
+     * Lookup all services for one class from the registry. The {@link TypeLiteral} allows to return a strong typed
+     * generic instance.
+     * <p/>
+     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * <p/>
+     * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
+     * {@link TypeLiteral}:
+     * <pre>{@code
+     * List<EventBus<ProgressEvent>> eventBusList = Lookup.lookupAll(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * }</pre>
+     *
+     * @param type The type literal to search.
+     * @return A list with all found service instances for the searched class.
+     */
+    @Override
+    public <T> List<T> lookupAll(TypeLiteral<T> type) {
+        Instance<T> select = weldInstance.select(new CdiTypeLiteral<>(type));
+        return lookupAll(select);
+    }
+
+    /**
+     * Concrete lookup all for a cdi {@link Instance} object.
+     *
+     * @param instance Use this instance to obtain the beans.
+     * @param <T>      The type of all returned beans
+     * @return A list with the found beans.
+     */
+    private <T> List<T> lookupAll(Instance<T> instance) {
+        return StreamSupport.stream(instance.spliterator(), false)
                 .map(t -> {
                     if (t.getClass().isAnnotationPresent(Priority.class)) {
                         return Pair.of(t, t.getClass().getAnnotation(Priority.class).value());
@@ -83,5 +122,28 @@ public class CDILookupStrategy implements LookupStrategy {
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Pair::getKey)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Helper class to map a {@link TypeLiteral} to {@link javax.enterprise.util.TypeLiteral}.
+     *
+     * @param <U> The strong type for the type literal.
+     */
+    private static class CdiTypeLiteral<U> extends javax.enterprise.util.TypeLiteral<U> {
+        /**
+         * Init the new type literal.
+         *
+         * @param commonsLiteral The common-lang3 {@link TypeLiteral}.
+         */
+        public CdiTypeLiteral(TypeLiteral<U> commonsLiteral) {
+            try {
+                Field actualType = javax.enterprise.util.TypeLiteral.class.getDeclaredField("actualType");
+                actualType.setAccessible(true);
+                actualType.set(this, commonsLiteral.getType());
+            }
+            catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new IllegalStateException("Can not get warpper instance for type literal");
+            }
+        }
     }
 }

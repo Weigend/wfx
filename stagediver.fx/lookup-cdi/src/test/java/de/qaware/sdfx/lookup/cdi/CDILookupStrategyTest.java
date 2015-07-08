@@ -23,6 +23,7 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.lookup.TestService;
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.After;
@@ -83,8 +84,20 @@ public class CDILookupStrategyTest {
         assertThat(Lookup.getLookupStrategy(), is(instanceOf(CDILookupStrategy.class)));
     }
 
+    @Test
+    public void testTypedLookup() throws Exception {
+        TestService2<String> service = strategy.lookup(new TypeLiteral<TestService2<String>>() {
+        });
+        assertThat(service.sayGoodbye(), instanceOf(String.class));
+        assertThat(service.sayGoodbye(), is(equalTo("Goodbye typed CDI")));
+    }
+
     public interface TestService1 {
         String sayGoodbye();
+    }
+
+    public interface TestService2<T> {
+        T sayGoodbye();
     }
 
     public static class Service1 implements TestService {
@@ -106,6 +119,13 @@ public class CDILookupStrategyTest {
         @Override
         public String sayGoodbye() {
             return "Goodbye CDI";
+        }
+    }
+
+    public static class Service4 implements TestService2<String> {
+        @Override
+        public String sayGoodbye() {
+            return "Goodbye typed CDI";
         }
     }
 }
