@@ -19,6 +19,7 @@
  */
 package de.qaware.sdfx.lookup;
 
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,9 +27,9 @@ import java.util.List;
 
 /**
  * The general service lookup for the platform.
- * <p>
+ * <p/>
  * It can work with the osgi registry or with google guice if this module is not loaded with osgi.
- * <p>
+ * <p/>
  * This class is thread-safe.
  *
  * @author christian.fritz
@@ -66,7 +67,7 @@ public final class Lookup {
 
     /**
      * Lookup a class from the registry.
-     * <p>
+     * <p/>
      * The returned service is that service that have the highest service ranking.
      *
      * @param clazz The class to search.
@@ -78,8 +79,27 @@ public final class Lookup {
     }
 
     /**
+     * Lookup an instance from the registry. The {@link TypeLiteral} allows to return a strong typed generic instance.
+     * <p/>
+     * The returned service is that service that have the highest service ranking.
+     * <p/>
+     * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
+     * {@link TypeLiteral}:
+     * <pre>{@code
+     * EventBus<ProgressEvent> eventBus = Lookup.lookup(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * }</pre>
+     *
+     * @param type The type literal to search.
+     * @param <T>  The type of the class to search.
+     * @return A instance of the requested class or null if not found.
+     */
+    public static <T> T lookup(TypeLiteral<T> type) {
+        return getLookupStrategy().lookup(type);
+    }
+
+    /**
      * Lookup all services for one class from the registry.
-     * <p>
+     * <p/>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      *
      * @param clazz The class to search.
@@ -88,6 +108,26 @@ public final class Lookup {
      */
     public static <T> List<T> lookupAll(Class<T> clazz) {
         return getLookupStrategy().lookupAll(clazz);
+    }
+
+    /**
+     * Lookup all services for one class from the registry. The {@link TypeLiteral} allows to return a strong typed
+     * generic instance.
+     * <p/>
+     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * <p/>
+     * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
+     * {@link TypeLiteral}:
+     * <pre>{@code
+     * List<EventBus<ProgressEvent>> eventBusList = strategy.lookupAll(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * }</pre>
+     *
+     * @param type The type literal to search.
+     * @param <T>  The type of the class to search.
+     * @return A list with all found service instances for the searched class.
+     */
+    public static <T> List<T> lookupAll(TypeLiteral<T> type) {
+        return getLookupStrategy().lookupAll(type);
     }
 
     /**
