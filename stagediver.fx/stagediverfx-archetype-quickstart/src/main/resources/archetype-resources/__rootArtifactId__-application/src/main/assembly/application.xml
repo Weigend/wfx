@@ -12,7 +12,7 @@
     <dependencySets>
         <dependencySet>
             <excludes>
-                <exclude>${groupId}:${artifactId}</exclude>
+                <exclude>${symbol_dollar}{project.groupId}:${symbol_dollar}{project.artifactId}</exclude>
             </excludes>
             <scope>runtime</scope>
             <outputDirectory>${symbol_dollar}{file.separator}lib</outputDirectory>
@@ -22,7 +22,7 @@
         <moduleSet>
             <useAllReactorProjects>true</useAllReactorProjects>
             <includes>
-                <include>${groupId}:${artifactId}</include>
+                <include>${symbol_dollar}{project.groupId}:${symbol_dollar}{project.artifactId}</include>
             </includes>
             <binaries>
                 <outputDirectory>${symbol_dollar}{file.separator}</outputDirectory>

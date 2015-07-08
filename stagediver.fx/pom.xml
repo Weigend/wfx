@@ -4,7 +4,7 @@
 
     <groupId>de.qaware.stagediver.fx</groupId>
     <artifactId>stagediver.fx</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4-SNAPSHOT</version>
     <name>stagediver.fx</name>
     <description>stagediver.fx is a rich-client-platform for JavaFX.</description>
     <packaging>pom</packaging>
@@ -323,7 +323,11 @@
                 <artifactId>maven-release-plugin</artifactId>
                 <version>2.5.1</version>
                 <configuration>
+                    <pushChanges>false</pushChanges>
+                    <localCheckout>true</localCheckout>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <preparationGoals>clean install</preparationGoals>
+                    <goals>deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
@@ -422,11 +426,11 @@
     <distributionManagement>
         <repository>
             <id>qaware-nexus</id>
-            <url>https://www.qaware.de/nexus/content/repositories/QAWARE-STAGEDIVER-FX/</url>
+            <url>https://www.qaware.de/nexus/content/repositories/qaware-internal/</url>
         </repository>
         <snapshotRepository>
             <id>qaware-nexus</id>
-            <url>https://www.qaware.de/nexus/content/repositories/QAWARE-STAGEDIVER-FX-SNAPSHOTS/</url>
+            <url>https://www.qaware.de/nexus/content/repositories/qaware-internal-snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 

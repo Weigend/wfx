@@ -19,17 +19,14 @@
  */
 package de.qaware.sdfx.platform.impl;
 
-import de.qaware.sdfx.platform.api.EventSubscriber;
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
-import de.qaware.sdfx.platform.api.events.StartupProgressEvent;
-import de.qaware.sdfx.platform.impl.eventbus.AnnotationProcessor;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -39,8 +36,7 @@ import java.util.ResourceBundle;
  *
  * @author christian.fritz
  */
-public class PreloaderController implements Initializable {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PreloaderController.class);
+public class ProgressController implements Initializable {
 
     @FXML
     private ProgressBar progressBar;
@@ -49,7 +45,9 @@ public class PreloaderController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        AnnotationProcessor.process(this);
+        EventBus<ProgressEvent> lookup = Lookup.lookup(EventBus.class);
+        lookup.subscribe(ProgressEvent.class, this::progress);
+
         progressBar.visibleProperty().bind(
                 progressBar.progressProperty().isNotEqualTo(0).and(
                         progressBar.progressProperty().isEqualTo(1).not()
@@ -64,15 +62,10 @@ public class PreloaderController implements Initializable {
      * @param event the ProgressEvent
      * @return true, if the event is still valid; false, event has been consumed
      */
-    @EventSubscriber(eventClass = {ProgressEvent.class, StartupProgressEvent.class})
     public boolean progress(final ProgressEvent event) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> progress(event));
             return true;
-        }
-        if (event.getClass() == ProgressEvent.class) {
-            LOGGER.warn("Use of \"de.qaware.sdfx.platform.api.events.ProgressEvent\" to report startup process is" +
-                    " deprecated.\n\tPlease use \"de.qaware.sdfx.platform.api.events.StartupProgressEvent\" instead.");
         }
         progressBar.progressProperty().setValue(event.getProgress());
         progressText.textProperty().setValue(event.getMessage());

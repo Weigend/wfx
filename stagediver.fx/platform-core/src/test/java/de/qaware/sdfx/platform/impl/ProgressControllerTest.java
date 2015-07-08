@@ -45,18 +45,18 @@ import static org.loadui.testfx.controls.Commons.hasText;
 import static org.mockito.Mockito.when;
 
 /**
- * Unit Test for the {@link de.qaware.sdfx.platform.impl.PreloaderController}.
+ * Unit Test for the {@link ProgressController}.
  *
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
-public class PreloaderControllerTest extends GuiTest {
+public class ProgressControllerTest extends GuiTest {
 
     static {
         stage = GuiTestHelper.getStage();
     }
 
-    private PreloaderController preloaderController;
+    private ProgressController preloaderController;
 
     @Mock
     private LookupStrategy lookupStrategy;
@@ -67,7 +67,7 @@ public class PreloaderControllerTest extends GuiTest {
         try {
             when(lookupStrategy.lookup(EventBus.class)).thenReturn(eventBus);
             Lookup.init(lookupStrategy);
-            URL resource = PreloaderControllerTest.class.getResource("/default/splash.fxml");
+            URL resource = ProgressControllerTest.class.getResource("/default/splash.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(resource);
             Parent node = fxmlLoader.load();
             preloaderController = fxmlLoader.getController();
@@ -89,13 +89,13 @@ public class PreloaderControllerTest extends GuiTest {
     }
 
     private Label getProgressText() throws NoSuchFieldException, IllegalAccessException {
-        Field progressText = PreloaderController.class.getDeclaredField("progressText");
+        Field progressText = ProgressController.class.getDeclaredField("progressText");
         progressText.setAccessible(true);
         return (Label) progressText.get(preloaderController);
     }
 
     private ProgressBar getProgressBar() throws NoSuchFieldException, IllegalAccessException {
-        Field progressText = PreloaderController.class.getDeclaredField("progressBar");
+        Field progressText = ProgressController.class.getDeclaredField("progressBar");
         progressText.setAccessible(true);
         return (ProgressBar) progressText.get(preloaderController);
     }

@@ -36,8 +36,7 @@ import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
@@ -121,6 +120,22 @@ public class AnnotationProcessorTest {
         constructor.newInstance();
     }
 
+    @Test
+    public void testZeroArgumentListener() throws Exception {
+        ZeroArgumentEventListener listener = new ZeroArgumentEventListener();
+        AnnotationProcessor.process(listener);
+        EventBus bus = Lookup.lookup(EventBus.class);
+        assertThat(bus.publish(new EventObject("")), is(equalTo(true)));
+    }
+
+    @Test
+    public void testVoidResultListener() throws Exception {
+        VoidResultEventListener listener = new VoidResultEventListener();
+        AnnotationProcessor.process(listener);
+        EventBus bus = Lookup.lookup(EventBus.class);
+        assertThat(bus.publish(new EventObject("")), is(equalTo(true)));
+        assertThat(listener.executed, is(equalTo(true)));
+    }
 
     /**
      * EventListener which does not consume the event.
@@ -166,6 +181,22 @@ public class AnnotationProcessorTest {
         public boolean notConsumeEvent(EventObject event) {
             invocationTypes.add(event.getClass());
             return true;
+        }
+    }
+
+    private static class ZeroArgumentEventListener {
+        @EventSubscriber(eventClass = {EventObject.class, ProgressEvent.class})
+        public boolean notConsumeEvent() {
+            return true;
+        }
+    }
+
+    private static class VoidResultEventListener {
+        public boolean executed;
+
+        @EventSubscriber(eventClass = {EventObject.class, ProgressEvent.class})
+        public void notConsumeEvent() {
+            executed = true;
         }
     }
 }

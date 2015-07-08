@@ -54,7 +54,14 @@ public final class AnnotationProcessor {
                 for (Class eventClass : s.eventClass()) {
                     Lookup.lookup(EventBus.class).subscribe(eventClass, event -> {
                         try {
-                            return (Boolean) method.invoke(object, event);
+                            Boolean result;
+                            if (method.getParameterCount() == 0) {
+                                result = (Boolean) method.invoke(object);
+                            }
+                            else {
+                                result = (Boolean) method.invoke(object, event);
+                            }
+                            return result == null || result;
                         }
                         catch (Exception e) {
                             throw new IllegalStateException(e);

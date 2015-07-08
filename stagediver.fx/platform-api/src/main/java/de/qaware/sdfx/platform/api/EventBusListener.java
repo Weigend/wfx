@@ -25,6 +25,7 @@ package de.qaware.sdfx.platform.api;
  * @param <T> the type of the Event
  * @author christian.fritz
  */
+@FunctionalInterface
 public interface EventBusListener<T> {
 
     /**
