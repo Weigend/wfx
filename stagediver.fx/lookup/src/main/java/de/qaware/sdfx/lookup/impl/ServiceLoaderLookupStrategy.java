@@ -22,8 +22,12 @@ package de.qaware.sdfx.lookup.impl;
 import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.Priority;
+import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +110,11 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     @Override
+    public <T> T lookup(TypeLiteral<T> type) {
+        return lookup(getType(type));
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public <T> T lookup(Class<T> clazz) {
         if (!lookupCache.containsKey(clazz)) {
@@ -147,6 +156,11 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public <T> List<T> lookupAll(TypeLiteral<T> type) {
+        return lookupAll(getType(type));
+    }
+
     /**
      * Load the instances with the jdk's {@link java.util.ServiceLoader}.
      *
@@ -157,6 +171,23 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         ServiceLoader<T> load = ServiceLoader.load(clazz);
         for (T instance : load) {
             lookupCache.put(clazz, instance);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> Class<T> getType(TypeLiteral<T> typeLiteral) {
+        Type type = typeLiteral.getType();
+        if (type instanceof Class) {
+            return (Class<T>) type;
+        }
+        else if (type instanceof ParameterizedType) {
+            return (Class<T>) ((ParameterizedType) type).getRawType();
+        }
+        else if (type instanceof GenericArrayType) {
+            return (Class<T>) Object[].class;
+        }
+        else {
+            throw new IllegalArgumentException("Illegal type");
         }
     }
 
