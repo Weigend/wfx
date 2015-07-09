@@ -69,8 +69,6 @@
         <version.asm>5.0.3</version.asm>
         <version.jfx>8.0</version.jfx>
         <sonar.jacoco.itReportPath>${project.basedir}/../target/jacoco-it.exec</sonar.jacoco.itReportPath>
-        <guice.version>3.0</guice.version>
-        <version.asm>5.0</version.asm>
         <weld.version>2.2.10.Final</weld.version>
     </properties>
 
@@ -113,11 +111,6 @@
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>lookup-cdi</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.qaware.stagediver.fx</groupId>
-                <artifactId>lookup-guice</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- Window Management -->
@@ -198,18 +191,6 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
-            </dependency>
-
-            <!-- Google Guice -->
-            <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-multibindings</artifactId>
-                <version>${guice.version}</version>
             </dependency>
 
             <!-- Testing -->

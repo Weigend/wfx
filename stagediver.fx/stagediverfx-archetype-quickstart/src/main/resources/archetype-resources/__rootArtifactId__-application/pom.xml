@@ -26,10 +26,6 @@
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>lookup-guice</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-runner</artifactId>
         </dependency>
     </dependencies>
