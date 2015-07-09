@@ -19,10 +19,10 @@
  */
 package de.qaware.sdfx.lookup;
 
-import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 
 /**

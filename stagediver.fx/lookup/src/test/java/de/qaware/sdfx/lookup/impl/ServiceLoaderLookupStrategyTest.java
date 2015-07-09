@@ -21,10 +21,12 @@ package de.qaware.sdfx.lookup.impl;
 
 import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.lookup.TestService;
+import de.qaware.sdfx.lookup.TypedTestService;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -57,6 +59,13 @@ public class ServiceLoaderLookupStrategyTest {
     }
 
     @Test
+    public void testTypedLookup() throws Exception {
+        TypedTestService<String> actual = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
+        assertThat(actual, is(notNullValue()));
+        assertThat(actual, instanceOf(TypedTestServiceImpl.class));
+    }
+
+    @Test
     public void testLookupTwice() throws Exception {
         TestService actual1 = lookupStrategy.lookup(TestService.class);
         TestService actual2 = lookupStrategy.lookup(TestService.class);
@@ -64,6 +73,17 @@ public class ServiceLoaderLookupStrategyTest {
         assertThat(actual2, is(notNullValue()));
         assertThat(actual1, instanceOf(TestServiceImpl.class));
         assertThat(actual2, instanceOf(TestServiceImpl.class));
+        assertThat(actual1, is(actual2));
+    }
+
+    @Test
+    public void testTypedLookupTwice() throws Exception {
+        TypedTestService<String> actual1 = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
+        TypedTestService<String> actual2 = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
+        assertThat(actual1, is(notNullValue()));
+        assertThat(actual2, is(notNullValue()));
+        assertThat(actual1, instanceOf(TypedTestServiceImpl.class));
+        assertThat(actual2, instanceOf(TypedTestServiceImpl.class));
         assertThat(actual1, is(actual2));
     }
 
@@ -152,12 +172,30 @@ public class ServiceLoaderLookupStrategyTest {
     }
 
     @Test
+    public void testTypedInit() throws Exception {
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(2));
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl(), true);
+        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(1));
+    }
+
+    @Test
     public void testInitProducer() throws Exception {
         lookupStrategy.init(TestService.class, new TestServiceImpl());
         lookupStrategy.init(TestService.class, new TestServiceImpl());
         assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(2));
         lookupStrategy.init(TestService.class, (Producer<TestService>) TestServiceImpl::new, true);
         assertThat(lookupStrategy.lookupAll(TestService.class), hasSize(1));
+    }
+
+    @Test
+    public void testTypedInitProducer() throws Exception {
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(2));
+        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, (Producer<TypedTestService<String>>) TypedTestServiceImpl::new, true);
+        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(1));
     }
 
     @Test
@@ -182,6 +220,13 @@ public class ServiceLoaderLookupStrategyTest {
         @Override
         public String sayHello() {
             return "World2";
+        }
+    }
+
+    public static class TypedTestServiceImpl implements TypedTestService<String> {
+        @Override
+        public String sayGoodbye() {
+            return "Goodbye";
         }
     }
 }

@@ -19,8 +19,7 @@
  */
 package de.qaware.sdfx.lookup;
 
-import org.apache.commons.lang3.reflect.TypeLiteral;
-
+import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 
 /**
@@ -33,9 +32,9 @@ import java.util.List;
 public interface LookupStrategy {
     /**
      * Lookup an instance from the registry. The {@link TypeLiteral} allows to return a strong typed generic instance.
-     * <p/>
+     * <p>
      * The returned service is that service that have the highest service ranking.
-     * <p/>
+     * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeLiteral}:
      * <pre>{@code
@@ -50,7 +49,7 @@ public interface LookupStrategy {
 
     /**
      * Lookup an instance from the registry.
-     * <p/>
+     * <p>
      * The returned service is that service that have the highest service ranking.
      *
      * @param clazz The class to search.
@@ -61,7 +60,7 @@ public interface LookupStrategy {
 
     /**
      * Lookup all services for one class from the registry.
-     * <p/>
+     * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      *
      * @param clazz The class to search.
@@ -73,9 +72,9 @@ public interface LookupStrategy {
     /**
      * Lookup all services for one class from the registry. The {@link TypeLiteral} allows to return a strong typed
      * generic instance.
-     * <p/>
+     * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
-     * <p/>
+     * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeLiteral}:
      * <pre>{@code

@@ -20,13 +20,13 @@
 package de.qaware.sdfx.lookup.cdi;
 
 import de.qaware.sdfx.lookup.*;
-import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;

@@ -22,12 +22,9 @@ package de.qaware.sdfx.lookup.impl;
 import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.Priority;
-import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import javax.enterprise.util.TypeLiteral;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +66,17 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     /**
+     * Add a new instance to the lookup. Existing instances are not overridden.
+     *
+     * @param type     The target type.
+     * @param instance The added instance.
+     * @param <T>      Type of the target instance.
+     */
+    public <T> void init(TypeLiteral<T> type, T instance) {
+        init(type.getRawType(), instance);
+    }
+
+    /**
      * Add a new instance to the lookup. If override is true, all existing instances are removed previous.
      *
      * @param clazz    The target class.
@@ -84,6 +92,18 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     /**
+     * Add a new instance to the lookup. If override is true, all existing instances are removed previous.
+     *
+     * @param type     The target type.
+     * @param instance The added instance.
+     * @param override True if existing instances should be removed previous.
+     * @param <T>      Type of the target instance.
+     */
+    public <T> void init(TypeLiteral<T> type, T instance, boolean override) {
+        init(type.getRawType(), instance, override);
+    }
+
+    /**
      * Add a new producer for the given class. Existing instances are not overridden.
      *
      * @param clazz    The target class.
@@ -92,6 +112,17 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      */
     public <T> void init(Class<T> clazz, Producer<T> producer) {
         init(clazz, producer, false);
+    }
+
+    /**
+     * Add a new producer for the given class. Existing instances are not overridden.
+     *
+     * @param type     The target type.
+     * @param producer The producer instance.
+     * @param <T>      Type of the target instance.
+     */
+    public <T> void init(TypeLiteral<T> type, Producer<T> producer) {
+        init(type.getRawType(), producer);
     }
 
     /**
@@ -109,9 +140,21 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         lookupCache.put(clazz, producer);
     }
 
+    /**
+     * Add a new producer for the given class. If override is true, all existing instances are removed previous.
+     *
+     * @param type     The target type.
+     * @param producer The producer instance.
+     * @param override True if existing instances should be removed previous.
+     * @param <T>      Type of the target instance.
+     */
+    public <T> void init(TypeLiteral<T> type, Producer<T> producer, boolean override) {
+        init(type.getRawType(), producer, override);
+    }
+
     @Override
     public <T> T lookup(TypeLiteral<T> type) {
-        return lookup(getType(type));
+        return lookup(type.getRawType());
     }
 
     @Override
@@ -158,7 +201,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
     @Override
     public <T> List<T> lookupAll(TypeLiteral<T> type) {
-        return lookupAll(getType(type));
+        return lookupAll(type.getRawType());
     }
 
     /**
@@ -174,26 +217,9 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T> Class<T> getType(TypeLiteral<T> typeLiteral) {
-        Type type = typeLiteral.getType();
-        if (type instanceof Class) {
-            return (Class<T>) type;
-        }
-        else if (type instanceof ParameterizedType) {
-            return (Class<T>) ((ParameterizedType) type).getRawType();
-        }
-        else if (type instanceof GenericArrayType) {
-            return (Class<T>) Object[].class;
-        }
-        else {
-            throw new IllegalArgumentException("Illegal type");
-        }
-    }
-
     /**
      * Producer to create the instance created by the lookup strategy.
-     * <p/>
+     * <p>
      * This producers can only be used with the {@link de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy}.
      *
      * @param <T> The type of the created instance.
