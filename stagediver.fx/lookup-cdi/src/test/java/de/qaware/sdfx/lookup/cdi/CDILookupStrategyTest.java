@@ -88,6 +88,18 @@ public class CDILookupStrategyTest {
     public void testTypedLookup() throws Exception {
         TestService2<String> service = strategy.lookup(new TypeLiteral<TestService2<String>>() {
         });
+        assertThat(service, instanceOf(Service4.class));
+        assertThat(service.sayGoodbye(), instanceOf(String.class));
+        assertThat(service.sayGoodbye(), is(equalTo("Goodbye typed CDI")));
+    }
+
+    @Test
+    public void testTypedLookupAll() throws Exception {
+        List<TestService2<String>> services = strategy.lookupAll(new TypeLiteral<TestService2<String>>() {
+        });
+        assertThat(services, hasSize(1));
+        TestService2<String> service = services.get(0);
+        assertThat(service, instanceOf(Service4.class));
         assertThat(service.sayGoodbye(), instanceOf(String.class));
         assertThat(service.sayGoodbye(), is(equalTo("Goodbye typed CDI")));
     }
