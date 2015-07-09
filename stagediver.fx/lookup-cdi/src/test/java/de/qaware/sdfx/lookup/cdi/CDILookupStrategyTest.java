@@ -19,10 +19,7 @@
  */
 package de.qaware.sdfx.lookup.cdi;
 
-import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.lookup.LookupStrategy;
-import de.qaware.sdfx.lookup.Priority;
-import de.qaware.sdfx.lookup.TestService;
+import de.qaware.sdfx.lookup.*;
 import org.apache.commons.lang3.reflect.TypeLiteral;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -86,7 +83,7 @@ public class CDILookupStrategyTest {
 
     @Test
     public void testTypedLookup() throws Exception {
-        TestService2<String> service = strategy.lookup(new TypeLiteral<TestService2<String>>() {
+        TypedTestService<String> service = strategy.lookup(new TypeLiteral<TypedTestService<String>>() {
         });
         assertThat(service, instanceOf(Service4.class));
         assertThat(service.sayGoodbye(), instanceOf(String.class));
@@ -95,10 +92,10 @@ public class CDILookupStrategyTest {
 
     @Test
     public void testTypedLookupAll() throws Exception {
-        List<TestService2<String>> services = strategy.lookupAll(new TypeLiteral<TestService2<String>>() {
+        List<TypedTestService<String>> services = strategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {
         });
         assertThat(services, hasSize(1));
-        TestService2<String> service = services.get(0);
+        TypedTestService<String> service = services.get(0);
         assertThat(service, instanceOf(Service4.class));
         assertThat(service.sayGoodbye(), instanceOf(String.class));
         assertThat(service.sayGoodbye(), is(equalTo("Goodbye typed CDI")));
@@ -106,10 +103,6 @@ public class CDILookupStrategyTest {
 
     public interface TestService1 {
         String sayGoodbye();
-    }
-
-    public interface TestService2<T> {
-        T sayGoodbye();
     }
 
     public static class Service1 implements TestService {
@@ -134,7 +127,7 @@ public class CDILookupStrategyTest {
         }
     }
 
-    public static class Service4 implements TestService2<String> {
+    public static class Service4 implements TypedTestService<String> {
         @Override
         public String sayGoodbye() {
             return "Goodbye typed CDI";
