@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.qaware.stagediver.fx</groupId>
@@ -28,8 +29,8 @@
         <connection>scm:git:git@github.com:qaware/stagediver.fx.git</connection>
         <developerConnection>scm:git:git@github.com:qaware/stagediver.fx.git</developerConnection>
         <url>https://github.com/qaware/stagediver.fx</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
     <issueManagement>
         <system>GitHub</system>
@@ -53,7 +54,6 @@
         <module>platform-core</module>
         <module>lookup</module>
         <module>lookup-cdi</module>
-        <module>lookup-guice</module>
         <module>windowmanager-api</module>
         <module>windowmanager-core</module>
         <module>stagediverfx-maven-plugin</module>
