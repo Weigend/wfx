@@ -24,9 +24,9 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.scene.Parent;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.MouseButton;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -57,7 +57,11 @@ public class ViewFocusHandlerTest extends GuiTest {
     }
 
     private WindowManagerImpl windowManager = new WindowManagerImpl();
-    private ViewFocusHandler focusHandler = new ViewFocusHandler(windowManager);
+
+    public ViewFocusHandlerTest() {
+        ViewFocusHandler focusHandler = new ViewFocusHandler(windowManager);
+        focusHandler.init();
+    }
 
     private View view1 = new TestView("Test1", Position.CENTER);
     private View view2 = new TestView("Test2", Position.LEFT);
