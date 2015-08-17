@@ -19,15 +19,16 @@
  */
 package de.qaware.sdfx.windowmtg.impl;
 
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.beans.value.*;
+import javafx.collections.*;
+import javafx.scene.*;
+import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +37,7 @@ import java.util.Set;
  *
  * @author christian.fritz
  */
+@Singleton
 public class ViewFocusHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewFocusHandler.class);
@@ -44,20 +46,26 @@ public class ViewFocusHandler {
 
     private final MultiWindowManager windowManager;
 
+    private boolean initialized = false;
+
     /**
      * Init the ViewFocusHandler for the given {@link MultiWindowManager}.
      *
      * @param windowManager Observe this window manager.
      */
+    @Inject
     public ViewFocusHandler(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
-        init();
     }
 
     /**
      * Initialize the focus handler.
      */
-    private void init() {
+    @PostConstruct
+    public void init() {
+        if (initialized) {
+            return;
+        }
         windowManager.mainRootAreaProperty().addListener((observable, oldValue, newValue) -> registerRootArea(newValue));
         windowManager.getRootAreas().addListener((ListChangeListener<RootArea>) c -> {
             if (!c.next()) {
@@ -66,6 +74,7 @@ public class ViewFocusHandler {
             c.getAddedSubList().forEach(this::registerRootArea);
             c.getRemoved().forEach(registeredScenes::remove);
         });
+        initialized = true;
     }
 
     /**
