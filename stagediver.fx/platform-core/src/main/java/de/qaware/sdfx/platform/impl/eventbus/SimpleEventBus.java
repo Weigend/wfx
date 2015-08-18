@@ -23,7 +23,11 @@ import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.EventBusListener;
 
 import javax.inject.Singleton;
-import java.util.*;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * A very simple event bus.
@@ -51,7 +55,7 @@ public class SimpleEventBus implements EventBus {
     public void subscribe(Class type, EventBusListener listener) {
         List<EventBusListener> subscriptionsForType = subscriptions.get(type);
         if (subscriptionsForType == null) {
-            subscriptionsForType = new ArrayList<>();
+            subscriptionsForType = new CopyOnWriteArrayList<>();
             subscriptions.put(type, subscriptionsForType);
         }
         subscriptionsForType.add(listener);
