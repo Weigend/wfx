@@ -21,7 +21,7 @@ package de.qaware.sdfx.lookup.cdi;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
-import de.qaware.sdfx.lookup.Priority;
+import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -112,12 +112,7 @@ public class CDILookupStrategy implements LookupStrategy {
      */
     private <T> List<T> lookupAll(Instance<T> instance) {
         return StreamSupport.stream(instance.spliterator(), false)
-                .map(t -> {
-                    if (t.getClass().isAnnotationPresent(Priority.class)) {
-                        return Pair.of(t, t.getClass().getAnnotation(Priority.class).value());
-                    }
-                    return Pair.of(t, 0);
-                })
+                .map(t -> Pair.of(t, ServiceLoaderLookupStrategy.getPriority(t.getClass())))
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Pair::getKey)
                 .collect(Collectors.toList());

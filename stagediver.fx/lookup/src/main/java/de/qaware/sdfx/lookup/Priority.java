@@ -23,14 +23,16 @@ import java.lang.annotation.*;
 
 /**
  * Defines the priority within the returned list of {@link LookupStrategy#lookupAll(Class)}.
- * <p/>
+ * <p>
  * The higher the more important. Default value is 0.
  *
  * @author christian.fritz
+ * @deprecated Please use {@link javax.annotation.Priority} instead
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = ElementType.TYPE)
 @Documented
+@Deprecated
 public @interface Priority {
 
     /**

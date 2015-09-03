@@ -19,13 +19,13 @@
  */
 package de.qaware.sdfx.lookup.impl;
 
-import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.lookup.TestService;
 import de.qaware.sdfx.lookup.TypedTestService;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.annotation.Priority;
 import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 

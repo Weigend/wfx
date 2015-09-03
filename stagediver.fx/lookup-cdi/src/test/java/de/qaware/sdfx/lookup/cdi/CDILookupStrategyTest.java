@@ -19,13 +19,17 @@
  */
 package de.qaware.sdfx.lookup.cdi;
 
-import de.qaware.sdfx.lookup.*;
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.LookupStrategy;
+import de.qaware.sdfx.lookup.TestService;
+import de.qaware.sdfx.lookup.TypedTestService;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.annotation.Priority;
 import javax.enterprise.util.TypeLiteral;
 import java.util.List;
 
@@ -105,6 +109,7 @@ public class CDILookupStrategyTest {
         String sayGoodbye();
     }
 
+    @Priority(1)
     public static class Service1 implements TestService {
         @Override
         public String sayHello() {

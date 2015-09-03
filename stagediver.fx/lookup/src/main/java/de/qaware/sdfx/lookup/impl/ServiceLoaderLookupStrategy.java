@@ -21,7 +21,6 @@ package de.qaware.sdfx.lookup.impl;
 
 import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
-import de.qaware.sdfx.lookup.Priority;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.enterprise.util.TypeLiteral;
@@ -190,13 +189,35 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
                 instance = (T) object;
             }
             Class<?> c = instance.getClass();
-            instances.add(Pair.of(instance,
-                    c.isAnnotationPresent(Priority.class) ? c.getAnnotation(Priority.class).value() : 0));
+            int priority = getPriority(c);
+            instances.add(Pair.of(instance, priority));
         }
         return instances.stream()
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * Get the priority for a specified class.
+     * <p>
+     * First the value of {@link javax.annotation.Priority} is taken. If no
+     * {@link javax.annotation.Priority} is available it takes the value of
+     * {@link de.qaware.sdfx.lookup.Priority}. In case that both annotations
+     * are not available, it returns 0.
+     *
+     * @param c Determ the priority for this class.
+     * @return The priority determed for the given class.
+     */
+    public static int getPriority(Class<?> c) {
+        int priority = 0;
+        if (c.isAnnotationPresent(javax.annotation.Priority.class)) {
+            priority = c.getAnnotation(javax.annotation.Priority.class).value();
+        }
+        else if (c.isAnnotationPresent(de.qaware.sdfx.lookup.Priority.class)) {
+            priority = c.getAnnotation(de.qaware.sdfx.lookup.Priority.class).value();
+        }
+        return priority;
     }
 
     @Override
