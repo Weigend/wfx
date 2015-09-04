@@ -58,6 +58,7 @@
                 <configuration>
                     <usedDependencies>
                         <usedDependency>de.qaware.stagediver.fx:platform-full</usedDependency>
+                        <usedDependency>ch.qos.logback:logback-classic</usedDependency>
                     </usedDependencies>
                 </configuration>
             </plugin>
