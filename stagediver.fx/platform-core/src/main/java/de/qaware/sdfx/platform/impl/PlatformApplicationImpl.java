@@ -20,7 +20,6 @@
 package de.qaware.sdfx.platform.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
@@ -28,14 +27,13 @@ import de.qaware.sdfx.platform.api.events.StartupProgressEvent;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import javafx.fxml.*;
+import javafx.scene.*;
+import javafx.stage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Priority;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;

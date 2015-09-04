@@ -19,16 +19,16 @@
  */
 package de.qaware.sdfx.windowmtg.windows;
 
-import de.qaware.sdfx.lookup.Priority;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-
 import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
+
+import javax.annotation.Priority;
 import javax.inject.Singleton;
 import java.io.IOException;
 
