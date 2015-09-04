@@ -47,7 +47,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     @FXML
     private ToolBar toolbar;
     @FXML
-    private HBox statusBar;
+    private Pane statusBar;
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
