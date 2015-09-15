@@ -24,6 +24,8 @@ import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.geometry.*;
+import javafx.scene.*;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,8 +34,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.geometry.*;
-import javafx.scene.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -239,5 +239,36 @@ public class ViewAreaTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSplitFail() throws Exception {
         viewArea.split(viewArea, viewArea, Orientation.HORIZONTAL);
+    }
+
+    @Test
+    public void testIsValidParentNull() throws Exception {
+        viewArea.setParent(null);
+        assertThat(viewArea.isValid(), is(false));
+    }
+
+    @Test
+    public void testIsValidFirstChild() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setFirstChild(viewArea);
+        viewArea.setParent(parent);
+        assertThat(viewArea.isValid(), is(true));
+    }
+
+    @Test
+    public void testIsValidSecondChild() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setSecondChild(viewArea);
+        viewArea.setParent(parent);
+        assertThat(viewArea.isValid(), is(true));
+    }
+
+    @Test
+    public void testIsValidBothWrong() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setFirstChild(mock(ViewArea.class));
+        parent.setSecondChild(mock(ViewArea.class));
+        viewArea.setParent(parent);
+        assertThat(viewArea.isValid(), is(false));
     }
 }

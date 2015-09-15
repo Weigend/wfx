@@ -21,7 +21,6 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
-
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.layout.*;
@@ -71,7 +70,7 @@ public class RootArea extends ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -101,7 +100,7 @@ public class RootArea extends ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p/>
+     * <p>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *
@@ -133,5 +132,15 @@ public class RootArea extends ViewArea {
      */
     public boolean isCloseStage() {
         return closeStage;
+    }
+
+    /**
+     * Check if the view area is valid and registered.
+     *
+     * @return true if the view area is valid. fals otherwise.
+     */
+    @Override
+    public boolean isValid() {
+        return true;
     }
 }

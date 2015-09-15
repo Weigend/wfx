@@ -21,13 +21,12 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.geometry.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A ViewArea is a node within the area tree. It has two children which are self view areas.
@@ -90,7 +89,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as first child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -116,7 +115,7 @@ public class ViewArea {
 
     /**
      * Set {@param child} as second child of this view area.
-     * <p/>
+     * <p>
      * It will also update the javafx scene graph and the childs parent value.
      *
      * @param child The new child.
@@ -129,7 +128,7 @@ public class ViewArea {
 
     /**
      * Split this area by {@param orientation}.
-     * <p/>
+     * <p>
      * Either the parameter {@param first} or {@param second} must be this area. Otherwise a
      * {@link IllegalArgumentException} is thrown.
      *
@@ -155,7 +154,7 @@ public class ViewArea {
 
     /**
      * Add the view to this area at position.
-     * <p/>
+     * <p>
      * If position is {@link Position#CENTER} it will be added to that child that is defined as editor area.
      * Otherwise this area is split and the view will be positioned according the position parameter.
      *
@@ -216,9 +215,9 @@ public class ViewArea {
 
     /**
      * Remove the given area as child from this area.
-     * <p/>
+     * <p>
      * In case of a underflow this area will also be removed.
-     * <p/>
+     * <p>
      * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param area The area that should be removed.
@@ -235,7 +234,7 @@ public class ViewArea {
 
     /**
      * Replace the {@param oldArea} with the {@param newArea}.
-     * <p/>
+     * <p>
      * Identity check is required here (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param oldArea The old area.
@@ -326,5 +325,14 @@ public class ViewArea {
      */
     public boolean dropToCenter() {
         return false;
+    }
+
+    /**
+     * Check if the view area is valid and registered.
+     *
+     * @return true if the view area is valid. fals otherwise.
+     */
+    public boolean isValid() {
+        return getParent() != null && (getParent().getFirstChild() == this || getParent().getSecondChild() == this);
     }
 }

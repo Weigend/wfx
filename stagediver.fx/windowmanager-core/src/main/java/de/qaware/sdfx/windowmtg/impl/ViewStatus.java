@@ -21,10 +21,9 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.scene.control.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javafx.scene.control.*;
 
 /**
  * Stores the current status and additional metadata of an window manager view.
@@ -174,7 +173,7 @@ public class ViewStatus {
      * @return Value for property area.
      */
     public TabArea getArea() {
-        return area;
+        return area != null && area.isValid() ? area : null;
     }
 
     /**

@@ -22,6 +22,8 @@ package de.qaware.sdfx.windowmtg.impl;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -29,11 +31,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -79,7 +77,7 @@ public class ViewStatusTest {
     public void testSetDividerPositionsLeft() throws Exception {
         when(view.getDefaultPosition()).thenReturn(Position.LEFT);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode).setDividerPositions(0.25);
@@ -89,7 +87,7 @@ public class ViewStatusTest {
     public void testSetDividerPositionsBottom() throws Exception {
         when(view.getDefaultPosition()).thenReturn(Position.BOTTOM);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode).setDividerPositions(0.75);
@@ -99,7 +97,7 @@ public class ViewStatusTest {
     public void testSetDividerPositionsToSmall() throws Exception {
         when(view.getViewAreaSize()).thenReturn(0.01);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
@@ -109,7 +107,7 @@ public class ViewStatusTest {
     public void testSetDividerPositionsToBig() throws Exception {
         when(view.getViewAreaSize()).thenReturn(0.99);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
@@ -121,7 +119,7 @@ public class ViewStatusTest {
         GridPane gridPane = mock(GridPane.class);
         when(parentArea.getNode()).thenReturn(gridPane);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
@@ -133,9 +131,24 @@ public class ViewStatusTest {
         when(view.getViewAreaSize()).thenReturn(0.5);
         when(view.getDefaultPosition()).thenReturn(Position.CENTER);
         status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        status.setArea(mockTabArea());
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
+    }
+
+    @Test
+    public void testGetInvalidArea() throws Exception {
+        status = new ViewStatus(view);
+        TabArea area = mockTabArea();
+        when(area.isValid()).thenReturn(false);
+        status.setArea(area);
+        assertThat(status.getArea(), is(nullValue()));
+    }
+
+    private TabArea mockTabArea() {
+        TabArea area = mock(TabArea.class);
+        when(area.isValid()).thenReturn(true);
+        return area;
     }
 }
