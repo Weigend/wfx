@@ -24,6 +24,9 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import javafx.scene.*;
+import javafx.scene.control.*;
+import javafx.stage.*;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -34,9 +37,6 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
 import java.util.List;
 import java.util.Map;
 
@@ -134,6 +134,19 @@ public class WindowManagerImplTest {
         ViewStatus viewStatus = captor.getValue();
         assertThat(views.size(), is(equalTo(2)));
         assertThat(views, hasEntry("view1", viewStatus));
+    }
+
+    @Test
+    public void testReRegisterClosedView() throws Exception {
+        views.put("view1", view1);
+        view1.setArea(null);
+        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
+
+        windowManager.register(view1.getView());
+
+        verify(mainWindow).add(captor.capture(), any(Position.class));
+        assertThat(captor.getValue().getView(), is(equalTo(view1.getView())));
+        assertThat(views.size(), is(equalTo(1)));
     }
 
     @Test
