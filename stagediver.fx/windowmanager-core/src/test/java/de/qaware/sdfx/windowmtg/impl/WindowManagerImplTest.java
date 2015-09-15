@@ -113,6 +113,7 @@ public class WindowManagerImplTest {
         views.put("view1", view1);
         views.put("view2", view2);
         TabArea targetArea = view2.getArea();
+        when(targetArea.isValid()).thenReturn(true);
         ViewStatus view = mockView("view2", "new View");
 
         assertThat(views.size(), is(equalTo(2)));

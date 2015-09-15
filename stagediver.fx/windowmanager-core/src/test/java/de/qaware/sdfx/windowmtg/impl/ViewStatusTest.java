@@ -31,7 +31,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -135,15 +136,6 @@ public class ViewStatusTest {
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
-    }
-
-    @Test
-    public void testGetInvalidArea() throws Exception {
-        status = new ViewStatus(view);
-        TabArea area = mockTabArea();
-        when(area.isValid()).thenReturn(false);
-        status.setArea(area);
-        assertThat(status.getArea(), is(nullValue()));
     }
 
     private TabArea mockTabArea() {

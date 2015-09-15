@@ -95,7 +95,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
             TabArea tabArea = oldView.getArea();
-            if (tabArea != null) {
+            if (tabArea != null && tabArea.isValid()) {
                 area = tabArea;
                 position = Position.CENTER;
                 tabArea.remove(oldView);

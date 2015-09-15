@@ -173,7 +173,7 @@ public class ViewStatus {
      * @return Value for property area.
      */
     public TabArea getArea() {
-        return area != null && area.isValid() ? area : null;
+        return area;
     }
 
     /**
