@@ -333,6 +333,6 @@ public class ViewArea {
      * @return true if the view area is valid. fals otherwise.
      */
     public boolean isValid() {
-        return getParent() != null && (getParent().getFirstChild() == this || getParent().getSecondChild() == this);
+        return getParent() != null && (getParent().getFirstChild() == this || getParent().getSecondChild() == this) && getParent().isValid();
     }
 }

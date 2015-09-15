@@ -250,14 +250,31 @@ public class ViewAreaTest {
     @Test
     public void testIsValidFirstChild() throws Exception {
         ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setParent(mock(ViewArea.class));
+        when(parent.getParent().isValid()).thenReturn(true);
+        when(parent.getParent().getFirstChild()).thenReturn(parent);
         parent.setFirstChild(viewArea);
         viewArea.setParent(parent);
         assertThat(viewArea.isValid(), is(true));
     }
 
     @Test
+    public void testIsValidFirstChildParentInvalid() throws Exception {
+        ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setParent(mock(ViewArea.class));
+        when(parent.getParent().isValid()).thenReturn(false);
+        when(parent.getParent().getFirstChild()).thenReturn(parent);
+        parent.setFirstChild(viewArea);
+        viewArea.setParent(parent);
+        assertThat(viewArea.isValid(), is(false));
+    }
+
+    @Test
     public void testIsValidSecondChild() throws Exception {
         ViewArea parent = new ViewArea(dragNDropManager);
+        parent.setParent(mock(ViewArea.class));
+        when(parent.getParent().isValid()).thenReturn(true);
+        when(parent.getParent().getFirstChild()).thenReturn(parent);
         parent.setSecondChild(viewArea);
         viewArea.setParent(parent);
         assertThat(viewArea.isValid(), is(true));
