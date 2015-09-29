@@ -12,28 +12,18 @@
     </bottom>
     <top>
         <VBox prefHeight="48.0" prefWidth="100.0">
-            <children>
-                <MenuBar fx:id="menuBar" useSystemMenuBar="true">
-                    <menus>
-                        <Menu mnemonicParsing="false" text="File">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Close"/>
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Edit">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="Delete"/>
-                            </items>
-                        </Menu>
-                        <Menu mnemonicParsing="false" text="Help">
-                            <items>
-                                <MenuItem mnemonicParsing="false" text="About"/>
-                            </items>
-                        </Menu>
-                    </menus>
-                </MenuBar>
-                <ToolBar fx:id="toolBar" prefHeight="24.0"/>
-            </children>
+            <MenuBar fx:id="menuBar" useSystemMenuBar="true">
+                <Menu mnemonicParsing="false" text="File">
+                    <MenuItem mnemonicParsing="false" text="Close"/>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Edit">
+                    <MenuItem mnemonicParsing="false" text="Delete"/>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Help">
+                    <MenuItem mnemonicParsing="false" text="About"/>
+                </Menu>
+            </MenuBar>
+            <ToolBar fx:id="toolbar" prefHeight="24.0"/>
         </VBox>
     </top>
 </BorderPane>
