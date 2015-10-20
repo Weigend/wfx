@@ -20,11 +20,8 @@
 package de.qaware.sdfx.lookup.cdi;
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.TestService;
 import de.qaware.sdfx.lookup.TypedTestService;
-import org.jboss.weld.environment.se.Weld;
-import org.jboss.weld.environment.se.WeldContainer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,31 +40,26 @@ import static org.hamcrest.Matchers.*;
  */
 public class CDILookupStrategyTest {
 
-    private LookupStrategy strategy;
-    private Weld weld;
-
     @Before
     public void setUp() throws Exception {
-        weld = new Weld();
-        WeldContainer container = weld.initialize();
-        strategy = container.instance().select(CDILookupStrategy.class).get();
+        CdiLookupTestHelper.initCdiLookup();
     }
 
     @After
     public void tearDown() throws Exception {
-        weld.shutdown();
+        CdiLookupTestHelper.shutDownCdiLookup();
     }
 
     @Test
     public void testLookup() throws Exception {
-        TestService1 service = strategy.lookup(TestService1.class);
+        TestService1 service = Lookup.lookup(TestService1.class);
         assertThat(service.sayGoodbye(), is(equalTo("Goodbye CDI")));
         assertThat(service, instanceOf(Service3.class));
     }
 
     @Test
     public void testLookupAll() throws Exception {
-        List<TestService> testServices = strategy.lookupAll(TestService.class);
+        List<TestService> testServices = Lookup.lookupAll(TestService.class);
         assertThat(testServices, hasSize(2));
         TestService service = testServices.get(0);
         assertThat(service.sayHello(), is(equalTo("Hello CDI")));
@@ -87,7 +79,7 @@ public class CDILookupStrategyTest {
 
     @Test
     public void testTypedLookup() throws Exception {
-        TypedTestService<String> service = strategy.lookup(new TypeLiteral<TypedTestService<String>>() {
+        TypedTestService<String> service = Lookup.lookup(new TypeLiteral<TypedTestService<String>>() {
         });
         assertThat(service, instanceOf(Service4.class));
         assertThat(service.sayGoodbye(), instanceOf(String.class));
@@ -96,7 +88,7 @@ public class CDILookupStrategyTest {
 
     @Test
     public void testTypedLookupAll() throws Exception {
-        List<TypedTestService<String>> services = strategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {
+        List<TypedTestService<String>> services = Lookup.lookupAll(new TypeLiteral<TypedTestService<String>>() {
         });
         assertThat(services, hasSize(1));
         TypedTestService<String> service = services.get(0);
