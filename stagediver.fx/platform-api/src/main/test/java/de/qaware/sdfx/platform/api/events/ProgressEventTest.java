@@ -19,6 +19,8 @@
  */
 package de.qaware.sdfx.platform.api.events;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -68,5 +70,12 @@ public class ProgressEventTest {
         ProgressEvent event = new ProgressEvent(null, 42.0, this);
         double progress = event.getProgress();
         assertThat(progress, is(closeTo(42.0, 0.0)));
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        EqualsVerifier.forClass(ProgressEvent.class)
+                .suppress(Warning.STRICT_INHERITANCE)
+                .verify();
     }
 }

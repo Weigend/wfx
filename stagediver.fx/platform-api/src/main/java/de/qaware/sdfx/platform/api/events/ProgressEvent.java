@@ -19,6 +19,8 @@
  */
 package de.qaware.sdfx.platform.api.events;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.EventObject;
 
 /**
@@ -31,13 +33,13 @@ public class ProgressEvent extends EventObject {
     /**
      * The event message. It will be shown to the user.
      */
-    private String message;
+    private final String message;
 
     /**
      * The progress.
      * The value must be between 0 and 1.
      */
-    private double progress;
+    private final double progress;
 
     /**
      * ProgressEvent for calculating a progress.
@@ -68,5 +70,37 @@ public class ProgressEvent extends EventObject {
      */
     public double getProgress() {
         return progress;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof ProgressEvent)) {
+            return false;
+        }
+        ProgressEvent that = (ProgressEvent) o;
+        return new org.apache.commons.lang3.builder.EqualsBuilder()
+                .append(getProgress(), that.getProgress())
+                .append(getMessage(), that.getMessage())
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 37)
+                .append(getMessage())
+                .append(getProgress())
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return new org.apache.commons.lang3.builder.ToStringBuilder(this)
+                .append("message", getMessage())
+                .append("progress", getProgress())
+                .toString();
     }
 }
