@@ -45,8 +45,8 @@ import java.util.stream.StreamSupport;
 public class CDILookupStrategy implements LookupStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CDILookupStrategy.class);
-    protected static Thread shutdownHook;
-    protected static Weld weld;
+    static Thread shutdownHook;
+    static Weld weld;
 
     @Inject
     private Instance<Object> weldInstance;

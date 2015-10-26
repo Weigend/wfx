@@ -20,15 +20,15 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.effect.*;
 import javafx.scene.input.*;
 import javafx.scene.paint.*;
 import javafx.stage.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -260,7 +260,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
 
     /**
      * Handle the drag over event. It draws the drop position for the current cursor position.
-     * <p/>
+     * <p>
      * Identity check is required here for applying the effect (@SuppressWarnings("PMD.CompareObjectsWithEquals")).
      *
      * @param event The drag event.
@@ -395,6 +395,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
                 dropOverlay.setY(target.getHeight() * 0.5);
                 dropOverlay.setWidth(target.getWidth());
                 dropOverlay.setHeight(target.getHeight() * 0.5);
+            default:
         }
     }
 

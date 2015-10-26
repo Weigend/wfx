@@ -166,7 +166,10 @@ public class ViewArea {
         ViewContainerAreaFactory viewContainerFactory = Lookup.lookup(ViewContainerAreaFactory.class);
         switch (position) {
             case CENTER:
-                getEditorArea().add(view, position);
+                ViewArea editorArea = getEditorArea();
+                if (editorArea != null) {
+                    editorArea.add(view, position);
+                }
                 break;
             case TOP:
                 if (orientation == Orientation.VERTICAL) {
@@ -208,6 +211,7 @@ public class ViewArea {
                     split(this, target, Orientation.HORIZONTAL);
                 }
                 break;
+            default:
         }
         view.setPosition(position);
         view.getArea().getNode().requestLayout();
