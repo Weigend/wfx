@@ -40,13 +40,13 @@ public class CdiLookupTestHelper {
      * Shutdown the cdi container.
      */
     public static void shutDownCdiLookup() {
-        if (CDILookupStrategy.shutdownHook != null) {
-            Runtime.getRuntime().removeShutdownHook(CDILookupStrategy.shutdownHook);
+        if (CDILookupStrategy.getShutdownHook() != null) {
+            Runtime.getRuntime().removeShutdownHook(CDILookupStrategy.getShutdownHook());
         }
-        CDILookupStrategy.shutdownHook = null;
-        if (CDILookupStrategy.weld != null) {
-            CDILookupStrategy.weld.shutdown();
-            CDILookupStrategy.weld = null;
+        CDILookupStrategy.setShutdownHook(null);
+        if (CDILookupStrategy.getWeld() != null) {
+            CDILookupStrategy.getWeld().shutdown();
+            CDILookupStrategy.setWeld(null);
         }
         Lookup.init(null);
     }

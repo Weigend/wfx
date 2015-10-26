@@ -45,8 +45,8 @@ import java.util.stream.StreamSupport;
 public class CDILookupStrategy implements LookupStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CDILookupStrategy.class);
-    static Thread shutdownHook;
-    static Weld weld;
+    private static Thread shutdownHook;
+    private static Weld weld;
 
     @Inject
     private Instance<Object> weldInstance;
@@ -119,5 +119,21 @@ public class CDILookupStrategy implements LookupStrategy {
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Pair::getKey)
                 .collect(Collectors.toList());
+    }
+
+    static Thread getShutdownHook() {
+        return shutdownHook;
+    }
+
+    static void setShutdownHook(Thread shutdownHook) {
+        CDILookupStrategy.shutdownHook = shutdownHook;
+    }
+
+    static Weld getWeld() {
+        return weld;
+    }
+
+    static void setWeld(Weld weld) {
+        CDILookupStrategy.weld = weld;
     }
 }

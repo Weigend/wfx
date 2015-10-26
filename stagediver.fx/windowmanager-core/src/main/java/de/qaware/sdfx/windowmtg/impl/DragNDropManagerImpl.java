@@ -395,6 +395,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
                 dropOverlay.setY(target.getHeight() * 0.5);
                 dropOverlay.setWidth(target.getWidth());
                 dropOverlay.setHeight(target.getHeight() * 0.5);
+                break;
             default:
         }
     }
