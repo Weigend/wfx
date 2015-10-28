@@ -56,15 +56,18 @@ public class CDILookupStrategy implements LookupStrategy {
      */
     public static void initLookup() {
         weld = new Weld();
+        WeldContainer container = weld.initialize();
         shutdownHook = new Thread() {
             @Override
             public void run() {
-                LOGGER.info("Shutdown Weld");
-                weld.shutdown();
+                if (container.isRunning()) {
+                    LOGGER.info("Shutdown Weld");
+                    weld.shutdown();
+                }
             }
         };
+        shutdownHook.setName("weld-shutdown-thread");
         Runtime.getRuntime().addShutdownHook(shutdownHook);
-        WeldContainer container = weld.initialize();
         Lookup.init(container.instance().select(CDILookupStrategy.class).get());
         LOGGER.info("Successfully initialized Weld/CDI and Lookup");
     }
