@@ -19,16 +19,17 @@
  */
 package de.qaware.sdfx.windowmtg.windows;
 
+import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import org.apache.commons.lang3.StringUtils;
+
 import javafx.collections.*;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.*;
-
-import javax.annotation.Priority;
 import javax.inject.Singleton;
 import java.io.IOException;
 
@@ -39,7 +40,7 @@ import java.io.IOException;
  * @author christian.fritz
  */
 @Singleton
-@Priority(Integer.MIN_VALUE)
+@javax.annotation.Priority(Integer.MIN_VALUE)
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     @FXML
@@ -58,16 +59,14 @@ public class DefaultApplicationWindow implements ApplicationWindow {
      * @throws IOException In case of the requested fxml file can not be found or read.
      */
     public void init() throws IOException {
-
-        ClassLoader classLoader = getClass().getClassLoader();
-        FXMLLoader loader = new FXMLLoader(classLoader.getResource(
-                "de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"
-        ));
-        loader.setClassLoader(classLoader);
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(getClass().getResource("/de/qaware/sdfx/windowmtg/windows/DefaultApplicationWindow.fxml"));
         loader.setController(this);
         BorderPane rootPane = loader.load();
         stage.setScene(new Scene(rootPane));
         rootPane.setCenter(windowManager.getRootPane());
+
+        useSystemMenuBarIfPossible();
     }
 
     /**
@@ -129,5 +128,15 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     public void setStage(Stage stage) {
         this.stage = stage;
         this.defaultTitle = stage.getTitle();
+    }
+
+    /**
+     * Uses the system menu bar on Mac OSX systems.
+     */
+    protected final void useSystemMenuBarIfPossible() {
+        String os = System.getProperty("os.name");
+        if (menuBar != null && StringUtils.startsWith(os, "Mac")) {
+            menuBar.useSystemMenuBarProperty().set(true);
+        }
     }
 }
