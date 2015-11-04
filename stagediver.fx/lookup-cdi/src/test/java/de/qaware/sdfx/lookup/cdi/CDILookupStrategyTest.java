@@ -22,8 +22,7 @@ package de.qaware.sdfx.lookup.cdi;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.TestService;
 import de.qaware.sdfx.lookup.TypedTestService;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.annotation.Priority;
@@ -40,14 +39,9 @@ import static org.hamcrest.Matchers.*;
  */
 public class CDILookupStrategyTest {
 
-    @Before
-    public void setUp() throws Exception {
-        CdiLookupTestHelper.initCdiLookup();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        CdiLookupTestHelper.shutDownCdiLookup();
+    @BeforeClass
+    public static void setUp() throws Exception {
+        CDILookupStrategy.initLookup();
     }
 
     @Test
@@ -72,7 +66,7 @@ public class CDILookupStrategyTest {
 
     @Test
     public void testInit() throws Exception {
-        Lookup.init(null);
+        CdiLookupTestHelper.shutDownCdiLookup();
         CDILookupStrategy.initLookup();
         assertThat(Lookup.getLookupStrategy(), is(instanceOf(CDILookupStrategy.class)));
     }
