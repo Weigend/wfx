@@ -45,7 +45,6 @@ import java.util.stream.StreamSupport;
 public class CDILookupStrategy implements LookupStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CDILookupStrategy.class);
-    private static Thread shutdownHook;
     private static Weld weld;
 
     @Inject
@@ -57,17 +56,6 @@ public class CDILookupStrategy implements LookupStrategy {
     public static void initLookup() {
         weld = new Weld();
         WeldContainer container = weld.initialize();
-        shutdownHook = new Thread() {
-            @Override
-            public void run() {
-                if (container.isRunning()) {
-                    LOGGER.info("Shutdown Weld");
-                    weld.shutdown();
-                }
-            }
-        };
-        shutdownHook.setName("weld-shutdown-thread");
-        Runtime.getRuntime().addShutdownHook(shutdownHook);
         Lookup.init(container.instance().select(CDILookupStrategy.class).get());
         LOGGER.info("Successfully initialized Weld/CDI and Lookup");
     }
@@ -122,14 +110,6 @@ public class CDILookupStrategy implements LookupStrategy {
                 .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
                 .map(Pair::getKey)
                 .collect(Collectors.toList());
-    }
-
-    static Thread getShutdownHook() {
-        return shutdownHook;
-    }
-
-    static void setShutdownHook(Thread shutdownHook) {
-        CDILookupStrategy.shutdownHook = shutdownHook;
     }
 
     static Weld getWeld() {
