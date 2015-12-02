@@ -23,6 +23,15 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.event.EventHandler;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.TabPane;
+import javafx.scene.input.*;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -32,18 +41,12 @@ import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.event.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
-
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManager.DATAFORMAT;
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.getDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
 import static de.qaware.sdfx.windowmtg.impl.JavaFxTestUtils.*;
-import static javafx.scene.input.TransferMode.*;
+import static javafx.scene.input.TransferMode.COPY;
+import static javafx.scene.input.TransferMode.MOVE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.*;
@@ -275,6 +278,8 @@ public class DragNDropManagerImplTest {
         mockReadOnlyProperty(stage, "height", 10);
         dragNDropManager.onDragDroppedNewStage(event, stage);
         assertThat(event.isDropCompleted(), is(true));
+        Stage droppedStage = (Stage) Whitebox.getInternalState(dragNDropManager, "droppedStage");
+        assertThat(droppedStage.isMaximized(), is(true));
     }
 
     @Test

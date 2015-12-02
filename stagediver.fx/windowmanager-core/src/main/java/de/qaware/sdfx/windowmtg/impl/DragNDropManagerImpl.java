@@ -20,12 +20,16 @@
 package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.effect.*;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Control;
+import javafx.scene.control.TabPane;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.ColorInput;
 import javafx.scene.input.*;
-import javafx.scene.paint.*;
-import javafx.stage.*;
+import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -307,8 +311,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Complete the dropped event.
-     * This contains the cleaning the effects and other status.
+     * Complete the dropped event. This contains the cleaning the effects and other status.
      *
      * @param event   The drag event
      * @param success Was the drop gesture successful
@@ -411,10 +414,9 @@ public class DragNDropManagerImpl implements DragNDropManager {
         Scene scene = new Scene(area.getNode(), dropStage.getWidth(), dropStage.getHeight());
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setWidth(dropStage.getWidth());
-        stage.setHeight(dropStage.getHeight());
         stage.setX(dropStage.getX());
         stage.setY(dropStage.getY());
+        stage.setMaximized(true);
         stage.setOnCloseRequest(event -> windowManager.remove(area));
         return stage;
     }
