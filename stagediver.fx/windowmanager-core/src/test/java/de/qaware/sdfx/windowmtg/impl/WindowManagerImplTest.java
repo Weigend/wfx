@@ -24,9 +24,9 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+import javafx.scene.Parent;
+import javafx.scene.control.TabPane;
+import javafx.stage.Stage;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -203,6 +203,14 @@ public class WindowManagerImplTest {
     public void testCloseView() throws Exception {
         views.put("view1", view1);
         views.put("view2", view2);
+        windowManager.closeView(view1.getView());
+        assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+    }
+
+    @Test
+    public void testCloseViewAlreadyClosed() throws Exception {
+        views.put("view1", view1);
+        view1.setArea(null);
         windowManager.closeView(view1.getView());
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }

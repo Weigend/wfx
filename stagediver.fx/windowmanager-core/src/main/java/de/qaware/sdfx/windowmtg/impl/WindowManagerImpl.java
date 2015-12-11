@@ -22,12 +22,14 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.application.*;
+import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.collections.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Parent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -171,8 +173,8 @@ public class WindowManagerImpl implements MultiWindowManager {
     /**
      * Close the specified view.
      * <p>
-     * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
-     * {@link IllegalArgumentException} will be thrown.
+     * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not
+     * registered a {@link IllegalArgumentException} will be thrown.
      *
      * @param view That view that should be closed
      */
@@ -182,8 +184,10 @@ public class WindowManagerImpl implements MultiWindowManager {
             throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
         }
         ViewStatus viewStatus = views.get(view.getViewId());
-        viewStatus.getArea().remove(viewStatus);
         viewStatus.setStatus(ViewStatus.Status.HIDDEN);
+        if (viewStatus.getArea() != null) {
+            viewStatus.getArea().remove(viewStatus);
+        }
     }
 
     /**
@@ -191,8 +195,8 @@ public class WindowManagerImpl implements MultiWindowManager {
      * <p>
      * The cloned view will be placed next to the given view in the same tab area.
      * <p>
-     * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
-     * {@link IllegalArgumentException} will be thrown.
+     * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not
+     * registered a {@link IllegalArgumentException} will be thrown.
      *
      * @param view Clone the given view.
      * @return The cloned view object.
@@ -203,9 +207,8 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
-     * Show a closed or hidden view again.
-     * The view will be shown at the same position where it was on close.
-     * The given view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
+     * Show a closed or hidden view again. The view will be shown at the same position where it was on close. The given
+     * view must be registered within the {@link de.qaware.sdfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.
      *
      * @param view The view to show.
