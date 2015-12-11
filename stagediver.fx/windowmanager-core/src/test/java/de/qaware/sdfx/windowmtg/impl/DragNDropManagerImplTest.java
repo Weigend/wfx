@@ -270,6 +270,7 @@ public class DragNDropManagerImplTest {
 
     @Test
     public void testOnDragDroppedNewStage() throws Exception {
+        when(windowManager.getWindowFactory()).thenReturn(Stage::new);
         Node node = mock(Node.class);
         DragEvent event = new DragEvent(node, scene, DragEvent.DRAG_DROPPED, mockDragboard(DragNDropManager.DATAFORMAT, "abc"), 0, 0, 0, 0, MOVE, null, rootPane, null);
         Stage stage = new Stage();

@@ -412,7 +412,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     private Stage initManagedWindow(Stage dropStage, final RootArea area) {
         Scene scene = new Scene(area.getNode(), dropStage.getWidth(), dropStage.getHeight());
-        Stage stage = new Stage();
+        Stage stage = windowManager.getWindowFactory().initializeWindow();
         stage.setScene(scene);
         stage.setX(dropStage.getX());
         stage.setY(dropStage.getY());

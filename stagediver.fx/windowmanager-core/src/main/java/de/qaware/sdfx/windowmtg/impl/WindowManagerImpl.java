@@ -22,6 +22,7 @@ package de.qaware.sdfx.windowmtg.impl;
 import com.google.common.collect.ImmutableList;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
+import de.qaware.sdfx.windowmtg.api.WindowFactory;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -55,6 +56,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>();
     private Map<String, ViewStatus> views = new LinkedHashMap<>();
     private View lastFocusedView;
+    private WindowFactory windowFactory = Stage::new;
 
     /**
      * Initialize a new window manager.
@@ -360,6 +362,16 @@ public class WindowManagerImpl implements MultiWindowManager {
                 .filter(viewStatus -> viewStatus.getTab().isSelected())
                 .map(ViewStatus::getView)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public WindowFactory getWindowFactory() {
+        return windowFactory;
+    }
+
+    @Override
+    public void setWindowFactory(WindowFactory windowFactory) {
+        this.windowFactory = windowFactory;
     }
 
     /**
