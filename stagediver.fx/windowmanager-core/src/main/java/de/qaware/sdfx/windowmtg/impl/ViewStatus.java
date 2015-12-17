@@ -21,7 +21,10 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.scene.control.*;
+import javafx.scene.control.SplitPane;
+import javafx.scene.control.Tab;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author christian.fritz
  */
 public class ViewStatus {
+    public static final int TAB_IMAGE_SIZE = 32;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewStatus.class);
     /**
@@ -159,7 +163,10 @@ public class ViewStatus {
         tab.setId(view.getViewId());
         //tab.setTooltip(new Tooltip(view.getToolTipInfo()));
         tab.setUserData(this);
-
+        if (view.getViewImagePath() != null) {
+            tab.setGraphic(new ImageView(new Image(
+                    view.getViewImagePath().toString(), TAB_IMAGE_SIZE, TAB_IMAGE_SIZE, true, true)));
+        }
         tab.setOnClosed(event -> {
             ViewStatus viewStatus = ViewStatus.this;
             viewStatus.getArea().remove(viewStatus);

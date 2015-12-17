@@ -22,8 +22,9 @@ package de.qaware.sdfx.windowmtg.impl;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.GridPane;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -31,8 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -136,6 +136,13 @@ public class ViewStatusTest {
         when(status.getArea().getParent()).thenReturn(parentArea);
         status.setDividerPositions();
         verify(parentNode, never()).setDividerPositions(anyDouble());
+    }
+
+    @Test
+    public void testTabImage() throws Exception {
+        when(view.getViewImagePath()).thenReturn(getClass().getResource("test-icon.png"));
+        status = new ViewStatus(view);
+        assertThat(((ImageView) status.getTab().getGraphic()).getImage(), is(notNullValue()));
     }
 
     private TabArea mockTabArea() {
