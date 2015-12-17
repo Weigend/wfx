@@ -22,13 +22,13 @@ package de.qaware.sdfx.windowmtg.api;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
-
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.core.IsNull.notNullValue;
@@ -82,7 +82,7 @@ public class FXMLViewTest {
 
     @Test
     public void testConstructorNonDefaultSize() throws Exception {
-        FXMLView<TestController> view = new FXMLView<TestController>("example:1", "Example view", Position.CENTER,
+        FXMLView<TestController> view = new FXMLView<>("example:1", "Example view", Position.CENTER,
                 "de/qaware/sdfx/windowmtg/api/exampleView.fxml", 0.25);
         assertThat(view, is(notNullValue()));
         assertThat(view.getTitle(), is(equalTo("Example view")));
@@ -91,6 +91,44 @@ public class FXMLViewTest {
         assertThat(view.getViewAreaSize(), is(equalTo(0.25)));
         assertThat(view.getController(), is(notNullValue()));
         assertThat(view.getController().getLabel().getText(), is(equalTo("Content")));
+    }
+
+    @Test
+    public void testBuilder() throws Exception {
+        FXMLView<TestController> view = new FXMLView.Builder<TestController>().withId("example:1")
+                .withTitle("Example view")
+                .withClassLoader(getClass().getClassLoader())
+                .withFile("de/qaware/sdfx/windowmtg/api/exampleView.fxml")
+                .withPos(Position.CENTER)
+                .withViewImage("de/qaware/sdfx/windowmtg/api/test-icon.png")
+                .withViewAreaSize(0.25)
+                .build();
+
+        assertThat(view, is(notNullValue()));
+        assertThat(view.getTitle(), is(equalTo("Example view")));
+        assertThat(view.getViewId(), is(equalTo("example:1")));
+        assertThat(view.getToolTipInfo(), is(nullValue()));
+        assertThat(view.getViewAreaSize(), is(equalTo(0.25)));
+        assertThat(view.getController(), is(notNullValue()));
+        assertThat(view.getViewImagePath(), is(notNullValue()));
+        assertThat(view.getController().getLabel().getText(), is(equalTo("Content")));
+    }
+
+    @Test
+    public void testBuilderWithoutClassLoader() throws Exception {
+        FXMLView<TestController> view = new FXMLView.Builder<TestController>().withId("example:1")
+                .withTitle("Example view")
+                .withFile(getClass().getResource("exampleView.fxml"))
+                .withPos(Position.CENTER)
+                .withViewImage(getClass().getResource("test-icon.png"))
+                .withToolTipInfo("Tooltip")
+                .build();
+
+        assertThat(view, is(notNullValue()));
+        assertThat(view.getToolTipInfo(), is(equalTo("Tooltip")));
+        assertThat(view.getController(), is(notNullValue()));
+        assertThat(view.getController().getLabel().getText(), is(equalTo("Content")));
+        assertThat(view.getViewImagePath(), is(notNullValue()));
     }
 
     public static class TestController {

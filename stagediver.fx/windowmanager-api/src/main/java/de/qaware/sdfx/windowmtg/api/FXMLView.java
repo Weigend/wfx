@@ -27,6 +27,7 @@ import javafx.scene.Parent;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 /**
  * This is the default implementation of a window management view. It loads the view from an fxml file and defines the
@@ -45,6 +46,18 @@ public class FXMLView<C> implements View {
     private final String toolTipInfo;
     private final double viewAreaSize;
     private final C controller;
+    private final URL viewImagePath;
+
+    private FXMLView(String id, String title, Position defaultPosition, Parent rootPane, String toolTipInfo, double viewAreaSize, C controller, URL viewImagePath) {
+        this.id = id;
+        this.title = title;
+        this.defaultPosition = defaultPosition;
+        this.rootPane = rootPane;
+        this.toolTipInfo = toolTipInfo;
+        this.viewAreaSize = viewAreaSize;
+        this.controller = controller;
+        this.viewImagePath = viewImagePath;
+    }
 
     /**
      * Get a new view with the specified values.
@@ -57,7 +70,9 @@ public class FXMLView<C> implements View {
      * @param file  The path to the fxml file.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file) throws IOException {
         this(id, title, pos, file, FXMLView.class.getClassLoader());
     }
@@ -74,7 +89,9 @@ public class FXMLView<C> implements View {
      * @param classLoader The class loader to resolve the fxml file and its controller.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file, ClassLoader classLoader) throws IOException {
         this(id, title, pos, file, null, classLoader);
     }
@@ -91,7 +108,9 @@ public class FXMLView<C> implements View {
      * @param viewAreaSize The view area size. See {@link de.qaware.sdfx.windowmtg.api.View#getViewAreaSize()}.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file, double viewAreaSize) throws IOException {
         this(id, title, pos, file, viewAreaSize, FXMLView.class.getClassLoader());
     }
@@ -109,7 +128,9 @@ public class FXMLView<C> implements View {
      * @param classLoader  The class loader to resolve the fxml file and its controller.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file, double viewAreaSize, ClassLoader classLoader) throws IOException {
         this(id, title, pos, file, null, viewAreaSize, classLoader);
     }
@@ -127,7 +148,9 @@ public class FXMLView<C> implements View {
      * @param classLoader The class loader to resolve the fxml file and its controller.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, ClassLoader classLoader)
             throws IOException {
         this(id, title, pos, file, toolTipInfo, DEFAULT_VIEW_AREA_SIZE, classLoader);
@@ -148,7 +171,9 @@ public class FXMLView<C> implements View {
      * @param classLoader  The class loader to resolve the fxml file and its controller.
      * @throws IOException           In case of the view can not be loaded.
      * @throws ViewNotFoundException In case of the view can not be found.
+     * @deprecated Use {@link FXMLView.Builder} now
      */
+    @Deprecated
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, double viewAreaSize, ClassLoader classLoader)
             throws IOException {
 
@@ -168,6 +193,7 @@ public class FXMLView<C> implements View {
         loader.setClassLoader(classLoader);
         rootPane = loader.load();
         controller = loader.getController();
+        viewImagePath = null;
     }
 
     @Override
@@ -216,6 +242,11 @@ public class FXMLView<C> implements View {
     }
 
     @Override
+    public URL getViewImagePath() {
+        return viewImagePath;
+    }
+
+    @Override
     public String toString() {
         return "FXMLView{" +
                 "id='" + id + '\'' +
@@ -224,5 +255,146 @@ public class FXMLView<C> implements View {
                 ", viewAreaSize=" + viewAreaSize +
                 ", controller=" + controller +
                 '}';
+    }
+
+    /**
+     * Builder for new FXML views.
+     *
+     * @param <C> The type of the controller.
+     */
+    public static class Builder<C> {
+        private String id;
+        private String title;
+        private Position pos;
+        private URL file;
+        private String toolTipInfo;
+        private double viewAreaSize;
+        private ClassLoader classLoader;
+        private URL viewImage;
+
+        /**
+         * Set the builder value "id"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withId(String id) {
+            this.id = id;
+            return this;
+        }
+
+        /**
+         * Set the builder value "title"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withTitle(String title) {
+            this.title = title;
+            return this;
+        }
+
+        /**
+         * Set the builder value "pos"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withPos(Position pos) {
+            this.pos = pos;
+            return this;
+        }
+
+        /**
+         * Set the builder value "file"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withFile(URL file) {
+            this.file = file;
+            return this;
+        }
+
+        /**
+         * Set the builder value "file"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withFile(String file) {
+            Objects.requireNonNull(classLoader);
+            this.file = classLoader.getResource(file);
+            return this;
+        }
+
+        /**
+         * Set the builder value "toolTipInfo"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withToolTipInfo(String toolTipInfo) {
+            this.toolTipInfo = toolTipInfo;
+            return this;
+        }
+
+        /**
+         * Set the builder value "viewAreaSize"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withViewAreaSize(double viewAreaSize) {
+            this.viewAreaSize = viewAreaSize;
+            return this;
+        }
+
+        /**
+         * Set the builder value "classLoader"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withClassLoader(ClassLoader classLoader) {
+            this.classLoader = classLoader;
+            return this;
+        }
+
+        /**
+         * Set the builder value "viewImagePath"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withViewImage(URL viewImage) {
+            this.viewImage = viewImage;
+            return this;
+        }
+
+        /**
+         * Set the builder value "viewImagePath"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withViewImage(String viewImage) {
+            Objects.requireNonNull(classLoader);
+            this.viewImage = classLoader.getResource(viewImage);
+            return this;
+        }
+
+        /**
+         * Build the real {@link FXMLView}.
+         *
+         * @return The new initialized view.
+         * @throws IOException In case of the fxml can not be read.
+         */
+        public FXMLView<C> build() throws IOException {
+            Objects.requireNonNull(id, "A view must have an unique id");
+            Objects.requireNonNull(title, "A view must have a title");
+            Objects.requireNonNull(pos, "The initial position must be set");
+            Objects.requireNonNull(file, "Can not initialize a FXMLView without a FXML file.");
+
+            FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+            loader.setLocation(file);
+            if (classLoader != null) {
+                loader.setClassLoader(classLoader);
+            }
+            Parent rootPane = loader.load();
+            C controller = loader.getController();
+
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
+        }
     }
 }
