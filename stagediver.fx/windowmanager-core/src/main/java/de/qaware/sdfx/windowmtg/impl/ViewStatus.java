@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author christian.fritz
  */
 public class ViewStatus {
-    public static final int TAB_IMAGE_SIZE = 32;
+    public static final int TAB_IMAGE_SIZE = 22;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewStatus.class);
     /**
