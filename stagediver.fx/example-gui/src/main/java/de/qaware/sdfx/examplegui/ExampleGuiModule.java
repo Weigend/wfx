@@ -69,10 +69,14 @@ public class ExampleGuiModule implements Module {
         try {
             ClassLoader classLoader = getClass().getClassLoader();
             LOGGER.info("Register example view");
-            FXMLView<ExampleController> center =
-                    new FXMLView<>("example-1", "Example GUI", Position.CENTER,
-                            "de/qaware/sdfx/examplegui/example.fxml", 0.7,
-                            classLoader);
+            FXMLView<ExampleController> center = new FXMLView.Builder<ExampleController>()
+                    .withId("example-1")
+                    .withTitle("Example GUI")
+                    .withPos(Position.CENTER)
+                    .withFile(getClass().getResource("example.fxml"))
+                    .withViewAreaSize(0.7)
+                    .withViewImage(getClass().getResource("test-icon.png"))
+                    .build();
 
             FXMLView<ExampleExplorerController> explorer =
                     new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
