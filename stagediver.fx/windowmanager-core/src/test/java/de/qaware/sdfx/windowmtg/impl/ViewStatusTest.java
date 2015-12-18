@@ -140,7 +140,7 @@ public class ViewStatusTest {
 
     @Test
     public void testTabImage() throws Exception {
-        when(view.getViewImagePath()).thenReturn(getClass().getResource("test-icon.png"));
+        when(view.getViewImagePath()).thenReturn(getClass().getResource("/de/qaware/sdfx/windowmtg/api/test-icon.png"));
         status = new ViewStatus(view);
         assertThat(((ImageView) status.getTab().getGraphic()).getImage(), is(notNullValue()));
     }
