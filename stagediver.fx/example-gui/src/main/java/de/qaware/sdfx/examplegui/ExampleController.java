@@ -24,8 +24,8 @@ import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.event.ActionEvent;
 
-import javafx.event.*;
 import java.io.IOException;
 
 /**
@@ -47,7 +47,12 @@ public class ExampleController {
         WindowManager windowManager = Lookup.lookup(WindowManager.class);
         View explorerView = windowManager.findView("example-explorer-1");
 
-        View testView = new FXMLView("test-" + getNextViewId(), "Test View", Position.BOTTOM, "de/qaware/sdfx/examplegui/test.fxml");
+        FXMLView<Object> testView = new FXMLView.Builder<>().withId("test-" + getNextViewId())
+                .withTitle("Test View")
+                .withPos(Position.BOTTOM)
+                .withFile(getClass().getResource("test.fxml"))
+                .build();
+
         windowManager.register(testView, explorerView);
     }
 

@@ -67,7 +67,6 @@ public class ExampleGuiModule implements Module {
     public void preload() {
         final WindowManager manager = Lookup.lookup(WindowManager.class);
         try {
-            ClassLoader classLoader = getClass().getClassLoader();
             LOGGER.info("Register example view");
             FXMLView<ExampleController> center = new FXMLView.Builder<ExampleController>()
                     .withId("example-1")
@@ -78,10 +77,13 @@ public class ExampleGuiModule implements Module {
                     .withViewImage(getClass().getResource("test-icon.png"))
                     .build();
 
-            FXMLView<ExampleExplorerController> explorer =
-                    new FXMLView<>("example-explorer-1", "Example Explorer", Position.LEFT,
-                            "de/qaware/sdfx/examplegui/example_explorer.fxml", 0.3,
-                            classLoader);
+            FXMLView<ExampleExplorerController> explorer = new FXMLView.Builder<ExampleExplorerController>()
+                    .withId("example-explorer-1")
+                    .withTitle("Example Explorer")
+                    .withPos(Position.LEFT)
+                    .withViewAreaSize(0.3)
+                    .withFile(getClass().getResource("example_explorer.fxml"))
+                    .build();
 
             manager.register(center);
             manager.register(explorer, center);
