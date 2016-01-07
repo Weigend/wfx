@@ -60,6 +60,7 @@
         <module>stagediverfx-archetype-quickstart</module>
         <module>example-gui</module>
         <module>platform-full</module>
+        <module>extensions</module>
     </modules>
 
     <properties>
@@ -128,6 +129,13 @@
             <dependency>
                 <groupId>de.qaware.stagediver.fx</groupId>
                 <artifactId>stagediverfx-archetype-quickstart</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- stagediver.fx Extensions -->
+            <dependency>
+                <groupId>de.qaware.stagediver.fx</groupId>
+                <artifactId>extension-ui-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
