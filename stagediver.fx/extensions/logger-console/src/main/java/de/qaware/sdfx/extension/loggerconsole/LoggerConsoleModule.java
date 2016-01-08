@@ -27,7 +27,6 @@ import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class LoggerConsoleModule implements Module {
         ObservableList<Menu> menu = appWindow.getMenu();
         Menu view = findOrCreateItem(menu, "view", () -> new Menu("View"), 2);
         Menu windows = (Menu) findOrCreateItem(view.getItems(), "windows", () -> new Menu("Windows"), 0);
-        windows.getItems().add(createMenuItem("loggerConsole", "Logger Console", this::showLoggerConsole));
+        windows.getItems().add(createMenuItem("loggerConsole", "Logger Console", (e) -> showLoggerConsole()));
     }
 
     @Override
@@ -78,10 +77,8 @@ public class LoggerConsoleModule implements Module {
 
     /**
      * Action handler to show the logging console.
-     *
-     * @param ignored ignored to be conform with {@link javafx.event.EventHandler}
      */
-    private void showLoggerConsole(ActionEvent ignored) {
+    private void showLoggerConsole() {
         final WindowManager manager = Lookup.lookup(WindowManager.class);
         if (!manager.hasRegisteredView(consoleView)) {
             manager.register(consoleView);
