@@ -134,13 +134,13 @@
 
             <!-- stagediver.fx Extensions -->
             <dependency>
-                <groupId>de.qaware.stagediver.fx</groupId>
-                <artifactId>extension-logger-console</artifactId>
+                <groupId>de.qaware.stagediver.fx.extensions</groupId>
+                <artifactId>logger-console</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>de.qaware.stagediver.fx</groupId>
-                <artifactId>extension-ui-utils</artifactId>
+                <groupId>de.qaware.stagediver.fx.extensions</groupId>
+                <artifactId>ui-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

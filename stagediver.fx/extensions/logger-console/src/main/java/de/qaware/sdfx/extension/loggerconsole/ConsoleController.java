@@ -19,12 +19,9 @@
  */
 package de.qaware.sdfx.extension.loggerconsole;
 
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TextArea;
-
 /**
+ * UI Controller to show the last log messages.
+ *
  * @author christian.fritz
  */
 public class ConsoleController {

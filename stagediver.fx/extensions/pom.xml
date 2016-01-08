@@ -9,12 +9,13 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+    <groupId>de.qaware.stagediver.fx.extensions</groupId>
     <artifactId>extensions</artifactId>
     <packaging>pom</packaging>
     <name>stagediver.fx - Extensions</name>
     <modules>
-        <module>extension-logger-console</module>
-        <module>extension-ui-utils</module>
+        <module>logger-console</module>
+        <module>ui-utils</module>
     </modules>
 
 </project>
