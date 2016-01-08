@@ -33,18 +33,22 @@ public interface Module {
      *
      * @return The module name.
      */
-    String getName();
+    default String getName() {
+        return getClass().getSimpleName();
+    }
 
     /**
      * Get the version of this module.
      *
      * @return The version of the module.
      */
-    String getVersion();
+    default String getVersion() {
+        return getClass().getPackage().getImplementationVersion();
+    }
 
     /**
      * Preload the module while starting the application.
-     * <p/>
+     * <p>
      * It will be executed in an separate thread while showing the splash screen.
      *
      * @throws PlatformException in case of any error while preloading the module.
@@ -53,15 +57,15 @@ public interface Module {
 
     /**
      * Finally start the application.
-     * <p/>
-     * It is called from the java fx platform thread in an non specific order, while the platform is initializing the main
-     * application window. This includes that all modules have executed there preload phase.
+     * <p>
+     * It is called from the java fx platform thread in an non specific order, while the platform is initializing the
+     * main application window. This includes that all modules have executed there preload phase.
      */
     void start();
 
     /**
      * Stop the module.
-     * <p/>
+     * <p>
      * This method will be called while platform shutdown.
      */
     void stop();
