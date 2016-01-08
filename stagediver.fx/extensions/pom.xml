@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <name>stagediver.fx - Extensions</name>
     <modules>
+        <module>extension-logger-console</module>
         <module>extension-ui-utils</module>
     </modules>
 
