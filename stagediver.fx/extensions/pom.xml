@@ -16,6 +16,7 @@
     <modules>
         <module>logger-console</module>
         <module>ui-utils</module>
+        <module>logger-console-api</module>
     </modules>
 
 </project>

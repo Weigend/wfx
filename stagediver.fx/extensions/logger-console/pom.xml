@@ -13,6 +13,10 @@
     <name>stagediver.fx - Extension - Logger Console</name>
     <dependencies>
         <dependency>
+            <groupId>de.qaware.stagediver.fx.extensions</groupId>
+            <artifactId>logger-console-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-api</artifactId>
         </dependency>
