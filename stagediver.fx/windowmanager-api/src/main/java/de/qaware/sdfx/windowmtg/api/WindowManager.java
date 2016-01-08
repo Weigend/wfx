@@ -147,6 +147,22 @@ public interface WindowManager {
     List<View> getVisibleViews();
 
     /**
+     * Check if the given view is already registered.
+     *
+     * @param view The view to check.
+     * @return true if the view is registered. otherwise false
+     */
+    boolean hasRegisteredView(View view);
+
+    /**
+     * Check if the given view is registered and currently visible.
+     *
+     * @param view The view to check.
+     * @return true if the view is visible. otherwise false.
+     */
+    boolean hasVisibleView(View view);
+
+    /**
      * Get the window factory to create new managed windows.
      *
      * @return The window factory to use.

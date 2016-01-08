@@ -374,6 +374,16 @@ public class WindowManagerImpl implements MultiWindowManager {
         this.windowFactory = windowFactory;
     }
 
+    @Override
+    public boolean hasRegisteredView(View view) {
+        return views.containsKey(view.getViewId()) && views.get(view.getViewId()).getView() == view;
+    }
+
+    @Override
+    public boolean hasVisibleView(View view) {
+        return getVisibleViews().contains(view);
+    }
+
     /**
      * Set the divider positions for all current views.
      */

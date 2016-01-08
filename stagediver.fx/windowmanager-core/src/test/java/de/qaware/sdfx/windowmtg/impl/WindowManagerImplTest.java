@@ -380,5 +380,20 @@ public class WindowManagerImplTest {
         List<View> visibleViews = windowManager.getVisibleViews();
         assertThat(visibleViews, hasSize(2));
         assertThat(visibleViews, containsInAnyOrder(view1.getView(), view4.getView()));
+
+        assertThat(windowManager.hasVisibleView(view1.getView()), is(true));
+        assertThat(windowManager.hasVisibleView(view2.getView()), is(false));
+    }
+
+    @Test
+    public void testHasRegisteredView() throws Exception {
+        ViewStatus view3 = mockView("view3", "view3");
+        ViewStatus view4 = mockView("view4", "view4");
+        views.put(view1.getView().getViewId(), view1);
+        views.put("view3", view4);
+
+        assertThat(windowManager.hasRegisteredView(view1.getView()), is(true));
+        assertThat(windowManager.hasRegisteredView(view2.getView()), is(false));
+        assertThat(windowManager.hasRegisteredView(view3.getView()), is(false));
     }
 }
