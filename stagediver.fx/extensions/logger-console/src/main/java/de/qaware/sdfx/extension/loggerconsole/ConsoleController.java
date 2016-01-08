@@ -19,10 +19,37 @@
  */
 package de.qaware.sdfx.extension.loggerconsole;
 
+import de.qaware.sdfx.extension.loggerconsole.api.LoggerAdapter;
+import de.qaware.sdfx.lookup.Lookup;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TextArea;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
 /**
  * UI Controller to show the last log messages.
  *
  * @author christian.fritz
  */
-public class ConsoleController {
+public class ConsoleController implements Initializable {
+    @FXML
+    private TextArea console;
+    @FXML
+    private ChoiceBox<String> level;
+    @FXML
+    private Button clear;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        LoggerAdapter adapter = Lookup.lookup(LoggerAdapter.class);
+        adapter.levelProperty().bind(level.getSelectionModel().selectedItemProperty());
+        adapter.messagesProperty().addListener((o, ov, nv) -> console.setScrollTop(1));
+        console.textProperty().bind(adapter.messagesProperty());
+        level.setItems(adapter.levelsProperty());
+        clear.setOnAction(event -> adapter.clearMessages());
+    }
 }
