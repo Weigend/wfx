@@ -147,6 +147,12 @@
                 <artifactId>ui-utils</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <!-- stagediver.fx logger console adapter -->
+            <dependency>
+                <groupId>de.qaware.stagediver.fx.extensions</groupId>
+                <artifactId>logger-console-logback</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- Example GUI -->
             <dependency>
