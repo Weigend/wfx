@@ -19,9 +19,11 @@
  */
 package de.qaware.sdfx.extension.loggerconsole.api;
 
-import javafx.beans.property.ReadOnlyListProperty;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.ObservableList;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.List;
 
@@ -47,25 +49,18 @@ public interface LoggerAdapter {
     ReadOnlyListProperty<String> levelsProperty();
 
     /**
-     * Get the current log level.
+     * Get a list with all logger and the current active log levels.
      *
-     * @return the log level.
+     * @return a list with all logger.
      */
-    String getLevel();
+    ObservableList<LoggerLevel> getLoggerLevels();
 
     /**
-     * Set the log level.
+     * Get the list property for all logger
      *
-     * @param level The new log level.
+     * @return the list property for all logger.
      */
-    void setLevel(String level);
-
-    /**
-     * Get the log level property.
-     *
-     * @return The log level property.
-     */
-    StringProperty levelProperty();
+    ListProperty<LoggerLevel> loggerLevelsProperty();
 
     /**
      * Get the property of log messages.
@@ -87,4 +82,90 @@ public interface LoggerAdapter {
      * After executing this method {@link #getMessages()} returns an empty string.
      */
     void clearMessages();
+
+    /**
+     * A model class to show the loggers with its levels in ui and transfer them to the adapter.
+     */
+    final class LoggerLevel {
+        private final ReadOnlyStringWrapper logger = new ReadOnlyStringWrapper(this, "logger");
+        private final StringProperty level = new SimpleStringProperty(this, "level");
+
+        /**
+         * @param logger the loggers name
+         * @param level  the current active level.
+         */
+        public LoggerLevel(String logger, String level) {
+            this.logger.set(logger);
+            this.level.set(level);
+        }
+
+        /**
+         * @return the loggers name.
+         */
+        public String getLogger() {
+            return logger.get();
+        }
+
+        /**
+         * @return the loggers name property.
+         */
+        public ReadOnlyStringProperty loggerProperty() {
+            return logger.getReadOnlyProperty();
+        }
+
+        /**
+         * @return the current level.
+         */
+        public String getLevel() {
+            return level.get();
+        }
+
+        /**
+         * @return the level property
+         */
+        public StringProperty levelProperty() {
+            return level;
+        }
+
+        /**
+         * @param level the new logging level for this logger.
+         */
+        public void setLevel(String level) {
+            this.level.set(level);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+
+            LoggerLevel that = (LoggerLevel) o;
+
+            return new EqualsBuilder()
+                    .append(getLogger(), that.getLogger())
+                    .append(getLevel(), that.getLevel())
+                    .isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37)
+                    .append(getLogger())
+                    .append(getLevel())
+                    .toHashCode();
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this)
+                    .append("logger", logger)
+                    .append("level", level)
+                    .toString();
+        }
+    }
 }

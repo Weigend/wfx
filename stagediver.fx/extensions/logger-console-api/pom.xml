@@ -11,4 +11,10 @@
 
     <artifactId>logger-console-api</artifactId>
     <name>stagediver.fx - Extension - Logger Console API</name>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+    </dependencies>
 </project>

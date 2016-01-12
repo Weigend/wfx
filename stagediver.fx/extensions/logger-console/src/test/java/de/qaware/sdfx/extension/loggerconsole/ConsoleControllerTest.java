@@ -27,7 +27,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +58,7 @@ public class ConsoleControllerTest {
     @Spy
     private TextArea console;
     @Spy
-    private ChoiceBox<String> level;
+    private TableView<LoggerAdapter.LoggerLevel> levels;
     @Spy
     private Button clear;
 
@@ -72,17 +73,18 @@ public class ConsoleControllerTest {
     public void setUp() throws Exception {
         Lookup.init(strategy);
         when(strategy.lookup(LoggerAdapter.class)).thenReturn(adapter);
-        when(adapter.levelProperty()).thenReturn(new SimpleStringProperty());
         when(adapter.messagesProperty()).thenReturn(new SimpleStringProperty());
         when(adapter.levelsProperty()).thenReturn(new SimpleListProperty<>(FXCollections.observableArrayList()));
+        when(adapter.loggerLevelsProperty()).thenReturn(new SimpleListProperty<>(FXCollections.observableArrayList()));
         adapter.levelsProperty().addAll("ALL", "Trace", "Debug", "Info", "Warn", "Error");
         ((StringProperty) adapter.messagesProperty()).set("ABC");
+        levels.getColumns().addAll(new TableColumn<>(), new TableColumn<>());
     }
 
     @Test
     public void testInitialize() throws Exception {
         controller.initialize(null, null);
         assertThat(console.getText(), is(equalTo("ABC")));
-        assertThat(level.getItems(), hasSize(6));
+        assertThat(levels.getColumns().get(1).getCellFactory(), notNullValue());
     }
 }

@@ -24,8 +24,10 @@ import de.qaware.sdfx.lookup.Lookup;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.ComboBoxTableCell;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -37,19 +39,24 @@ import java.util.ResourceBundle;
  */
 public class ConsoleController implements Initializable {
     @FXML
-    private TextArea console;
+    private TableView<LoggerAdapter.LoggerLevel> levels;
     @FXML
-    private ChoiceBox<String> level;
+    private TextArea console;
+
     @FXML
     private Button clear;
 
     @Override
+    @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
         LoggerAdapter adapter = Lookup.lookup(LoggerAdapter.class);
-        adapter.levelProperty().bind(level.getSelectionModel().selectedItemProperty());
-        adapter.messagesProperty().addListener((o, ov, nv) -> console.setScrollTop(1));
+        adapter.messagesProperty().addListener((o, ov, nv) -> console.setScrollTop(Double.MAX_VALUE));
         console.textProperty().bind(adapter.messagesProperty());
-        level.setItems(adapter.levelsProperty());
         clear.setOnAction(event -> adapter.clearMessages());
+
+        TableColumn<LoggerAdapter.LoggerLevel, String> levelColumn = (TableColumn<LoggerAdapter.LoggerLevel, String>) levels.getColumns().get(1);
+        levelColumn.setCellFactory(ComboBoxTableCell.forTableColumn(adapter.levelsProperty().get()));
+
+        levels.itemsProperty().bindBidirectional(adapter.loggerLevelsProperty());
     }
 }
