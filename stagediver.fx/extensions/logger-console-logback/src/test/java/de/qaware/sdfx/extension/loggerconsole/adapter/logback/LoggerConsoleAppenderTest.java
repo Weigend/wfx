@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.startsWith;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,7 +69,7 @@ public class LoggerConsoleAppenderTest {
         appender.doAppend(buildEvent("before5"));
         appender.doAppend(buildEvent("before6"));
 
-        assertThat(lastMessages, is(equalTo("before2\r\nbefore3\r\nbefore4\r\nbefore5\r\nbefore6\r\n\n")));
+        assertThat(lastMessages, startsWith("before2"));
     }
 
     private ILoggingEvent buildEvent(String msg) {
