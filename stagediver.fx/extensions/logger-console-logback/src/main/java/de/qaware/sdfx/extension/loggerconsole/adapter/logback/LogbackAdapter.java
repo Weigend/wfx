@@ -25,6 +25,7 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.LoggerContextListener;
 import de.qaware.sdfx.extension.loggerconsole.api.LoggerAdapter;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -49,7 +50,7 @@ public class LogbackAdapter implements LoggerAdapter, LoggerContextListener {
     private final SimpleListProperty<LoggerLevel> loggerLevels =
             new SimpleListProperty<>(this, "loggerLevels", FXCollections.observableArrayList());
     private final ReadOnlyStringWrapper messages = new ReadOnlyStringWrapper(this, "messages");
-    private final LoggerConsoleAppender appender = new LoggerConsoleAppender(messages::set);
+    private final LoggerConsoleAppender appender = new LoggerConsoleAppender(m -> Platform.runLater(() -> messages.set(m)));
 
     private Map<Logger, Level> previousLevel = new WeakHashMap<>();
 
