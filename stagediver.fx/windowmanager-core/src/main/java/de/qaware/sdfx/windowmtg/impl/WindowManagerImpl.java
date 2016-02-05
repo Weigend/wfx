@@ -84,17 +84,20 @@ public class WindowManagerImpl implements MultiWindowManager {
      * <p>
      * The Position will give an advice where this view should be placed.
      *
-     * @param view The view to register.
+     * @param view     The view to register.
+     * @param showView True if the view should be shown immediately, false otherwise
      */
     @Override
-    public void register(final View view) {
+    public void register(final View view, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> register(view));
             return;
         }
 
         ViewStatus v = new ViewStatus(view);
+
         ViewArea area = getMainRootArea();
+        boolean show = showView;
         Position position = v.getPosition();
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
@@ -103,36 +106,45 @@ public class WindowManagerImpl implements MultiWindowManager {
                 area = tabArea;
                 position = Position.CENTER;
                 tabArea.remove(oldView);
+                show = true;
             }
         }
-        area.add(v, position);
+
+        if (show) {
+            area.add(v, position);
+        }
         views.put(view.getViewId(), v);
     }
 
     /**
      * Register a new view within this window manager using a parent view to define the exact position.
      *
-     * @param view   The view to register.
-     * @param parent An already registered view which defines the exact position to insert the view.
+     * @param view     The view to register.
+     * @param parent   An already registered view which defines the exact position to insert the view.
+     * @param showView True if the view should be shown immediately, false otherwise
      */
     @Override
-    public void register(final View view, final View parent) {
+    public void register(final View view, final View parent, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
             Platform.runLater(() -> register(view, parent));
             return;
         }
-
         if (!views.containsKey(parent.getViewId())) {
             throw new IllegalArgumentException("Can not find parent view");
         }
+
+        boolean show = showView;
         ViewStatus parentStatus = views.get(parent.getViewId());
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
         if (views.containsKey(view.getViewId())) {
             ViewStatus oldView = views.get(view.getViewId());
             oldView.getArea().remove(oldView);
+            show = true;
         }
-        parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
+        if (show) {
+            parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
+        }
         views.put(view.getViewId(), viewStatus);
     }
 

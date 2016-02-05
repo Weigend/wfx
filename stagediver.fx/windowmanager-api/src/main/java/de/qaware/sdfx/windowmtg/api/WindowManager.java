@@ -37,16 +37,28 @@ public interface WindowManager {
     void init();
 
     /**
-     * Register a new view within this window manager.
+     * Register and show a new view within this window manager.
      * <p>
      * The Position will give an advice where this view should be placed.
      *
      * @param view The view to register.
      */
-    void register(View view);
+    default void register(View view) {
+        register(view, true);
+    }
 
     /**
-     * Register a new view within this window manager using a parent view to define the exact position.
+     * Register a new view within this window manager.
+     * <p>
+     * The Position will give an advice where this view should be placed.
+     *
+     * @param view     The view to register.
+     * @param showView True if the view should be shown immediately, false otherwise
+     */
+    void register(View view, boolean showView);
+
+    /**
+     * Register and a new view within this window manager using a parent view to define the exact position.
      * <p>
      * It use the given parent view with the views position to exactly define the displayed position. If the position is
      * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
@@ -55,7 +67,22 @@ public interface WindowManager {
      * @param view   The view to register.
      * @param parent An already registered view which defines the exact position to insert the view.
      */
-    void register(View view, View parent);
+    default void register(View view, View parent) {
+        register(view, parent, true);
+    }
+
+    /**
+     * Register a new view within this window manager using a parent view to define the exact position.
+     * <p>
+     * It use the given parent view with the views position to exactly define the displayed position. If the position is
+     * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
+     * value the area which contains the parent view will be split according to the value of position of the new view.
+     *
+     * @param view     The view to register.
+     * @param parent   An already registered view which defines the exact position to insert the view.
+     * @param showView True if the view should be shown immediately, false otherwise
+     */
+    void register(View view, View parent, boolean showView);
 
     /**
      * Get the root pane for this window manager.

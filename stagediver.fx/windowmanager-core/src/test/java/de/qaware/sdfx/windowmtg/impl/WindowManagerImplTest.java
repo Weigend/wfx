@@ -138,6 +138,14 @@ public class WindowManagerImplTest {
     }
 
     @Test
+    public void testRegisterParentDontShow() throws Exception {
+        views.put("view2", view2);
+        windowManager.register(view1.getView(), view2.getView(), false);
+        verify(view2.getArea(), never()).add(any(), any(Position.class));
+        assertThat(views, hasKey("view1"));
+    }
+
+    @Test
     public void testReRegisterClosedView() throws Exception {
         views.put("view1", view1);
         view1.setArea(null);
@@ -148,6 +156,17 @@ public class WindowManagerImplTest {
         verify(mainWindow).add(captor.capture(), any(Position.class));
         assertThat(captor.getValue().getView(), is(equalTo(view1.getView())));
         assertThat(views.size(), is(equalTo(1)));
+    }
+
+    @Test
+    public void testReRegisterClosedViewDontShow() throws Exception {
+        views.put("view1", view1);
+        view1.setArea(null);
+        windowManager.register(view1.getView(), false);
+        verify(mainWindow, never()).add(any(), any(Position.class));
+
+        assertThat(views.size(), is(equalTo(1)));
+        assertThat(views, hasKey("view1"));
     }
 
     @Test
