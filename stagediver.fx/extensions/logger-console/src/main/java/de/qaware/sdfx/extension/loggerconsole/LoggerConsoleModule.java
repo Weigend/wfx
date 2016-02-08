@@ -72,7 +72,9 @@ public class LoggerConsoleModule implements Module {
     @Override
     public void stop() {
         final WindowManager manager = Lookup.lookup(WindowManager.class);
-        manager.closeView(consoleView);
+        if (manager.hasRegisteredView(consoleView)) {
+            manager.closeView(consoleView);
+        }
     }
 
     /**
