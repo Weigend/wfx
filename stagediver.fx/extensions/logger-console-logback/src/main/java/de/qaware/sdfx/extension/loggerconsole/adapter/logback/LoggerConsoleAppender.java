@@ -89,16 +89,16 @@ public class LoggerConsoleAppender extends OutputStreamAppender<ILoggingEvent> {
             super.append(eventObject);
             outputStream.flush();
             events.add(outputStream.toString("UTF-8"));
-        }
-        catch (IOException e) {
-            addStatus(new ErrorStatus("IO failure in appender", this, e));
-        }
-        finally {
             outputStream.reset();
             if (limiter.tryAcquire()) {
                 String messages = StringUtils.join(events.toArray());
                 messagesReceiver.accept(messages);
             }
+        }
+        catch (IOException e) {
+            addStatus(new ErrorStatus("IO failure in appender", this, e));
+        }
+        finally {
             lock.unlock();
         }
     }
