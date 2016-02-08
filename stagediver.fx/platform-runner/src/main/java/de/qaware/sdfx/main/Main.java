@@ -25,9 +25,10 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.platform.api.exceptions.PlatformException;
-import javafx.application.*;
-import javafx.fxml.*;
-import javafx.stage.*;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -136,7 +137,7 @@ public class Main extends Application {
      */
     @Override
     public void stop() throws Exception {
-        LOGGER.info("Begin shtudown of platform. Stop modules.");
+        LOGGER.info("Begin shutdown of platform. Stop modules.");
         modules.forEach(Module::stop);
         platformApplication.stop();
         super.stop();
