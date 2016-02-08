@@ -31,6 +31,10 @@
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx.extensions</groupId>
+            <artifactId>ui-utils</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx.extensions</groupId>
             <artifactId>logger-console</artifactId>
         </dependency>
         <dependency>

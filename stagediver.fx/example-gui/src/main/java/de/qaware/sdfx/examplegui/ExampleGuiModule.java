@@ -19,6 +19,7 @@
  */
 package de.qaware.sdfx.examplegui;
 
+import de.qaware.sdfx.extension.systemviews.SystemViewsHelper;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
@@ -96,7 +97,7 @@ public class ExampleGuiModule implements Module {
 
     @Override
     public void start() {
-
+        SystemViewsHelper.addViewOverview();
     }
 
 
