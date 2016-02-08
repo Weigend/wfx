@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane prefHeight="600.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.72"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.qaware.sdfx.extension.systemviews.ViewOverview">
+    <top>
+        <Label text="Registered Views" BorderPane.alignment="CENTER_LEFT"/>
+    </top>
+    <center>
+        <ListView BorderPane.alignment="CENTER" fx:id="views"/>
+    </center>
+</BorderPane>
