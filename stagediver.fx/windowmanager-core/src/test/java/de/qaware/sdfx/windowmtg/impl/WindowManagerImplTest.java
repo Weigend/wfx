@@ -77,11 +77,16 @@ public class WindowManagerImplTest {
     public void setUp() throws Exception {
         mockReadOnlyProperty(windowManager, "mainRootArea", mainWindow);
         Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
-        views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
+        views = getViewsStatus();
         subWindows = (List<RootArea>) Whitebox.getInternalState(windowManager, "subWindows");
         mainStage = mockStageForArea(mainWindow);
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         Lookup.init(new ServiceLoaderLookupStrategy());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, ViewStatus> getViewsStatus() {
+        return (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "viewsStatus");
     }
 
     @Test
@@ -106,6 +111,7 @@ public class WindowManagerImplTest {
         verify(mainWindow).add(captor.capture(), any(Position.class));
         assertThat(captor.getValue().getView(), is(equalTo(view.getView())));
         assertThat(views.size(), is(equalTo(1)));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view.getView()));
     }
 
     @Test
@@ -124,6 +130,7 @@ public class WindowManagerImplTest {
         verify(targetArea).add(newViewStatus, Position.CENTER);
         verify(targetArea).remove(view2);
         assertThat(views.size(), is(equalTo(2)));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view.getView()));
     }
 
     @Test
@@ -135,6 +142,7 @@ public class WindowManagerImplTest {
         ViewStatus viewStatus = captor.getValue();
         assertThat(views.size(), is(equalTo(2)));
         assertThat(views, hasEntry("view1", viewStatus));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
     @Test
@@ -143,6 +151,7 @@ public class WindowManagerImplTest {
         windowManager.register(view1.getView(), view2.getView(), false);
         verify(view2.getArea(), never()).add(any(), any(Position.class));
         assertThat(views, hasKey("view1"));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
     @Test
@@ -156,6 +165,7 @@ public class WindowManagerImplTest {
         verify(mainWindow).add(captor.capture(), any(Position.class));
         assertThat(captor.getValue().getView(), is(equalTo(view1.getView())));
         assertThat(views.size(), is(equalTo(1)));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
     @Test
@@ -167,6 +177,7 @@ public class WindowManagerImplTest {
 
         assertThat(views.size(), is(equalTo(1)));
         assertThat(views, hasKey("view1"));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
     @Test
@@ -181,11 +192,27 @@ public class WindowManagerImplTest {
 
         assertThat(views.size(), is(equalTo(2)));
         assertThat(views, hasEntry("view1", viewStatus));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testRegisterParentNoParentFound() throws Exception {
         windowManager.register(view1.getView(), view2.getView());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testUnregister() throws Exception {
+        views.put(view1.getView().getViewId(), view1);
+        views.put(view2.getView().getViewId(), view2);
+        List<View> viewList = (List<View>) Whitebox.getInternalState(windowManager, "views");
+        viewList.add(view1.getView());
+        viewList.add(view2.getView());
+
+        windowManager.unregister(view2.getView());
+        assertThat(viewList, hasSize(1));
+        assertThat(viewList, contains(view1.getView()));
+        assertThat(views.size(), is(equalTo(1)));
     }
 
     @Test
@@ -196,7 +223,6 @@ public class WindowManagerImplTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testRestoreDefaultLayout() throws Exception {
         RootArea area = mock(RootArea.class);
         mockStageForArea(area);
@@ -208,7 +234,7 @@ public class WindowManagerImplTest {
         windowManager.restoreDefaultLayout();
         assertThat(subWindows, hasSize(0));
 
-        views = (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "views");
+        views = getViewsStatus();
         assertThat(views.size(), is(equalTo(2)));
         assertThat(views.get("view1"), is(not(equalTo(view1))));
         assertThat(views.get("view1").getView(), is(equalTo(view1.getView())));
@@ -216,6 +242,9 @@ public class WindowManagerImplTest {
         assertThat(views.get("view2"), is(not(equalTo(view2))));
         assertThat(views.get("view2").getView(), is(equalTo(view2.getView())));
         assertThat(views.get("view2").getParent(), is(equalTo(views.get("view1"))));
+
+        assertThat(windowManager.getRegisteredViews(), hasSize(2));
+        assertThat(windowManager.getRegisteredViews(), containsInAnyOrder(view1.getView(), view2.getView()));
     }
 
     @Test

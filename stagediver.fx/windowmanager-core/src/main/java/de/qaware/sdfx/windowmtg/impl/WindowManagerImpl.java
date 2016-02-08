@@ -51,10 +51,12 @@ public class WindowManagerImpl implements MultiWindowManager {
     private static final Logger LOGGER = LoggerFactory.getLogger(WindowManagerImpl.class);
     protected Pane rootPane = new HBox();
     private final DragNDropManager dragNDropManager = new DragNDropManagerImpl(this);
-    private final ReadOnlyListWrapper<RootArea> subWindows = new ReadOnlyListWrapper<>();
-    private final ReadOnlyObjectWrapper<RootArea> mainRootArea = new ReadOnlyObjectWrapper<>();
-    private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>();
-    private Map<String, ViewStatus> views = new LinkedHashMap<>();
+    private final ReadOnlyListWrapper<RootArea> subWindows = new ReadOnlyListWrapper<>(this, "subWindows");
+    private final ReadOnlyObjectWrapper<RootArea> mainRootArea = new ReadOnlyObjectWrapper<>(this, "mainRootArea");
+    private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>(this, "focusedView");
+    private Map<String, ViewStatus> viewsStatus = new LinkedHashMap<>();
+    private ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
+
     private View lastFocusedView;
     private WindowFactory windowFactory = Stage::new;
 
@@ -99,8 +101,8 @@ public class WindowManagerImpl implements MultiWindowManager {
         ViewArea area = getMainRootArea();
         boolean show = showView;
         Position position = v.getPosition();
-        if (views.containsKey(view.getViewId())) {
-            ViewStatus oldView = views.get(view.getViewId());
+        if (viewsStatus.containsKey(view.getViewId())) {
+            ViewStatus oldView = viewsStatus.get(view.getViewId());
             TabArea tabArea = oldView.getArea();
             if (tabArea != null && tabArea.isValid()) {
                 area = tabArea;
@@ -113,7 +115,8 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (show) {
             area.add(v, position);
         }
-        views.put(view.getViewId(), v);
+        viewsStatus.put(view.getViewId(), v);
+        views.add(view);
     }
 
     /**
@@ -129,23 +132,31 @@ public class WindowManagerImpl implements MultiWindowManager {
             Platform.runLater(() -> register(view, parent));
             return;
         }
-        if (!views.containsKey(parent.getViewId())) {
+        if (!viewsStatus.containsKey(parent.getViewId())) {
             throw new IllegalArgumentException("Can not find parent view");
         }
 
         boolean show = showView;
-        ViewStatus parentStatus = views.get(parent.getViewId());
+        ViewStatus parentStatus = viewsStatus.get(parent.getViewId());
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
-        if (views.containsKey(view.getViewId())) {
-            ViewStatus oldView = views.get(view.getViewId());
+        if (viewsStatus.containsKey(view.getViewId())) {
+            ViewStatus oldView = viewsStatus.get(view.getViewId());
             oldView.getArea().remove(oldView);
             show = true;
         }
         if (show) {
             parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
         }
-        views.put(view.getViewId(), viewStatus);
+        viewsStatus.put(view.getViewId(), viewStatus);
+        views.add(view);
+    }
+
+    @Override
+    public void unregister(View view) {
+        closeView(view);
+        ViewStatus status = viewsStatus.remove(view.getViewId());
+        views.remove(status.getView());
     }
 
     /**
@@ -171,8 +182,9 @@ public class WindowManagerImpl implements MultiWindowManager {
         rootPane.getChildren().clear();
         //save the old views
         LinkedHashMap<String, ViewStatus> oldViews = new LinkedHashMap<>();
-        oldViews.putAll(views);
-        this.views = new LinkedHashMap<>();
+        oldViews.putAll(viewsStatus);
+        viewsStatus.clear();
+        views.clear();
         for (ViewStatus view : oldViews.values()) {
             view.restoreDefault();
             if (view.getParent() == null) {
@@ -194,10 +206,10 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void closeView(View view) {
-        if (!views.containsKey(view.getViewId())) {
+        if (!viewsStatus.containsKey(view.getViewId())) {
             throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
         }
-        ViewStatus viewStatus = views.get(view.getViewId());
+        ViewStatus viewStatus = viewsStatus.get(view.getViewId());
         viewStatus.setStatus(ViewStatus.Status.HIDDEN);
         if (viewStatus.getArea() != null) {
             viewStatus.getArea().remove(viewStatus);
@@ -229,7 +241,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void showView(View view) {
-        ViewStatus viewStatus = views.get(view.getViewId());
+        ViewStatus viewStatus = viewsStatus.get(view.getViewId());
         if (viewStatus == null || viewStatus.getView() != view) {
             throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
         }
@@ -243,8 +255,8 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         ViewStatus parent = viewStatus.getParent();
         boolean added = false;
-        views.remove(view.getViewId());
-
+        viewsStatus.remove(view.getViewId());
+        views.remove(viewStatus.getView());
         while (!added && parent != null) {
             if (parent.getStatus() == ViewStatus.Status.VISIBLE) {
                 register(view, parent.getView());
@@ -267,10 +279,10 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public View findView(String viewID) {
-        if (!views.containsKey(viewID)) {
+        if (!viewsStatus.containsKey(viewID)) {
             return null;
         }
-        return views.get(viewID).getView();
+        return viewsStatus.get(viewID).getView();
     }
 
     @Override
@@ -370,10 +382,15 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     @Override
     public List<View> getVisibleViews() {
-        return views.values().stream()
+        return viewsStatus.values().stream()
                 .filter(viewStatus -> viewStatus.getTab().isSelected())
                 .map(ViewStatus::getView)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public ReadOnlyListProperty<View> getRegisteredViews() {
+        return views.getReadOnlyProperty();
     }
 
     @Override
@@ -388,7 +405,7 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     @Override
     public boolean hasRegisteredView(View view) {
-        return views.containsKey(view.getViewId()) && views.get(view.getViewId()).getView() == view;
+        return viewsStatus.containsKey(view.getViewId()) && viewsStatus.get(view.getViewId()).getView() == view;
     }
 
     @Override
@@ -400,7 +417,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      * Set the divider positions for all current views.
      */
     private void setDividerPositions() {
-        views.values().forEach(ViewStatus::setDividerPositions);
+        viewsStatus.values().forEach(ViewStatus::setDividerPositions);
     }
 
     /**
@@ -410,7 +427,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @return A list with all views which are registered under the given area.
      */
     private List<ViewStatus> getForRootArea(final RootArea area) {
-        return views.values().stream()
+        return viewsStatus.values().stream()
                 .filter(view -> view.getArea() != null && view.getArea().getRootArea() == area)
                 .collect(Collectors.toList());
     }

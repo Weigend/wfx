@@ -20,6 +20,8 @@
 package de.qaware.sdfx.windowmtg.api;
 
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyListProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 
 import java.util.List;
@@ -107,6 +109,15 @@ public interface WindowManager {
     void closeView(View view);
 
     /**
+     * Unregister the given view.
+     * <p>
+     * If the given view is currently visible it will be closed and then removed from the list of registered views.
+     *
+     * @param view The view to register.
+     */
+    void unregister(View view);
+
+    /**
      * Clone the specified view.
      * <p>
      * The cloned view will be placed next to the given view in the same tab area.
@@ -116,7 +127,9 @@ public interface WindowManager {
      *
      * @param view Clone the given view.
      * @return The cloned view object.
+     * @deprecated Should be implemented by the application, due to various context association.
      */
+    @Deprecated
     View cloneView(View view);
 
     /**
@@ -172,6 +185,13 @@ public interface WindowManager {
      * @return Get all visible views.
      */
     List<View> getVisibleViews();
+
+    /**
+     * Get an {@link ObservableList} with all currently registered views.
+     *
+     * @return a list with all registered views.
+     */
+    ReadOnlyListProperty<View> getRegisteredViews();
 
     /**
      * Check if the given view is already registered.
