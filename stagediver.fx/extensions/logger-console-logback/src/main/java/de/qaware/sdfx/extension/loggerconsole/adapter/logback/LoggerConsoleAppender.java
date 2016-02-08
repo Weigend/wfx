@@ -97,12 +97,9 @@ public class LoggerConsoleAppender extends OutputStreamAppender<ILoggingEvent> {
             outputStream.reset();
             if (limiter.tryAcquire()) {
                 String messages = StringUtils.join(events.toArray());
-                lock.unlock();
                 messagesReceiver.accept(messages);
             }
-            else {
-                lock.unlock();
-            }
+            lock.unlock();
         }
     }
 }
