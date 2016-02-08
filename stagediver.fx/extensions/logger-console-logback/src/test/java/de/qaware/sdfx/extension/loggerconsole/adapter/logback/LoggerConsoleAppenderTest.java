@@ -66,6 +66,7 @@ public class LoggerConsoleAppenderTest {
         appender.doAppend(buildEvent("before2"));
         appender.doAppend(buildEvent("before3"));
         appender.doAppend(buildEvent("before4"));
+        Thread.sleep(1000);
         appender.doAppend(buildEvent("before5"));
         appender.doAppend(buildEvent("before6"));
 
