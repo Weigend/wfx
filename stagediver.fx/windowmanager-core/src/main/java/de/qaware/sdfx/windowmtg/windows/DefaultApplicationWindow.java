@@ -62,8 +62,6 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private Stage stage;
     private String defaultTitle;
 
-    public DefaultApplicationWindow() {}
-
     /**
      * Initialize the application window.
      *
