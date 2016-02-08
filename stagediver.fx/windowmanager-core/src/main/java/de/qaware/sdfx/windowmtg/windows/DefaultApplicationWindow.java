@@ -22,20 +22,28 @@ package de.qaware.sdfx.windowmtg.windows;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.ApplicationWindow;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.apache.commons.lang3.StringUtils;
-
-import javafx.collections.*;
-import javafx.fxml.*;
-import javafx.scene.*;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.util.Objects;
 
 /**
- * This is the main window of the stagediver.fx platform. It supports the window management
- * and the default bars like menu, tool and status bar.
+ * This is the main window of the stagediver.fx platform. It supports the window management and the default bars like
+ * menu, tool and status bar.
  *
  * @author christian.fritz
  */
@@ -43,6 +51,7 @@ import java.io.IOException;
 @javax.annotation.Priority(Integer.MIN_VALUE)
 public class DefaultApplicationWindow implements ApplicationWindow {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationWindow.class);
     @FXML
     private MenuBar menuBar;
     @FXML
@@ -52,6 +61,8 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private WindowManager windowManager;
     private Stage stage;
     private String defaultTitle;
+
+    public DefaultApplicationWindow() {}
 
     /**
      * Initialize the application window.
@@ -128,6 +139,37 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     public void setStage(Stage stage) {
         this.stage = stage;
         this.defaultTitle = stage.getTitle();
+
+        this.stage.setOnCloseRequest(this::platformShutdownRequestHandler);
+    }
+
+    /**
+     * Event handler that will be executed when request to close the main stage.
+     * <p>
+     * It can be overwritten to perform a own action.
+     *
+     * @param event The window event triggered the handler.
+     */
+    protected void platformShutdownRequestHandler(WindowEvent event) {
+        Dialog<Boolean> d = new Dialog<>();
+        d.initOwner(stage);
+        d.setResultConverter(b -> Objects.equals(b, ButtonType.YES));
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(getClass().getResource("ShutdownDialog.fxml"));
+        try {
+            d.setDialogPane(loader.load());
+            d.showAndWait().ifPresent(shouldClose -> {
+                if (!shouldClose) {
+                    event.consume();
+                }
+                else {
+                    Platform.exit();
+                }
+            });
+        }
+        catch (IOException e) {
+            LOGGER.error("Unable to load shutdown dialog.", e);
+        }
     }
 
     /**

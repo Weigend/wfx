@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ButtonType?>
+<?import javafx.scene.control.DialogPane?>
+<DialogPane contentText="Do you really wan't to close the application?" headerText="Close Application"
+            xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" id="ShutdownDialog">
+    <buttonTypes>
+        <ButtonType fx:constant="YES"/>
+        <ButtonType fx:constant="NO"/>
+    </buttonTypes>
+</DialogPane>
