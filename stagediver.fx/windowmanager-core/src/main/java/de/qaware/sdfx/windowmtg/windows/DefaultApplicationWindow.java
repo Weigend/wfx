@@ -155,7 +155,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
         d.initOwner(stage);
         d.setResultConverter(b -> Objects.equals(b, ButtonType.YES));
         FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
-        loader.setLocation(getClass().getResource("ShutdownDialog.fxml"));
+        loader.setLocation(getClass().getResource("/de/qaware/sdfx/windowmtg/windows/ShutdownDialog.fxml"));
         try {
             d.setDialogPane(loader.load());
             d.showAndWait().ifPresent(shouldClose -> {
