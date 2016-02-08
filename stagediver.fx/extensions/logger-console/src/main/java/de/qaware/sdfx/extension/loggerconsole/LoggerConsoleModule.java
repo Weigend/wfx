@@ -31,8 +31,7 @@ import javafx.scene.control.Menu;
 
 import java.io.IOException;
 
-import static de.qaware.sdfx.extension.uiutils.MenuUtil.createMenuItem;
-import static de.qaware.sdfx.extension.uiutils.MenuUtil.findOrCreateItem;
+import static de.qaware.sdfx.extension.uiutils.MenuUtil.*;
 
 /**
  * Module to load the logger console.
@@ -66,7 +65,7 @@ public class LoggerConsoleModule implements Module {
         ObservableList<Menu> menu = appWindow.getMenu();
         Menu view = findOrCreateItem(menu, "view", () -> new Menu("View"), 2);
         Menu windows = (Menu) findOrCreateItem(view.getItems(), "windows", () -> new Menu("Windows"), 0);
-        windows.getItems().add(createMenuItem("loggerConsole", "Logger Console", (e) -> showLoggerConsole()));
+        windows.getItems().add(createMenuItem("loggerConsole", "Logger Console", showView(consoleView)));
     }
 
     @Override
@@ -74,19 +73,6 @@ public class LoggerConsoleModule implements Module {
         final WindowManager manager = Lookup.lookup(WindowManager.class);
         if (manager.hasRegisteredView(consoleView)) {
             manager.closeView(consoleView);
-        }
-    }
-
-    /**
-     * Action handler to show the logging console.
-     */
-    private void showLoggerConsole() {
-        final WindowManager manager = Lookup.lookup(WindowManager.class);
-        if (!manager.hasRegisteredView(consoleView)) {
-            manager.register(consoleView);
-        }
-        else {
-            manager.showView(consoleView);
         }
     }
 }

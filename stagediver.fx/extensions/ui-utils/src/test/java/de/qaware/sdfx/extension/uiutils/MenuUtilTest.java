@@ -19,10 +19,18 @@
  */
 package de.qaware.sdfx.extension.uiutils;
 
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.LookupStrategy;
+import de.qaware.sdfx.windowmtg.api.View;
+import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,14 +39,25 @@ import java.util.List;
 import static de.qaware.sdfx.extension.uiutils.MenuUtil.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 /**
  * Unit test for the {@link MenuUtil}
  *
  * @author christian.fritz
  */
+@RunWith(MockitoJUnitRunner.class)
 public class MenuUtilTest {
+    @Mock
+    private WindowManager windowManager;
+    @Mock
+    private LookupStrategy strategy;
+
+    @Before
+    public void setUp() throws Exception {
+        Lookup.init(strategy);
+        when(strategy.lookup(WindowManager.class)).thenReturn(windowManager);
+    }
 
     @Test
     public void testCreateAndFindMenu() throws Exception {
@@ -79,5 +98,20 @@ public class MenuUtilTest {
         assertThat(item, notNullValue());
         assertThat(items, hasItem(item));
         assertThat(items.get(2), is(sameInstance(item)));
+    }
+
+    @Test
+    public void testShowView() throws Exception {
+        View view = mock(View.class);
+        showView(view).handle(null);
+        verify(windowManager).register(view);
+    }
+
+    @Test
+    public void testShowViewRegistered() throws Exception {
+        View view = mock(View.class);
+        when(windowManager.hasRegisteredView(view)).thenReturn(true);
+        showView(view).handle(null);
+        verify(windowManager).showView(view);
     }
 }

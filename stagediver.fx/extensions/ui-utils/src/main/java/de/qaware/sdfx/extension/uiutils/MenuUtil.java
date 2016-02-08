@@ -19,6 +19,9 @@
  */
 package de.qaware.sdfx.extension.uiutils;
 
+import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.windowmtg.api.View;
+import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
@@ -135,5 +138,23 @@ public final class MenuUtil {
         else {
             return (T) item;
         }
+    }
+
+    /**
+     * Get an {@link EventHandler} that shows the given view.
+     *
+     * @param view The view to show.
+     * @return the event handler that shows the view.
+     */
+    public static EventHandler<ActionEvent> showView(View view) {
+        return event -> {
+            final WindowManager manager = Lookup.lookup(WindowManager.class);
+            if (!manager.hasRegisteredView(view)) {
+                manager.register(view);
+            }
+            else {
+                manager.showView(view);
+            }
+        };
     }
 }
