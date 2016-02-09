@@ -100,12 +100,13 @@ public interface WindowManager {
     /**
      * Close the specified view.
      * <p>
-     * The given view must be registered within the {@link WindowManager}. If it is not registered a {@link
-     * IllegalArgumentException} will be thrown.
+     * The given view must be registered within the {@link WindowManager}. If the view is not registered it returns
+     * false.
      *
      * @param view That view that should be closed
+     * @return true if the view was successfully closed. otherwise false.
      */
-    void closeView(View view);
+    boolean closeView(View view);
 
     /**
      * Unregister the given view.
@@ -113,8 +114,9 @@ public interface WindowManager {
      * If the given view is currently visible it will be closed and then removed from the list of registered views.
      *
      * @param view The view to register.
+     * @return true if the view was successfully closed and unregistered. otherwise false.
      */
-    void unregister(View view);
+    boolean unregister(View view);
 
     /**
      * Clone the specified view.

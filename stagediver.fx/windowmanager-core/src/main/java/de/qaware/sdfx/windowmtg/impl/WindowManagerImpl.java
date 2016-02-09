@@ -153,10 +153,14 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     @Override
-    public void unregister(View view) {
+    public boolean unregister(View view) {
+        if (!viewsStatus.containsKey(view.getViewId())) {
+            return false;
+        }
         closeView(view);
         ViewStatus status = viewsStatus.remove(view.getViewId());
         views.remove(status.getView());
+        return true;
     }
 
     /**
@@ -205,15 +209,16 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @param view That view that should be closed
      */
     @Override
-    public void closeView(View view) {
+    public boolean closeView(View view) {
         if (!viewsStatus.containsKey(view.getViewId())) {
-            throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
+            return false;
         }
         ViewStatus viewStatus = viewsStatus.get(view.getViewId());
         viewStatus.setStatus(ViewStatus.Status.HIDDEN);
         if (viewStatus.getArea() != null) {
             viewStatus.getArea().remove(viewStatus);
         }
+        return true;
     }
 
     /**

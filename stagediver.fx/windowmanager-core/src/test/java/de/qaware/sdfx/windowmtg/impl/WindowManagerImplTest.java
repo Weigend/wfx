@@ -209,7 +209,7 @@ public class WindowManagerImplTest {
         viewList.add(view1.getView());
         viewList.add(view2.getView());
 
-        windowManager.unregister(view2.getView());
+        assertThat(windowManager.unregister(view2.getView()), is(true));
         assertThat(viewList, hasSize(1));
         assertThat(viewList, contains(view1.getView()));
         assertThat(views.size(), is(equalTo(1)));
@@ -251,7 +251,7 @@ public class WindowManagerImplTest {
     public void testCloseView() throws Exception {
         views.put("view1", view1);
         views.put("view2", view2);
-        windowManager.closeView(view1.getView());
+        assertThat(windowManager.closeView(view1.getView()), is(true));
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }
 
@@ -259,14 +259,13 @@ public class WindowManagerImplTest {
     public void testCloseViewAlreadyClosed() throws Exception {
         views.put("view1", view1);
         view1.setArea(null);
-        windowManager.closeView(view1.getView());
+        assertThat(windowManager.closeView(view1.getView()), is(true));
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testCloseViewNotExists() throws Exception {
-        windowManager.closeView(mock(View.class));
-        assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
+        assertThat(windowManager.closeView(mock(View.class)), is(false));
     }
 
     @Test
