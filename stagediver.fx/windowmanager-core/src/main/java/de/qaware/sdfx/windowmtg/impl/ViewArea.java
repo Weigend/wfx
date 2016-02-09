@@ -334,7 +334,7 @@ public class ViewArea {
     /**
      * Check if the view area is valid and registered.
      *
-     * @return true if the view area is valid. fals otherwise.
+     * @return true if the view area is valid. false otherwise.
      */
     public boolean isValid() {
         return getParent() != null && (getParent().getFirstChild() == this || getParent().getSecondChild() == this) && getParent().isValid();

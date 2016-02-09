@@ -115,12 +115,9 @@ public class WindowManagerImpl implements MultiWindowManager {
             }
         }
 
-        if (show) {
-            area.add(v, position);
+        register(v, show, area, position);
         }
-        viewsStatus.put(view.getViewId(), v);
-        views.add(view);
-    }
+
 
     /**
      * Register a new view within this window manager using a parent view to define the exact position.
@@ -139,20 +136,27 @@ public class WindowManagerImpl implements MultiWindowManager {
             throw new IllegalArgumentException("Can not find parent view");
         }
 
-        boolean show = showView;
         ViewStatus parentStatus = viewsStatus.get(parent.getViewId());
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
-        if (viewsStatus.containsKey(view.getViewId())) {
-            ViewStatus oldView = viewsStatus.get(view.getViewId());
-            oldView.getArea().remove(oldView);
-            show = true;
+        boolean show = unregister(view) || showView;
+        register(viewStatus, show, parentStatus.getArea(), viewStatus.getPosition());
         }
-        if (show) {
-            parentStatus.getArea().add(viewStatus, viewStatus.getPosition());
+
+    /**
+     * Performs the real registration by updating the caches and the view area.
+     *
+     * @param viewStatus the view status to register
+     * @param show       should show the view
+     * @param viewArea   the real target view area
+     * @param position   the real target position.
+     */
+    private void register(ViewStatus viewStatus, boolean show, ViewArea viewArea, Position position) {
+        if (show && viewArea != null && position != null) {
+            viewArea.add(viewStatus, position);
         }
-        viewsStatus.put(view.getViewId(), viewStatus);
-        views.add(view);
+        viewsStatus.put(viewStatus.getView().getViewId(), viewStatus);
+        views.add(viewStatus.getView());
     }
 
     @Override
@@ -160,10 +164,23 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (!viewsStatus.containsKey(view.getViewId())) {
             return false;
         }
-        closeView(view);
+        unregisterImpl(view);
+        return true;
+    }
+
+    /**
+     * Unregister a given view.
+     * <p>
+     * If the view visible it will be closed before unregister.
+     *
+     * @param view The view to unregister.
+     * @return The last position if the view was visible at last. otherwise null.
+     */
+    private TabArea unregisterImpl(View view) {
+        TabArea oldArea = closeViewImpl(view);
         ViewStatus status = viewsStatus.remove(view.getViewId());
         views.remove(status.getView());
-        return true;
+        return oldArea;
     }
 
     /**
@@ -213,15 +230,28 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public boolean closeView(View view) {
+        return closeViewImpl(view) != null;
+    }
+
+    /**
+     * Close the given view. It returns the area of the last position.
+     * <p>
+     * If the view can not be found or is already closed it returns null.
+     *
+     * @param view the view to close.
+     * @return the last position.
+     */
+    private TabArea closeViewImpl(View view) {
         if (!viewsStatus.containsKey(view.getViewId())) {
-            return false;
+            return null;
         }
         ViewStatus viewStatus = viewsStatus.get(view.getViewId());
         viewStatus.setStatus(ViewStatus.Status.HIDDEN);
-        if (viewStatus.getArea() != null) {
-            viewStatus.getArea().remove(viewStatus);
+        TabArea tabArea = viewStatus.getArea();
+        if (tabArea != null) {
+            tabArea.remove(viewStatus);
         }
-        return true;
+        return tabArea;
     }
 
     /**

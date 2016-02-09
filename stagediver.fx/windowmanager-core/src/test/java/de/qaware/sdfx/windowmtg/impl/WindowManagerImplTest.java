@@ -259,7 +259,7 @@ public class WindowManagerImplTest {
     public void testCloseViewAlreadyClosed() throws Exception {
         views.put("view1", view1);
         view1.setArea(null);
-        assertThat(windowManager.closeView(view1.getView()), is(true));
+        assertThat(windowManager.closeView(view1.getView()), is(false));
         assertThat(view1.getStatus(), is(ViewStatus.Status.HIDDEN));
     }
 
