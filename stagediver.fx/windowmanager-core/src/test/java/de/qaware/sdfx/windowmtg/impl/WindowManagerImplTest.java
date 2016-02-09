@@ -32,6 +32,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.internal.util.reflection.Whitebox;
@@ -59,18 +60,19 @@ public class WindowManagerImplTest {
     public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
     @Mock
     private DragNDropManager dragNDropManager;
-
     @Mock
     private RootArea mainWindow;
+    @Captor
+    private ArgumentCaptor<ViewStatus> viewStatusCaptor;
 
     private Stage mainStage;
     private ViewStatus view1 = mockView("view1", "view1");
     private ViewStatus view2 = mockView("view2", "view2");
+    private Map<String, ViewStatus> views;
+    private List<RootArea> subWindows;
 
     @InjectMocks
     private WindowManagerImpl windowManager;
-    private Map<String, ViewStatus> views;
-    private List<RootArea> subWindows;
 
     @Before
     @SuppressWarnings("unchecked")
@@ -101,21 +103,27 @@ public class WindowManagerImplTest {
         verify(view2).setDividerPositions();
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, boolean)} case successful registration of a view
+     */
     @Test
-    public void testRegisterViewWithoutParent() throws Exception {
+    public void testRegister() throws Exception {
         ViewStatus view = mockView("newView", "new View");
-        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
         assertThat(views.size(), is(equalTo(0)));
+
         windowManager.register(view.getView());
 
-        verify(mainWindow).add(captor.capture(), any(Position.class));
-        assertThat(captor.getValue().getView(), is(equalTo(view.getView())));
+        verify(mainWindow).add(viewStatusCaptor.capture(), any(Position.class));
+        assertThat(viewStatusCaptor.getValue().getView(), is(equalTo(view.getView())));
         assertThat(views.size(), is(equalTo(1)));
         assertThat(windowManager.getRegisteredViews(), hasItem(view.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, boolean)} case register a new view with already registered view id.
+     */
     @Test
-    public void testRegisterViewWithoutParentViewExists() throws Exception {
+    public void testRegisterViewExists() throws Exception {
         views.put("view1", view1);
         views.put("view2", view2);
         TabArea targetArea = view2.getArea();
@@ -133,20 +141,27 @@ public class WindowManagerImplTest {
         assertThat(windowManager.getRegisteredViews(), hasItem(view.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, View, boolean)} case successful and show the registered view.
+     */
     @Test
     public void testRegisterParent() throws Exception {
         views.put("view2", view2);
+
         windowManager.register(view1.getView(), view2.getView());
-        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
-        verify(view2.getArea()).add(captor.capture(), any(Position.class));
-        ViewStatus viewStatus = captor.getValue();
+
+        verify(view2.getArea()).add(viewStatusCaptor.capture(), any(Position.class));
+        ViewStatus viewStatus = viewStatusCaptor.getValue();
         assertThat(views.size(), is(equalTo(2)));
         assertThat(views, hasEntry("view1", viewStatus));
         assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, View, boolean)} case successful but don't show the registered view.
+     */
     @Test
-    public void testRegisterParentDontShow() throws Exception {
+    public void testRegisterParentDoNotShow() throws Exception {
         views.put("view2", view2);
         windowManager.register(view1.getView(), view2.getView(), false);
         verify(view2.getArea(), never()).add(any(), any(Position.class));
@@ -154,20 +169,27 @@ public class WindowManagerImplTest {
         assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, boolean)} case successful register an already registered but closed
+     * view
+     */
     @Test
     public void testReRegisterClosedView() throws Exception {
         views.put("view1", view1);
         view1.setArea(null);
-        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
 
         windowManager.register(view1.getView());
 
-        verify(mainWindow).add(captor.capture(), any(Position.class));
-        assertThat(captor.getValue().getView(), is(equalTo(view1.getView())));
+        verify(mainWindow).add(viewStatusCaptor.capture(), any(Position.class));
+        assertThat(viewStatusCaptor.getValue().getView(), is(equalTo(view1.getView())));
         assertThat(views.size(), is(equalTo(1)));
         assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, boolean)} case successful register an already registered but closed
+     * view and the view should not be visible after registration.
+     */
     @Test
     public void testReRegisterClosedViewDontShow() throws Exception {
         views.put("view1", view1);
@@ -180,14 +202,17 @@ public class WindowManagerImplTest {
         assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, View, boolean)} case successful register an already registered view
+     */
     @Test
-    public void testRegisterParentUnregistered() throws Exception {
+    public void testRegisterParentReRegistered() throws Exception {
         views.put("view1", view1);
         views.put("view2", view2);
+
         windowManager.register(view1.getView(), view2.getView());
-        ArgumentCaptor<ViewStatus> captor = ArgumentCaptor.forClass(ViewStatus.class);
-        verify(view2.getArea()).add(captor.capture(), any(Position.class));
-        ViewStatus viewStatus = captor.getValue();
+        verify(view2.getArea()).add(viewStatusCaptor.capture(), any(Position.class));
+        ViewStatus viewStatus = viewStatusCaptor.getValue();
         verify(view1.getArea()).remove(view1);
 
         assertThat(views.size(), is(equalTo(2)));
@@ -195,6 +220,27 @@ public class WindowManagerImplTest {
         assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
     }
 
+    /**
+     * Test {@link WindowManagerImpl#register(View, View, boolean)} case successful register view with parent. but
+     * parent view is closed
+     */
+    @Test
+    public void testRegisterParentClosed() throws Exception {
+        views.put("view2", view2);
+        view2.setArea(null);
+
+        windowManager.register(view1.getView(), view2.getView());
+
+        verify(mainWindow).add(viewStatusCaptor.capture(), any(Position.class));
+        ViewStatus viewStatus = viewStatusCaptor.getValue();
+        assertThat(views.size(), is(equalTo(2)));
+        assertThat(views, hasEntry("view1", viewStatus));
+        assertThat(windowManager.getRegisteredViews(), hasItem(view1.getView()));
+    }
+
+    /**
+     * Test {@link WindowManagerImpl#register(View, boolean)} case view2 as parent is not registered.
+     */
     @Test(expected = IllegalArgumentException.class)
     public void testRegisterParentNoParentFound() throws Exception {
         windowManager.register(view1.getView(), view2.getView());

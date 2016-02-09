@@ -98,26 +98,19 @@ public class WindowManagerImpl implements MultiWindowManager {
             Platform.runLater(() -> register(view));
             return;
         }
-
         ViewStatus v = new ViewStatus(view);
 
         ViewArea area = getMainRootArea();
         boolean show = showView;
         Position position = v.getPosition();
-        if (viewsStatus.containsKey(view.getViewId())) {
-            ViewStatus oldView = viewsStatus.get(view.getViewId());
-            TabArea tabArea = oldView.getArea();
-            if (tabArea != null && tabArea.isValid()) {
-                area = tabArea;
-                position = Position.CENTER;
-                tabArea.remove(oldView);
-                show = true;
-            }
+        TabArea oldArea = unregisterImpl(view);
+        if (oldArea != null && oldArea.isValid()) {
+            area = oldArea;
+            position = Position.CENTER;
+            show = true;
         }
-
         register(v, show, area, position);
-        }
-
+    }
 
     /**
      * Register a new view within this window manager using a parent view to define the exact position.
@@ -140,8 +133,31 @@ public class WindowManagerImpl implements MultiWindowManager {
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
         boolean show = unregister(view) || showView;
-        register(viewStatus, show, parentStatus.getArea(), viewStatus.getPosition());
+        ViewArea area = findAreaToAdd(parentStatus);
+        if (area == null) {
+            area = getMainRootArea();
         }
+        register(viewStatus, show, area, viewStatus.getPosition());
+    }
+
+    /**
+     * Find the deepest view area defined by the parent view.
+     *
+     * @param parentView start the search for a visible parent view area.
+     * @return the found view area to add the view. otherwise false.
+     */
+    private ViewArea findAreaToAdd(ViewStatus parentView) {
+        ViewStatus parent = parentView;
+
+        while (parent != null) {
+            TabArea area = parent.getArea();
+            if (area != null) {
+                return area;
+            }
+            parent = parent.getParent();
+        }
+        return null;
+    }
 
     /**
      * Performs the real registration by updating the caches and the view area.
@@ -179,7 +195,9 @@ public class WindowManagerImpl implements MultiWindowManager {
     private TabArea unregisterImpl(View view) {
         TabArea oldArea = closeViewImpl(view);
         ViewStatus status = viewsStatus.remove(view.getViewId());
-        views.remove(status.getView());
+        if (status != null) {
+            views.remove(status.getView());
+        }
         return oldArea;
     }
 
