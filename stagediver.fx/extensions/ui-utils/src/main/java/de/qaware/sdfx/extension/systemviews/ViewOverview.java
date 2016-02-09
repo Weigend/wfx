@@ -53,22 +53,7 @@ public class ViewOverview implements Initializable {
         items.setComparator((o1, o2) -> o1.getTitle().compareTo(o2.getTitle()));
         views.setItems(items);
 
-        views.setCellFactory(param -> new ListCell<View>() {
-            @Override
-            protected void updateItem(View item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null) {
-                    return;
-                }
-                setId("overview_" + item.getViewId());
-                setText(item.getTitle());
-                if (item.getViewImagePath() != null) {
-                    setGraphic(new ImageView(new Image(
-                            item.getViewImagePath().toString(), IMAGE_SIZE, IMAGE_SIZE, true, true)));
-                }
-            }
-
-        });
+        views.setCellFactory(param -> new ViewListCell());
         views.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2) {
                 showView();
@@ -83,5 +68,31 @@ public class ViewOverview implements Initializable {
 
     private void showView() {
         windowManager.showView(views.getSelectionModel().getSelectedItem());
+    }
+
+    /**
+     * The {@link ListCell} for {@link View} objects.
+     */
+    private static class ViewListCell extends ListCell<View> {
+        @Override
+        protected void updateItem(View item, boolean empty) {
+            super.updateItem(item, empty);
+            if (empty) {
+                setId(null);
+                setText(null);
+                setGraphic(null);
+                return;
+            }
+            setId("overview_" + item.getViewId());
+            setText(item.getTitle());
+            if (item.getViewImagePath() != null) {
+                setGraphic(new ImageView(new Image(
+                        item.getViewImagePath().toString(), IMAGE_SIZE, IMAGE_SIZE, true, true)));
+            }
+            else {
+                setGraphic(null);
+            }
+        }
+
     }
 }
