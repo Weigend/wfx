@@ -22,6 +22,7 @@ package de.qaware.sdfx.extension.systemviews;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListCell;
@@ -48,7 +49,10 @@ public class ViewOverview implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         windowManager = Lookup.lookup(WindowManager.class);
-        views.setItems(windowManager.getRegisteredViews());
+        SortedList<View> items = new SortedList<>(windowManager.getRegisteredViews());
+        items.setComparator((o1, o2) -> o1.getTitle().compareTo(o2.getTitle()));
+        views.setItems(items);
+
         views.setCellFactory(param -> new ListCell<View>() {
             @Override
             protected void updateItem(View item, boolean empty) {
