@@ -21,7 +21,6 @@ package de.qaware.sdfx.windowmtg.api;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 
 import java.util.List;
@@ -187,7 +186,7 @@ public interface WindowManager {
     List<View> getVisibleViews();
 
     /**
-     * Get an {@link ObservableList} with all currently registered views.
+     * Get an {@link javafx.collections.ObservableList} with all currently registered views.
      *
      * @return a list with all registered views.
      */
