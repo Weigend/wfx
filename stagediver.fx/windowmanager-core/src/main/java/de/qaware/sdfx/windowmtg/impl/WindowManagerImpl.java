@@ -31,12 +31,10 @@ import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-import org.apache.commons.collections4.list.SetUniqueList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,8 +55,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final ReadOnlyObjectWrapper<RootArea> mainRootArea = new ReadOnlyObjectWrapper<>(this, "mainRootArea");
     private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>(this, "focusedView");
     private Map<String, ViewStatus> viewsStatus = new LinkedHashMap<>();
-    private ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views",
-            FXCollections.observableList(SetUniqueList.setUniqueList(new ArrayList<>())));
+    private ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
 
     private View lastFocusedView;
     private WindowFactory windowFactory = Stage::new;
@@ -301,6 +298,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (viewStatus == null || viewStatus.getView() != view) {
             throw new IllegalArgumentException(String.format("View with id '%s' is not registered", view.getViewId()));
         }
+        // view is already registered and visible but in background => request focus on view
         if (viewStatus.getStatus() == ViewStatus.Status.VISIBLE && viewStatus.getTab().getTabPane() != null) {
             viewStatus.getTab().getTabPane().requestFocus();
             viewStatus.getTab().getTabPane().getSelectionModel().select(viewStatus.getTab());
@@ -310,18 +308,11 @@ public class WindowManagerImpl implements MultiWindowManager {
         viewStatus.restoreDefault();
 
         ViewStatus parent = viewStatus.getParent();
-        boolean added = false;
-        viewsStatus.remove(view.getViewId());
-        views.remove(viewStatus.getView());
-        while (!added && parent != null) {
-            if (parent.getStatus() == ViewStatus.Status.VISIBLE) {
-                register(view, parent.getView());
-                added = true;
-            }
-            parent = parent.getParent();
+        if (parent != null) {
+            register(view, parent.getView(), true);
         }
-        if (!added) {
-            register(view);
+        else {
+            register(view, true);
         }
     }
 

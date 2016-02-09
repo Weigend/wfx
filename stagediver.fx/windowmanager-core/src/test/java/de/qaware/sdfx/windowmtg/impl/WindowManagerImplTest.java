@@ -351,13 +351,18 @@ public class WindowManagerImplTest {
         Whitebox.setInternalState(view1, "parent", view2);
         Whitebox.setInternalState(view2, "parent", view3);
         view2.setStatus(ViewStatus.Status.HIDDEN);
+        view2.setArea(null);
 
         windowManager.showView(view1.getView());
+
 
         assertThat(views.size(), is(equalTo(3)));
         assertThat(views.get("view1"), is(not(equalTo(view1))));
         assertThat(views.get("view1").getView(), is(equalTo(view1.getView())));
-        assertThat(views.get("view1").getParent(), is(view3));
+        assertThat(views.get("view1").getParent(), is(view2));
+
+        verify(view3.getArea()).add(viewStatusCaptor.capture(), any());
+        assertThat(viewStatusCaptor.getValue(), is(views.get("view1")));
     }
 
     @Test(expected = IllegalArgumentException.class)
