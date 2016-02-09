@@ -291,6 +291,9 @@ public class WindowManagerImplTest {
 
         assertThat(windowManager.getRegisteredViews(), hasSize(2));
         assertThat(windowManager.getRegisteredViews(), containsInAnyOrder(view1.getView(), view2.getView()));
+
+        verify(views.get("view1").getView()).getViewAreaSize();
+        verify(views.get("view2").getView()).getViewAreaSize();
     }
 
     @Test
