@@ -78,9 +78,18 @@ subprojects {
     sourceCompatibility = 8
     targetCompatibility = 8
 
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
     task packageSources(type: Jar) {
         classifier = 'sources'
         from sourceSets.main.allSource
+    }
+
+    task javadocJar(type: Jar) {
+        classifier = 'javadoc'
+        from javadoc
     }
 
     artifacts.archives packageSources
@@ -106,6 +115,12 @@ subprojects {
         publications {
             mavenJava(MavenPublication) {
                 from components.java
+                if (tasks.findByName('jarTests') != null) {
+                    artifact jarTests {
+                        classifier "tests"
+                    }
+                }
+                artifact javadocJar
                 artifact packageSources {
                     classifier "sources"
                 }
