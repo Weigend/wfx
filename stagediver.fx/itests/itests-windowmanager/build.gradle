@@ -1,0 +1,10 @@
+description = 'stagediver.fx - Window Manager UI Integration Tests'
+dependencies {
+    compile project(':lookup')
+    compile project(':windowmanager-api')
+    compile project(':windowmanager-core')
+
+    testCompile project(path: ':windowmanager-api', configuration: 'tests')
+    testCompile project(path: ':windowmanager-core', configuration: 'tests')
+    testCompile 'org.loadui:testFx'
+}

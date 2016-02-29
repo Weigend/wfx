@@ -9,6 +9,5 @@ dependencies {
     compile project(':extensions:ui-utils')
     compile project(':extensions:logger-console')
     compile project(':extensions:logger-console-logback')
-    compile project(':platform-full')
     compile 'ch.qos.logback:logback-classic'
 }
