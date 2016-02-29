@@ -6,8 +6,15 @@ dependencies {
     testCompile 'org.loadui:testFx'
 }
 
-task packageTests(type: Jar) {
-    from sourceSets.test.output
+task jarTests(type: Jar, dependsOn: testClasses) {
     classifier = 'tests'
+    from sourceSets.test.output
 }
-artifacts.archives packageTests
+configurations {
+    tests {
+        extendsFrom testRuntime
+    }
+}
+artifacts {
+    tests jarTests
+}

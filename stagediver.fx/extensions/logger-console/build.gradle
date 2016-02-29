@@ -7,6 +7,6 @@ dependencies {
     compile project(':windowmanager-api')
     compile project(':extensions:ui-utils')
 
-    testCompile project(':windowmanager-api')
+    testCompile project(path: ':windowmanager-api', configuration: 'tests')
     testCompile 'org.loadui:testFx'
 }

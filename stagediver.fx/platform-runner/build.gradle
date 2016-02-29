@@ -6,6 +6,16 @@ dependencies {
     compile 'com.google.guava:guava'
     compile 'org.slf4j:slf4j-api'
 
-    testCompile project(':windowmanager-api')
+    testCompile project(path: ':windowmanager-api', configuration: 'tests')
     testCompile 'org.loadui:testFx'
+}
+sourceSets {
+    main {
+        // Workaround for tests with CDI. Ensures the META-INF/beans.xml within the same directory as the class files.
+        output.resourcesDir = 'build/classes/main'
+    }
+    test {
+        // Workaround for tests with CDI. Ensures the META-INF/beans.xml within the same directory as the class files.
+        output.resourcesDir = 'build/classes/test'
+    }
 }

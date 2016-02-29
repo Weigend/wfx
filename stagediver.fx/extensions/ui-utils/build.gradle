@@ -5,7 +5,6 @@ dependencies {
     compile project(':windowmanager-api')
     compile 'org.apache.commons:commons-lang3'
 
-
-    testCompile project(':windowmanager-api')
+    testCompile project(path: ':windowmanager-api', configuration: 'tests')
     testCompile 'org.loadui:testFx'
 }
