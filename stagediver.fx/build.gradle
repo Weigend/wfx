@@ -17,6 +17,7 @@ ext {
 
 allprojects {
     apply plugin: 'maven'
+    apply plugin: 'maven-publish'
     apply plugin: "io.spring.dependency-management"
 
     group = 'de.qaware.stagediver.fx'
@@ -53,6 +54,23 @@ allprojects {
             dependency group: 'nl.jqno.equalsverifier', name: 'equalsverifier', version: '1.7.5'
         }
     }
+
+    publishing {
+        repositories {
+            maven {
+                if (project.version.endsWith('-SNAPSHOT')) {
+                    url "https://www.qaware.de/nexus/content/repositories/qaware-internal-snapshots/"
+                }
+                else {
+                    url "https://www.qaware.de/nexus/content/repositories/qaware-internal/"
+                }
+                credentials {
+                    username qawareUsername
+                    password qawarePassword
+                }
+            }
+        }
+    }
 }
 
 subprojects {
@@ -83,6 +101,16 @@ subprojects {
             }
         }
         maven { url "http://repo.maven.apache.org/maven2" }
+    }
+    publishing {
+        publications {
+            mavenJava(MavenPublication) {
+                from components.java
+                artifact packageSources {
+                    classifier "sources"
+                }
+            }
+        }
     }
 
     dependencies {
