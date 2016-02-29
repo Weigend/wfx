@@ -1,0 +1,11 @@
+description = 'stagediver.fx - Platform-Runner'
+dependencies {
+    compile project(':lookup')
+    compile project(':platform-api')
+    compile project(':lookup-cdi')
+    compile 'com.google.guava:guava'
+    compile 'org.slf4j:slf4j-api'
+
+    testCompile project(':windowmanager-api')
+    testCompile 'org.loadui:testFx'
+}

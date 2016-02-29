@@ -1,0 +1,19 @@
+description = 'stagediver.fx - CDI Lookup Module'
+dependencies {
+    compile project(':lookup')
+    compile 'javax.enterprise:cdi-api'
+    compile 'javax.inject:javax.inject'
+
+    compile 'org.jboss.weld.se:weld-se'
+    compile 'org.jboss.weld:weld-core'
+    compile 'org.apache.commons:commons-lang3'
+
+    testCompile project(':lookup')
+    testCompile 'org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec'
+}
+
+task packageTests(type: Jar) {
+    from sourceSets.test.output
+    classifier = 'tests'
+}
+artifacts.archives packageTests

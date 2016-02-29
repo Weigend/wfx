@@ -1,0 +1,26 @@
+description = 'stagediver.fx - Window Manager Core'
+
+dependencies {
+    compile project(':windowmanager-api')
+    compile project(':platform-api')
+    compile project(':lookup')
+
+    compile 'javax.enterprise:cdi-api'
+    compile 'javax.inject:javax.inject'
+    compile 'org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec'
+
+    compile 'org.jboss.weld:weld-core'
+    compile 'org.apache.commons:commons-lang3'
+    compile 'com.google.guava:guava'
+
+    testCompile project(':windowmanager-api')
+    testCompile project(':lookup-cdi')
+    testCompile 'org.jboss.weld.se:weld-se'
+    testCompile 'org.loadui:testFx'
+}
+
+task packageTests(type: Jar) {
+    from sourceSets.test.output
+    classifier = 'tests'
+}
+artifacts.archives packageTests

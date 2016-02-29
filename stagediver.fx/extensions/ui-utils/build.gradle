@@ -1,0 +1,11 @@
+group = 'de.qaware.stagediver.fx.extensions'
+description = 'stagediver.fx - Extension - UI-Utils'
+dependencies {
+    compile project(':lookup')
+    compile project(':windowmanager-api')
+    compile 'org.apache.commons:commons-lang3'
+
+
+    testCompile project(':windowmanager-api')
+    testCompile 'org.loadui:testFx'
+}

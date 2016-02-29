@@ -1,0 +1,34 @@
+rootProject.name = 'stagediver.fx'
+include ':platform-runner'
+include ':platform-api'
+include ':platform-core'
+include ':lookup'
+include ':lookup-cdi'
+include ':windowmanager-api'
+include ':windowmanager-core'
+include ':stagediverfx-maven-plugin'
+include ':stagediverfx-archetype-quickstart'
+include ':example-gui'
+include ':platform-full'
+include ':extensions:logger-console'
+include ':extensions:ui-utils'
+include ':extensions:logger-console-api'
+include ':extensions:logger-console-logback'
+include ':extensions'
+
+project(':platform-runner').projectDir = "$rootDir/platform-runner" as File
+project(':platform-api').projectDir = "$rootDir/platform-api" as File
+project(':platform-core').projectDir = "$rootDir/platform-core" as File
+project(':lookup').projectDir = "$rootDir/lookup" as File
+project(':lookup-cdi').projectDir = "$rootDir/lookup-cdi" as File
+project(':windowmanager-api').projectDir = "$rootDir/windowmanager-api" as File
+project(':windowmanager-core').projectDir = "$rootDir/windowmanager-core" as File
+project(':stagediverfx-maven-plugin').projectDir = "$rootDir/stagediverfx-maven-plugin" as File
+project(':stagediverfx-archetype-quickstart').projectDir = "$rootDir/stagediverfx-archetype-quickstart" as File
+project(':example-gui').projectDir = "$rootDir/example-gui" as File
+project(':platform-full').projectDir = "$rootDir/platform-full" as File
+project(':extensions:logger-console').projectDir = "$rootDir/extensions/logger-console" as File
+project(':extensions:ui-utils').projectDir = "$rootDir/extensions/ui-utils" as File
+project(':extensions:logger-console-api').projectDir = "$rootDir/extensions/logger-console-api" as File
+project(':extensions:logger-console-logback').projectDir = "$rootDir/extensions/logger-console-logback" as File
+project(':extensions').projectDir = "$rootDir/extensions" as File

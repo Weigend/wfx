@@ -1,0 +1,9 @@
+group = 'de.qaware.stagediver.fx.extensions'
+description = 'stagediver.fx - Extension - Logger Console Adapter - Logback'
+dependencies {
+    compile project(':extensions:logger-console-api')
+    compile 'ch.qos.logback:logback-core'
+    compile 'org.apache.commons:commons-collections4'
+    compile 'org.apache.commons:commons-lang3'
+    compile 'com.google.guava:guava'
+}

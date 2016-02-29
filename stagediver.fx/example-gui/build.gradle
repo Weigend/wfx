@@ -1,0 +1,11 @@
+description = 'stagediver.fx - Example-GUI'
+dependencies {
+    compile project(':windowmanager-api')
+    compile project(':lookup')
+    compile project(':platform-api')
+    compile project(':platform-runner')
+    compile project(':extensions:ui-utils')
+    compile project(':extensions:logger-console')
+    compile project(':extensions:logger-console-logback')
+    compile project(':platform-full')
+}
