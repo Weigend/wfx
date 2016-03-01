@@ -13,6 +13,7 @@ ext {
     weldVersion = '2.3.1.Final'
     slf4jVersion = '1.7.12'
     logbackVersion = '1.1.3'
+    vendor = 'QAware GmbH'
 }
 
 allprojects {
@@ -92,6 +93,20 @@ subprojects {
         from javadoc
     }
 
+    jar {
+        manifest {
+            attributes(
+                    'Implementation-Title': project.description ?: project.name,
+                    'Implementation-Version': version,
+                    'Implementation-Vendor-Id': project.group,
+                    'Implementation-Vendor': vendor,
+                    'Specification-Title': project.description ?: project.name,
+                    'Specification-Version': version,
+                    'Specification-Vendor': vendor
+            )
+        }
+    }
+
     artifacts.archives packageSources
     repositories {
         mavenLocal()
@@ -111,6 +126,7 @@ subprojects {
         }
         maven { url "http://repo.maven.apache.org/maven2" }
     }
+
     publishing {
         publications {
             mavenJava(MavenPublication) {
