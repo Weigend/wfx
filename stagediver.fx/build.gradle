@@ -11,8 +11,8 @@ buildscript {
 plugins {
     id 'org.sonarqube' version '1.2'
 }
-
 apply plugin: 'org.sonarqube'
+
 ext {
     weldVersion = '2.3.1.Final'
     slf4jVersion = '1.7.12'
@@ -170,6 +170,17 @@ subprojects {
     test {
         if (project.hasProperty('ignoreTestFailure')) {
             ignoreFailures = ignoreTestFailure.toBoolean()
+        }
+    }
+}
+gradle.taskGraph.whenReady {
+    subprojects {
+        test {
+            jacoco {
+                def sonarActive = gradle.taskGraph.hasTask(project.rootProject.tasks['sonarqube'])
+                enabled = sonarActive
+                logger.info "SonarQube Analysis is ${sonarActive}. Set Jacoco Execution also to ${enabled}"
+            }
         }
     }
 }
