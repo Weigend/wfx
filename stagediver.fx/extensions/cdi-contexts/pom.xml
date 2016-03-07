@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cdi-contexts</artifactId>
+    <name>stagediver.fx - Extension - CDI Contexts</name>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -35,6 +36,16 @@
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>lookup</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.qaware.stagediver.fx</groupId>
+            <artifactId>windowmanager-api</artifactId>
+        </dependency>
+
+
         <!-- CDI & Weld dependencies -->
         <dependency>
             <groupId>javax.inject</groupId>
@@ -43,6 +54,10 @@
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.annotation</groupId>
+            <artifactId>jboss-annotations-api_1.2_spec</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.weld.se</groupId>
@@ -57,10 +72,6 @@
 
         <!-- Commons dependencies -->
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
@@ -71,14 +82,10 @@
             <artifactId>lookup-cdi</artifactId>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>lookup</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>windowmanager-api</artifactId>
+            <artifactId>windowmanager-core</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
