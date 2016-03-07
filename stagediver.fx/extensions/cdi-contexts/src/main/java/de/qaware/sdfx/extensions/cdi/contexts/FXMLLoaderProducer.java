@@ -17,9 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package de.qaware.sdfx.windowmtg.impl;
+package de.qaware.sdfx.extensions.cdi.contexts;
 
-import javafx.fxml.*;
+import javafx.fxml.FXMLLoader;
 import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
 
 import javax.enterprise.context.Dependent;

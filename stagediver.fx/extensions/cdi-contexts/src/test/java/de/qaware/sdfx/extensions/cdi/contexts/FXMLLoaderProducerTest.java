@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package de.qaware.sdfx.windowmtg.impl;
+package de.qaware.sdfx.extensions.cdi.contexts;
 
 
 import de.qaware.sdfx.lookup.Lookup;
@@ -25,19 +25,20 @@ import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
-import javafx.fxml.*;
-import javafx.scene.control.*;
 import javax.annotation.PostConstruct;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- * Unit test for the {@link de.qaware.sdfx.windowmtg.impl.FXMLLoaderProducer}.
+ * Unit test for the {@link de.qaware.sdfx.extensions.cdi.contexts.FXMLLoaderProducer}.
  *
  * @author christian.fritz
  */
@@ -52,8 +53,12 @@ public class FXMLLoaderProducerTest {
 
     @Test
     public void testLoadFxml() throws Exception {
-        FXMLView<TestController> testControllerFXMLView = new FXMLView<>("id", "title", Position.CENTER,
-                "de/qaware/sdfx/windowmtg/impl/test.fxml", getClass().getClassLoader());
+        FXMLView<TestController> testControllerFXMLView = new FXMLView.Builder<TestController>()
+                .withId("id")
+                .withTitle("title")
+                .withPos(Position.CENTER)
+                .withFile(getClass().getResource("/de/qaware/sdfx/extensions/cdi/contexts/test.fxml"))
+                .build();
 
         assertThat(testControllerFXMLView.getController().getTestLabel().getText(), is(equalTo("test")));
         assertThat(testControllerFXMLView.getController().isPostConstructCalled(), is(true));
@@ -78,7 +83,8 @@ public class FXMLLoaderProducerTest {
         private boolean postConstructCalled;
 
         /**
-         * If {@link TestController#postConstructCalled} is equals true, assume that the class was initialized through cdi.
+         * If {@link TestController#postConstructCalled} is equals true, assume that the class was initialized through
+         * cdi.
          */
         @PostConstruct
         public void init() {
