@@ -19,7 +19,9 @@
  */
 package de.qaware.sdfx.extensions.cdi.contexts;
 
+import de.qaware.sdfx.extensions.cdi.contexts.api.Eager;
 import de.qaware.sdfx.extensions.cdi.contexts.api.JfxContext;
+import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 
@@ -36,6 +38,7 @@ import java.util.Objects;
  *
  * @author christian.fritz
  */
+@Eager
 @Singleton
 public class ScopeHandler {
 
@@ -55,11 +58,11 @@ public class ScopeHandler {
     /**
      * The listener executed when the focus view changes.
      *
-     * @param nv the new focused view.
+     * @param view the new focused view.
      */
     @SuppressWarnings("unchecked")
-    private void focusedViewChangeListener(View nv) {
-        Annotation scopeAnnotation = findScopeAnnotation(nv.getClass());
+    private void focusedViewChangeListener(View view) {
+        Annotation scopeAnnotation = findScopeAnnotation(findClass(view));
         if (scopeAnnotation == null) {
             return;
         }
@@ -68,10 +71,23 @@ public class ScopeHandler {
             return;
         }
         JfxContext context = (JfxContext) c;
-        Object contextStorage = context.getStorageIdentifierFor(nv);
+        Object contextStorage = context.getStorageIdentifierFor(view);
         if (!Objects.equals(context.getAssociatedStorage(), contextStorage)) {
             context.associate(contextStorage, true);
         }
+    }
+
+    /**
+     * Find the real class for scope detection.
+     *
+     * @param view view for detection
+     * @return the class for scope detection
+     */
+    private static Class findClass(View view) {
+        if (view instanceof FXMLView) {
+            return ((FXMLView) view).getController().getClass();
+        }
+        return view.getClass();
     }
 
     /**
