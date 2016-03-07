@@ -21,6 +21,7 @@ package de.qaware.sdfx.extensions.cdi.contexts;
 
 
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
@@ -28,11 +29,17 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
-import org.junit.BeforeClass;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -42,13 +49,26 @@ import static org.hamcrest.Matchers.*;
  *
  * @author christian.fritz
  */
+@RunWith(Arquillian.class)
 public class FXMLLoaderProducerTest {
     @ClassRule
     public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        CDILookupStrategy.initLookup();
+    @Inject
+    private LookupStrategy strategy;
+
+    @Deployment
+    public static JavaArchive createDeployment() {
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClass(CDILookupStrategy.class)
+                .addClass(TestController.class)
+                .addClass(FXMLLoaderProducer.class)
+                .addAsManifestResource("META-INF/beans.xml");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        Lookup.init(strategy);
     }
 
     @Test
