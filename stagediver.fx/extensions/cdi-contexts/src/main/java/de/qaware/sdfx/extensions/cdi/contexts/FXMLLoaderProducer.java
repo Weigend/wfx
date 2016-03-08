@@ -17,10 +17,9 @@
  * limitations under the License.
  * #L%
  */
-package de.qaware.sdfx.windowmtg.impl;
+package de.qaware.sdfx.extensions.cdi.contexts;
 
-import javafx.fxml.*;
-import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
+import javafx.fxml.FXMLLoader;
 
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Instance;
@@ -53,19 +52,15 @@ public class FXMLLoaderProducer {
     }
 
     /**
-     * The controller factory to create the controller instances. It uses CDI to
-     * create the real instances but will never return a proxy instance.
+     * The controller factory to create the controller instances. It uses CDI to create the real instances but will
+     * never return a proxy instance.
      *
      * @param controllerClass The requested controller type class.
      * @param <T>             The type of the requested instance.
      * @return The created instance. Possible proxies are unpacked.
      */
-    @SuppressWarnings("unchecked")
     private <T> T controllerFactory(Class<T> controllerClass) {
-        T o = instance.select(controllerClass).get();
-        if (o instanceof TargetInstanceProxy) {
-            return ((TargetInstanceProxy<T>) o).getTargetInstance();
-        }
-        return o;
+        T controller = instance.select(controllerClass).get();
+        return BeanUtils.getUnwrappedInstance(controller);
     }
 }

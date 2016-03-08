@@ -17,43 +17,68 @@
  * limitations under the License.
  * #L%
  */
-package de.qaware.sdfx.windowmtg.impl;
+package de.qaware.sdfx.extensions.cdi.contexts;
 
 
 import de.qaware.sdfx.lookup.Lookup;
+import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
-import org.junit.BeforeClass;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Label;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import javafx.fxml.*;
-import javafx.scene.control.*;
 import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 /**
- * Unit test for the {@link de.qaware.sdfx.windowmtg.impl.FXMLLoaderProducer}.
+ * Unit test for the {@link de.qaware.sdfx.extensions.cdi.contexts.FXMLLoaderProducer}.
  *
  * @author christian.fritz
  */
+@RunWith(Arquillian.class)
 public class FXMLLoaderProducerTest {
     @ClassRule
     public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        CDILookupStrategy.initLookup();
+    @Inject
+    private LookupStrategy strategy;
+
+    @Deployment
+    public static JavaArchive createDeployment() {
+        return ShrinkWrap.create(JavaArchive.class)
+                .addClass(CDILookupStrategy.class)
+                .addClass(TestController.class)
+                .addClass(FXMLLoaderProducer.class)
+                .addAsManifestResource("META-INF/beans.xml");
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        Lookup.init(strategy);
     }
 
     @Test
     public void testLoadFxml() throws Exception {
-        FXMLView<TestController> testControllerFXMLView = new FXMLView<>("id", "title", Position.CENTER,
-                "de/qaware/sdfx/windowmtg/impl/test.fxml", getClass().getClassLoader());
+        FXMLView<TestController> testControllerFXMLView = new FXMLView.Builder<TestController>()
+                .withId("id")
+                .withTitle("title")
+                .withPos(Position.CENTER)
+                .withFile(getClass().getResource("/de/qaware/sdfx/extensions/cdi/contexts/test.fxml"))
+                .build();
 
         assertThat(testControllerFXMLView.getController().getTestLabel().getText(), is(equalTo("test")));
         assertThat(testControllerFXMLView.getController().isPostConstructCalled(), is(true));
@@ -78,7 +103,8 @@ public class FXMLLoaderProducerTest {
         private boolean postConstructCalled;
 
         /**
-         * If {@link TestController#postConstructCalled} is equals true, assume that the class was initialized through cdi.
+         * If {@link TestController#postConstructCalled} is equals true, assume that the class was initialized through
+         * cdi.
          */
         @PostConstruct
         public void init() {

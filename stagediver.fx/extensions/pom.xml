@@ -16,6 +16,7 @@
         <module>ui-utils</module>
         <module>logger-console-api</module>
         <module>logger-console-logback</module>
+        <module>cdi-contexts</module>
     </modules>
 
 </project>
