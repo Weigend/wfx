@@ -24,6 +24,8 @@ import de.qaware.sdfx.extensions.cdi.contexts.api.JfxContext;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.View;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.spi.Context;
@@ -42,6 +44,8 @@ import java.util.Objects;
 @Singleton
 public class ScopeHandler {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ScopeHandler.class);
+
     @Inject
     private BeanManager beanManager;
     @Inject
@@ -52,6 +56,7 @@ public class ScopeHandler {
      */
     @PostConstruct
     public void initScopeHandler() {
+        LOGGER.debug("Initialize the scope handler.");
         windowManager.focusedViewProperty().addListener((o, ov, nv) -> focusedViewChangeListener(nv));
     }
 
@@ -62,7 +67,8 @@ public class ScopeHandler {
      */
     @SuppressWarnings("unchecked")
     private void focusedViewChangeListener(View view) {
-        Annotation scopeAnnotation = findScopeAnnotation(findClass(view));
+        Object scopedObject = findScopedObject(view);
+        Annotation scopeAnnotation = findScopeAnnotation(scopedObject.getClass());
         if (scopeAnnotation == null) {
             return;
         }
@@ -71,9 +77,10 @@ public class ScopeHandler {
             return;
         }
         JfxContext context = (JfxContext) c;
-        Object contextStorage = context.getStorageIdentifierFor(view);
+        Object contextStorage = context.getStorageIdentifierFor(scopedObject);
         if (contextStorage != null && !Objects.equals(context.getAssociatedStorage(), contextStorage)) {
             context.associate(contextStorage, true);
+            LOGGER.debug("Assigned context {} to storage {}.", context.getClass().getSimpleName(), contextStorage);
         }
     }
 
@@ -83,11 +90,11 @@ public class ScopeHandler {
      * @param view view for detection
      * @return the class for scope detection
      */
-    private static Class findClass(View view) {
+    private static Object findScopedObject(View view) {
         if (view instanceof FXMLView) {
-            return ((FXMLView) view).getController().getClass();
+            return ((FXMLView) view).getController();
         }
-        return view.getClass();
+        return view;
     }
 
     /**
