@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import javax.enterprise.util.TypeLiteral;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,5 +72,14 @@ public class LookupTest {
         Lookup.init((LookupStrategy) null);
         LookupStrategy actual = Lookup.getLookupStrategy();
         assertThat(actual, is(nullValue()));
+    }
+
+    @Test
+    public void testStrategyNull() throws Exception {
+        Lookup.init((LookupStrategy) null);
+        assertThat(Lookup.lookup(TestService.class), is(nullValue()));
+        assertThat(Lookup.lookupAll(TestService.class), is(nullValue()));
+        assertThat(Lookup.lookup(new TypeLiteral<TestService>() {}), is(nullValue()));
+        assertThat(Lookup.lookup(new TypeLiteral<TestService>() {}), is(nullValue()));
     }
 }
