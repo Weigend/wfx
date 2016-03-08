@@ -71,7 +71,7 @@ public class EagerExtensionTest {
     @Test
     public void testLazyInit() throws Exception {
         assertThat(TestBean1.isConstructed(), is(false));
-        Lookup.lookup(TestBean1.class).hashCode();
+        Lookup.lookup(TestBean1.class).toString();
         assertThat(TestBean1.isConstructed(), is(true));
     }
 

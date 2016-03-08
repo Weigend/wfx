@@ -19,7 +19,6 @@
  */
 package de.qaware.sdfx.extensions.cdi.contexts.api;
 
-import javax.inject.Qualifier;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -31,7 +30,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  *
  * @author christian.fritz
  */
-@Qualifier
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface Eager {

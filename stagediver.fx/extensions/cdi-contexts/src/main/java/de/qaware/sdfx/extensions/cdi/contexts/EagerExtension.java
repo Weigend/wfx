@@ -57,8 +57,7 @@ public class EagerExtension implements Extension {
      */
     public void load(@Observes AfterDeploymentValidation event, BeanManager beanManager) {
         eagerBeansList.forEach(bean ->
-                beanManager.getReference(bean, bean.getBeanClass(), beanManager.createCreationalContext(bean))
-                        .hashCode()
+                beanManager.getReference(bean, bean.getBeanClass(), beanManager.createCreationalContext(bean)).toString()
         );
     }
 
