@@ -72,7 +72,7 @@ public class ScopeHandler {
         }
         JfxContext context = (JfxContext) c;
         Object contextStorage = context.getStorageIdentifierFor(view);
-        if (!Objects.equals(context.getAssociatedStorage(), contextStorage)) {
+        if (contextStorage != null && !Objects.equals(context.getAssociatedStorage(), contextStorage)) {
             context.associate(contextStorage, true);
         }
     }
