@@ -21,10 +21,13 @@ package de.qaware.sdfx.windowmtg.impl;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.Position;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.layout.*;
-import javafx.stage.*;
+import javafx.geometry.Orientation;
+import javafx.scene.Parent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
 /**
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
@@ -76,7 +79,7 @@ public class RootArea extends ViewArea {
      * @param child The new child.
      */
     @Override
-    protected void setFirstChild(ViewArea child) {
+    protected final void setFirstChild(ViewArea child) {
         super.setFirstChild(child);
         box.getChildren().set(0, child.getNode());
         HBox.setHgrow(child.getNode(), Priority.ALWAYS);

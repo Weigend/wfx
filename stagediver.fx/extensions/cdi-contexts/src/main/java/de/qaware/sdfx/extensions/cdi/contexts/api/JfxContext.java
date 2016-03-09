@@ -26,14 +26,15 @@ import java.util.Set;
 
 /**
  * The JfxContext defines the context in which several views can be combined.
- * <p>
+ * <p/>
  * For example a search can be split into two separate views but using the same backend model.
- * <p>
+ * <p/>
  * The {@link de.qaware.sdfx.extensions.cdi.contexts.api.ViewContext} with the implementation {@link
  * de.qaware.sdfx.extensions.cdi.contexts.view.ViewContextImpl} is an example how such a context can be implemented. All
  * views annotated with {@link ViewScoped} can use the same backend model. But two views of the same type may use
  * different backend models if they are created for different storages.
  *
+ * @param <T> The type of the associated storage
  * @author christian.fritz
  */
 public interface JfxContext<T> extends BoundContext<T>, ManagedContext {

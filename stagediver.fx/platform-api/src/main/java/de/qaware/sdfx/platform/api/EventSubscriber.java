@@ -34,7 +34,7 @@ import java.lang.annotation.Target;
 public @interface EventSubscriber {
 
     /**
-     * Method for getting the class.
+     * @return the event types handled by the annotated method.
      */
     Class[] eventClass();
 }

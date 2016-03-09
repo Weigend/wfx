@@ -202,9 +202,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      * Get the priority for a specified class.
      * <p>
      * First the value of {@link javax.annotation.Priority} is taken. If no
-     * {@link javax.annotation.Priority} is available it takes the value of
-     * {@link de.qaware.sdfx.lookup.Priority}. In case that both annotations
-     * are not available, it returns 0.
+     * {@link javax.annotation.Priority} is available it returns 0.
      *
      * @param c Determ the priority for this class.
      * @return The priority determed for the given class.
@@ -213,9 +211,6 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         int priority = 0;
         if (c.isAnnotationPresent(javax.annotation.Priority.class)) {
             priority = c.getAnnotation(javax.annotation.Priority.class).value();
-        }
-        else if (c.isAnnotationPresent(de.qaware.sdfx.lookup.Priority.class)) {
-            priority = c.getAnnotation(de.qaware.sdfx.lookup.Priority.class).value();
         }
         return priority;
     }

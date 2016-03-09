@@ -43,10 +43,11 @@ import static org.jboss.weld.bean.BeanIdentifiers.forManagedBean;
 
 /**
  * Abstract implementation for the {@link JfxContext}.
- * <p>
+ * <p/>
  * A minimal functional example for a {@link JfxContext} is the {@link de.qaware.sdfx.extensions.cdi.contexts.api.ViewContext}
  * with the implementation {@link de.qaware.sdfx.extensions.cdi.contexts.view.ViewContextImpl}.
  *
+ * @param <T> The type of the associated storage
  * @author christian.fritz
  * @see de.qaware.sdfx.extensions.cdi.contexts.api.JfxContext
  * @see de.qaware.sdfx.extensions.cdi.contexts.api.ViewContext
