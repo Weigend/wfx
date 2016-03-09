@@ -60,6 +60,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     private Pane statusBar;
     private WindowManager windowManager;
     private Stage stage;
+    private String title;
     private String defaultTitle;
 
     /**
@@ -125,7 +126,10 @@ public class DefaultApplicationWindow implements ApplicationWindow {
 
     @Override
     public void setTitle(String title) {
-        stage.setTitle(title);
+        this.title = title;
+        if (getStage() != null) {
+            getStage().setTitle(title);
+        }
     }
 
     @Override
@@ -137,13 +141,13 @@ public class DefaultApplicationWindow implements ApplicationWindow {
     public void setStage(Stage stage) {
         this.stage = stage;
         this.defaultTitle = stage.getTitle();
-
+        this.stage.setTitle(title);
         this.stage.setOnCloseRequest(this::platformShutdownRequestHandler);
     }
 
     /**
      * Event handler that will be executed when request to close the main stage.
-     * <p>
+     * <p/>
      * It can be overwritten to perform a own action.
      *
      * @param event The window event triggered the handler.
