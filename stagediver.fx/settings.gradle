@@ -1,0 +1,16 @@
+rootProject.name = 'stagediver.fx'
+include ':platform-runner'
+include ':platform-api'
+include ':platform-core'
+include ':lookup'
+include ':lookup-cdi'
+include ':windowmanager-api'
+include ':windowmanager-core'
+include ':example-gui'
+
+include ':itests:itests-windowmanager'
+
+include ':extensions:logger-console'
+include ':extensions:ui-utils'
+include ':extensions:logger-console-api'
+include ':extensions:logger-console-logback'

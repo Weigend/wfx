@@ -1,0 +1,12 @@
+description = 'stagediver.fx - Platform Core'
+dependencies {
+    compile project(':platform-api')
+    compile project(':windowmanager-api')
+    compile project(':lookup')
+    compile 'javax.inject:javax.inject'
+    compile 'org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec'
+    compile 'org.slf4j:slf4j-api'
+
+    testCompile project(path: ':windowmanager-api', configuration: 'tests')
+    testCompile 'org.loadui:testFx'
+}

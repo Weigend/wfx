@@ -1,0 +1,13 @@
+description = 'stagediver.fx - Example-GUI'
+dependencies {
+    compile project(':windowmanager-api')
+    compile project(':windowmanager-core')
+    compile project(':lookup')
+    compile project(':platform-api')
+    compile project(':platform-core')
+    compile project(':platform-runner')
+    compile project(':extensions:ui-utils')
+    compile project(':extensions:logger-console')
+    compile project(':extensions:logger-console-logback')
+    compile 'ch.qos.logback:logback-classic'
+}
