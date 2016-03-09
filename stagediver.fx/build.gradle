@@ -5,11 +5,11 @@ buildscript {
     }
     dependencies {
         classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.11.0'
-        classpath "io.spring.gradle:dependency-management-plugin:0.5.3.RELEASE"
     }
 }
 plugins {
     id 'org.sonarqube' version '1.2'
+    id "io.spring.dependency-management" version "0.5.6.RELEASE"
 }
 apply plugin: 'org.sonarqube'
 
@@ -17,9 +17,9 @@ ext {
     weldVersion = '2.3.1.Final'
     slf4jVersion = '1.7.12'
     logbackVersion = '1.1.3'
+    arquillianVersion = '1.1.9.Final'
     vendor = 'QAware GmbH'
 }
-
 allprojects {
     apply plugin: 'maven'
     apply plugin: 'maven-publish'
@@ -29,8 +29,10 @@ allprojects {
     version = '0.6-SNAPSHOT'
 
     dependencyManagement {
+        imports {
+            mavenBom "org.jboss.arquillian:arquillian-bom:${arquillianVersion}"
+        }
         dependencies {
-
             dependency group: 'javax.enterprise', name: 'cdi-api', version: '1.2'
             dependency group: 'javax.inject', name: 'javax.inject', version: '1'
             dependency group: 'org.jboss.weld', name: 'weld-core', version: weldVersion
@@ -49,9 +51,12 @@ allprojects {
             dependency group: 'ch.qos.logback', name: 'logback-core', version: logbackVersion
 
             dependency(group: 'junit', name: 'junit', version: '4.12') {
-                exclude group: 'org.hamcrest'
+                exclude group: 'org.hamcrest', name: 'hamcrest-core'
             }
             dependency group: 'org.loadui', name: 'testFx', version: '3.1.1'
+
+            dependency group: 'org.jboss.arquillian.container', name: 'arquillian-weld-se-embedded-1.1', version: '1.0.0.CR8'
+            dependency group: 'org.jboss.shrinkwrap', name: 'shrinkwrap-api', version: '1.2.2'
 
             dependency group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
             dependency group: 'org.mockito', name: 'mockito-all', version: '1.10.19'

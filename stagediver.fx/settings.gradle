@@ -10,6 +10,7 @@ include ':example-gui'
 
 include ':itests:itests-windowmanager'
 
+include ':extensions:cdi-contexts'
 include ':extensions:logger-console'
 include ':extensions:ui-utils'
 include ':extensions:logger-console-api'
