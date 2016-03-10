@@ -21,6 +21,7 @@ package de.qaware.sdfx.windowmtg.windows;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
+import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -56,6 +57,8 @@ public class DefaultApplicationWindowTest extends GuiTest {
     private WindowEvent event;
     @Mock
     private WindowManager windowManager;
+    @Mock
+    private EventBus eventBus;
 
     @InjectMocks
     private DefaultApplicationWindow window = new DefaultApplicationWindow();
@@ -69,6 +72,7 @@ public class DefaultApplicationWindowTest extends GuiTest {
     @Before
     public void setUp() throws Exception {
         when(strategy.lookup(FXMLLoader.class)).thenAnswer(i -> new FXMLLoader());
+        when(strategy.lookup(EventBus.class)).thenReturn(eventBus);
     }
 
     @Test
