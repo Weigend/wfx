@@ -3,6 +3,7 @@ description = 'stagediver.fx - Window Manager Core'
 dependencies {
     compile project(':windowmanager-api')
     compile project(':platform-api')
+    compile project(':platform-core')
     compile project(':lookup')
 
     compile 'javax.enterprise:cdi-api'

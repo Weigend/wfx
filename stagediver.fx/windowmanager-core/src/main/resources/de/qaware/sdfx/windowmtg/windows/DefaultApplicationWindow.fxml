@@ -1,28 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml">
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<BorderPane prefHeight="600.0" prefWidth="800.0" xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/8.0.72">
     <bottom>
         <HBox fx:id="statusBar" prefHeight="20.0" prefWidth="-1.0">
-            <Label text="Status bar" HBox.hgrow="ALWAYS"/>
-            <Separator orientation="VERTICAL" prefHeight="200.0"/>
-            <Label alignment="CENTER_RIGHT" text="Other Info" HBox.hgrow="SOMETIMES"/>
+            <fx:include source="StatusBarProgress.fxml" alignment="CENTER_RIGHT"/>
         </HBox>
     </bottom>
     <top>
         <VBox prefHeight="48.0" prefWidth="100.0">
-            <MenuBar fx:id="menuBar" useSystemMenuBar="true">
-                <Menu mnemonicParsing="false" text="File">
-                    <MenuItem mnemonicParsing="false" text="Close"/>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Edit">
-                    <MenuItem mnemonicParsing="false" text="Delete"/>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                    <MenuItem mnemonicParsing="false" text="About"/>
-                </Menu>
-            </MenuBar>
+            <MenuBar fx:id="menuBar" useSystemMenuBar="true"/>
             <ToolBar fx:id="toolbar" prefHeight="24.0"/>
         </VBox>
     </top>
