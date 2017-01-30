@@ -271,6 +271,8 @@ public class FXMLView<C> implements View {
         private double viewAreaSize;
         private ClassLoader classLoader;
         private URL viewImage;
+        private Parent rootPane;
+        private C controller;
 
         /**
          * Set the builder value "id"
@@ -375,6 +377,28 @@ public class FXMLView<C> implements View {
         }
 
         /**
+         * Set the builder value "rootPane"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withRootPane(Parent rootPane) {
+            Objects.requireNonNull(rootPane);
+            this.rootPane = rootPane;
+            return this;
+        }
+
+        /**
+         * Set the builder value "controller"
+         *
+         * @return fluent builder interface
+         */
+        public Builder<C> withController(C controller) {
+            Objects.requireNonNull(controller);
+            this.controller = controller;
+            return this;
+        }
+
+        /**
          * Build the real {@link FXMLView}.
          *
          * @return The new initialized view.
@@ -391,8 +415,23 @@ public class FXMLView<C> implements View {
             if (classLoader != null) {
                 loader.setClassLoader(classLoader);
             }
-            Parent rootPane = loader.load();
-            C controller = loader.getController();
+            rootPane = loader.load();
+            controller = loader.getController();
+
+
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
+        }
+
+        /**
+         * Clone to real {@link FXMLView}.
+         *
+         * @return The new initialized view.
+         */
+        public FXMLView<C> clone() {
+            Objects.requireNonNull(id, "A view must have an unique id");
+            Objects.requireNonNull(title, "A view must have a title");
+            Objects.requireNonNull(pos, "The initial position must be set");
+            Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
 
             return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
         }
