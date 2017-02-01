@@ -382,7 +382,7 @@ public class FXMLView<C> implements View {
          * @return fluent builder interface
          */
         public Builder<C> withRootPane(Parent rootPane) {
-            Objects.requireNonNull(rootPane);
+            // Objects.requireNonNull(rootPane);
             this.rootPane = rootPane;
             return this;
         }
@@ -393,7 +393,7 @@ public class FXMLView<C> implements View {
          * @return fluent builder interface
          */
         public Builder<C> withController(C controller) {
-            Objects.requireNonNull(controller);
+            // Objects.requireNonNull(controller);
             this.controller = controller;
             return this;
         }
@@ -431,7 +431,7 @@ public class FXMLView<C> implements View {
             Objects.requireNonNull(id, "A view must have an unique id");
             Objects.requireNonNull(title, "A view must have a title");
             Objects.requireNonNull(pos, "The initial position must be set");
-            Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
+            // Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
 
             return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
         }
