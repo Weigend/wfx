@@ -265,6 +265,7 @@ public class FXMLView<C> implements View {
      *
      * @param <C> The type of the controller.
      */
+    @SuppressWarnings({"findbugs:CN_IMPLEMENTS_CLONE_BUT_NOT_CLONEABLE", "PMD.CloneMethodMustImplementCloneable"})
     public static class Builder<C> {
         private String id;
         private String title;
