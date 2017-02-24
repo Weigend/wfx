@@ -28,8 +28,7 @@ import de.qaware.sdfx.lookup.cdi.CDILookupStrategy;
  */
 public class CDIMain extends Main {
 
-    @Override
-    public void init() throws Exception {
+    public void init() {
         CDILookupStrategy.initLookup();
         super.init();
     }

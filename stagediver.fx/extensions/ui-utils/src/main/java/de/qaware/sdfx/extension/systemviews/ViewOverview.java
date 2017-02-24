@@ -39,6 +39,7 @@ import java.util.ResourceBundle;
  *
  * @author christian.fritz
  */
+@SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ViewOverview implements Initializable {
     private static final double IMAGE_SIZE = 16;
     @FXML

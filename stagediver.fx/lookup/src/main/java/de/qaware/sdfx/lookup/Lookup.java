@@ -34,6 +34,7 @@ import java.util.List;
  *
  * @author christian.fritz
  */
+@SuppressWarnings("checkstyle:com.puppycrawl.tools.checkstyle.checks.design.HideUtilityClassConstructorCheck")
 public final class Lookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
     private static LookupStrategy lookupStrategy;
@@ -60,7 +61,7 @@ public final class Lookup {
      * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)}
      */
     @Deprecated
-    @SuppressWarnings("UtilityClassWithPublicConstructor")
+    @SuppressWarnings({"UtilityClassWithPublicConstructor", "PMD.UnusedFormalParameter"})
     public Lookup(Class forClazz) {
         LOGGER.warn("Do not use 'new Lookup(Class forClazz)'. Use instead 'Lookup.init(LookupStrategy)'.");
     }

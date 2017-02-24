@@ -19,7 +19,6 @@
  */
 package de.qaware.sdfx.windowmtg.api;
 
-import com.google.common.base.Preconditions;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.exceptions.ViewNotFoundException;
 import javafx.fxml.FXMLLoader;
@@ -28,6 +27,8 @@ import javafx.scene.Parent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This is the default implementation of a window management view. It loads the view from an fxml file and defines the
@@ -73,6 +74,7 @@ public class FXMLView<C> implements View {
      * @deprecated Use {@link FXMLView.Builder} now
      */
     @Deprecated
+    @SuppressWarnings("PMD.UseProperClassLoader")
     public FXMLView(String id, String title, Position pos, String file) throws IOException {
         this(id, title, pos, file, FXMLView.class.getClassLoader());
     }
@@ -111,6 +113,7 @@ public class FXMLView<C> implements View {
      * @deprecated Use {@link FXMLView.Builder} now
      */
     @Deprecated
+    @SuppressWarnings("PMD.UseProperClassLoader")
     public FXMLView(String id, String title, Position pos, String file, double viewAreaSize) throws IOException {
         this(id, title, pos, file, viewAreaSize, FXMLView.class.getClassLoader());
     }
@@ -177,7 +180,7 @@ public class FXMLView<C> implements View {
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, double viewAreaSize, ClassLoader classLoader)
             throws IOException {
 
-        Preconditions.checkNotNull(classLoader);
+        checkNotNull(classLoader);
         this.id = id;
         this.title = title;
         this.defaultPosition = pos;
@@ -262,7 +265,7 @@ public class FXMLView<C> implements View {
      *
      * @param <C> The type of the controller.
      */
-    public static class Builder<C> {
+    public static class Builder<C> implements Cloneable {
         private String id;
         private String title;
         private Position pos;
@@ -277,6 +280,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "id"
          *
+         * @param id the id
          * @return fluent builder interface
          */
         public Builder<C> withId(String id) {
@@ -287,6 +291,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "title"
          *
+         * @param title the title
          * @return fluent builder interface
          */
         public Builder<C> withTitle(String title) {
@@ -297,6 +302,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "pos"
          *
+         * @param pos the position
          * @return fluent builder interface
          */
         public Builder<C> withPos(Position pos) {
@@ -307,6 +313,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "file"
          *
+         * @param file the file
          * @return fluent builder interface
          */
         public Builder<C> withFile(URL file) {
@@ -317,6 +324,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "file"
          *
+         * @param file the file
          * @return fluent builder interface
          */
         public Builder<C> withFile(String file) {
@@ -338,6 +346,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "viewAreaSize"
          *
+         * @param viewAreaSize the view area size
          * @return fluent builder interface
          */
         public Builder<C> withViewAreaSize(double viewAreaSize) {
@@ -348,6 +357,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "classLoader"
          *
+         * @param classLoader the classloader
          * @return fluent builder interface
          */
         public Builder<C> withClassLoader(ClassLoader classLoader) {
@@ -358,6 +368,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "viewImagePath"
          *
+         * @param viewImage the image
          * @return fluent builder interface
          */
         public Builder<C> withViewImage(URL viewImage) {
@@ -368,6 +379,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "viewImagePath"
          *
+         * @param viewImage the image
          * @return fluent builder interface
          */
         public Builder<C> withViewImage(String viewImage) {
@@ -379,6 +391,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "rootPane"
          *
+         * @param rootPane the root pane
          * @return fluent builder interface
          */
         public Builder<C> withRootPane(Parent rootPane) {
@@ -390,6 +403,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "controller"
          *
+         * @param controller the controller
          * @return fluent builder interface
          */
         public Builder<C> withController(C controller) {

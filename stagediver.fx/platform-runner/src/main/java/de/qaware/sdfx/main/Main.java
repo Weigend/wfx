@@ -49,7 +49,7 @@ public class Main extends Application {
     private PlatformApplication platformApplication;
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->
                 LOGGER.error("Uncaught Exception in thread '" + t.getName() + "': ", e));
 
@@ -136,6 +136,7 @@ public class Main extends Application {
      * @throws java.lang.Exception In case of any erros while stopping the application.
      */
     @Override
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void stop() throws Exception {
         LOGGER.info("Begin shutdown of platform. Stop modules.");
         modules.forEach(Module::stop);
