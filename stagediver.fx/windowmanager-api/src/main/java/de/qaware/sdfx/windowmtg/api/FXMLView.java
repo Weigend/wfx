@@ -265,7 +265,7 @@ public class FXMLView<C> implements View {
      *
      * @param <C> The type of the controller.
      */
-    public static class Builder<C> implements Cloneable {
+    public static class Builder<C> {
         private String id;
         private String title;
         private Position pos;
@@ -336,6 +336,7 @@ public class FXMLView<C> implements View {
         /**
          * Set the builder value "toolTipInfo"
          *
+         * @param toolTipInfo the tool tip info
          * @return fluent builder interface
          */
         public Builder<C> withToolTipInfo(String toolTipInfo) {
@@ -441,6 +442,7 @@ public class FXMLView<C> implements View {
          *
          * @return The new initialized view.
          */
+        @SuppressWarnings({"findbugs:CN_IDIOM_NO_SUPER_CALL", "PMD.CloneThrowsCloneNotSupportedException"})
         public FXMLView<C> clone() {
             Objects.requireNonNull(id, "A view must have an unique id");
             Objects.requireNonNull(title, "A view must have a title");
