@@ -23,6 +23,7 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
 import org.slf4j.Logger;
@@ -47,16 +48,16 @@ public class CDILookupStrategy implements LookupStrategy {
     private static final Logger LOGGER = LoggerFactory.getLogger(CDILookupStrategy.class);
     private static Weld weld;
 
-    @Inject
+    @ Inject
     private Instance<Object> weldInstance;
 
     /**
      * Initialize the Lookup module.
      */
     public static void initLookup() {
-        weld = new Weld();
+        weld = new Weld(RegistrySingletonProvider.STATIC_INSTANCE);
         WeldContainer container = weld.initialize();
-        Lookup.init(container.instance().select(CDILookupStrategy.class).get());
+        Lookup.init(container.select(CDILookupStrategy.class).get());
         LOGGER.info("Successfully initialized Weld/CDI and Lookup");
     }
 

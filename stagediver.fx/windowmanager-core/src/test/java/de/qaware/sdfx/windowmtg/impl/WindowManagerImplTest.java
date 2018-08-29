@@ -27,6 +27,7 @@ import de.qaware.sdfx.windowmtg.api.View;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -35,7 +36,6 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.List;
@@ -78,17 +78,17 @@ public class WindowManagerImplTest {
     @SuppressWarnings("unchecked")
     public void setUp() throws Exception {
         mockReadOnlyProperty(windowManager, "mainRootArea", mainWindow);
-        Whitebox.setInternalState(windowManager, "dragNDropManager", dragNDropManager);
+        FieldUtils.writeField(windowManager, "dragNDropManager", dragNDropManager, true);
         views = getViewsStatus();
-        subWindows = (List<RootArea>) Whitebox.getInternalState(windowManager, "subWindows");
+        subWindows = (List<RootArea>)FieldUtils.readField(windowManager, "subWindows", true);
         mainStage = mockStageForArea(mainWindow);
         when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
         Lookup.init(new ServiceLoaderLookupStrategy());
     }
 
     @SuppressWarnings("unchecked")
-    private Map<String, ViewStatus> getViewsStatus() {
-        return (Map<String, ViewStatus>) Whitebox.getInternalState(windowManager, "viewsStatus");
+    private Map<String, ViewStatus> getViewsStatus()  throws Exception {
+        return (Map<String, ViewStatus>) FieldUtils.readField(windowManager, "viewsStatus", true);
     }
 
     @Test
@@ -251,7 +251,7 @@ public class WindowManagerImplTest {
     public void testUnregister() throws Exception {
         views.put(view1.getView().getViewId(), view1);
         views.put(view2.getView().getViewId(), view2);
-        List<View> viewList = (List<View>) Whitebox.getInternalState(windowManager, "views");
+        List<View> viewList = (List<View>) FieldUtils.readField(windowManager, "views", true);
         viewList.add(view1.getView());
         viewList.add(view2.getView());
 
@@ -275,7 +275,7 @@ public class WindowManagerImplTest {
         subWindows.add(area);
         views.put("view1", view1);
         views.put("view2", view2);
-        Whitebox.setInternalState(view2, "parent", view1);
+        FieldUtils.writeField(view2, "parent", view1, true);
 
         windowManager.restoreDefaultLayout();
         assertThat(subWindows, hasSize(0));
@@ -351,8 +351,8 @@ public class WindowManagerImplTest {
         views.put("view2", view2);
         ViewStatus view3 = mockView("view3", "view3");
         views.put("view3", view3);
-        Whitebox.setInternalState(view1, "parent", view2);
-        Whitebox.setInternalState(view2, "parent", view3);
+        FieldUtils.writeField(view1, "parent", view2, true);
+        FieldUtils.writeField(view2, "parent", view3, true);
         view2.setStatus(ViewStatus.Status.HIDDEN);
         view2.setArea(null);
 

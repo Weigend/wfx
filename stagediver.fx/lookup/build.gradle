@@ -1,6 +1,6 @@
 description = 'stagediver.fx - Lookup'
 dependencies {
-    compile 'javax.enterprise:cdi-api'
+    compile 'org.jboss.weld.se:weld-se-core'
     compile 'org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec'
     compile 'com.google.guava:guava'
     compile 'org.apache.commons:commons-lang3'

@@ -6,17 +6,16 @@ dependencies {
     compile project(':platform-core')
     compile project(':lookup')
 
-    compile 'javax.enterprise:cdi-api'
     compile 'javax.inject:javax.inject'
     compile 'org.jboss.spec.javax.annotation:jboss-annotations-api_1.2_spec'
 
-    compile 'org.jboss.weld:weld-core'
+    compile 'org.jboss.weld.se:weld-se-core'
     compile 'org.apache.commons:commons-lang3'
     compile 'com.google.guava:guava'
 
     testCompile project(path: ':windowmanager-api', configuration: 'tests')
     testCompile project(path: ':lookup-cdi', configuration: 'tests')
-    testCompile 'org.jboss.weld.se:weld-se'
+    testCompile 'org.jboss.weld.se:weld-se-core'
     testCompile 'org.loadui:testFx'
 }
 sourceSets {

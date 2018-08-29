@@ -25,15 +25,15 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.platform.api.Module;
 import de.qaware.sdfx.platform.api.PlatformApplication;
 import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
+import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,7 +68,7 @@ public class MainTest {
         when(lookupStrategy.lookupAll(Module.class)).thenReturn(modules);
         mockModule("Test 1", "1.0");
         mockModule("Test 2", "1.1");
-        Whitebox.setInternalState(main, "modules", modules);
+        FieldUtils.writeField(main, "modules", modules, true);
     }
 
     @Test
@@ -77,8 +77,8 @@ public class MainTest {
         main.init();
         assertThat(Lookup.getLookupStrategy(), is(lookupStrategy));
 
-        PlatformApplication platformApplication = (PlatformApplication) Whitebox.getInternalState(main, "platformApplication");
-        List<Module> modules = (List<Module>) Whitebox.getInternalState(main, "modules");
+        PlatformApplication platformApplication = (PlatformApplication) FieldUtils.readField(main, "platformApplication", true);
+        List<Module> modules = (List<Module>) FieldUtils.readField(main, "modules", true);
         assertThat(platformApplication, is(notNullValue()));
         assertThat(modules.size(), is(equalTo(2)));
     }

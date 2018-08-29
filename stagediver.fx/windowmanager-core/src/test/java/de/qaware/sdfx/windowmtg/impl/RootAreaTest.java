@@ -23,18 +23,19 @@ import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
 import de.qaware.sdfx.windowmtg.api.JavaFXThreadingRule;
 import de.qaware.sdfx.windowmtg.api.Position;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.util.reflection.Whitebox;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import javafx.beans.property.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+import java.lang.reflect.Field;
 
 import static org.mockito.Mockito.*;
 
@@ -103,12 +104,12 @@ public class RootAreaTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testRemoveArea() throws Exception {
-        Whitebox.setInternalState(rootArea, "closeStage", true);
+        FieldUtils.writeField(rootArea, "closeStage", true, true);
         Scene scene = new Scene(rootArea.getNode());
         Stage stage = mock(Stage.class);
         scene.windowProperty();
-        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) Whitebox.getInternalState(scene, "window");
-        Whitebox.setInternalState(stageProperty, "value", stage);
+        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) FieldUtils.readField(scene, "window", true);
+        FieldUtils.writeField(stageProperty, "value", stage, true);
 
         rootArea.remove(firstChild);
         verify(stage).close();

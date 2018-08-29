@@ -24,25 +24,27 @@ import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
 import de.qaware.sdfx.platform.impl.eventbus.SimpleEventBus;
-import de.qaware.sdfx.windowmtg.api.GuiTestHelper;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.loadui.testfx.GuiTest;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 
-import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.loadui.testfx.controls.Commons.hasText;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
+import static org.testfx.matcher.control.LabeledMatchers.hasText;
 
 /**
  * Unit Test for the {@link ProgressController}.
@@ -50,29 +52,31 @@ import static org.mockito.Mockito.when;
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ProgressControllerTest extends GuiTest {
+public class ProgressControllerTest {
 
     static {
-        stage = GuiTestHelper.getStage();
+        //stage = GuiTestHelper.getStage();
     }
 
     private ProgressController preloaderController;
 
     @Mock
     private LookupStrategy lookupStrategy;
+
     private EventBus eventBus = new SimpleEventBus();
 
-    @Override
-    protected Parent getRootNode() {
+    private Parent node;
+
+    @Before
+    public void getRootNode() {
         try {
             when(lookupStrategy.lookup(EventBus.class)).thenReturn(eventBus);
             Lookup.init(lookupStrategy);
             URL resource = ProgressControllerTest.class.getResource("/default/splash.fxml");
             FXMLLoader fxmlLoader = new FXMLLoader(resource);
-            Parent node = fxmlLoader.load();
+            node = fxmlLoader.load();
             preloaderController = fxmlLoader.getController();
-            return node;
-        }
+         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -83,7 +87,7 @@ public class ProgressControllerTest extends GuiTest {
         assertThat(getProgressText(), hasText("Loading..."));
         assertThat(getProgressBar().progressProperty().get(), is(equalTo(0.0)));
         Lookup.lookup(EventBus.class).publish(new ProgressEvent("TestMessage", 0.5, this));
-        waitUntil(getProgressText(), not(hasText("Loading...")));
+        waitUntilTextDiffers(getProgressText(), "Loading...");
         assertThat(getProgressText().textProperty().get(), is(equalTo(("TestMessage"))));
         assertThat(getProgressBar().progressProperty().get(), is(equalTo(0.5)));
     }
@@ -98,5 +102,21 @@ public class ProgressControllerTest extends GuiTest {
         Field progressText = ProgressController.class.getDeclaredField("progressBar");
         progressText.setAccessible(true);
         return (ProgressBar) progressText.get(preloaderController);
+    }
+
+    private void waitUntilTextDiffers(Label label, String text) {
+
+        for(int i = 0; i < 200; i++) {
+            String labelText = label.getText();
+
+            if (!text.equals(labelText)) {
+                break;
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

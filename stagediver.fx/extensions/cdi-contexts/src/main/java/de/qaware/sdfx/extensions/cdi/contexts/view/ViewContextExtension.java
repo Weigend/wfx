@@ -20,6 +20,7 @@
 package de.qaware.sdfx.extensions.cdi.contexts.view;
 
 import de.qaware.sdfx.extensions.cdi.contexts.api.ViewContext;
+import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
@@ -46,7 +47,7 @@ public class ViewContextExtension implements Extension {
      * @param event The {@link AfterBeanDiscovery event} to listen for.
      */
     public void afterBeanDiscovery(@Observes AfterBeanDiscovery event) {
-        setViewContextContext(new ViewContextImpl("STATIC_INSTANCE"));
+        setViewContextContext(new ViewContextImpl(RegistrySingletonProvider.STATIC_INSTANCE));
         event.addContext(viewContextContext);
     }
 

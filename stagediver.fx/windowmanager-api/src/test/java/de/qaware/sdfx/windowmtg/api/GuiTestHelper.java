@@ -24,6 +24,8 @@ import org.loadui.testfx.utils.FXTestUtils;
 
 import javafx.application.*;
 import javafx.stage.*;
+
+import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -47,6 +49,8 @@ public class GuiTestHelper {
             stageFuture.set(primaryStage);
         }
     }
+
+
 
     /**
      * Get the stage from the {@link de.qaware.sdfx.windowmtg.api.GuiTestHelper.TestFxApp} application. It will be

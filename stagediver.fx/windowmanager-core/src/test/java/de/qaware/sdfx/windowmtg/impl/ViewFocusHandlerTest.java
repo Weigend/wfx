@@ -46,15 +46,16 @@ import static org.mockito.Mockito.when;
  *
  * @author christian.fritz
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ViewFocusHandlerTest extends GuiTest {
+//unWith(MockitoJUnitRunner.class)
+public class ViewFocusHandlerTest {
+   /*
     static {
         stage = GuiTestHelper.getStage();
         stage.setX(50);
         stage.setY(50);
         stage.setHeight(500);
         stage.setWidth(500);
-    }
+    }*/
 
     private WindowManagerImpl windowManager = new WindowManagerImpl();
 
@@ -83,7 +84,7 @@ public class ViewFocusHandlerTest extends GuiTest {
         windowManager.register(view1);
         windowManager.register(view2, view1);
     }
-
+/*
     @Test
     public void testSingleWindow() throws Exception {
         runInJavaFxThreadAndWait(windowManager::init);
@@ -93,8 +94,8 @@ public class ViewFocusHandlerTest extends GuiTest {
         click(view2.getRootNode(), MouseButton.PRIMARY);
         assertThat(windowManager.getFocusedView(), is(view2));
     }
-
-    @Override
+*/
+    //@Override
     protected Parent getRootNode() {
         return windowManager.getRootPane();
     }

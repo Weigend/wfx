@@ -50,6 +50,8 @@ public class BeanUtilsTest {
         when(proxy.getTargetInstance()).thenReturn(test);
 
         assertThat(getUnwrappedInstance(test), sameInstance(test));
-        assertThat(getUnwrappedInstance(proxy), sameInstance(test));
+
+        Object test1 = getUnwrappedInstance(proxy);
+        assertThat(test1, sameInstance(test));
     }
 }

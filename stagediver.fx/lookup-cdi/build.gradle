@@ -4,8 +4,7 @@ dependencies {
     compile 'javax.enterprise:cdi-api'
     compile 'javax.inject:javax.inject'
 
-    compile 'org.jboss.weld.se:weld-se'
-    compile 'org.jboss.weld:weld-core'
+    compile 'org.jboss.weld.se:weld-se-core'
     compile 'org.apache.commons:commons-lang3'
 
     testCompile project(path: ':lookup', configuration: 'tests')
@@ -14,11 +13,11 @@ dependencies {
 sourceSets {
     main {
         // Workaround for tests with CDI. Ensures the META-INF/beans.xml within the same directory as the class files.
-        output.resourcesDir = 'build/classes/main'
+        output.resourcesDir = 'build/classes/java/main'
     }
     test {
         // Workaround for tests with CDI. Ensures the META-INF/beans.xml within the same directory as the class files.
-        output.resourcesDir = 'build/classes/test'
+        output.resourcesDir = 'build/classes/java/main'
     }
 }
 
