@@ -402,4 +402,45 @@
 
     </distributionManagement>
 
+    <repositories>
+
+        <repository>
+            <id>qaware-maven-release</id>
+            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+
+        <repository>
+            <id>qaware-maven-snapshot</id>
+            <url>https://artifactory.qaware.de/artifactory/qaware-maven-snapshot</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+
+    </repositories>
+
+    <pluginRepositories>
+
+        <pluginRepository>
+            <id>qaware-maven-release</id>
+            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+        
+    </pluginRepositories>
+
 </project>
