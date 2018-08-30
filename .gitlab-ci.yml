@@ -28,9 +28,9 @@ build:
       - "*/target"
       - "*/*/target"
   script:
-    - cd stagediver.fx
     - >
       mvn $MAVEN_CLI_OPTS
+      -f stagediver.fx/pom.xml
       clean org.jacoco:jacoco-maven-plugin:prepare-agent verify
 
 ################################################################################
