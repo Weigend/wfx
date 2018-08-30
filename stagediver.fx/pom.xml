@@ -390,11 +390,15 @@
 
     <distributionManagement>
 
-        <snapshotRepository>
-            <id>qaware-nexus-snapshots</id>
-            <url>https://www.qaware.de/nexus/content/repositories/qaware-internal-snapshots</url>
-        </snapshotRepository>
+        <repository>
+            <id>qaware-maven-release</id>
+            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
+        </repository>
 
+        <snapshotRepository>
+            <id>qaware-maven-snapshot</id>
+            <url>https://artifactory.qaware.de/artifactory/qaware-maven-snapshot</url>
+        </snapshotRepository>
 
     </distributionManagement>
 
