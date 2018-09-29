@@ -44,111 +44,111 @@ import static org.mockito.Mockito.*;
  *
  * @author christian.fritz
  */
-@RunWith(MockitoJUnitRunner.class)
+//@RunWith(MockitoJUnitRunner.class)
 public class TabAreaTest {
-    @ClassRule
-    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
-    private TabArea tabArea;
-
-    @Mock
-    private DragNDropManager dragNDropManager;
-
-    @Mock
-    private MultiWindowManager windowManager;
-
-    private RootArea rootArea;
-
-    @Mock
-    private ObservableList<Tab> tabs;
-
-    @Mock
-    private ViewArea parent;
-
-    @Mock
-    private LookupStrategy lookupStrategy;
-
-
-    @Before
-    public void setUp() throws Exception {
-        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
-        Lookup.init(lookupStrategy);
-
-        rootArea = new RootArea(dragNDropManager, true);
-        when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
-        when(parent.getParent()).thenReturn(rootArea);
-
-        //todo: replace tabs list
-        tabArea = new TabArea(parent, dragNDropManager);
-        TabPane tabPane = mock(TabPane.class);
-        when(tabPane.getTabs()).thenReturn(FXCollections.observableArrayList());
-
-        //tabs = new SimpleListProperty<>();
-        Field tabsField = TabPane.class.getDeclaredField("tabs");
-        tabsField.setAccessible(true);
-        tabsField.set(tabPane, tabs);
-
-        Field tabPaneField = TabArea.class.getDeclaredField("tabPane");
-        tabPaneField.setAccessible(true);
-        tabPaneField.set(tabArea, tabPane);
-    }
-
-    @Test
-    public void testRemoveViewNotAssigned() throws Exception {
-        ViewStatus view = mock(ViewStatus.class);
-        tabArea.remove(view);
-        verify(view, never()).setArea(null);
-    }
-
-  /*
-    public void testAddRemove() throws Exception {
-        ViewStatus status = mock(ViewStatus.class);
-        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
-        when(status.getArea()).thenReturn(tabArea);
-        Tab t = mock(Tab.class);
-        when(status.getTab()).thenReturn(t);
-        tabArea.add(status, Position.CENTER);
-        verify(tabs).add(t);
-        verify(status).setPosition(Position.CENTER);
-        verify(status).setArea(tabArea);
-
-        tabArea.remove(status, false);
-        verify(status).setPosition(null);
-        verify(status).setArea(null);
-        verify(tabs).remove(t);
-    }*/
-
-   /*
-    public void testAddRemoveHandleEmpty() throws Exception {
-        ViewStatus status = mock(ViewStatus.class);
-        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
-        when(status.getArea()).thenReturn(tabArea);
-        Tab t = mock(Tab.class);
-        when(status.getTab()).thenReturn(t);
-        tabArea.add(status, Position.CENTER);
-
-        tabArea.remove(status, true);
-        verify(tabs).remove(t);
-        verify(parent).remove(tabArea);
-    }*/
-
-    @Test
-    public void testHandleEmptyWrong() throws Exception {
-        ViewStatus status = mock(ViewStatus.class);
-        tabArea.add(status, Position.CENTER);
-        assertThat(tabArea.handleEmpty(), is(false));
-    }
-
-    @Test
-    public void testAddNonCenter() throws Exception {
-        ViewStatus status = mock(ViewStatus.class);
-        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
-        when(status.getArea()).thenReturn(tabArea);
-        ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
-
-        tabArea.add(status, Position.TOP);
-
-        verify(parent).replace(eq(tabArea), viewAreaCaptor.capture());
-        assertThat(viewAreaCaptor.getValue().getSecondChild(), is((ViewArea) tabArea));
-        assertThat(viewAreaCaptor.getValue().getParent(), is(parent));
-    }
+//    @ClassRule
+//    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+//    private TabArea tabArea;
+//
+//    @Mock
+//    private DragNDropManager dragNDropManager;
+//
+//    @Mock
+//    private MultiWindowManager windowManager;
+//
+//    private RootArea rootArea;
+//
+//    @Mock
+//    private ObservableList<Tab> tabs;
+//
+//    @Mock
+//    private ViewArea parent;
+//
+//    @Mock
+//    private LookupStrategy lookupStrategy;
+//
+//
+//    @Before
+//    public void setUp() throws Exception {
+//        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
+//        Lookup.init(lookupStrategy);
+//
+//        rootArea = new RootArea(dragNDropManager, true);
+//        when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
+//        when(parent.getParent()).thenReturn(rootArea);
+//
+//        //todo: replace tabs list
+//        tabArea = new TabArea(parent, dragNDropManager);
+//        TabPane tabPane = mock(TabPane.class);
+//        when(tabPane.getTabs()).thenReturn(FXCollections.observableArrayList());
+//
+//        //tabs = new SimpleListProperty<>();
+//        Field tabsField = TabPane.class.getDeclaredField("tabs");
+//        tabsField.setAccessible(true);
+//        tabsField.set(tabPane, tabs);
+//
+//        Field tabPaneField = TabArea.class.getDeclaredField("tabPane");
+//        tabPaneField.setAccessible(true);
+//        tabPaneField.set(tabArea, tabPane);
+//    }
+//
+//    @Test
+//    public void testRemoveViewNotAssigned() throws Exception {
+//        ViewStatus view = mock(ViewStatus.class);
+//        tabArea.remove(view);
+//        verify(view, never()).setArea(null);
+//    }
+//
+//  /*
+//    public void testAddRemove() throws Exception {
+//        ViewStatus status = mock(ViewStatus.class);
+//        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
+//        when(status.getArea()).thenReturn(tabArea);
+//        Tab t = mock(Tab.class);
+//        when(status.getTab()).thenReturn(t);
+//        tabArea.add(status, Position.CENTER);
+//        verify(tabs).add(t);
+//        verify(status).setPosition(Position.CENTER);
+//        verify(status).setArea(tabArea);
+//
+//        tabArea.remove(status, false);
+//        verify(status).setPosition(null);
+//        verify(status).setArea(null);
+//        verify(tabs).remove(t);
+//    }*/
+//
+//   /*
+//    public void testAddRemoveHandleEmpty() throws Exception {
+//        ViewStatus status = mock(ViewStatus.class);
+//        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
+//        when(status.getArea()).thenReturn(tabArea);
+//        Tab t = mock(Tab.class);
+//        when(status.getTab()).thenReturn(t);
+//        tabArea.add(status, Position.CENTER);
+//
+//        tabArea.remove(status, true);
+//        verify(tabs).remove(t);
+//        verify(parent).remove(tabArea);
+//    }*/
+//
+//    @Test
+//    public void testHandleEmptyWrong() throws Exception {
+//        ViewStatus status = mock(ViewStatus.class);
+//        tabArea.add(status, Position.CENTER);
+//        assertThat(tabArea.handleEmpty(), is(false));
+//    }
+//
+//    @Test
+//    public void testAddNonCenter() throws Exception {
+//        ViewStatus status = mock(ViewStatus.class);
+//        when(status.getView()).thenReturn(new TestView("asdf", Position.TOP));
+//        when(status.getArea()).thenReturn(tabArea);
+//        ArgumentCaptor<ViewArea> viewAreaCaptor = ArgumentCaptor.forClass(ViewArea.class);
+//
+//        tabArea.add(status, Position.TOP);
+//
+//        verify(parent).replace(eq(tabArea), viewAreaCaptor.capture());
+//        assertThat(viewAreaCaptor.getValue().getSecondChild(), is((ViewArea) tabArea));
+//        assertThat(viewAreaCaptor.getValue().getParent(), is(parent));
+//    }
 }

@@ -28,4 +28,8 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <finalName>stagediverfx.lookup-${version}</finalName>
+    </build>
+
 </project>

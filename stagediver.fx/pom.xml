@@ -18,7 +18,8 @@
         <weldVersion>3.0.5.Final</weldVersion>
         <arquillianVersion>1.1.4.Final</arquillianVersion>
         <jaxb.version>2.3.0</jaxb.version>
-        <java.version>1.10</java.version>
+        <java.version>11</java.version>
+        <javafx.version>11</javafx.version>
     </properties>
 
 
@@ -89,6 +90,18 @@
                 <version>${logbackVersion}</version>
             </dependency>
 
+            <!-- JavaFX packages that are not long part of the JDK -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+
 
             <!--
             *****************************************************************************************
@@ -112,10 +125,9 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>2.21.0</version>
+                <version>2.22.0</version>
                 <scope>test</scope>
             </dependency>
-
 
             <!-- https://mvnrepository.com/artifact/org.loadui/testFx -->
             <dependency>
@@ -202,7 +214,17 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
 
-
+        <!-- explicit add JavaFX packages that are not long part of the JDK -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
@@ -252,7 +274,7 @@
                     <!-- used to compile the jars -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>3.8.0</version>
                 </plugin>
                 <plugin>
                     <!-- used to bundle the AWB to an zip file -->
@@ -390,57 +412,12 @@
 
     <distributionManagement>
 
-        <repository>
-            <id>qaware-maven-release</id>
-            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
-        </repository>
-
         <snapshotRepository>
-            <id>qaware-maven-snapshot</id>
-            <url>https://artifactory.qaware.de/artifactory/qaware-maven-snapshot</url>
+            <id>qaware-nexus-snapshots</id>
+            <url>https://www.qaware.de/nexus/content/repositories/qaware-internal-snapshots</url>
         </snapshotRepository>
 
+
     </distributionManagement>
-
-    <repositories>
-
-        <repository>
-            <id>qaware-maven-release</id>
-            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>qaware-maven-snapshot</id>
-            <url>https://artifactory.qaware.de/artifactory/qaware-maven-snapshot</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
-    </repositories>
-
-    <pluginRepositories>
-
-        <pluginRepository>
-            <id>qaware-maven-release</id>
-            <url>https://artifactory.qaware.de/artifactory/qaware-maven-release</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-        
-    </pluginRepositories>
 
 </project>
