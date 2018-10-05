@@ -1,0 +1,55 @@
+image: maven:3.5-jdk-11-slim
+
+variables:
+  MAVEN_REPO_LOCAL_PATH: ".mvn/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=$MAVEN_REPO_LOCAL_PATH"
+  MAVEN_CLI_OPTS: "-s .mvn/settings.xml --batch-mode --errors --fail-at-end --show-version -DinstallAtEnd=true -DdeployAtEnd=true"
+  CACHE_KEY: $CI_COMMIT_REF_SLUG
+
+stages:
+  - build     # compile, unit-tests, integration-tests, package
+  - analyze   # run SonarQube analysis
+
+################################################################################
+# BUILD
+
+build:
+  stage: build
+  cache:
+    key: $CACHE_KEY
+    paths:
+      - $MAVEN_REPO_LOCAL_PATH
+  artifacts:
+    expire_in: 1 day
+    # Archive build artifacts and make them accessible in the following stages (needed e.g. for the analyse stage)
+    # Should grab all build artifacts (JARs, byte code, JUnit reports, JaCoCo reports) in a two-stage Maven module structure
+    paths:
+      - "target"
+      - "*/target"
+      - "*/*/target"
+  script:
+    - >
+      mvn $MAVEN_CLI_OPTS
+      clean org.jacoco:jacoco-maven-plugin:prepare-agent verify
+
+################################################################################
+# ANALYZE
+
+analyze:
+  stage: analyze
+  #when: manual # remove this for automatic SonarQube analysis
+  cache:
+    key: $CACHE_KEY
+    paths:
+      - $MAVEN_REPO_LOCAL_PATH
+  script:
+    - >
+      if [ "$CI_COMMIT_REF_NAME" != "master" ]; then
+      SONAR_BRANCH_NAME="-Dsonar.branch.name=$CI_COMMIT_REF_NAME";
+      fi
+    - >
+      mvn $MAVEN_CLI_OPTS
+      $MAVEN_SONAR_GOAL
+      $SONAR_BRANCH_NAME
+      -Dsonar.host.url=$SONAR_URL
+      -Dsonar.login=$SONAR_TOKEN
