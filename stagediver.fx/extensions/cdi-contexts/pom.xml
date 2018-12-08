@@ -5,13 +5,13 @@
     <parent>
         <groupId>de.qaware.stagediver.fx.extensions</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.1</version>
     </parent>
 
     <description>stagediver.fx - Extension - CDI Contexts</description>
 
     <artifactId>cdi-contexts</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.1</version>
 
     <dependencies>
 
