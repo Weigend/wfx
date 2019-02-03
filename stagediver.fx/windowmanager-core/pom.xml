@@ -5,13 +5,13 @@
     <parent>
         <groupId>de.qaware.stagediver.fx</groupId>
         <artifactId>stagediver-fx</artifactId>
-        <version>1.1.2-SNAPSHOT</version>
+        <version>1.1.3-SNAPSHOT</version>
     </parent>
 
     <description>stagediver.fx - Window Manager Core</description>
 
     <artifactId>windowmanager-core</artifactId>
-    <version>1.1.2-SNAPSHOT</version>
+    <version>1.1.3-SNAPSHOT</version>
 
 
     <dependencies>
