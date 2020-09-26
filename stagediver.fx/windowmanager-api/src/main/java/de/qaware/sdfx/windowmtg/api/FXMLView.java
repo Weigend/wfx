@@ -28,8 +28,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Objects;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * This is the default implementation of a window management view. It loads the view from an fxml file and defines the
  * other needed values.
@@ -180,7 +178,10 @@ public class FXMLView<C> implements View {
     public FXMLView(String id, String title, Position pos, String file, String toolTipInfo, double viewAreaSize, ClassLoader classLoader)
             throws IOException {
 
-        checkNotNull(classLoader);
+        if (classLoader == null) {
+            throw new IllegalArgumentException("the given classloader is null!");
+        }
+
         this.id = id;
         this.title = title;
         this.defaultPosition = pos;

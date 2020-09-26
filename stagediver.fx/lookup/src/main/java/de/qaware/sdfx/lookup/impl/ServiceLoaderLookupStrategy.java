@@ -19,8 +19,9 @@
  */
 package de.qaware.sdfx.lookup.impl;
 
-import com.google.common.collect.ArrayListMultimap;
 import de.qaware.sdfx.lookup.LookupStrategy;
+import org.apache.commons.collections4.MultiValuedMap;
+import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.enterprise.util.TypeLiteral;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  */
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
-    private ArrayListMultimap<Class, Object> lookupCache = ArrayListMultimap.create();
+    private final MultiValuedMap<Class, Object> lookupCache = new ArrayListValuedHashMap<>();
 
     /**
      * Initializes the internal structure to be able to lookup services.
@@ -85,7 +86,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      */
     public <T> void init(Class<T> clazz, T instance, boolean override) {
         if (override) {
-            lookupCache.removeAll(clazz);
+            lookupCache.remove(clazz);
         }
         lookupCache.put(clazz, instance);
     }
@@ -134,7 +135,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      */
     public <T> void init(Class<T> clazz, Producer<T> producer, boolean override) {
         if (override) {
-            lookupCache.removeAll(clazz);
+            lookupCache.remove(clazz);
         }
         lookupCache.put(clazz, producer);
     }

@@ -23,11 +23,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.loadui</groupId>
             <artifactId>testFx</artifactId>
         </dependency>

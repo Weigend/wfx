@@ -32,12 +32,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
