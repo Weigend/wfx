@@ -43,8 +43,8 @@ import java.util.concurrent.CountDownLatch;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.loadui.testfx.controls.Commons.hasText;
 import static org.mockito.Mockito.when;
-import static org.testfx.matcher.control.LabeledMatchers.hasText;
 /**
  * Unit Test for the {@link ProgressController}.
  *
