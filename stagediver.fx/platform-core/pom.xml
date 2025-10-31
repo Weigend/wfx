@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <artifactId>platform-core</artifactId>
+    <version>1.4.0-SNAPSHOT</version>
+    <description>stagediver.fx - Platform Core</description>
 
     <parent>
         <groupId>de.qaware.stagediver.fx</groupId>
@@ -8,14 +11,8 @@
         <version>1.4.0-SNAPSHOT</version>
     </parent>
 
-    <description>stagediver.fx - Platform Core</description>
-
-    <artifactId>platform-core</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
-
 
     <dependencies>
-
         <!-- project dependencies -->
 
         <dependency>
@@ -42,7 +39,7 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit</artifactId>
-            <version>4.0.13-alpha</version>
+            <version>4.0.18</version>
             <scope>test</scope>
         </dependency>
 

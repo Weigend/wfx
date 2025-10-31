@@ -38,13 +38,13 @@ import static org.mockito.Mockito.when;
 public class BeanUtilsTest {
 
     @Test
-    public void testIsProxied() throws Exception {
+    public void testIsProxied() {
         assertThat(isProxied(""), is(false));
         assertThat(isProxied(mock(TargetInstanceProxy.class)), is(true));
     }
 
     @Test
-    public void testGetUnwrappedInstance() throws Exception {
+    public void testGetUnwrappedInstance() {
         TargetInstanceProxy<String> proxy = mock(TargetInstanceProxy.class);
         String test = "test";
         when(proxy.weld_getTargetInstance()).thenReturn(test);
