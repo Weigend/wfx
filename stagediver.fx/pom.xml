@@ -12,8 +12,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4jVersion>1.7.12</slf4jVersion>
-        <logbackVersion>1.2.3</logbackVersion>
+        <slf4jVersion>2.0.13</slf4jVersion>
+        <logbackVersion>1.5.20</logbackVersion>
         <weldVersion>3.1.9.Final</weldVersion>
         <arquillianVersion>1.1.4.Final</arquillianVersion>
         <jaxb.version>2.3.0</jaxb.version>
@@ -57,9 +57,8 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
-                <version>3.7</version>
+                <version>3.19.0</version>
             </dependency>
-
 
 
             <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
