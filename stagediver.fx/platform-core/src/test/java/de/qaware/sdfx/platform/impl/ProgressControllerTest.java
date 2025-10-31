@@ -24,6 +24,7 @@ import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.events.ProgressEvent;
 import de.qaware.sdfx.platform.impl.eventbus.SimpleEventBus;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
@@ -33,30 +34,24 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.testfx.framework.junit.ApplicationTest;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
-
 /**
  * Unit Test for the {@link ProgressController}.
  *
  * @author christian.fritz
  */
 @RunWith(MockitoJUnitRunner.class)
-public class ProgressControllerTest {
-
-    static {
-        //stage = GuiTestHelper.getStage();
-    }
+public class ProgressControllerTest  {
 
     private ProgressController preloaderController;
 
@@ -70,6 +65,9 @@ public class ProgressControllerTest {
     @Before
     public void getRootNode() {
         try {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.startup(latch::countDown); // startet das JavaFX Toolkit
+            latch.await();
             when(lookupStrategy.lookup(EventBus.class)).thenReturn(eventBus);
             Lookup.init(lookupStrategy);
             URL resource = ProgressControllerTest.class.getResource("/default/splash.fxml");
@@ -78,6 +76,8 @@ public class ProgressControllerTest {
             preloaderController = fxmlLoader.getController();
          }
         catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
     }

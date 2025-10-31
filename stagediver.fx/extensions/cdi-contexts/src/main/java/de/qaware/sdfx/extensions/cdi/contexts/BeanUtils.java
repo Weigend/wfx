@@ -51,7 +51,7 @@ public final class BeanUtils {
     @SuppressWarnings("unchecked")
     public static <T> T getUnwrappedInstance(T object) {
         if (isProxied(object)) {
-            return ((TargetInstanceProxy<T>) object).getTargetInstance();
+            return ((TargetInstanceProxy<T>) object).weld_getTargetInstance();
         }
         return object;
     }

@@ -47,7 +47,7 @@ public class BeanUtilsTest {
     public void testGetUnwrappedInstance() throws Exception {
         TargetInstanceProxy<String> proxy = mock(TargetInstanceProxy.class);
         String test = "test";
-        when(proxy.getTargetInstance()).thenReturn(test);
+        when(proxy.weld_getTargetInstance()).thenReturn(test);
 
         assertThat(getUnwrappedInstance(test), sameInstance(test));
 
