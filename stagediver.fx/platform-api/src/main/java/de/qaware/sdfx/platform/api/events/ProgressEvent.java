@@ -19,9 +19,8 @@
  */
 package de.qaware.sdfx.platform.api.events;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import java.util.EventObject;
+import java.util.Objects;
 
 /**
  * This event is to report the startup progress to the splash screen and to the global progress bar.
@@ -77,30 +76,20 @@ public class ProgressEvent extends EventObject {
         if (this == o) {
             return true;
         }
-
-        if (!(o instanceof ProgressEvent)) {
+        if (!(o instanceof ProgressEvent that)) {
             return false;
         }
-        ProgressEvent that = (ProgressEvent) o;
-        return new org.apache.commons.lang3.builder.EqualsBuilder()
-                .append(getProgress(), that.getProgress())
-                .append(getMessage(), that.getMessage())
-                .isEquals();
+        return Double.compare(that.progress, progress) == 0
+                && Objects.equals(message, that.message);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 37)
-                .append(getMessage())
-                .append(getProgress())
-                .toHashCode();
+        return Objects.hash(message, progress);
     }
 
     @Override
     public String toString() {
-        return new org.apache.commons.lang3.builder.ToStringBuilder(this)
-                .append("message", getMessage())
-                .append("progress", getProgress())
-                .toString();
+        return "ProgressEvent{message='" + getMessage() + "', progress=" + progress + "}";
     }
 }
