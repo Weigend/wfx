@@ -1,5 +1,0 @@
-group = 'de.qaware.stagediver.fx.extensions'
-description = 'stagediver.fx - Extension - Logger Console API'
-dependencies {
-    compile 'org.apache.commons:commons-lang3'
-}

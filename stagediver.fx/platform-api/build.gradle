@@ -1,4 +1,0 @@
-description = 'stagediver.fx - Platform API'
-dependencies {
-    compile 'org.apache.commons:commons-lang3'
-}

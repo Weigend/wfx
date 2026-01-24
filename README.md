@@ -14,6 +14,10 @@ WFX (formerly stagediver.fx) is a lightweight rich client platform for JavaFX ap
 - **Modular Architecture** - Plugin-based module system for extending applications
 - **FXML Integration** - Seamless integration with JavaFX FXML views
 
+## Architecture
+
+![WFX Architecture](docs/stagediver-architecture.png)
+
 ## Requirements
 
 - **Java 17** or higher
