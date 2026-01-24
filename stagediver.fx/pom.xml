@@ -30,6 +30,7 @@
         <module>platform-runner</module>
         <module>windowmanager-api</module>
         <module>windowmanager-core</module>
+        <module>stagediverfx-all</module>
         <module>example-gui</module>
     </modules>
 
