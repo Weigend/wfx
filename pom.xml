@@ -22,16 +22,16 @@
     </properties>
 
     <modules>
-        <module>extensions</module>
-        <module>lookup</module>
-        <module>lookup-cdi</module>
-        <module>platform-api</module>
-        <module>platform-core</module>
-        <module>platform-runner</module>
-        <module>windowmanager-api</module>
-        <module>windowmanager-core</module>
+        <module>stagediver.fx/extensions</module>
+        <module>stagediver.fx/lookup</module>
+        <module>stagediver.fx/lookup-cdi</module>
+        <module>stagediver.fx/platform-api</module>
+        <module>stagediver.fx/platform-core</module>
+        <module>stagediver.fx/platform-runner</module>
+        <module>stagediver.fx/windowmanager-api</module>
+        <module>stagediver.fx/windowmanager-core</module>
+        <module>stagediver.fx/example-gui</module>
         <module>stagediverfx-all</module>
-        <module>example-gui</module>
     </modules>
 
     <dependencyManagement>

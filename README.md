@@ -55,7 +55,30 @@ mvn compile exec:java -Dexec.mainClass=de.qaware.sdfx.examplegui.ExampleCDIMain
 | `windowmanager-core` | Window management implementation |
 | `extensions/cdi-contexts` | CDI context extensions (ViewScoped, etc.) |
 | `extensions/ui-utils` | UI utility classes |
+| `stagediverfx-all` | All-in-One JAR with all modules bundled |
 | `example-gui` | Example application demonstrating the framework |
+
+## Maven Dependency
+
+The easiest way to use WFX is to add the `stagediverfx-all` dependency which includes all modules and their required runtime dependencies:
+
+```xml
+<dependency>
+    <groupId>de.qaware.stagediver.fx</groupId>
+    <artifactId>stagediverfx-all</artifactId>
+    <version>1.4.0-SNAPSHOT</version>
+</dependency>
+```
+
+This single dependency provides:
+- All WFX modules bundled in one JAR
+- CDI API and Weld SE implementation
+- JavaFX FXML and Controls
+- SLF4J logging API
+- Logback as optional logging implementation
+- Apache Commons Lang3
+
+If you prefer to pick individual modules, you can also add them separately (e.g., `lookup`, `platform-runner`, `windowmanager-core`).
 
 ## Creating a Simple Application
 
