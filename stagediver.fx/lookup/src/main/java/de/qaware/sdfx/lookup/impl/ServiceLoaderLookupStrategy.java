@@ -20,15 +20,14 @@
 package de.qaware.sdfx.lookup.impl;
 
 import de.qaware.sdfx.lookup.LookupStrategy;
-import org.apache.commons.collections4.MultiValuedMap;
-import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
-import org.apache.commons.lang3.tuple.Pair;
 
 import jakarta.enterprise.util.TypeLiteral;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  */
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
-    private final MultiValuedMap<Class, Object> lookupCache = new ArrayListValuedHashMap<>();
+    private final Map<Class<?>, List<Object>> lookupCache = new ConcurrentHashMap<>();
 
     /**
      * Initializes the internal structure to be able to lookup services.
@@ -48,10 +47,17 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     @SuppressWarnings("unchecked")
     public void init(Object[][] o) {
         for (Object[] objects : o) {
-            Class clazz = (Class) objects[0];
+            Class<?> clazz = (Class<?>) objects[0];
             Object value = objects[1];
-            init(clazz, value);
+            initRaw(clazz, value);
         }
+    }
+
+    /**
+     * Internal method for raw class initialization (used by Object[][] init).
+     */
+    private void initRaw(Class<?> clazz, Object instance) {
+        lookupCache.computeIfAbsent(clazz, k -> new ArrayList<>()).add(instance);
     }
 
     /**
@@ -88,7 +94,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (override) {
             lookupCache.remove(clazz);
         }
-        lookupCache.put(clazz, instance);
+        lookupCache.computeIfAbsent(clazz, k -> new ArrayList<>()).add(instance);
     }
 
     /**
@@ -137,7 +143,7 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (override) {
             lookupCache.remove(clazz);
         }
-        lookupCache.put(clazz, producer);
+        lookupCache.computeIfAbsent(clazz, k -> new ArrayList<>()).add(producer);
     }
 
     /**
@@ -163,15 +169,15 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (!lookupCache.containsKey(clazz)) {
             loadInstances(clazz);
         }
-        List<T> objects = (List<T>) lookupCache.get(clazz);
-        if (objects.size() <= 0) {
+        List<Object> objects = lookupCache.getOrDefault(clazz, List.of());
+        if (objects.isEmpty()) {
             return null;
         }
-        if (objects.get(0) instanceof Producer) {
-            return ((Producer<T>) objects.get(0)).getInstance();
+        Object first = objects.get(0);
+        if (first instanceof Producer) {
+            return ((Producer<T>) first).getInstance();
         }
-        return objects.get(0);
-
+        return (T) first;
     }
 
     @Override
@@ -180,22 +186,15 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (!lookupCache.containsKey(clazz)) {
             loadInstances(clazz);
         }
-        List<Pair<T, Integer>> instances = new ArrayList<>();
-        for (Object object : lookupCache.get(clazz)) {
-            T instance;
-            if (object instanceof Producer) {
-                instance = ((Producer<T>) object).getInstance();
-            }
-            else {
-                instance = (T) object;
-            }
-            Class<?> c = instance.getClass();
-            int priority = getPriority(c);
-            instances.add(Pair.of(instance, priority));
-        }
-        return instances.stream()
-                .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
-                .map(Map.Entry::getKey)
+        List<Object> cached = lookupCache.getOrDefault(clazz, List.of());
+        return cached.stream()
+                .map(object -> {
+                    if (object instanceof Producer) {
+                        return ((Producer<T>) object).getInstance();
+                    }
+                    return (T) object;
+                })
+                .sorted(Comparator.comparingInt((T o) -> getPriority(o.getClass())).reversed())
                 .collect(Collectors.toList());
     }
 
@@ -229,8 +228,9 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      */
     private <T> void loadInstances(Class<T> clazz) {
         ServiceLoader<T> load = ServiceLoader.load(clazz);
+        List<Object> instances = lookupCache.computeIfAbsent(clazz, k -> new ArrayList<>());
         for (T instance : load) {
-            lookupCache.put(clazz, instance);
+            instances.add(instance);
         }
     }
 

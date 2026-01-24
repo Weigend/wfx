@@ -26,20 +26,23 @@ import jakarta.inject.Singleton;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * A very simple event bus.
+ * A very simple thread-safe event bus.
+ * <p>
+ * Uses {@link ConcurrentHashMap} for thread-safe subscription management
+ * and {@link CopyOnWriteArrayList} for safe iteration during event publishing.
  *
  * @author christian.fritz
  */
 @Singleton
+@SuppressWarnings({"rawtypes", "unchecked"})
 public class SimpleEventBus implements EventBus {
-    private Map<Class, List<EventBusListener>> subscriptions = new WeakHashMap<>();
+    private final Map<Class, List<EventBusListener>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean publish(EventObject event) {
         List<EventBusListener> subscriptionsForType = subscriptions.get(event.getClass());
         boolean result = true;
@@ -53,12 +56,7 @@ public class SimpleEventBus implements EventBus {
 
     @Override
     public void subscribe(Class type, EventBusListener listener) {
-        List<EventBusListener> subscriptionsForType = subscriptions.get(type);
-        if (subscriptionsForType == null) {
-            subscriptionsForType = new CopyOnWriteArrayList<>();
-            subscriptions.put(type, subscriptionsForType);
-        }
-        subscriptionsForType.add(listener);
+        subscriptions.computeIfAbsent(type, k -> new CopyOnWriteArrayList<>()).add(listener);
     }
 
     @Override

@@ -52,7 +52,19 @@ public class PlatformApplicationImpl implements PlatformApplication {
     private Stage mainApplicationStage;
     private Stage preloaderStage;
     private ProgressController progressController;
-    private EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+    private EventBus<ProgressEvent> eventBus;
+
+    /**
+     * Get the EventBus instance (lazy initialization).
+     * @return The EventBus for progress events.
+     */
+    @SuppressWarnings("unchecked")
+    private EventBus<ProgressEvent> getEventBus() {
+        if (eventBus == null) {
+            eventBus = Lookup.lookup(EventBus.class);
+        }
+        return eventBus;
+    }
 
     /**
      * Get the human readable module name.
@@ -100,7 +112,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
             loader.setLocation(splashFxmlUrl);
             Parent parent = loader.load();
             progressController = loader.getController();
-            eventBus.subscribe(StartupProgressEvent.class, progressController::progress);
+            getEventBus().subscribe(StartupProgressEvent.class, progressController::progress);
             Scene scene = new Scene(parent);
             stage.setScene(scene);
             stage.initStyle(StageStyle.UNDECORATED);
@@ -123,8 +135,8 @@ public class PlatformApplicationImpl implements PlatformApplication {
             preloaderStage.close();
         }
         if (progressController != null) {
-            eventBus.unsubscribe(ProgressEvent.class, progressController::progress);
-            eventBus.unsubscribe(StartupProgressEvent.class, progressController::progress);
+            getEventBus().unsubscribe(ProgressEvent.class, progressController::progress);
+            getEventBus().unsubscribe(StartupProgressEvent.class, progressController::progress);
         }
     }
 

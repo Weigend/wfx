@@ -22,7 +22,6 @@ package de.qaware.sdfx.lookup.cdi;
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.lookup.LookupStrategy;
 import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 import org.jboss.weld.environment.se.Weld;
 import org.jboss.weld.environment.se.WeldContainer;
@@ -33,6 +32,7 @@ import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.util.TypeLiteral;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -107,9 +107,7 @@ public class CDILookupStrategy implements LookupStrategy {
      */
     private <T> List<T> lookupAll(Instance<T> instance) {
         return StreamSupport.stream(instance.spliterator(), false)
-                .map(t -> Pair.of(t, ServiceLoaderLookupStrategy.getPriority(t.getClass())))
-                .sorted((o1, o2) -> o2.getValue().compareTo(o1.getValue()))
-                .map(Pair::getKey)
+                .sorted(Comparator.comparingInt((T t) -> ServiceLoaderLookupStrategy.getPriority(t.getClass())).reversed())
                 .collect(Collectors.toList());
     }
 

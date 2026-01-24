@@ -55,18 +55,6 @@ public final class Lookup {
     }
 
     /**
-     * Init the lookup for the given class.
-     *
-     * @param forClazz The class which want to use the lookup.
-     * @deprecated Use instead {@link de.qaware.sdfx.lookup.Lookup#init(LookupStrategy)}
-     */
-    @Deprecated
-    @SuppressWarnings({"UtilityClassWithPublicConstructor", "PMD.UnusedFormalParameter"})
-    public Lookup(Class forClazz) {
-        LOGGER.warn("Do not use 'new Lookup(Class forClazz)'. Use instead 'Lookup.init(LookupStrategy)'.");
-    }
-
-    /**
      * Lookup a class from the registry.
      * <p>
      * The returned service is that service that have the highest service ranking.
