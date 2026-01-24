@@ -23,45 +23,94 @@ import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.EventBusListener;
 
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.EventObject;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * A very simple thread-safe event bus.
+ * A thread-safe event bus with support for event type hierarchies.
  * <p>
- * Uses {@link ConcurrentHashMap} for thread-safe subscription management
- * and {@link CopyOnWriteArrayList} for safe iteration during event publishing.
+ * Features:
+ * <ul>
+ *   <li>Thread-safe subscription management using {@link ConcurrentHashMap}</li>
+ *   <li>Safe iteration during event publishing using {@link CopyOnWriteArrayList}</li>
+ *   <li>Event hierarchy support - listeners for superclasses receive events of subclasses</li>
+ *   <li>Error isolation - exceptions in one listener don't affect others</li>
+ * </ul>
  *
  * @author christian.fritz
  */
 @Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SimpleEventBus implements EventBus {
+    private static final Logger LOG = LoggerFactory.getLogger(SimpleEventBus.class);
+
     private final Map<Class, List<EventBusListener>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
     public boolean publish(EventObject event) {
-        List<EventBusListener> subscriptionsForType = subscriptions.get(event.getClass());
+        Set<EventBusListener> listeners = collectListeners(event.getClass());
+        if (listeners.isEmpty()) {
+            LOG.debug("No listeners registered for event type: {}", event.getClass().getName());
+            return true;
+        }
+
         boolean result = true;
-        if (subscriptionsForType != null) {
-            for (EventBusListener next : subscriptionsForType) {
-                result &= next.eventPublished(event);
+        for (EventBusListener listener : listeners) {
+            try {
+                result &= listener.eventPublished(event);
+            } catch (Exception e) {
+                LOG.error("Exception in event listener for {}: {}", event.getClass().getSimpleName(), e.getMessage(), e);
+                // Continue with other listeners - don't let one broken listener stop the bus
             }
         }
+        return result;
+    }
+
+    /**
+     * Collects all unique listeners that should receive the event, including listeners
+     * registered for superclasses of the event type. Each listener is only included once,
+     * even if registered for multiple types in the hierarchy.
+     *
+     * @param eventType the concrete event type
+     * @return set of all applicable listeners (deduplicated)
+     */
+    private Set<EventBusListener> collectListeners(Class<?> eventType) {
+        Set<EventBusListener> result = new HashSet<>();
+
+        // Walk up the class hierarchy
+        Class<?> current = eventType;
+        while (current != null && EventObject.class.isAssignableFrom(current)) {
+            List<EventBusListener> listeners = subscriptions.get(current);
+            if (listeners != null) {
+                result.addAll(listeners);
+            }
+            current = current.getSuperclass();
+        }
+
         return result;
     }
 
     @Override
     public void subscribe(Class type, EventBusListener listener) {
         subscriptions.computeIfAbsent(type, k -> new CopyOnWriteArrayList<>()).add(listener);
+        LOG.debug("Subscribed listener for event type: {}", type.getName());
     }
 
     @Override
     public boolean unsubscribe(Class type, EventBusListener listener) {
         List<EventBusListener> subscriptionsForType = subscriptions.get(type);
-        return subscriptionsForType != null && subscriptionsForType.remove(listener);
+        boolean removed = subscriptionsForType != null && subscriptionsForType.remove(listener);
+        if (removed) {
+            LOG.debug("Unsubscribed listener for event type: {}", type.getName());
+        }
+        return removed;
     }
 }
