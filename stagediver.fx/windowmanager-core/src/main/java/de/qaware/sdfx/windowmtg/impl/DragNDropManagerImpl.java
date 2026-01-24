@@ -87,21 +87,43 @@ public class DragNDropManagerImpl implements DragNDropManager {
     }
 
     /**
-     * Getter for property dragedViewStatus.
+     * Getter for property draggedViewStatus.
      *
-     * @return Value for property dragedViewStatus.
+     * @return Value for property draggedViewStatus.
+     * @deprecated Use {@link #getDraggedViewStatus()} instead.
      */
+    @Deprecated
     public static ViewStatus getDragedViewStatus() {
         return dragedViewStatus;
     }
 
     /**
-     * Set the current view status as draged view.
+     * Getter for property draggedViewStatus.
      *
-     * @param dragedViewStatus The view to set as current draged view.
+     * @return Value for property draggedViewStatus.
      */
-    public static void setDragedViewStatus(ViewStatus dragedViewStatus) {
-        DragNDropManagerImpl.dragedViewStatus = dragedViewStatus;
+    public static ViewStatus getDraggedViewStatus() {
+        return dragedViewStatus;
+    }
+
+    /**
+     * Set the current view status as dragged view.
+     *
+     * @param draggedViewStatus The view to set as current dragged view.
+     * @deprecated Use {@link #setDraggedViewStatus(ViewStatus)} instead.
+     */
+    @Deprecated
+    public static void setDragedViewStatus(ViewStatus draggedViewStatus) {
+        DragNDropManagerImpl.dragedViewStatus = draggedViewStatus;
+    }
+
+    /**
+     * Set the current view status as dragged view.
+     *
+     * @param draggedViewStatus The view to set as current dragged view.
+     */
+    public static void setDraggedViewStatus(ViewStatus draggedViewStatus) {
+        DragNDropManagerImpl.dragedViewStatus = draggedViewStatus;
     }
 
     /**

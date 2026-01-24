@@ -22,6 +22,7 @@ package de.qaware.sdfx.platform.api.events;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.equalTo;
@@ -72,9 +73,12 @@ public class ProgressEventTest  {
 
     @Test
     public void testEquals() throws Exception {
-        // todo
-        // EqualsVerifier.forClass(ProgressEvent.class)
-        //        .suppress(Warning.STRICT_INHERITANCE)
-        //        .verify();
+        ProgressEvent event1 = new ProgressEvent("test", 0.5, this);
+        ProgressEvent event2 = new ProgressEvent("test", 0.5, this);
+        ProgressEvent event3 = new ProgressEvent("other", 0.5, this);
+        
+        assertThat(event1, is(event2));
+        assertThat(event1.hashCode(), is(event2.hashCode()));
+        assertThat(event1, is(not(event3)));
     }
 }

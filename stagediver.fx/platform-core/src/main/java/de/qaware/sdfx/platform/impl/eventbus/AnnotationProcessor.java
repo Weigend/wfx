@@ -44,15 +44,16 @@ public final class AnnotationProcessor {
      *
      * @param object the object to check for annotated methods
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void process(final Object object) {
-        Class clazz = object.getClass();
+        Class<?> clazz = object.getClass();
         Method[] methods = clazz.getMethods();
         for (final Method method : methods) {
             if (method.isAnnotationPresent(EventSubscriber.class)) {
                 EventSubscriber s = method.getAnnotation(EventSubscriber.class);
-                for (Class eventClass : s.eventClass()) {
-                    Lookup.lookup(EventBus.class).subscribe(eventClass, event -> {
+                for (Class<?> eventClass : s.eventClass()) {
+                    EventBus eventBus = Lookup.lookup(EventBus.class);
+                    eventBus.subscribe(eventClass, event -> {
                         try {
                             Boolean result;
                             if (method.getParameterCount() == 0) {
@@ -63,7 +64,7 @@ public final class AnnotationProcessor {
                             }
                             return result == null || result;
                         }
-                        catch (Exception e) {
+                        catch (ReflectiveOperationException | ClassCastException e) {
                             throw new IllegalStateException(e);
                         }
                     });
