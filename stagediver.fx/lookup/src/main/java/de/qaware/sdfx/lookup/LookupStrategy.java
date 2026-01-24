@@ -19,7 +19,7 @@
  */
 package de.qaware.sdfx.lookup;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 import java.util.List;
 
 /**

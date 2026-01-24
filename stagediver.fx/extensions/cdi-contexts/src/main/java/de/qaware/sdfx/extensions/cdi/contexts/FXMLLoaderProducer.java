@@ -21,11 +21,11 @@ package de.qaware.sdfx.extensions.cdi.contexts;
 
 import javafx.fxml.FXMLLoader;
 
-import javax.enterprise.context.Dependent;
-import javax.enterprise.inject.Instance;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.enterprise.context.Dependent;
+import jakarta.enterprise.inject.Instance;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.nio.charset.StandardCharsets;
 
 /**

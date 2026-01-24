@@ -37,7 +37,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -48,7 +48,7 @@ import java.util.Objects;
  * @author christian.fritz
  */
 @Singleton
-@javax.annotation.Priority(Integer.MIN_VALUE)
+@jakarta.annotation.Priority(Integer.MIN_VALUE)
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationWindow.class);

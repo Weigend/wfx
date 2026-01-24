@@ -22,7 +22,7 @@ package de.qaware.sdfx.platform.impl.eventbus;
 import de.qaware.sdfx.platform.api.EventBus;
 import de.qaware.sdfx.platform.api.EventBusListener;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Map;

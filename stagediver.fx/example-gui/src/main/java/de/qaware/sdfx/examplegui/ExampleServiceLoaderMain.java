@@ -20,6 +20,7 @@
 package de.qaware.sdfx.examplegui;
 
 import de.qaware.sdfx.main.Main;
+import javafx.application.Application;
 
 /**
  * Example main class to demonstrate running the application with the service loader lookup strategy.
@@ -28,4 +29,12 @@ import de.qaware.sdfx.main.Main;
  */
 public class ExampleServiceLoaderMain extends Main {
 
+    /**
+     * Application entry point.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        Application.launch(ExampleServiceLoaderMain.class, args);
+    }
 }

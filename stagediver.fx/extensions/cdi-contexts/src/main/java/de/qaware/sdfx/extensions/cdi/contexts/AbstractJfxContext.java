@@ -34,8 +34,8 @@ import org.jboss.weld.serialization.spi.BeanIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.inject.spi.AnnotatedType;
-import javax.enterprise.inject.spi.BeanManager;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 

@@ -27,11 +27,11 @@ import de.qaware.sdfx.windowmtg.api.WindowManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.spi.Context;
-import javax.enterprise.inject.spi.BeanManager;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.spi.Context;
+import jakarta.enterprise.inject.spi.BeanManager;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
@@ -98,10 +98,10 @@ public class ScopeHandler {
     }
 
     /**
-     * Find the {@link javax.inject.Scope} annotation at the given view.
+     * Find the {@link jakarta.inject.Scope} annotation at the given view.
      *
      * @param clazz The class to check
-     * @return The found annotation or null if no {@link javax.inject.Scope} annotation was found.
+     * @return The found annotation or null if no {@link jakarta.inject.Scope} annotation was found.
      */
     private Annotation findScopeAnnotation(Class clazz) {
         Annotation scopeAnnotation = null;

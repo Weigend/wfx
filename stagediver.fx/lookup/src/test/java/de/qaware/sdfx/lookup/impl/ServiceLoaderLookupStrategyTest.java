@@ -25,8 +25,8 @@ import de.qaware.sdfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.annotation.Priority;
-import javax.enterprise.util.TypeLiteral;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.util.TypeLiteral;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

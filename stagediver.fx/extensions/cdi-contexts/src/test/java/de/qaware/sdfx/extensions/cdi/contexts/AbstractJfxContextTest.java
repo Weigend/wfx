@@ -34,8 +34,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -62,7 +62,7 @@ public class AbstractJfxContextTest {
                 .addClass(ViewScoped.class)
                 .addClass(CDILookupStrategy.class)
                 .addClass(ViewContextExtension.Producer.class)
-                .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension")
+                .addAsManifestResource("META-INF/services/jakarta.enterprise.inject.spi.Extension")
                 .addAsManifestResource("META-INF/beans.xml");
     }
 

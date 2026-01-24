@@ -31,10 +31,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -54,7 +54,7 @@ public class EagerExtensionTest {
         return ShrinkWrap.create(JavaArchive.class)
                 .addClass(TestBean.class)
                 .addClass(CDILookupStrategy.class)
-                .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension")
+                .addAsManifestResource("META-INF/services/jakarta.enterprise.inject.spi.Extension")
                 .addAsManifestResource("META-INF/beans.xml");
     }
 

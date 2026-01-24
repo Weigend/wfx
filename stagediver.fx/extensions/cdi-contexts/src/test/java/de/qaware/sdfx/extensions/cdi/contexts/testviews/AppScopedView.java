@@ -23,7 +23,7 @@ import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.View;
 import javafx.scene.Parent;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * A test view implementation that is {@link ApplicationScoped}.

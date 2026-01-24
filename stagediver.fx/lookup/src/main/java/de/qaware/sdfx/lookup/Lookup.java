@@ -22,7 +22,7 @@ package de.qaware.sdfx.lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 import java.util.List;
 
 /**

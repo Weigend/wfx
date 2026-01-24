@@ -2,8 +2,6 @@ package de.qaware.sdfx.example.charts;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.platform.api.PreloaderNotificationService;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
 import javafx.fxml.*;
 import javafx.scene.chart.*;

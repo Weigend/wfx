@@ -21,10 +21,10 @@ package de.qaware.sdfx.extensions.cdi.contexts;
 
 import de.qaware.sdfx.extensions.cdi.contexts.api.Eager;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.spi.*;
-import javax.inject.Singleton;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.spi.*;
+import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 

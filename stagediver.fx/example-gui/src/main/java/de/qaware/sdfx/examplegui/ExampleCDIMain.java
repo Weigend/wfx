@@ -20,6 +20,7 @@
 package de.qaware.sdfx.examplegui;
 
 import de.qaware.sdfx.main.CDIMain;
+import javafx.application.Application;
 
 /**
  * Example class for starting the application with cdi as lookup strategy.
@@ -27,4 +28,13 @@ import de.qaware.sdfx.main.CDIMain;
  * @author christian.fritz
  */
 public class ExampleCDIMain extends CDIMain {
+
+    /**
+     * Application entry point.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        Application.launch(ExampleCDIMain.class, args);
+    }
 }

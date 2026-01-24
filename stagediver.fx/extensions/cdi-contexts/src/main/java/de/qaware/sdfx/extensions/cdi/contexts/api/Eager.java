@@ -26,7 +26,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Mark a {@link javax.inject.Singleton} or {@link javax.enterprise.context.ApplicationScoped} annotated bean as eager.
+ * Mark a {@link jakarta.inject.Singleton} or {@link jakarta.enterprise.context.ApplicationScoped} annotated bean as eager.
  *
  * @author christian.fritz
  */

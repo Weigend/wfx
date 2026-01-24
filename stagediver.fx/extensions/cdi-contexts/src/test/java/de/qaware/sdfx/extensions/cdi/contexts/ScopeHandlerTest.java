@@ -38,7 +38,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import static de.qaware.sdfx.extensions.cdi.contexts.BeanUtils.getUnwrappedInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,7 +74,7 @@ public class ScopeHandlerTest {
                 .addClass(WindowManagerImpl.class)
                 .addClass(ViewContextExtension.Producer.class)
                 .addClass(CDILookupStrategy.class)
-                .addAsManifestResource("META-INF/services/javax.enterprise.inject.spi.Extension")
+                .addAsManifestResource("META-INF/services/jakarta.enterprise.inject.spi.Extension")
                 .addAsManifestResource("META-INF/beans.xml");
     }
 

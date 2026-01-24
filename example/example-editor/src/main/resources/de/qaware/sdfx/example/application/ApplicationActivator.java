@@ -5,8 +5,6 @@ import de.qaware.sdfx.platform.api.PreloaderNotificationService;
 import de.qaware.sdfx.windowmtg.api.FXMLView;
 import de.qaware.sdfx.windowmtg.api.Position;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
 
 import javafx.application.*;
 import java.io.IOException;

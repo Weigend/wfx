@@ -24,7 +24,7 @@ import org.apache.commons.collections4.MultiValuedMap;
 import org.apache.commons.collections4.multimap.ArrayListValuedHashMap;
 import org.apache.commons.lang3.tuple.Pair;
 
-import javax.enterprise.util.TypeLiteral;
+import jakarta.enterprise.util.TypeLiteral;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -202,16 +202,16 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     /**
      * Get the priority for a specified class.
      * <p>
-     * First the value of {@link javax.annotation.Priority} is taken. If no
-     * {@link javax.annotation.Priority} is available it returns 0.
+     * First the value of {@link jakarta.annotation.Priority} is taken. If no
+     * {@link jakarta.annotation.Priority} is available it returns 0.
      *
      * @param c Determ the priority for this class.
      * @return The priority determed for the given class.
      */
     public static int getPriority(Class<?> c) {
         int priority = 0;
-        if (c.isAnnotationPresent(javax.annotation.Priority.class)) {
-            priority = c.getAnnotation(javax.annotation.Priority.class).value();
+        if (c.isAnnotationPresent(jakarta.annotation.Priority.class)) {
+            priority = c.getAnnotation(jakarta.annotation.Priority.class).value();
         }
         return priority;
     }

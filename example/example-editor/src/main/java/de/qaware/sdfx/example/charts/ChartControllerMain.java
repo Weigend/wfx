@@ -2,7 +2,6 @@ package de.qaware.sdfx.example.charts;
 
 
 import de.qaware.sdfx.lookup.Lookup;
-import de.qaware.sdfx.nonosgi.PlatformModule;
 
 import javafx.application.*;
 import javafx.fxml.*;

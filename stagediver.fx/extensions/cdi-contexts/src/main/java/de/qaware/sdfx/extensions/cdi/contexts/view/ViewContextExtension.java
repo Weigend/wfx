@@ -22,11 +22,11 @@ package de.qaware.sdfx.extensions.cdi.contexts.view;
 import de.qaware.sdfx.extensions.cdi.contexts.api.ViewContext;
 import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 
-import javax.enterprise.event.Observes;
-import javax.enterprise.inject.Produces;
-import javax.enterprise.inject.spi.AfterBeanDiscovery;
-import javax.enterprise.inject.spi.Extension;
-import javax.inject.Singleton;
+import jakarta.enterprise.event.Observes;
+import jakarta.enterprise.inject.Produces;
+import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
+import jakarta.enterprise.inject.spi.Extension;
+import jakarta.inject.Singleton;
 
 /**
  * Register the {@link ViewContext} within the current cdi instance.

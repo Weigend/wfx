@@ -33,8 +33,8 @@ import javafx.stage.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Priority;
-import javax.inject.Singleton;
+import jakarta.annotation.Priority;
+import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;

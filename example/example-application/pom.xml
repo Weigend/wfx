@@ -5,7 +5,7 @@
     <parent>
         <artifactId>example-parent</artifactId>
         <groupId>de.qaware.stagediver.fx.example</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -24,14 +24,15 @@
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
-            <artifactId>platform-full</artifactId>
-            <version>${version.stagediver}</version>
+            <artifactId>platform-core</artifactId>
             <type>pom</type>
             <scope>provided</scope>
+            <version>${version.stagediver}</version>
         </dependency>
         <dependency>
             <groupId>de.qaware.stagediver.fx</groupId>
             <artifactId>platform-runner</artifactId>
+            <version>${version.stagediver}</version>
         </dependency>
     </dependencies>
     <build>

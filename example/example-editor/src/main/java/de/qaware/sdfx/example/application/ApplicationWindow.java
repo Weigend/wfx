@@ -2,8 +2,6 @@ package de.qaware.sdfx.example.application;
 
 import de.qaware.sdfx.lookup.Lookup;
 import de.qaware.sdfx.windowmtg.api.WindowManager;
-import org.apache.felix.scr.annotations.Component;
-import org.apache.felix.scr.annotations.Service;
 
 import javafx.collections.*;
 import javafx.fxml.*;
