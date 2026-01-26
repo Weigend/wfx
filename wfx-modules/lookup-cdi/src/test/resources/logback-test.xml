@@ -1,0 +1,14 @@
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder><pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern></encoder>
+    </appender>
+
+    <!-- globales Level -->
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- feiner steuern -->
+    <logger name="org.jboss.weld" level="WARN"/>
+    <logger name="de.weigend.wfx" level="INFO"/>
+</configuration>

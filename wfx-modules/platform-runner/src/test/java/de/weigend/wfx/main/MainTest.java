@@ -1,0 +1,126 @@
+/*
+ * #%L
+ * The platform-runner module is main start module for the stagediver.fx platform.
+ * %%
+ * Copyright (C) 2013 - 2015 Weigend AM
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+package de.weigend.wfx.main;
+
+import de.weigend.wfx.lookup.Lookup;
+import de.weigend.wfx.lookup.LookupStrategy;
+import de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy;
+import de.weigend.wfx.platform.api.Module;
+import de.weigend.wfx.platform.api.PlatformApplication;
+import de.weigend.wfx.windowmtg.api.GuiTestHelper;
+import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.*;
+
+/**
+ * Unit test for the {@link Main} class.
+ *
+ * @author christian.fritz
+ */
+@RunWith(MockitoJUnitRunner.class)
+public class MainTest {
+
+    @InjectMocks
+    private Main main;
+
+    @Mock
+    private LookupStrategy lookupStrategy;
+    @Mock
+    private PlatformApplication platformApplication;
+
+    private List<Module> modules;
+
+    @Before
+    public void setUp() throws Exception {
+        Lookup.init(lookupStrategy);
+        when(lookupStrategy.lookup(PlatformApplication.class)).thenReturn(platformApplication);
+        modules = new ArrayList<>();
+        when(lookupStrategy.lookupAll(Module.class)).thenReturn(modules);
+        mockModule("Test 1", "1.0");
+        mockModule("Test 2", "1.1");
+        FieldUtils.writeField(main, "modules", modules, true);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testInit() throws Exception {
+        main.init();
+        assertThat(Lookup.getLookupStrategy(), is(lookupStrategy));
+
+        PlatformApplication platformApplication = (PlatformApplication) FieldUtils.readField(main, "platformApplication", true);
+        List<Module> modules = (List<Module>) FieldUtils.readField(main, "modules", true);
+        assertThat(platformApplication, is(notNullValue()));
+        assertThat(modules.size(), is(equalTo(2)));
+    }
+
+    @Test
+    public void testInitNoLookupStrategy() throws Exception {
+        Lookup.init(null);
+        main.init();
+        assertThat(Lookup.getLookupStrategy(), is(instanceOf(ServiceLoaderLookupStrategy.class)));
+    }
+
+    @Test
+    public void testStart() throws Exception {
+        Stage stage = GuiTestHelper.getStage();
+        GuiTestHelper.runInJavaFxThreadAndWait(() -> main.start(stage));
+        Thread.sleep(1000);
+        verify(platformApplication).preload();
+        verify(platformApplication).showPreloader(any(Stage.class));
+        for (Module module : modules) {
+            verify(module).preload();
+        }
+        verify(platformApplication).hidePreloader();
+        verify(platformApplication).showMainApplicationWindow(stage);
+        verify(platformApplication).start();
+        for (Module module : modules) {
+            verify(module).start();
+        }
+    }
+
+    @Test
+    public void testStop() throws Exception {
+        main.stop();
+        verify(platformApplication).stop();
+        for (Module module : modules) {
+            verify(module).stop();
+        }
+    }
+
+    private void mockModule(String name, String version) {
+        Module module = mock(Module.class);
+        when(module.getName()).thenReturn(name);
+        when(module.getVersion()).thenReturn(version);
+        modules.add(module);
+    }
+}

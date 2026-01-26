@@ -4,7 +4,7 @@
 [![JavaFX](https://img.shields.io/badge/JavaFX-21-blue.svg)](https://openjfx.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE.txt)
 
-WFX (formerly stagediver.fx) is a lightweight rich client platform for JavaFX applications. Inspired by NetBeans RCP, it enables rapid development of JavaFX applications with typical window management features like tab views, split panes, and docking.
+WFX (formerly wfx) is a lightweight rich client platform for JavaFX applications. Inspired by NetBeans RCP, it enables rapid development of JavaFX applications with typical window management features like tab views, split panes, and docking.
 
 ## Features
 
@@ -16,7 +16,7 @@ WFX (formerly stagediver.fx) is a lightweight rich client platform for JavaFX ap
 
 ## Architecture
 
-![WFX Architecture](docs/stagediver-architecture.png)
+![WFX Architecture](docs/wfx-architecture.png)
 
 ## Requirements
 
@@ -43,7 +43,7 @@ Or with CDI as lookup strategy:
 
 ```bash
 cd example-gui
-mvn compile exec:java -Dexec.mainClass=de.qaware.sdfx.examplegui.ExampleCDIMain
+mvn compile exec:java -Dexec.mainClass=de.weigend.wfx.examplegui.ExampleCDIMain
 ```
 
 ## Project Structure
@@ -59,17 +59,17 @@ mvn compile exec:java -Dexec.mainClass=de.qaware.sdfx.examplegui.ExampleCDIMain
 | `windowmanager-core` | Window management implementation |
 | `extensions/cdi-contexts` | CDI context extensions (ViewScoped, etc.) |
 | `extensions/ui-utils` | UI utility classes |
-| `stagediverfx-all` | All-in-One JAR with all modules bundled |
+| `wfx-all` | All-in-One JAR with all modules bundled |
 | `example-gui` | Example application demonstrating the framework |
 
 ## Maven Dependency
 
-The easiest way to use WFX is to add the `stagediverfx-all` dependency which includes all modules and their required runtime dependencies:
+The easiest way to use WFX is to add the `wfx-all` dependency which includes all modules and their required runtime dependencies:
 
 ```xml
 <dependency>
-    <groupId>de.qaware.stagediver.fx</groupId>
-    <artifactId>stagediverfx-all</artifactId>
+    <groupId>de.weigend.wfx</groupId>
+    <artifactId>wfx-all</artifactId>
     <version>6.2.1-SNAPSHOT</version>
 </dependency>
 ```
@@ -89,7 +89,7 @@ If you prefer to pick individual modules, you can also add them separately (e.g.
 ### 1. Create a Main Class
 
 ```java
-import de.qaware.sdfx.main.Main;
+import de.weigend.wfx.main.Main;
 import javafx.application.Application;
 
 public class MyApp extends Main {
@@ -102,11 +102,11 @@ public class MyApp extends Main {
 ### 2. Create a Module
 
 ```java
-import de.qaware.sdfx.platform.api.Module;
-import de.qaware.sdfx.windowmtg.api.WindowManager;
-import de.qaware.sdfx.windowmtg.api.FXMLViewBuilder;
-import de.qaware.sdfx.windowmtg.api.Position;
-import de.qaware.sdfx.lookup.Lookup;
+import de.weigend.wfx.platform.api.Module;
+import de.weigend.wfx.windowmtg.api.WindowManager;
+import de.weigend.wfx.windowmtg.api.FXMLViewBuilder;
+import de.weigend.wfx.windowmtg.api.Position;
+import de.weigend.wfx.lookup.Lookup;
 
 public class MyModule implements Module {
     
@@ -135,7 +135,7 @@ public class MyModule implements Module {
 
 ### 3. Register the Module
 
-Create `META-INF/services/de.qaware.sdfx.platform.api.Module`:
+Create `META-INF/services/de.weigend.wfx.platform.api.Module`:
 ```
 com.example.MyModule
 ```
@@ -145,7 +145,7 @@ com.example.MyModule
 For CDI-based dependency injection, extend `CDIMain` instead:
 
 ```java
-import de.qaware.sdfx.main.CDIMain;
+import de.weigend.wfx.main.CDIMain;
 import javafx.application.Application;
 
 public class MyCDIApp extends CDIMain {
@@ -174,4 +174,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## History
 
-This project was originally developed as "stagediver.fx" at QAware GmbH and has been modernized to support Java 17+ and Jakarta EE 10.
+This project was originally developed as "wfx" at Weigend AM and has been modernized to support Java 17+ and Jakarta EE 10.

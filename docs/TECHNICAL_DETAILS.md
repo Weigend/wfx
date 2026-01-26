@@ -1,4 +1,4 @@
-# WFX (stagediver.fx) - Technical Documentation
+# WFX (wfx) - Technical Documentation
 
 ## Overview
 
@@ -21,7 +21,7 @@ WFX is a lightweight Rich Client Platform (RCP) for JavaFX applications. It prov
 ## Project Structure
 
 ```
-stagediver.fx/
+wfx/
 ├── platform-api/          # Public API interfaces
 ├── platform-core/         # Core implementation
 ├── platform-runner/       # Application bootstrap
@@ -41,7 +41,7 @@ stagediver.fx/
 
 ### Module Interface
 
-Modules implement `de.qaware.sdfx.platform.api.Module`:
+Modules implement `de.weigend.wfx.platform.api.Module`:
 
 ```java
 public interface Module {
@@ -56,7 +56,7 @@ public interface Module {
 ### Module Discovery
 
 Modules are discovered via Java ServiceLoader:
-- Register in `META-INF/services/de.qaware.sdfx.platform.api.Module`
+- Register in `META-INF/services/de.weigend.wfx.platform.api.Module`
 
 ## Lookup System
 
@@ -189,7 +189,7 @@ mvn javafx:run
 
 Or with explicit main class:
 ```bash
-mvn exec:java -Dexec.mainClass=de.qaware.sdfx.main.Main
+mvn exec:java -Dexec.mainClass=de.weigend.wfx.main.Main
 ```
 
 ## Key Design Decisions
@@ -290,7 +290,7 @@ GuiTestHelper.runInJavaFxThreadAndWait(() -> {
 ## Repository
 
 - **GitHub**: https://github.com/jweigend/wfx
-- **Original**: gitlab/qaware/stagediver.fx (archived)
+- **Original**: gitlab/qaware/wfx (archived)
 
 ## License
 
