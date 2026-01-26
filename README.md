@@ -70,7 +70,7 @@ The easiest way to use WFX is to add the `stagediverfx-all` dependency which inc
 <dependency>
     <groupId>de.qaware.stagediver.fx</groupId>
     <artifactId>stagediverfx-all</artifactId>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>6.2.1-SNAPSHOT</version>
 </dependency>
 ```
 
