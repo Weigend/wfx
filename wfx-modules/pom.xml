@@ -260,19 +260,19 @@
                     <!-- used to create source-jars that will stored beside the artifacts -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>2.4</version>
+                    <version>3.3.1</version>
                 </plugin>
                 <plugin>
                     <!-- used to compile the jars -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.8.0</version>
+                    <version>3.13.0</version>
                 </plugin>
                 <plugin>
                     <!-- used to bundle the AWB to an zip file -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.7.1</version>
                 </plugin>
                 <plugin>
                     <!-- Used to measure code coverage -->
@@ -284,7 +284,7 @@
                     <!-- Used to delete the external integration test coverage file -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.4.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -305,7 +305,7 @@
                     <!-- Used to extract vanilla solr distribution and exclude unnecessary files -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.10</version>
+                    <version>3.8.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -325,12 +325,12 @@
                     <!-- creating jars and test-jars -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.4.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
-                    <version>3.1.0</version>
+                    <version>3.3.1</version>
                 </plugin>
 
                 <plugin>
@@ -371,7 +371,7 @@
                     </excludes>
                 </configuration>
 
-                <version>2.21.0</version>
+                <version>3.5.2</version>
             </plugin>
 
             <plugin>
