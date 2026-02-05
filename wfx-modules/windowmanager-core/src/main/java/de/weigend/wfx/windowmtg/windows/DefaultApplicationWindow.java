@@ -166,6 +166,8 @@ public class DefaultApplicationWindow implements ApplicationWindow {
                 }
                 else {
                     Platform.exit();
+                    // Force JVM exit in case non-daemon threads are still running
+                    System.exit(0);
                 }
             });
         }
