@@ -32,4 +32,17 @@ public class CDIMain extends Main {
         CDILookupStrategy.initLookup();
         super.init();
     }
+
+    /**
+     * Shutdown the CDI container when the application stops.
+     * This ensures proper cleanup of all managed beans and resources.
+     *
+     * @throws Exception In case of any errors while stopping the application.
+     */
+    @Override
+    @SuppressWarnings("PMD.SignatureDeclareThrowsException")
+    public void stop() throws Exception {
+        super.stop();
+        CDILookupStrategy.shutdownLookup();
+    }
 }

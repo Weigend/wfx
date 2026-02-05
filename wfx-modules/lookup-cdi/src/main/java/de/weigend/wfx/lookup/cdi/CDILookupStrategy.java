@@ -111,6 +111,26 @@ public class CDILookupStrategy implements LookupStrategy {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Shutdown the Weld CDI container.
+     * This should be called when the application is shutting down.
+     */
+    public static void shutdownLookup() {
+        if (weld != null) {
+            try {
+                LOGGER.info("Shutting down Weld/CDI container...");
+                weld.shutdown();
+                LOGGER.info("Weld/CDI container successfully shut down");
+            } catch (IllegalStateException e) {
+                LOGGER.warn("Weld container already shut down or not running: {}", e.getMessage());
+            } catch (Exception e) {
+                LOGGER.error("Error shutting down Weld/CDI container", e);
+            } finally {
+                weld = null;
+            }
+        }
+    }
+
     static Weld getWeld() {
         return weld;
     }
