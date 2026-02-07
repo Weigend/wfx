@@ -1,6 +1,6 @@
 /*
  * #%L
- * stagediver.fx is a rich-client-platform for JavaFX.
+ * wfx is a rich-client-platform for JavaFX.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -40,7 +40,7 @@ import java.net.URL;
 import java.util.List;
 
 /**
- * The JavaFX application. It initialize the javafx application thread and the main stage for stagediver.fx platform.
+ * The JavaFX application. It initialize the javafx application thread and the main stage for wfx platform.
  *
  * @author christian.fritz
  */
@@ -181,7 +181,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
     /**
      * Find the splash screen.
      * It first try to find the application specific splashscreen under {@code /splash/splash.fxml}
-     * and if it can not found it uses the default stagediver.fx splash screen.
+     * and if it can not found it uses the default wfx splash screen.
      *
      * @return the url of the found splash screen fxml.
      */

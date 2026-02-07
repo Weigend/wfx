@@ -6,7 +6,7 @@
     <artifactId>wfx</artifactId>
     <version>6.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <description>Stagediver FX Framework</description>
+    <description>wfx Framework</description>
 
     <!-- global properties fot the whole project  -->
     <properties>

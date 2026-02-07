@@ -1,6 +1,6 @@
 /*
  * #%L
- * The core lookup module of the stagediver.fx platform and all applications.
+ * The core lookup module of the wfx platform and all applications.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%

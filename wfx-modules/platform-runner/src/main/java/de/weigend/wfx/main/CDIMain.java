@@ -1,6 +1,6 @@
 /*
  * #%L
- * The platform-runner module is main start module for the stagediver.fx platform.
+ * The platform-runner module is main start module for the wfx platform.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -22,7 +22,7 @@ package de.weigend.wfx.main;
 import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
 
 /**
- * stagediver.fx application startup class with cdi as lookup strategy.
+ * wfx application startup class with cdi as lookup strategy.
  *
  * @author christian.fritz
  */

@@ -1,6 +1,6 @@
 /*
  * #%L
- * The platform-runner module is main start module for the stagediver.fx platform.
+ * The platform-runner module is main start module for the wfx platform.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%

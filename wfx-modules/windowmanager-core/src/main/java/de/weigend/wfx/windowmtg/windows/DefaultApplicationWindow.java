@@ -1,6 +1,6 @@
 /*
  * #%L
- * stagediver.fx is a rich-client-platform for JavaFX.
+ * wfx is a rich-client-platform for JavaFX.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -42,7 +42,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /**
- * This is the main window of the stagediver.fx platform. It supports the window management and the default bars like
+ * This is the main window of the wfx platform. It supports the window management and the default bars like
  * menu, tool and status bar.
  *
  * @author christian.fritz

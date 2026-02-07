@@ -1,6 +1,6 @@
 /*
  * #%L
- * Example GUI Implementation for stagediver.fx
+ * Example GUI Implementation for wfx
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%

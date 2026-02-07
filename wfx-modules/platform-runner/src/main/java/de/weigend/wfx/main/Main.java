@@ -1,6 +1,6 @@
 /*
  * #%L
- * The platform-runner module is main start module for the stagediver.fx platform.
+ * The platform-runner module is main start module for the wfx platform.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * stagediver.fx application startup class. It controls the full application lifecycle beginning with showing the
+ * wfx application startup class. It controls the full application lifecycle beginning with showing the
  * preloader over bootstrapping the modules, showing the main application window and shutdown the application inclusive
  * all modules.
  *

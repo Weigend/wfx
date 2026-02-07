@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>platform-core</artifactId>
     <version>6.2.1-SNAPSHOT</version>
-    <description>stagediver.fx - Platform Core</description>
+    <description>wfx - Platform Core</description>
 
     <parent>
         <groupId>de.weigend.wfx</groupId>

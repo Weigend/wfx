@@ -1,6 +1,6 @@
 /*
  * #%L
- * stagediver.fx is a rich-client-platform for JavaFX.
+ * wfx is a rich-client-platform for JavaFX.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -23,7 +23,7 @@ package de.weigend.wfx.lookup.cdi;
 import de.weigend.wfx.lookup.Lookup;
 
 /**
- * Some helper utils to start and shutdown the stagediver.fx cdi container while testing.
+ * Some helper utils to start and shutdown the wfx cdi container while testing.
  *
  * @author christian.fritz
  */

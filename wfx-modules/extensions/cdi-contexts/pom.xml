@@ -8,7 +8,7 @@
         <version>6.2.1-SNAPSHOT</version>
     </parent>
 
-    <description>stagediver.fx - Extension - CDI Contexts</description>
+    <description>wfx - Extension - CDI Contexts</description>
 
     <artifactId>cdi-contexts</artifactId>
     <version>6.2.1-SNAPSHOT</version>

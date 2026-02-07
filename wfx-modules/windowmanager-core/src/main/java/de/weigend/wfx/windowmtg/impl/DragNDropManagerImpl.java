@@ -1,6 +1,6 @@
 /*
  * #%L
- * stagediver.fx is a rich-client-platform for JavaFX.
+ * wfx is a rich-client-platform for JavaFX.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -72,7 +72,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     private Node effectTarget;
     /**
-     * Temp stage when the view was dropped outside a stagediver.fx window.
+     * Temp stage when the view was dropped outside a wfx window.
      */
     private Stage droppedStage;
 

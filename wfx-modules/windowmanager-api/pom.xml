@@ -8,7 +8,7 @@
         <version>6.2.1-SNAPSHOT</version>
     </parent>
 
-    <description>stagediver.fx - Window Manager API</description>
+    <description>wfx - Window Manager API</description>
 
     <artifactId>windowmanager-api</artifactId>
     <version>6.2.1-SNAPSHOT</version>

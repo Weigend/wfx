@@ -1,6 +1,6 @@
 /*
  * #%L
- * stagediver.fx is a rich-client-platform for JavaFX.
+ * wfx is a rich-client-platform for JavaFX.
  * %%
  * Copyright (C) 2013 - 2015 Weigend AM
  * %%
@@ -18,7 +18,7 @@
  * #L%
  */
 /**
- * This is the internal implementation of the stagediver.fx window management.
+ * This is the internal implementation of the wfx window management.
  *
  * @author christian.fritz
  */
