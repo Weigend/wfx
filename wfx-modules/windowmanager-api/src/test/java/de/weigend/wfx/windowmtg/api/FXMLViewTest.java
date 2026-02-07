@@ -21,7 +21,6 @@ package de.weigend.wfx.windowmtg.api;
 
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.lookup.LookupStrategy;
-import de.weigend.wfx.windowmtg.api.exceptions.ViewNotFoundException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -54,16 +53,28 @@ public class FXMLViewTest {
         Lookup.init(strategy);
     }
 
-    @Test(expected = ViewNotFoundException.class)
+    @Test(expected = NullPointerException.class)
     public void testConstructorViewNotFound() throws Exception {
-        new FXMLView<>("notFound", "notfound", Position.CENTER, "/notExisting.fxml", getClass().getClassLoader());
+        // When a non-existent file is specified, classLoader.getResource() returns null,
+        // which causes the Builder to throw NullPointerException with "Can not initialize a FXMLView without a FXML file."
+        new FXMLView.Builder<>()
+                .withId("notFound")
+                .withTitle("notfound")
+                .withPos(Position.CENTER)
+                .withClassLoader(getClass().getClassLoader())
+                .withFile("/notExisting.fxml")
+                .build();
     }
 
     @Test
     public void testConstructorSuccessfull() throws Exception {
-        View view = new FXMLView<>("example:1", "Example view", Position.CENTER,
-                "de/weigend/wfx/windowmtg/api/exampleView.fxml", getClass().getClassLoader()
-        );
+        View view = new FXMLView.Builder<>()
+                .withId("example:1")
+                .withTitle("Example view")
+                .withPos(Position.CENTER)
+                .withClassLoader(getClass().getClassLoader())
+                .withFile("de/weigend/wfx/windowmtg/api/exampleView.fxml")
+                .build();
         assertThat(view, is(notNullValue()));
         assertThat(view.getRootNode(), is(instanceOf(BorderPane.class)));
         assertThat(view.getDefaultPosition(), is(Position.CENTER));
@@ -72,8 +83,12 @@ public class FXMLViewTest {
 
     @Test
     public void testConstructorMinimal() throws Exception {
-        View view = new FXMLView<>("example:1", "Example view", Position.CENTER,
-                "de/weigend/wfx/windowmtg/api/exampleView.fxml");
+        View view = new FXMLView.Builder<>()
+                .withId("example:1")
+                .withTitle("Example view")
+                .withPos(Position.CENTER)
+                .withFile(getClass().getResource("exampleView.fxml"))
+                .build();
         assertThat(view, is(notNullValue()));
         assertThat(view.getTitle(), is(equalTo("Example view")));
         assertThat(view.getViewId(), is(equalTo("example:1")));
@@ -82,8 +97,14 @@ public class FXMLViewTest {
 
     @Test
     public void testConstructorNonDefaultSize() throws Exception {
-        FXMLView<TestController> view = new FXMLView<>("example:1", "Example view", Position.CENTER,
-                "de/weigend/wfx/windowmtg/api/exampleView.fxml", 0.25);
+        FXMLView<TestController> view = new FXMLView.Builder<TestController>()
+                .withId("example:1")
+                .withTitle("Example view")
+                .withPos(Position.CENTER)
+                .withClassLoader(getClass().getClassLoader())
+                .withFile("de/weigend/wfx/windowmtg/api/exampleView.fxml")
+                .withViewAreaSize(0.25)
+                .build();
         assertThat(view, is(notNullValue()));
         assertThat(view.getTitle(), is(equalTo("Example view")));
         assertThat(view.getViewId(), is(equalTo("example:1")));

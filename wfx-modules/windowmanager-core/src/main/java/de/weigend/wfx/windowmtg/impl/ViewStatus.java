@@ -194,16 +194,6 @@ public class ViewStatus {
 
     /**
      * Resize the area of this view to the defined value.
-     *
-     * @deprecated Use {@link ViewStatus#setDividerPositions()} instead.
-     */
-    @Deprecated
-    public void setDeviderPositions() {
-        setDividerPositions();
-    }
-
-    /**
-     * Resize the area of this view to the defined value.
      */
     public void setDividerPositions() {
         SplitPane splitPane;

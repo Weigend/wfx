@@ -124,8 +124,6 @@ dnd.setDraggedViewStatus(ViewDragStatus.DRAGGING);
 ViewDragStatus status = dnd.getDraggedViewStatus();
 ```
 
-Note: Legacy methods `getDragedViewStatus()`/`setDragedViewStatus()` are deprecated but retained for backward compatibility.
-
 ## CDI Integration
 
 ### FXMLLoaderProducer

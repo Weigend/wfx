@@ -44,15 +44,17 @@ public interface EventBus<T extends EventObject> {
      *
      * @param type     the event type to subscribe.
      * @param listener your listener, which will be called if a event happens.
+     * @param <E>      the concrete event type
      */
-    void subscribe(Class type, EventBusListener<T> listener);
+    <E extends T> void subscribe(Class<E> type, EventBusListener<? super E> listener);
 
     /**
      * Unsubscribe a listener for a given type of event.
      *
-     * @param type     the event type to subscribe.
-     * @param listener your listener, which will be called if a event happens.
+     * @param type     the event type to unsubscribe from.
+     * @param listener the listener to remove.
+     * @param <E>      the concrete event type
      * @return true if the listener was successfully removed
      */
-    boolean unsubscribe(Class type, EventBusListener<T> listener);
+    <E extends T> boolean unsubscribe(Class<E> type, EventBusListener<? super E> listener);
 }

@@ -271,22 +271,6 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
-     * Clone the specified view.
-     * <p>
-     * The cloned view will be placed next to the given view in the same tab area.
-     * <p>
-     * The given view must be registered within the {@link de.weigend.wfx.windowmtg.api.WindowManager}. If it is not
-     * registered a {@link IllegalArgumentException} will be thrown.
-     *
-     * @param view Clone the given view.
-     * @return The cloned view object.
-     */
-    @Override
-    public View cloneView(View view) {
-        return null;
-    }
-
-    /**
      * Show a closed or hidden view again. The view will be shown at the same position where it was on close. The given
      * view must be registered within the {@link de.weigend.wfx.windowmtg.api.WindowManager}. If it is not registered a
      * {@link IllegalArgumentException} will be thrown.

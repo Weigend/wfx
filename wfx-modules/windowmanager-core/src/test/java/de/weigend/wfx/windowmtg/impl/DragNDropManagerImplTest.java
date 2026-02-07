@@ -42,8 +42,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static de.weigend.wfx.windowmtg.impl.DragNDropManager.DATAFORMAT;
-import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.getDragedViewStatus;
-import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.setDragedViewStatus;
+import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.getDraggedViewStatus;
+import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.setDraggedViewStatus;
 import static de.weigend.wfx.windowmtg.impl.JavaFxTestUtils.*;
 import static javafx.scene.input.TransferMode.COPY;
 import static javafx.scene.input.TransferMode.MOVE;

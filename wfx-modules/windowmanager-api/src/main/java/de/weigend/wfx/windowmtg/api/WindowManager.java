@@ -24,6 +24,7 @@ import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.Parent;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A Window manager which is able to handle views dynamically.
@@ -119,21 +120,6 @@ public interface WindowManager {
     boolean unregister(View view);
 
     /**
-     * Clone the specified view.
-     * <p>
-     * The cloned view will be placed next to the given view in the same tab area.
-     * <p>
-     * The given view must be registered within the {@link WindowManager}. If it is not registered a {@link
-     * IllegalArgumentException} will be thrown.
-     *
-     * @param view Clone the given view.
-     * @return The cloned view object.
-     * @deprecated Should be implemented by the application, due to various context association.
-     */
-    @Deprecated
-    View cloneView(View view);
-
-    /**
      * Show a closed view again. The view will be shown at the same position where it was on close. The given view must
      * be registered within the {@link WindowManager}. If it is not registered a {@link IllegalArgumentException} will
      * be thrown.
@@ -149,22 +135,62 @@ public interface WindowManager {
      *
      * @param viewID The view id to search.
      * @return The registered view or null if it was not found.
+     * @see #findViewById(String) for an Optional-returning alternative
      */
     View findView(String viewID);
 
     /**
+     * Find a view with the assigned view id.
+     * <p>
+     * This is the {@link Optional}-returning alternative to {@link #findView(String)}.
+     *
+     * @param viewID The view id to search.
+     * @return An Optional containing the registered view, or empty if not found.
+     * @since 6.3.0
+     */
+    default Optional<View> findViewById(String viewID) {
+        return Optional.ofNullable(findView(viewID));
+    }
+
+    /**
      * Get that view that currently holds the focus within this window.
      *
-     * @return That view that holds the focus.
+     * @return That view that holds the focus, or null if no view has focus.
+     * @see #currentFocusedView() for an Optional-returning alternative
      */
     View getFocusedView();
 
     /**
+     * Get the view that currently holds the focus within this window.
+     * <p>
+     * This is the {@link Optional}-returning alternative to {@link #getFocusedView()}.
+     *
+     * @return An Optional containing the focused view, or empty if no view has focus.
+     * @since 6.3.0
+     */
+    default Optional<View> currentFocusedView() {
+        return Optional.ofNullable(getFocusedView());
+    }
+
+    /**
      * Get that view that holds recently the focus within this window..
      *
-     * @return That view that hodls recently the focus.
+     * @return That view that holds recently the focus, or null if none.
+     * @see #previousFocusedView() for an Optional-returning alternative
      */
     View getLastFocusedView();
+
+    /**
+     * Get the view that most recently held focus within this window.
+     * <p>
+     * This is the {@link Optional}-returning alternative to {@link #getLastFocusedView()}.
+     *
+     * @return An Optional containing the previously focused view, or empty if none.
+     * @since 6.3.0
+     */
+    default Optional<View> previousFocusedView() {
+        return Optional.ofNullable(getLastFocusedView());
+    }
 
     /**
      * Set the given view as the view that holds currently the focus.

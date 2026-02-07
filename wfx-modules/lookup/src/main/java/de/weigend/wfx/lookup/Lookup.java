@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.util.TypeLiteral;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * The general service lookup for the platform.
@@ -62,6 +64,7 @@ public final class Lookup {
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
      * @return A instance of the requested class or null if not found.
+     * @see #find(Class) for an Optional-returning alternative
      */
     public static <T> T lookup(Class<T> clazz) {
         LookupStrategy strategy = getLookupStrategy();
@@ -69,6 +72,20 @@ public final class Lookup {
             return strategy.lookup(clazz);
         }
         return null;
+    }
+
+    /**
+     * Lookup a class from the registry, returning an {@link Optional}.
+     * <p>
+     * This is the {@link Optional}-returning alternative to {@link #lookup(Class)}.
+     *
+     * @param clazz The class to search.
+     * @param <T>   The type of the class to search.
+     * @return An Optional containing the found instance, or empty if not found.
+     * @since 6.3.0
+     */
+    public static <T> Optional<T> find(Class<T> clazz) {
+        return Optional.ofNullable(lookup(clazz));
     }
 
     /**
@@ -85,6 +102,7 @@ public final class Lookup {
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return A instance of the requested class or null if not found.
+     * @see #find(TypeLiteral) for an Optional-returning alternative
      */
     public static <T> T lookup(TypeLiteral<T> type) {
         LookupStrategy strategy = getLookupStrategy();
@@ -95,13 +113,28 @@ public final class Lookup {
     }
 
     /**
+     * Lookup an instance from the registry using a TypeLiteral, returning an {@link Optional}.
+     * <p>
+     * This is the {@link Optional}-returning alternative to {@link #lookup(TypeLiteral)}.
+     *
+     * @param type The type literal to search.
+     * @param <T>  The type of the class to search.
+     * @return An Optional containing the found instance, or empty if not found.
+     * @since 6.3.0
+     */
+    public static <T> Optional<T> find(TypeLiteral<T> type) {
+        return Optional.ofNullable(lookup(type));
+    }
+
+    /**
      * Lookup all services for one class from the registry.
      * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
-     * @return A list with all found service instances for the searched class.
+     * @return A list with all found service instances for the searched class, or null if no strategy is set.
+     * @see #findAll(Class) for an empty-list-returning alternative
      */
     public static <T> List<T> lookupAll(Class<T> clazz) {
         LookupStrategy strategy = getLookupStrategy();
@@ -109,6 +142,22 @@ public final class Lookup {
             return strategy.lookupAll(clazz);
         }
         return null;
+    }
+
+    /**
+     * Lookup all services for one class from the registry.
+     * <p>
+     * Unlike {@link #lookupAll(Class)}, this method returns an empty list instead of null
+     * when no services are found or no strategy is set.
+     *
+     * @param clazz The class to search.
+     * @param <T>   The type of the class to search.
+     * @return A list with all found service instances, never null.
+     * @since 6.3.0
+     */
+    public static <T> List<T> findAll(Class<T> clazz) {
+        List<T> result = lookupAll(clazz);
+        return result != null ? result : Collections.emptyList();
     }
 
     /**
@@ -125,7 +174,8 @@ public final class Lookup {
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
-     * @return A list with all found service instances for the searched class.
+     * @return A list with all found service instances for the searched class, or null if no strategy is set.
+     * @see #findAll(TypeLiteral) for an empty-list-returning alternative
      */
     public static <T> List<T> lookupAll(TypeLiteral<T> type) {
         LookupStrategy strategy = getLookupStrategy();
@@ -133,6 +183,22 @@ public final class Lookup {
             return strategy.lookupAll(type);
         }
         return null;
+    }
+
+    /**
+     * Lookup all services using a TypeLiteral from the registry.
+     * <p>
+     * Unlike {@link #lookupAll(TypeLiteral)}, this method returns an empty list instead of null
+     * when no services are found or no strategy is set.
+     *
+     * @param type The type literal to search.
+     * @param <T>  The type of the class to search.
+     * @return A list with all found service instances, never null.
+     * @since 6.3.0
+     */
+    public static <T> List<T> findAll(TypeLiteral<T> type) {
+        List<T> result = lookupAll(type);
+        return result != null ? result : Collections.emptyList();
     }
 
     /**
