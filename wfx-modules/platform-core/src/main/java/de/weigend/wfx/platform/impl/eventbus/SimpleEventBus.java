@@ -22,7 +22,6 @@ package de.weigend.wfx.platform.impl.eventbus;
 import de.weigend.wfx.platform.api.EventBus;
 import de.weigend.wfx.platform.api.EventBusListener;
 
-import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,16 +46,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *
  * @author christian.fritz
  */
-@Singleton
 @SuppressWarnings({"rawtypes", "unchecked"})
-public class SimpleEventBus implements EventBus {
+public class SimpleEventBus implements EventBus<EventObject> {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleEventBus.class);
 
-    private final Map<Class, List<EventBusListener>> subscriptions = new ConcurrentHashMap<>();
+    private final Map<Class<?>, List<EventBusListener<?>>> subscriptions = new ConcurrentHashMap<>();
 
     @Override
     public boolean publish(EventObject event) {
-        Set<EventBusListener> listeners = collectListeners(event.getClass());
+        Set<EventBusListener<?>> listeners = collectListeners(event.getClass());
         if (listeners.isEmpty()) {
             LOG.debug("No listeners registered for event type: {}", event.getClass().getName());
             return true;
@@ -82,13 +80,13 @@ public class SimpleEventBus implements EventBus {
      * @param eventType the concrete event type
      * @return set of all applicable listeners (deduplicated)
      */
-    private Set<EventBusListener> collectListeners(Class<?> eventType) {
-        Set<EventBusListener> result = new HashSet<>();
+    private Set<EventBusListener<?>> collectListeners(Class<?> eventType) {
+        Set<EventBusListener<?>> result = new HashSet<>();
 
         // Walk up the class hierarchy
         Class<?> current = eventType;
         while (current != null && EventObject.class.isAssignableFrom(current)) {
-            List<EventBusListener> listeners = subscriptions.get(current);
+            List<EventBusListener<?>> listeners = subscriptions.get(current);
             if (listeners != null) {
                 result.addAll(listeners);
             }
@@ -99,14 +97,14 @@ public class SimpleEventBus implements EventBus {
     }
 
     @Override
-    public void subscribe(Class type, EventBusListener listener) {
+    public <E extends EventObject> void subscribe(Class<E> type, EventBusListener<? super E> listener) {
         subscriptions.computeIfAbsent(type, k -> new CopyOnWriteArrayList<>()).add(listener);
         LOG.debug("Subscribed listener for event type: {}", type.getName());
     }
 
     @Override
-    public boolean unsubscribe(Class type, EventBusListener listener) {
-        List<EventBusListener> subscriptionsForType = subscriptions.get(type);
+    public <E extends EventObject> boolean unsubscribe(Class<E> type, EventBusListener<? super E> listener) {
+        List<EventBusListener<?>> subscriptionsForType = subscriptions.get(type);
         boolean removed = subscriptionsForType != null && subscriptionsForType.remove(listener);
         if (removed) {
             LOG.debug("Unsubscribed listener for event type: {}", type.getName());
