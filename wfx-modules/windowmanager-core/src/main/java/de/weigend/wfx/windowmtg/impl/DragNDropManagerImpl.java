@@ -72,6 +72,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     private Node effectTarget;
     /**
+     * Cached position to avoid redundant overlay updates.
+     */
+    private Position lastPosition;
+    /**
      * Temp stage when the view was dropped outside a wfx window.
      */
     private Stage droppedStage;
@@ -84,6 +88,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
     @Inject
     public DragNDropManagerImpl(MultiWindowManager windowManager) {
         this.windowManager = windowManager;
+        // Initialize effect settings once - not on every drag event
+        effect.setMode(BlendMode.COLOR_BURN);
+        dropOverlay.setPaint(Color.LIGHTSTEELBLUE);
+        effect.setBottomInput(dropOverlay);
     }
 
     /**
@@ -259,6 +267,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
         Node target = (Node) event.getSource();
         LOGGER.debug("Handle drag exited: {}", event);
         target.setEffect(null);
+        lastPosition = null;
         event.consume();
     }
 
@@ -282,26 +291,36 @@ public class DragNDropManagerImpl implements DragNDropManager {
             return;
         }
         
-        if (target != effectTarget) {
+        Position position = detectPosition(event, target);
+        ViewArea area = (ViewArea) target.getUserData();
+        
+        if (!area.dropToCenter() && position == Position.CENTER) {
+            event.consume();
+            if (effectTarget != null) {
+                effectTarget.setEffect(null);
+                effectTarget = null;
+                lastPosition = null;
+            }
+            return;
+        }
+        
+        // Only update effect/overlay when target or position changes
+        boolean targetChanged = target != effectTarget;
+        boolean positionChanged = position != lastPosition;
+        
+        if (targetChanged) {
             if (effectTarget != null) {
                 effectTarget.setEffect(null);
             }
             target.setEffect(effect);
+            effectTarget = target;
         }
-        effect.setMode(BlendMode.COLOR_BURN);
-        dropOverlay.setPaint(Color.LIGHTSTEELBLUE);
-        effect.setBottomInput(dropOverlay);
-        Position position = detectPosition(event, target);
-
-        ViewArea area = (ViewArea) target.getUserData();
-        if (!area.dropToCenter() && position == Position.CENTER) {
-            event.consume();
-            target.setEffect(null);
-            effectTarget = null;
-            return;
+        
+        if (targetChanged || positionChanged) {
+            adjustOverlay(target, position);
+            lastPosition = position;
         }
-        adjustOverlay(target, position);
-        effectTarget = target;
+        
         event.acceptTransferModes(TransferMode.MOVE);
         event.consume();
     }
@@ -328,6 +347,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
             effectTarget.setEffect(null);
         }
         effectTarget = null;
+        lastPosition = null;
 
         event.setDropCompleted(success);
         // closeDropStages();
