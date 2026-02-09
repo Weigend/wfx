@@ -41,7 +41,7 @@ wfx/
 
 ### Module Interface
 
-Modules implement `de.weigend.wfx.platform.api.Module`:
+Modules implement `de.weigend.software-ekg-wfx.platform.api.Module`:
 
 ```java
 public interface Module {
@@ -56,7 +56,7 @@ public interface Module {
 ### Module Discovery
 
 Modules are discovered via Java ServiceLoader:
-- Register in `META-INF/services/de.weigend.wfx.platform.api.Module`
+- Register in `META-INF/services/de.weigend.software-ekg-wfx.platform.api.Module`
 
 ## Lookup System
 
@@ -187,7 +187,7 @@ mvn javafx:run
 
 Or with explicit main class:
 ```bash
-mvn exec:java -Dexec.mainClass=de.weigend.wfx.main.Main
+mvn exec:java -Dexec.mainClass=de.weigend.software-ekg-wfx.main.Main
 ```
 
 ## Key Design Decisions

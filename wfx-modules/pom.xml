@@ -2,8 +2,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.weigend.wfx</groupId>
-    <artifactId>wfx</artifactId>
+    <groupId>de.weigend.software-ekg-wfx</groupId>
+    <artifactId>software-ekg-wfx</artifactId>
     <version>6.2.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <description>wfx Framework</description>

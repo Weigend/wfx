@@ -43,7 +43,7 @@ Or with CDI as lookup strategy:
 
 ```bash
 cd example-gui
-mvn compile exec:java -Dexec.mainClass=de.weigend.wfx.examplegui.ExampleCDIMain
+mvn compile exec:java -Dexec.mainClass=de.weigend.software-ekg-wfx.examplegui.ExampleCDIMain
 ```
 
 ## Project Structure
@@ -68,7 +68,7 @@ The easiest way to use WFX is to add the `wfx-all` dependency which includes all
 
 ```xml
 <dependency>
-    <groupId>de.weigend.wfx</groupId>
+    <groupId>de.weigend.software-ekg-wfx</groupId>
     <artifactId>wfx-all</artifactId>
     <version>6.2.1-SNAPSHOT</version>
 </dependency>
@@ -89,7 +89,7 @@ If you prefer to pick individual modules, you can also add them separately (e.g.
 ### 1. Create a Main Class
 
 ```java
-import de.weigend.wfx.main.Main;
+import de.weigend.software-ekg-wfx.main.Main;
 import javafx.application.Application;
 
 public class MyApp extends Main {
@@ -102,11 +102,11 @@ public class MyApp extends Main {
 ### 2. Create a Module
 
 ```java
-import de.weigend.wfx.platform.api.Module;
-import de.weigend.wfx.windowmtg.api.WindowManager;
-import de.weigend.wfx.windowmtg.api.FXMLViewBuilder;
-import de.weigend.wfx.windowmtg.api.Position;
-import de.weigend.wfx.lookup.Lookup;
+import de.weigend.software-ekg-wfx.platform.api.Module;
+import de.weigend.software-ekg-wfx.windowmtg.api.WindowManager;
+import de.weigend.software-ekg-wfx.windowmtg.api.FXMLViewBuilder;
+import de.weigend.software-ekg-wfx.windowmtg.api.Position;
+import de.weigend.software-ekg-wfx.lookup.Lookup;
 
 public class MyModule implements Module {
     
@@ -135,7 +135,7 @@ public class MyModule implements Module {
 
 ### 3. Register the Module
 
-Create `META-INF/services/de.weigend.wfx.platform.api.Module`:
+Create `META-INF/services/de.weigend.software-ekg-wfx.platform.api.Module`:
 ```
 com.example.MyModule
 ```
@@ -145,7 +145,7 @@ com.example.MyModule
 For CDI-based dependency injection, extend `CDIMain` instead:
 
 ```java
-import de.weigend.wfx.main.CDIMain;
+import de.weigend.software-ekg-wfx.main.CDIMain;
 import javafx.application.Application;
 
 public class MyCDIApp extends CDIMain {

@@ -5,35 +5,35 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.weigend.wfx</groupId>
-        <artifactId>wfx</artifactId>
+        <groupId>de.weigend.software-ekg-wfx</groupId>
+        <artifactId>software-ekg-wfx</artifactId>
         <version>6.2.1-SNAPSHOT</version>
     </parent>
 
-    <groupId>de.weigend.wfx</groupId>
+    <groupId>de.weigend.software-ekg-wfx</groupId>
     <artifactId>example-gui</artifactId>
     <version>6.2.1-SNAPSHOT</version>
     <dependencies>
         <dependency>
-            <groupId>de.weigend.wfx</groupId>
+            <groupId>de.weigend.software-ekg-wfx</groupId>
             <artifactId>platform-runner</artifactId>
             <version>6.2.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>de.weigend.wfx</groupId>
+            <groupId>de.weigend.software-ekg-wfx</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>6.2.1-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>de.weigend.wfx</groupId>
+            <groupId>de.weigend.software-ekg-wfx</groupId>
             <artifactId>windowmanager-core</artifactId>
             <version>6.2.1-SNAPSHOT</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>de.weigend.wfx</groupId>
+            <groupId>de.weigend.software-ekg-wfx</groupId>
             <artifactId>ui-utils</artifactId>
             <version>6.2.1-SNAPSHOT</version>
             <scope>compile</scope>
@@ -60,7 +60,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>de.weigend.wfx.examplegui.ExampleServiceLoaderMain</mainClass>
+                    <mainClass>de.weigend.software-ekg-wfx.examplegui.ExampleServiceLoaderMain</mainClass>
                 </configuration>
             </plugin>
         </plugins>
