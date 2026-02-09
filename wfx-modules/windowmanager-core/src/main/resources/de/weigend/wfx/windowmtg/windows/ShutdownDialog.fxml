@@ -2,7 +2,7 @@
 
 <?import javafx.scene.control.ButtonType?>
 <?import javafx.scene.control.DialogPane?>
-<DialogPane contentText="Möchten sie die Anwendungs wirklich beenden?" headerText="Anwendung beenden"
+<DialogPane contentText="Do you really want to exit the application?" headerText="Exit Application"
             xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1" id="ShutdownDialog">
     <buttonTypes>
         <ButtonType fx:constant="YES"/>
