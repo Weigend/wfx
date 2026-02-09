@@ -45,7 +45,7 @@ import static org.hamcrest.Matchers.*;
  * <p>
  * It also tests the {@link ViewContextExtension}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(Arquillian.class)
 public class AbstractJfxContextTest {

@@ -20,6 +20,6 @@
 /**
  * Contains the sagediver.fx window manager api.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 package de.weigend.wfx.windowmtg.api;

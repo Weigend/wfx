@@ -37,7 +37,7 @@ import java.util.ResourceBundle;
 /**
  * View controller to list all registered views.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class ViewOverview implements Initializable {

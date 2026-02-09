@@ -22,7 +22,7 @@ package de.weigend.wfx.platform.api.exceptions;
 /**
  * Generic platform exception.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class PlatformException extends Exception {
     /**

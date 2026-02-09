@@ -20,6 +20,6 @@
 /**
  * This is the platform core api.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 package de.weigend.wfx.platform.api;

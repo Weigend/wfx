@@ -41,7 +41,7 @@ import static java.util.Collections.unmodifiableList;
 /**
  * The logging adapter.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class LogbackAdapter implements LoggerAdapter, LoggerContextListener {
     public static final String DEFAULT = "Default";

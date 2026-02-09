@@ -40,7 +40,7 @@ import java.util.List;
  * preloader over bootstrapping the modules, showing the main application window and shutdown the application inclusive
  * all modules.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class Main extends Application {
 

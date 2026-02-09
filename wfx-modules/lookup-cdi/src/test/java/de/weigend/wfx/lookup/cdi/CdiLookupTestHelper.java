@@ -25,7 +25,7 @@ import de.weigend.wfx.lookup.Lookup;
 /**
  * Some helper utils to start and shutdown the wfx cdi container while testing.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class CdiLookupTestHelper {
 

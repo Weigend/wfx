@@ -34,7 +34,7 @@ import java.util.function.Consumer;
 /**
  * Special log appender that creates a string of the last x log events.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class LoggerConsoleAppender extends OutputStreamAppender<ILoggingEvent> {
     public static final int BUFFER_SIZE = 64 * 1024;

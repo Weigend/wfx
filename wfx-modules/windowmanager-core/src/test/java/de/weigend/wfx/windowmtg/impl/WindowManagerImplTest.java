@@ -51,7 +51,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test for the {@link WindowManagerImpl}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@ RunWith(MockitoJUnitRunner.class)
 public class WindowManagerImplTest {

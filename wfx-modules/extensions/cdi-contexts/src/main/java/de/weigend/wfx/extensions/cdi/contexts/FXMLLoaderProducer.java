@@ -31,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 /**
  * Produces the FXMLLoader when using the cdi module.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @Singleton
 public class FXMLLoaderProducer {

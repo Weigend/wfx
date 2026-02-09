@@ -22,7 +22,7 @@ package de.weigend.wfx.extensions.cdi.contexts.api;
 /**
  * A view specific cdi context.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface ViewContext extends JfxContext<String> {
 }

@@ -27,7 +27,7 @@ import java.util.List;
  * of the given {@link java.lang.Class} object. It allows you to use our own registry, service locator or dependency
  * injection container.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface LookupStrategy {
     /**

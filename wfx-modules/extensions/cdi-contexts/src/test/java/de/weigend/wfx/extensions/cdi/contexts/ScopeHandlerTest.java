@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Unit test for the {@link ScopeHandler}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(Arquillian.class)
 public class ScopeHandlerTest {

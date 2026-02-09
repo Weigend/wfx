@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
 /**
  * Handles the full window management with fully customizable layout and drag&drop into new not existing windows.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @Singleton
 public class WindowManagerImpl implements MultiWindowManager {

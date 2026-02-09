@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Unit test for the cid specific startup in {@link de.weigend.wfx.main.CDIMain}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class CDIMainTest {
 

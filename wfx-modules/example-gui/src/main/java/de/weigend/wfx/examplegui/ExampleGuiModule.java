@@ -33,7 +33,7 @@ import java.io.IOException;
 /**
  * Register the a example view within the window manager.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ExampleGuiModule implements Module {
 

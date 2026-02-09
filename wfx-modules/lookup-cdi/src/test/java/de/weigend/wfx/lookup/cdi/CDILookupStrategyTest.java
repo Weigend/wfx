@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.*;
 /**
  * Unit test for the {@link de.weigend.wfx.lookup.cdi.CDILookupStrategy}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class CDILookupStrategyTest {
 

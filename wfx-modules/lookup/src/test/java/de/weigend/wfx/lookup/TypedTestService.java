@@ -23,7 +23,7 @@ package de.weigend.wfx.lookup;
 /**
  * Sample service to test strict typed lookups.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  * @see {@link LookupStrategy#lookupAll(javax.enterprise.util.TypeLiteral)} and
  * {@link LookupStrategy#lookup(javax.enterprise.util.TypeLiteral)}
  */

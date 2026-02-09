@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test for the {@link DefaultApplicationWindow}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@ R unWith(MockitoJUnitRunner.class)
 public class DefaultApplicationWindowTest {

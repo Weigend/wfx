@@ -27,7 +27,7 @@ import java.net.URL;
  * Defines a View. A view is an object that could be registered within the {@link WindowManager} and displayed as a
  * tab.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface View {
 

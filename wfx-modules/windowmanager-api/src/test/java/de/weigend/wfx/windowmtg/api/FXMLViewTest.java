@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for loading of standard fxml views with {@link FXMLView}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class FXMLViewTest {
 

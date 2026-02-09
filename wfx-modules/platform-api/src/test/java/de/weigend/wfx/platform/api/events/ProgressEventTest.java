@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.equalTo;
 /**
  * Unit test for the {@link de.weigend.wfx.platform.api.events.ProgressEvent}
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ProgressEventTest  {
     /**

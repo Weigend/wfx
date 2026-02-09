@@ -28,7 +28,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 /**
  * A test view implementation that is {@link ApplicationScoped}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @ApplicationScoped
 public class AppScopedView implements View {

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for the {@link ViewFocusHandler}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //unWith(MockitoJUnitRunner.class)
 public class ViewFocusHandlerTest {

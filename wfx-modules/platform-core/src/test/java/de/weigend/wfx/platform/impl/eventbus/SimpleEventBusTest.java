@@ -39,7 +39,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link de.weigend.wfx.platform.impl.eventbus.SimpleEventBus}
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SimpleEventBusTest {

@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link AnnotationProcessor}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 @SuppressWarnings("unchecked")

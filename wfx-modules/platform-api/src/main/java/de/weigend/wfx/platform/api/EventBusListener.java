@@ -23,7 +23,7 @@ package de.weigend.wfx.platform.api;
  * The callback interface.
  *
  * @param <T> the type of the Event
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @FunctionalInterface
 public interface EventBusListener<T> {

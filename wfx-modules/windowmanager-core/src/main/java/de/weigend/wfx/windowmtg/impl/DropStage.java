@@ -37,7 +37,7 @@ import java.util.List;
  * <p/>
  * This drop events are captured by one undecorated and transparent stage per screen. This stages covers the whole screen.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 class DropStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(DropStage.class);

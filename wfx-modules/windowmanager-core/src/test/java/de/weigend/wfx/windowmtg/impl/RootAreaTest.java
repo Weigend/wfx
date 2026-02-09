@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 /**
  * Test the root area.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class RootAreaTest {

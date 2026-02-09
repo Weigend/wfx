@@ -24,7 +24,7 @@ import de.weigend.wfx.platform.api.exceptions.PlatformException;
 /**
  * Module interface to implement the initialization and the shutdown of a module while the platform starts and stops.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface Module {
 

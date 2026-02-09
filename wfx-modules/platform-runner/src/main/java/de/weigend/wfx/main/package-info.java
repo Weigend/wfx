@@ -20,6 +20,6 @@
 /**
  * The Main Package contains the full startup.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 package de.weigend.wfx.main;

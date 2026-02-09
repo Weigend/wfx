@@ -24,7 +24,7 @@ import org.jboss.weld.interceptor.util.proxy.TargetInstanceProxy;
 /**
  * Utilities to work with cdi beans.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public final class BeanUtils {
 

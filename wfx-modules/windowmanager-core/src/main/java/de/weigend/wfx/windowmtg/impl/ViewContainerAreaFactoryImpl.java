@@ -22,7 +22,7 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * Implementation for the view container areas. This Implementation will show the added views as tabs within a TabPane.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ViewContainerAreaFactoryImpl implements ViewContainerAreaFactory {
 

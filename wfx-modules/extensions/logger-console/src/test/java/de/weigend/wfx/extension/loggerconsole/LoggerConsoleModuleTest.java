@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link LoggerConsoleModule}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LoggerConsoleModuleTest {

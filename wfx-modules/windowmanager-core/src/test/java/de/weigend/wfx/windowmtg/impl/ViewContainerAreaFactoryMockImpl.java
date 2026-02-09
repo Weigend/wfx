@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 /**
  * Mock Implementations for the view container areas.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ViewContainerAreaFactoryMockImpl implements ViewContainerAreaFactory {
 

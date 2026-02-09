@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 /**
  * Use the javas {@link java.util.ServiceLoader} to lookup the actual instances.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
 

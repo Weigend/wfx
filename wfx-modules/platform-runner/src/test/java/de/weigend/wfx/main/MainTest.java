@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test for the {@link Main} class.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MainTest {

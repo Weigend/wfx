@@ -27,7 +27,7 @@ import javafx.scene.Parent;
 /**
  * A test view implementation that is {@link ViewScoped}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @ViewScoped
 public class ViewScopedView implements View {

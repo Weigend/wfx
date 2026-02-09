@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link ConsoleController}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 

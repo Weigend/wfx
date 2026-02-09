@@ -31,7 +31,7 @@ import jakarta.inject.Singleton;
 /**
  * Register the {@link ViewContext} within the current cdi instance.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ViewContextExtension implements Extension {
 

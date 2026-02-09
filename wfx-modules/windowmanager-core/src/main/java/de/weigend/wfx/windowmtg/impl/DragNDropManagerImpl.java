@@ -39,7 +39,7 @@ import jakarta.inject.Singleton;
 /**
  * Handles the full drag&drop gestures for the window and view management.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @Singleton
 public class DragNDropManagerImpl implements DragNDropManager {

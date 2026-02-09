@@ -20,6 +20,6 @@
 /**
  * This package contains the concrete implementations for lookup strategies.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 package de.weigend.wfx.lookup.impl;

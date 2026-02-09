@@ -45,7 +45,7 @@ import static org.mockito.Mockito.*;
 /**
  * Test for the {@link ViewArea}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class ViewAreaTest {

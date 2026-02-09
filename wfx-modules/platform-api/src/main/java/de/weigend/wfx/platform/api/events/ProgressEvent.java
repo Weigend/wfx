@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * This event is to report the startup progress to the splash screen and to the global progress bar.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class ProgressEvent extends EventObject {
 

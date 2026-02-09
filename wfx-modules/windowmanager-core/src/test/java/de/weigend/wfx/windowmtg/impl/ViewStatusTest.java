@@ -39,7 +39,7 @@ import static org.mockito.Mockito.*;
 /**
  * test for {@link ViewStatus}
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class ViewStatusTest {

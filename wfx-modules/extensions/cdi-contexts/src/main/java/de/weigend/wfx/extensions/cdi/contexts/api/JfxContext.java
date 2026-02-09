@@ -35,7 +35,7 @@ import java.util.Set;
  * different backend models if they are created for different storages.
  *
  * @param <T> The type of the associated storage
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface JfxContext<T> extends BoundContext<T>, ManagedContext {
     /**

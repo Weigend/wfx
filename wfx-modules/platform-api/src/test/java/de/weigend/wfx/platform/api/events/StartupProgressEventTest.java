@@ -25,7 +25,7 @@ import org.junit.Test;
 /**
  * Unit test for {@link StartupProgressEvent}
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class StartupProgressEventTest {
     /**

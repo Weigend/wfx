@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 /**
  * A RootArea is a special {@link ViewArea} which has no parent and is directly used as root.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class RootArea extends ViewArea {
     private final Pane box;

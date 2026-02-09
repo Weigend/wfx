@@ -44,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  *   <li>Error isolation - exceptions in one listener don't affect others</li>
  * </ul>
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SimpleEventBus implements EventBus<EventObject> {

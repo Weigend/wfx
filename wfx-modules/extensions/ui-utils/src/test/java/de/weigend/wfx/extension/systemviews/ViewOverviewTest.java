@@ -47,7 +47,7 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test for {@link ViewOverview}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 // unWith(MockitoJUnitRunner.class)
 public class ViewOverviewTest  {

@@ -48,7 +48,7 @@ import static org.jboss.weld.bean.BeanIdentifiers.forManagedBean;
  * with the implementation {@link de.weigend.wfx.extensions.cdi.contexts.view.ViewContextImpl}.
  *
  * @param <T> The type of the associated storage
- * @author christian.fritz
+ * @author Software-EKG Team
  * @see de.weigend.wfx.extensions.cdi.contexts.api.JfxContext
  * @see de.weigend.wfx.extensions.cdi.contexts.api.ViewContext
  * @see de.weigend.wfx.extensions.cdi.contexts.view.ViewContextImpl

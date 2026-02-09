@@ -28,7 +28,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Mark a {@link jakarta.inject.Singleton} or {@link jakarta.enterprise.context.ApplicationScoped} annotated bean as eager.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 @Retention(RUNTIME)
 @Target(TYPE)

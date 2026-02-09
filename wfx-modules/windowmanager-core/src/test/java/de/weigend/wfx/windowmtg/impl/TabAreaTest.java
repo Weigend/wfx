@@ -42,7 +42,7 @@ import static org.mockito.Mockito.*;
 /**
  * Test for {@link TabArea}.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class TabAreaTest {

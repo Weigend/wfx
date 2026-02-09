@@ -33,7 +33,7 @@ import java.util.Objects;
  * other needed values.
  *
  * @param <C> Defines the type of the controller class.
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class FXMLView<C> implements View {
 

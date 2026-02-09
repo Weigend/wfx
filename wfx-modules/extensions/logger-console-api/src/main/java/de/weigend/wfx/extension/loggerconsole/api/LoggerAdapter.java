@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * Adapter to retrieve the log messages from a logging framework like logback or log4j.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public interface LoggerAdapter {
 

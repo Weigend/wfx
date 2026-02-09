@@ -24,7 +24,7 @@ import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
 /**
  * wfx application startup class with cdi as lookup strategy.
  *
- * @author christian.fritz
+ * @author Software-EKG Team
  */
 public class CDIMain extends Main {
     @Override
