@@ -18,7 +18,7 @@
         <weldVersion>5.1.2.Final</weldVersion>
         <arquillianVersion>1.8.0.Final</arquillianVersion>
         <jaxb.version>2.3.0</jaxb.version>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <javafx.version>21.0.5</javafx.version>
     </properties>
 
