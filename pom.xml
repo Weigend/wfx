@@ -430,22 +430,4 @@
 
     </build>
 
-    <!--
-      Default QAware maven repository in the QAware artifactory that will used
-      to deploy the binary that to be available for the usage in Software-EKG AWB.
-    -->
-    <distributionManagement>
-        <repository>
-            <id>qaware-artifactory-maven-releases</id>
-            <name>Artifactory-releases</name>
-            <url>https://artifactory.qaware.de:443/artifactory/qaware-maven-release</url>
-        </repository>
-
-        <snapshotRepository>
-            <id>qaware-artifactory-maven-snapshots</id>
-            <name>Artifactory-snapshots</name>
-            <url>https://artifactory.qaware.de:443/artifactory/qaware-maven-snapshot</url>
-        </snapshotRepository>
-    </distributionManagement>
-
 </project>
