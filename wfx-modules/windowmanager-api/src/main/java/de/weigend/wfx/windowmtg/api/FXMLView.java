@@ -20,7 +20,6 @@
 package de.weigend.wfx.windowmtg.api;
 
 import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.windowmtg.api.exceptions.ViewNotFoundException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 

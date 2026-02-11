@@ -20,6 +20,8 @@
 package de.weigend.wfx.windowmtg.impl;
 
 import de.weigend.wfx.windowmtg.api.Position;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Control;
@@ -32,9 +34,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 
 /**
  * Handles the full drag&drop gestures for the window and view management.
@@ -134,7 +133,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     @Override
     public void onDragDetected(MouseEvent event) {
-        if (!(event.getSource() instanceof TabPane)) {
+        if (!(event.getSource() instanceof TabPane pane)) {
             return;
         }
 
@@ -153,7 +152,6 @@ public class DragNDropManagerImpl implements DragNDropManager {
         }
         LOGGER.debug("Handle drag detected: {}", event);
 
-        TabPane pane = (TabPane) event.getSource();
         ViewStatus view = (ViewStatus) pane.getSelectionModel().getSelectedItem().getUserData();
         setDraggedViewStatus(view);
 
@@ -176,11 +174,10 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     @Override
     public void onDragDone(DragEvent event) {
-        if (!(event.getSource() instanceof TabPane) || !(((TabPane) event.getSource()).getUserData() instanceof TabArea)) {
+        if (!(event.getSource() instanceof TabPane source) || !(((TabPane) event.getSource()).getUserData() instanceof TabArea)) {
             return;
         }
         LOGGER.debug("Handle drag done: {}", event);
-        TabPane source = (TabPane) event.getSource();
         TabArea area = (TabArea) source.getUserData();
         Dragboard db = event.getDragboard();
         if (droppedStage != null) {
@@ -238,13 +235,11 @@ public class DragNDropManagerImpl implements DragNDropManager {
         if (isInvalidDragboard(event)) {
             return;
         }
-        if (!(event.getGestureTarget() instanceof Control)) {
+        if (!(event.getGestureTarget() instanceof Control targetNode)) {
             return;
         }
-        Control targetNode = (Control) event.getGestureTarget();
         // Add view to new area
-        if (targetNode.getUserData() instanceof ViewArea) {
-            ViewArea target = (ViewArea) targetNode.getUserData();
+        if (targetNode.getUserData() instanceof ViewArea target) {
             getDraggedViewStatus().getArea().remove(getDraggedViewStatus(), false);
             Position position = detectPosition(event, targetNode);
             getDraggedViewStatus().setPosition(position);
@@ -261,10 +256,9 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     @Override
     public void onDragExited(DragEvent event) {
-        if (!(event.getSource() instanceof Node)) {
+        if (!(event.getSource() instanceof Node target)) {
             return;
         }
-        Node target = (Node) event.getSource();
         LOGGER.debug("Handle drag exited: {}", event);
         target.setEffect(null);
         lastPosition = null;
@@ -281,19 +275,17 @@ public class DragNDropManagerImpl implements DragNDropManager {
     @Override
     @SuppressWarnings("PMD.CompareObjectsWithEquals")
     public void onDragOver(DragEvent event) {
-        if (!(event.getSource() instanceof Control)) {
+        if (!(event.getSource() instanceof Control target)) {
             return;
         }
-        Control target = (Control) event.getSource();
-        
+
         // Only handle drag over for controls that have a ViewArea as userData
-        if (!(target.getUserData() instanceof ViewArea)) {
+        if (!(target.getUserData() instanceof ViewArea area)) {
             return;
         }
         
         Position position = detectPosition(event, target);
-        ViewArea area = (ViewArea) target.getUserData();
-        
+
         if (!area.dropToCenter() && position == Position.CENTER) {
             event.consume();
             if (effectTarget != null) {

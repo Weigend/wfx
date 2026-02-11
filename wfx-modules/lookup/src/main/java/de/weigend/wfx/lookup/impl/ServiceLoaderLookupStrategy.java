@@ -20,13 +20,9 @@
 package de.weigend.wfx.lookup.impl;
 
 import de.weigend.wfx.lookup.LookupStrategy;
-
 import jakarta.enterprise.util.TypeLiteral;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.ServiceLoader;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 

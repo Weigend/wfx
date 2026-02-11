@@ -22,13 +22,15 @@ package de.weigend.wfx.examplegui;
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.windowmtg.api.View;
 import de.weigend.wfx.windowmtg.api.WindowManager;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
+import javafx.scene.input.MouseEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.event.*;
-import javafx.fxml.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
 import java.net.URL;
 import java.util.ResourceBundle;
 

@@ -20,6 +20,7 @@
 package de.weigend.wfx.extensions.cdi.contexts.api;
 
 import jakarta.enterprise.context.NormalScope;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;

@@ -26,6 +26,8 @@ import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
 import de.weigend.wfx.windowmtg.api.FXMLView;
 import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
 import de.weigend.wfx.windowmtg.api.Position;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
@@ -37,9 +39,6 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

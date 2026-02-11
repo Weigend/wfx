@@ -19,23 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
-import de.weigend.wfx.windowmtg.api.Position;
-import de.weigend.wfx.windowmtg.api.View;
-import javafx.scene.control.SplitPane;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
 /**
  * test for {@link ViewStatus}
  *

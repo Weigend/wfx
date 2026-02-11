@@ -25,6 +25,8 @@ import de.weigend.wfx.extensions.cdi.contexts.view.ViewContextExtension;
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.lookup.LookupStrategy;
 import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -33,9 +35,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;

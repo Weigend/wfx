@@ -22,6 +22,7 @@ package de.weigend.wfx.windowmtg.windows;
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.windowmtg.api.ApplicationWindow;
 import de.weigend.wfx.windowmtg.api.WindowManager;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -37,7 +38,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.Objects;
 

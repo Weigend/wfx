@@ -20,11 +20,11 @@
 package de.weigend.wfx.extensions.cdi.contexts;
 
 import de.weigend.wfx.extensions.cdi.contexts.api.Eager;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.spi.*;
 import jakarta.inject.Singleton;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
  * @author Software-EKG Team
  */
 public class EagerExtension implements Extension {
-    private List<Bean<?>> eagerBeansList = new ArrayList<>();
+    private final List<Bean<?>> eagerBeansList = new ArrayList<>();
 
     /**
      * Collect the beans to initialize

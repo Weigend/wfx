@@ -19,16 +19,18 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import javafx.beans.value.*;
-import javafx.collections.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -130,8 +132,7 @@ public class ViewFocusHandler {
     private ViewStatus findView(Node focusOwner) {
         Node owner = focusOwner;
         while (owner != null) {
-            if (owner.getUserData() instanceof TabArea) {
-                TabArea area = (TabArea) owner.getUserData();
+            if (owner.getUserData() instanceof TabArea area) {
                 TabPane tabPane = (TabPane) area.getNode();
                 if (tabPane != null) {
                     Tab tab = tabPane.getSelectionModel().getSelectedItem();

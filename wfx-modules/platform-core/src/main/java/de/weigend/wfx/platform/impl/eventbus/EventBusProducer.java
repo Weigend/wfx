@@ -20,7 +20,6 @@
 package de.weigend.wfx.platform.impl.eventbus;
 
 import de.weigend.wfx.platform.api.EventBus;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.Produces;

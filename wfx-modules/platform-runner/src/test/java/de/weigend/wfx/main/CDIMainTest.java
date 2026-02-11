@@ -22,9 +22,8 @@ package de.weigend.wfx.main;
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
 import de.weigend.wfx.platform.api.PlatformApplication;
+import javafx.stage.Stage;
 import org.junit.Test;
-
-import javafx.stage.*;
 
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;

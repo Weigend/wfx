@@ -21,22 +21,13 @@ package de.weigend.wfx.windowmtg.impl;
 
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy;
-import de.weigend.wfx.windowmtg.api.GuiTestHelper;
 import de.weigend.wfx.windowmtg.api.Position;
 import de.weigend.wfx.windowmtg.api.View;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.input.*;
+import javafx.scene.Parent;
+import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.loadui.testfx.GuiTest;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static de.weigend.wfx.windowmtg.api.GuiTestHelper.runInJavaFxThreadAndWait;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -57,15 +48,15 @@ public class ViewFocusHandlerTest {
         stage.setWidth(500);
     }*/
 
-    private WindowManagerImpl windowManager = new WindowManagerImpl();
+    private final WindowManagerImpl windowManager = new WindowManagerImpl();
 
     public ViewFocusHandlerTest() {
         ViewFocusHandler focusHandler = new ViewFocusHandler(windowManager);
         focusHandler.init();
     }
 
-    private View view1 = new TestView("Test1", Position.CENTER);
-    private View view2 = new TestView("Test2", Position.LEFT);
+    private final View view1 = new TestView("Test1", Position.CENTER);
+    private final View view2 = new TestView("Test2", Position.LEFT);
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -101,7 +92,7 @@ public class ViewFocusHandlerTest {
     }
 
     private static class TabAreaMock extends TabArea {
-        private TabPane node = new TabPane();
+        private final TabPane node = new TabPane();
 
         protected TabAreaMock(ViewArea parent, DragNDropManager dragNDropManager) {
             super(parent, dragNDropManager);

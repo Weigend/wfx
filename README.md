@@ -93,7 +93,7 @@ import de.weigend.software-ekg-wfx.main.Main;
 import javafx.application.Application;
 
 public class MyApp extends Main {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         Application.launch(MyApp.class, args);
     }
 }
@@ -149,7 +149,7 @@ import de.weigend.software-ekg-wfx.main.CDIMain;
 import javafx.application.Application;
 
 public class MyCDIApp extends CDIMain {
-    public static void main(String[] args) {
+    static void main(String[] args) {
         Application.launch(MyCDIApp.class, args);
     }
 }

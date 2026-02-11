@@ -21,9 +21,8 @@ package de.weigend.wfx.extensions.cdi.contexts.testviews;
 
 import de.weigend.wfx.windowmtg.api.Position;
 import de.weigend.wfx.windowmtg.api.View;
-import javafx.scene.Parent;
-
 import jakarta.enterprise.context.ApplicationScoped;
+import javafx.scene.Parent;
 
 /**
  * A test view implementation that is {@link ApplicationScoped}.

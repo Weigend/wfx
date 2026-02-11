@@ -19,13 +19,13 @@
  */
 package de.weigend.wfx.extensions.cdi.contexts;
 
-import javafx.fxml.FXMLLoader;
-
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import javafx.fxml.FXMLLoader;
+
 import java.nio.charset.StandardCharsets;
 
 /**

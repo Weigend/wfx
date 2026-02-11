@@ -31,10 +31,10 @@ import javafx.scene.control.Label;
  */
 public class TestView implements View {
 
-    private String id;
+    private final String id;
 
-    private Position position;
-    private Label rootNode;
+    private final Position position;
+    private final Label rootNode;
 
     public TestView(String id, Position position) {
         this.id = id;

@@ -19,10 +19,11 @@
  */
 package de.weigend.wfx.windowmtg.api;
 
-import javafx.collections.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.stage.*;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Menu;
+import javafx.stage.Stage;
+
 import java.io.IOException;
 
 /**

@@ -19,26 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy;
-import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
-import de.weigend.wfx.windowmtg.api.Position;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.lang.reflect.Field;
-
-import static org.mockito.Mockito.*;
-
 /**
  * Test the root area.
  *

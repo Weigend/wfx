@@ -58,7 +58,7 @@ public class ProgressControllerTest  {
     @Mock
     private LookupStrategy lookupStrategy;
 
-    private EventBus eventBus = new SimpleEventBus();
+    private final EventBus eventBus = new SimpleEventBus();
 
     private Parent node;
 

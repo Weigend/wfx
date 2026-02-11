@@ -21,10 +21,11 @@ package de.weigend.wfx.windowmtg.impl;
 
 import de.weigend.wfx.lookup.Lookup;
 import de.weigend.wfx.windowmtg.api.Position;
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.SplitPane;
+import javafx.scene.layout.Pane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -139,7 +140,7 @@ public class ViewArea {
      *                                  them.
      */
     protected void split(ViewArea first, ViewArea second, Orientation orientation) {
-        if (!(first == this ^ second == this)) {
+        if ((first == this) == (second == this)) {
             throw new IllegalArgumentException("Either first or second area must be this.");
         }
 

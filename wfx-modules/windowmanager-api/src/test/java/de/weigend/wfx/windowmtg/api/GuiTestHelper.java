@@ -20,12 +20,12 @@
 package de.weigend.wfx.windowmtg.api;
 
 import com.google.common.util.concurrent.SettableFuture;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.loadui.testfx.utils.FXTestUtils;
 
-import javafx.application.*;
-import javafx.stage.*;
-
-import java.lang.reflect.Field;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -95,7 +95,7 @@ public class GuiTestHelper {
      */
     private static class JfxExecutor {
 
-        private Runnable runnable;
+        private final Runnable runnable;
         private Exception rethrownException;
 
         public JfxExecutor(Runnable runnable) {

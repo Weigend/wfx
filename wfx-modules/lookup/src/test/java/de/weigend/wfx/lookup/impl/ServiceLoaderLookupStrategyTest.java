@@ -22,11 +22,11 @@ package de.weigend.wfx.lookup.impl;
 import de.weigend.wfx.lookup.TestService;
 import de.weigend.wfx.lookup.TypedTestService;
 import de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
+import jakarta.annotation.Priority;
+import jakarta.enterprise.util.TypeLiteral;
 import org.junit.Before;
 import org.junit.Test;
 
-import jakarta.annotation.Priority;
-import jakarta.enterprise.util.TypeLiteral;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

@@ -20,6 +20,7 @@
 package de.weigend.wfx.lookup;
 
 import jakarta.enterprise.util.TypeLiteral;
+
 import java.util.List;
 
 /**

@@ -19,13 +19,13 @@
  */
 package de.weigend.wfx.lookup;
 
+import jakarta.enterprise.util.TypeLiteral;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import jakarta.enterprise.util.TypeLiteral;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class LookupTest {
     public void setUp() throws Exception {
         Lookup.init(strategy);
         when(strategy.lookup(TestService.class)).thenReturn(service);
-        when(strategy.lookupAll(TestService.class)).thenReturn(Arrays.asList(service));
+        when(strategy.lookupAll(TestService.class)).thenReturn(List.of(service));
     }
 
     @Test
@@ -69,14 +69,14 @@ public class LookupTest {
 
     @Test
     public void testGetLookupStrategy() throws Exception {
-        Lookup.init((LookupStrategy) null);
+        Lookup.init(null);
         LookupStrategy actual = Lookup.getLookupStrategy();
         assertThat(actual, is(nullValue()));
     }
 
     @Test
     public void testStrategyNull() throws Exception {
-        Lookup.init((LookupStrategy) null);
+        Lookup.init(null);
         assertThat(Lookup.lookup(TestService.class), is(nullValue()));
         assertThat(Lookup.lookupAll(TestService.class), is(nullValue()));
         assertThat(Lookup.lookup(new TypeLiteral<TestService>() {}), is(nullValue()));

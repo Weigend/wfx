@@ -22,6 +22,7 @@ package de.weigend.wfx.windowmtg.impl;
 import de.weigend.wfx.windowmtg.api.Position;
 import de.weigend.wfx.windowmtg.api.View;
 import de.weigend.wfx.windowmtg.api.WindowFactory;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -33,7 +34,6 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.inject.Singleton;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -54,8 +54,8 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final ReadOnlyListWrapper<RootArea> subWindows = new ReadOnlyListWrapper<>(this, "subWindows");
     private final ReadOnlyObjectWrapper<RootArea> mainRootArea = new ReadOnlyObjectWrapper<>(this, "mainRootArea");
     private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>(this, "focusedView");
-    private Map<String, ViewStatus> viewsStatus = new LinkedHashMap<>();
-    private ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
+    private final Map<String, ViewStatus> viewsStatus = new LinkedHashMap<>();
+    private final ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
 
     private View lastFocusedView;
     private WindowFactory windowFactory = Stage::new;

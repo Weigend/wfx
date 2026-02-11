@@ -19,8 +19,10 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import javafx.scene.input.*;
-import javafx.stage.*;
+import javafx.scene.input.DataFormat;
+import javafx.scene.input.DragEvent;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 /**
  * The drag&drop manager. The implementations handles the full dnd management of views.

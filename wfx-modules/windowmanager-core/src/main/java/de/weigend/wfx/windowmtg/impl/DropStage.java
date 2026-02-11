@@ -19,15 +19,18 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.input.Dragboard;
+import javafx.scene.input.TransferMode;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.geometry.*;
-import javafx.scene.*;
-import javafx.scene.input.*;
-import javafx.scene.layout.*;
-import javafx.scene.paint.*;
-import javafx.stage.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

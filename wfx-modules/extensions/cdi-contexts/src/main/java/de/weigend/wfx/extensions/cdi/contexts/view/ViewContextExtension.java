@@ -20,13 +20,12 @@
 package de.weigend.wfx.extensions.cdi.contexts.view;
 
 import de.weigend.wfx.extensions.cdi.contexts.api.ViewContext;
-import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
-
 import jakarta.enterprise.event.Observes;
 import jakarta.enterprise.inject.Produces;
 import jakarta.enterprise.inject.spi.AfterBeanDiscovery;
 import jakarta.enterprise.inject.spi.Extension;
 import jakarta.inject.Singleton;
+import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 
 /**
  * Register the {@link ViewContext} within the current cdi instance.

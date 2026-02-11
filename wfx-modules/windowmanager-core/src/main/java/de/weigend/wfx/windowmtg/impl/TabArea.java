@@ -20,11 +20,11 @@
 package de.weigend.wfx.windowmtg.impl;
 
 import de.weigend.wfx.windowmtg.api.Position;
+import javafx.scene.Parent;
+import javafx.scene.control.TabPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javafx.scene.*;
-import javafx.scene.control.*;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

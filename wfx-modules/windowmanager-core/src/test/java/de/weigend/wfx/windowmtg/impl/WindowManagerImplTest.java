@@ -19,35 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy;
-import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
-import de.weigend.wfx.windowmtg.api.Position;
-import de.weigend.wfx.windowmtg.api.View;
-import javafx.scene.Parent;
-import javafx.scene.control.TabPane;
-import javafx.stage.Stage;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import java.util.List;
-import java.util.Map;
-
-import static de.weigend.wfx.windowmtg.impl.JavaFxTestUtils.*;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.*;
-
 /**
  * Unit test for the {@link WindowManagerImpl}.
  *

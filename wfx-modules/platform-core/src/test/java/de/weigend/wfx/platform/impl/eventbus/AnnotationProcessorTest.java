@@ -185,7 +185,7 @@ public class AnnotationProcessorTest {
     }
 
     private static class ListenForMultipleEventsEventListener {
-        private List<Class<? extends EventObject>> invocationTypes = new ArrayList<>();
+        private final List<Class<? extends EventObject>> invocationTypes = new ArrayList<>();
 
         public List<Class<? extends EventObject>> getInvocationTypes() {
             return invocationTypes;

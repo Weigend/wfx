@@ -19,38 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.lookup.LookupStrategy;
-import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
-import de.weigend.wfx.windowmtg.api.Position;
-import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Control;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
-import javafx.scene.input.*;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import static de.weigend.wfx.windowmtg.impl.DragNDropManager.DATAFORMAT;
-import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.getDraggedViewStatus;
-import static de.weigend.wfx.windowmtg.impl.DragNDropManagerImpl.setDraggedViewStatus;
-import static de.weigend.wfx.windowmtg.impl.JavaFxTestUtils.*;
-import static javafx.scene.input.TransferMode.COPY;
-import static javafx.scene.input.TransferMode.MOVE;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
 /**
  * Unit test for the {@link DragNDropManagerImpl}.
  *

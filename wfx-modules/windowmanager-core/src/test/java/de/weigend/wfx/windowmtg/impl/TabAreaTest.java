@@ -19,26 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.impl;
 
-import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.lookup.LookupStrategy;
-import de.weigend.wfx.windowmtg.api.JavaFXThreadingRule;
-import de.weigend.wfx.windowmtg.api.Position;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import javafx.collections.*;
-import javafx.scene.control.*;
-import java.lang.reflect.Field;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.*;
-
 /**
  * Test for {@link TabArea}.
  *

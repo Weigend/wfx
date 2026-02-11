@@ -19,31 +19,6 @@
  */
 package de.weigend.wfx.windowmtg.windows;
 
-import de.weigend.wfx.lookup.Lookup;
-import de.weigend.wfx.lookup.LookupStrategy;
-import de.weigend.wfx.platform.api.EventBus;
-import de.weigend.wfx.windowmtg.api.WindowManager;
-import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
-
-import static de.weigend.wfx.windowmtg.api.GuiTestHelper.getStage;
-import static de.weigend.wfx.windowmtg.api.GuiTestHelper.runInJavaFxThreadAndWait;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
-
 /**
  * Unit test for the {@link DefaultApplicationWindow}.
  *

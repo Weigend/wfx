@@ -20,9 +20,8 @@
 package de.weigend.wfx.windowmtg.impl;
 
 import de.weigend.wfx.windowmtg.api.WindowManager;
-
-import javafx.beans.property.*;
-import javafx.collections.*;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.ObservableList;
 
 /**
  * A multi window manager.

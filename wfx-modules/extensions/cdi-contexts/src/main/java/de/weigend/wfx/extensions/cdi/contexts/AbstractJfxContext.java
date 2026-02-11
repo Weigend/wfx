@@ -21,6 +21,8 @@ package de.weigend.wfx.extensions.cdi.contexts;
 
 import de.weigend.wfx.extensions.cdi.contexts.api.JfxContext;
 import de.weigend.wfx.lookup.Lookup;
+import jakarta.enterprise.inject.spi.AnnotatedType;
+import jakarta.enterprise.inject.spi.BeanManager;
 import org.jboss.weld.annotated.slim.AnnotatedTypeIdentifier;
 import org.jboss.weld.annotated.slim.SlimAnnotatedType;
 import org.jboss.weld.bean.StringBeanIdentifier;
@@ -34,8 +36,6 @@ import org.jboss.weld.serialization.spi.BeanIdentifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.enterprise.inject.spi.AnnotatedType;
-import jakarta.enterprise.inject.spi.BeanManager;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -57,9 +57,9 @@ public abstract class AbstractJfxContext<T> extends AbstractBoundContext<T> impl
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractJfxContext.class);
     private final NamingScheme namingScheme;
 
-    private Map<T, BoundBeanStore> beanStores = new ConcurrentHashMap<>();
-    private ThreadLocal<T> associatedStorage = new ThreadLocal<>();
-    private Map<Object, T> beanStorageIdentifier = new WeakHashMap<>();
+    private final Map<T, BoundBeanStore> beanStores = new ConcurrentHashMap<>();
+    private final ThreadLocal<T> associatedStorage = new ThreadLocal<>();
+    private final Map<Object, T> beanStorageIdentifier = new WeakHashMap<>();
 
     /**
      * Initialize a new jfx context.

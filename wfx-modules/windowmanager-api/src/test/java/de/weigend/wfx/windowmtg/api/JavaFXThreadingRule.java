@@ -19,12 +19,11 @@
  */
 package de.weigend.wfx.windowmtg.api;
 
+import javafx.stage.Stage;
 import org.junit.Rule;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import javafx.stage.*;
 
 /**
  * A JUnit {@link Rule} for running tests on the JavaFX thread and performing

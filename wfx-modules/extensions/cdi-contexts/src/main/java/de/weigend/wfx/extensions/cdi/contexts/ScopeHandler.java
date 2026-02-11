@@ -24,14 +24,14 @@ import de.weigend.wfx.extensions.cdi.contexts.api.JfxContext;
 import de.weigend.wfx.windowmtg.api.FXMLView;
 import de.weigend.wfx.windowmtg.api.View;
 import de.weigend.wfx.windowmtg.api.WindowManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.spi.Context;
 import jakarta.enterprise.inject.spi.BeanManager;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.annotation.Annotation;
 import java.util.Objects;
 
@@ -73,10 +73,9 @@ public class ScopeHandler {
             return;
         }
         Context c = beanManager.getContext(scopeAnnotation.annotationType());
-        if (!(c instanceof JfxContext)) {
+        if (!(c instanceof JfxContext context)) {
             return;
         }
-        JfxContext context = (JfxContext) c;
         Object contextStorage = context.getStorageIdentifierFor(scopedObject);
         if (contextStorage != null && !Objects.equals(context.getAssociatedStorage(), contextStorage)) {
             context.associate(contextStorage, true);

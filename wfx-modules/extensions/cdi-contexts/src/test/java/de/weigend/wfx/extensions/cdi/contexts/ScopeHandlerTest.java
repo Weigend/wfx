@@ -30,6 +30,7 @@ import de.weigend.wfx.lookup.cdi.CDILookupStrategy;
 import de.weigend.wfx.windowmtg.api.View;
 import de.weigend.wfx.windowmtg.api.WindowManager;
 import de.weigend.wfx.windowmtg.impl.WindowManagerImpl;
+import jakarta.inject.Inject;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
@@ -37,8 +38,6 @@ import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
-import jakarta.inject.Inject;
 
 import static de.weigend.wfx.extensions.cdi.contexts.BeanUtils.getUnwrappedInstance;
 import static org.hamcrest.MatcherAssert.assertThat;
