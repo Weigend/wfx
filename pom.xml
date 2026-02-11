@@ -4,12 +4,13 @@
 
     <groupId>de.weigend.software-ekg-wfx</groupId>
     <artifactId>software-ekg-wfx</artifactId>
-    <version>6.2.1-SNAPSHOT</version>
+    <version>${revision}</version>
     <packaging>pom</packaging>
     <description>WFX - Window Framework for JavaFX</description>
 
     <!-- global properties for the whole project  -->
     <properties>
+        <revision>7.0.0-SNAPSHOT</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4jVersion>2.0.13</slf4jVersion>
@@ -400,6 +401,31 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
     </build>
