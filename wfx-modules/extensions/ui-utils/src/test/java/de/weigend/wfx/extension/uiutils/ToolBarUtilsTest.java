@@ -37,7 +37,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * Unit test for the {@link ToolBarUtils}.
  *
- * @author Software-EKG Team
  */
 public class ToolBarUtilsTest {
     static {

@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * Helper methods to test the GUI.
  *
- * @author Software-EKG Team
  */
 public class GuiTestHelper {
     private static final SettableFuture<Stage> stageFuture = SettableFuture.create();

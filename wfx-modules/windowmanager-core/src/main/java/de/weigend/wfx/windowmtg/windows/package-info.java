@@ -20,6 +20,5 @@
 /**
  * The window package contains the default main window implementation for the wfx platform.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.windowmtg.windows;

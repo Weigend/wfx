@@ -44,7 +44,6 @@ import static org.mockito.Mockito.*;
 /**
  * Unit test for the {@link MenuUtil}
  *
- * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class MenuUtilTest {

@@ -22,6 +22,5 @@
  *
  * It is placed within the platform codebase because tho it is easier to handle the development.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.examplegui;

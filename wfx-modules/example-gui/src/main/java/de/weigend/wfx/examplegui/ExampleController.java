@@ -31,7 +31,6 @@ import java.io.IOException;
 /**
  * Example controller.
  *
- * @author Software-EKG Team
  */
 public class ExampleController {
 

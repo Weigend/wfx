@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * test for {@link ViewStatus}
  *
- * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class ViewStatusTest {

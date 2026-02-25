@@ -34,7 +34,6 @@ import java.util.ResourceBundle;
 /**
  * The controller for handling the splash screen.
  *
- * @author Software-EKG Team
  */
 public class ProgressController implements Initializable {
 

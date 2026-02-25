@@ -34,7 +34,6 @@ import java.util.Optional;
  * <p>
  * This class is thread-safe.
  *
- * @author Software-EKG Team
  */
 @SuppressWarnings("checkstyle:com.puppycrawl.tools.checkstyle.checks.design.HideUtilityClassConstructorCheck")
 public final class Lookup {

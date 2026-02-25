@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * Unit test for the {@link DragNDropManagerImpl}.
  *
- * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class DragNDropManagerImplTest {

@@ -34,7 +34,6 @@ import java.util.List;
 /**
  * The {@code ToolMenuBarUtils} contains helpful methods to programmatically change toolbars and menu bars.
  *
- * @author Software-EKG Team
  */
 public final class ToolBarUtils {
 

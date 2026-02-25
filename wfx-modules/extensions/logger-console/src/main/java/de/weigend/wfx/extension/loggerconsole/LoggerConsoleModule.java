@@ -36,7 +36,6 @@ import static de.weigend.wfx.extension.uiutils.MenuUtil.*;
 /**
  * Module to load the logger console.
  *
- * @author Software-EKG Team
  */
 public class LoggerConsoleModule implements Module {
 

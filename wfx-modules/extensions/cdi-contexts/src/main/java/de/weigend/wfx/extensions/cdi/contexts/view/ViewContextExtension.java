@@ -30,7 +30,6 @@ import org.jboss.weld.bootstrap.api.helpers.RegistrySingletonProvider;
 /**
  * Register the {@link ViewContext} within the current cdi instance.
  *
- * @author Software-EKG Team
  */
 public class ViewContextExtension implements Extension {
 

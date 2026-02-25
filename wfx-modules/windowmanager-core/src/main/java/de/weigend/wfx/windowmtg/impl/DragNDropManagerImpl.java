@@ -38,7 +38,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Handles the full drag&drop gestures for the window and view management.
  *
- * @author Software-EKG Team
  */
 @Singleton
 public class DragNDropManagerImpl implements DragNDropManager {

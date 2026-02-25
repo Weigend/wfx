@@ -40,7 +40,6 @@ import java.util.stream.StreamSupport;
 /**
  * Using Contexts and Dependency Injection (CDI) as lookup strategy.
  *
- * @author Software-EKG Team
  */
 @Singleton
 public class CDILookupStrategy implements LookupStrategy {

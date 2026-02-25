@@ -29,7 +29,6 @@ import java.io.IOException;
 /**
  * Defines the main window of the wfx platform.
  *
- * @author Software-EKG Team
  */
 public interface ApplicationWindow {
 

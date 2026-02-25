@@ -22,7 +22,6 @@ package de.weigend.wfx.lookup;
 /**
  * Test service for unit testing of {@link de.weigend.wfx.lookup.impl.ServiceLoaderLookupStrategy}
  *
- * @author Software-EKG Team
  */
 public interface TestService {
 

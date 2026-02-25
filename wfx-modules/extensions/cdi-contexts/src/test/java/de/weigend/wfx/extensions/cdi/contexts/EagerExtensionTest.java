@@ -41,7 +41,6 @@ import static org.hamcrest.Matchers.is;
 /**
  * Unit test for the {@link EagerExtension}.
  *
- * @author Software-EKG Team
  */
 @RunWith(Arquillian.class)
 public class EagerExtensionTest {

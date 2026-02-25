@@ -31,7 +31,6 @@ import java.util.Set;
 /**
  * Describes a logical view area which displays the views within a tab pane.
  *
- * @author Software-EKG Team
  */
 public class TabArea extends ViewArea {
 

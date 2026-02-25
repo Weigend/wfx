@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.weigend.software-ekg-wfx</groupId>
+        <groupId>io.softwareecg.wfx</groupId>
         <artifactId>extensions</artifactId>
         <version>${revision}</version>
     </parent>
@@ -15,13 +15,13 @@
     <dependencies>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>lookup</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -39,14 +39,14 @@
         <!-- ******** test dependencies ************ -->
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>lookup-cdi</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -54,7 +54,7 @@
         </dependency>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>windowmanager-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>

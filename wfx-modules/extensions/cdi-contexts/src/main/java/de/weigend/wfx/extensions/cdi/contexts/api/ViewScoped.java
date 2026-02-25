@@ -33,7 +33,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * The scope annotation for the {@link ViewContext}.
  *
- * @author Software-EKG Team
  */
 @NormalScope
 @Retention(RUNTIME)

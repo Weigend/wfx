@@ -27,7 +27,6 @@ import javafx.stage.Stage;
  * <p>
  * This is a {@link FunctionalInterface} whose functional method is {@link #initializeWindow()}.
  *
- * @author Software-EKG Team
  */
 @FunctionalInterface
 public interface WindowFactory {

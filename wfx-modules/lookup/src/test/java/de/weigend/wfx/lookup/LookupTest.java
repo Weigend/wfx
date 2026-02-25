@@ -37,7 +37,6 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link de.weigend.wfx.lookup.Lookup} class.
  *
- * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LookupTest {

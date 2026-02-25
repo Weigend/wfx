@@ -31,7 +31,6 @@ import java.util.List;
 /**
  * CDI extension to eager initialize beans annotated with {@link Eager}.
  *
- * @author Software-EKG Team
  */
 public class EagerExtension implements Extension {
     private final List<Bean<?>> eagerBeansList = new ArrayList<>();

@@ -27,7 +27,6 @@ import javafx.scene.control.Label;
 /**
  * A generic Testview.
  *
- * @author Software-EKG Team
  */
 public class TestView implements View {
 

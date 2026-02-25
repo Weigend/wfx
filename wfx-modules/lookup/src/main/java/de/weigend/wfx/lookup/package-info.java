@@ -20,6 +20,5 @@
 /**
  * This is the platforms service lookup api.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.lookup;

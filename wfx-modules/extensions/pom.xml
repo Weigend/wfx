@@ -5,8 +5,8 @@
     <packaging>pom</packaging>
 
     <parent>
-        <groupId>de.weigend.software-ekg-wfx</groupId>
-        <artifactId>software-ekg-wfx</artifactId>
+        <groupId>io.softwareecg.wfx</groupId>
+        <artifactId>wfx</artifactId>
         <version>${revision}</version>
     </parent>
 

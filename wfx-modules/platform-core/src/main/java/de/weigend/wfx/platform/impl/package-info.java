@@ -20,6 +20,5 @@
 /**
  * Implements the platform api and the startup main.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.platform.impl;

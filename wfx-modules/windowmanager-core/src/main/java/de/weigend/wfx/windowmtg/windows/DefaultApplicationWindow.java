@@ -45,7 +45,6 @@ import java.util.Objects;
  * This is the main window of the wfx platform. It supports the window management and the default bars like
  * menu, tool and status bar.
  *
- * @author Software-EKG Team
  */
 @Singleton
 @jakarta.annotation.Priority(Integer.MIN_VALUE)

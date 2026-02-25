@@ -33,7 +33,6 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link BeanUtils}
  *
- * @author Software-EKG Team
  */
 public class BeanUtilsTest {
 

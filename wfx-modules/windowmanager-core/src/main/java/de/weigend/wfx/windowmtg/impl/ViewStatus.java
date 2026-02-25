@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 /**
  * Stores the current status and additional metadata of an window manager view.
  *
- * @author Software-EKG Team
  */
 public class ViewStatus {
     public static final int TAB_IMAGE_SIZE = 22;

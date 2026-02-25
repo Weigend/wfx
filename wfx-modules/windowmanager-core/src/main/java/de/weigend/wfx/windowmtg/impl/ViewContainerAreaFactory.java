@@ -26,7 +26,6 @@ package de.weigend.wfx.windowmtg.impl;
  * For example an implementation will produce {@link de.weigend.wfx.windowmtg.impl.TabArea}. Thats a ViewArea that will
  * show the added views as tabs within a tabpane.
  *
- * @author Software-EKG Team
  */
 public interface ViewContainerAreaFactory {
     /**

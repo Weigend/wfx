@@ -28,7 +28,6 @@ import javafx.collections.ObservableList;
  * <p/>
  * This is a window manager which is able to handle the views within one or more windows.
  *
- * @author Christian Fritz
  */
 public interface MultiWindowManager extends WindowManager {
 

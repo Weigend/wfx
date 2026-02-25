@@ -25,7 +25,6 @@ import javafx.application.Application;
 /**
  * Example main class to demonstrate running the application with the service loader lookup strategy.
  *
- * @author Software-EKG Team
  */
 public class ExampleServiceLoaderMain extends Main {
 

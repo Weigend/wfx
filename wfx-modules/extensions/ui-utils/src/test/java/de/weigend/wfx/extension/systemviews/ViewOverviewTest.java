@@ -22,7 +22,6 @@ package de.weigend.wfx.extension.systemviews;
 /**
  * Unit test for {@link ViewOverview}.
  *
- * @author Software-EKG Team
  */
 // unWith(MockitoJUnitRunner.class)
 public class ViewOverviewTest  {

@@ -41,7 +41,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 /**
  * Integration test to test the initial positions of views within the window manager.
  *
- * @author Software-EKG Team
  */
 public class InitialPositionUITest extends GuiTest {
     static {

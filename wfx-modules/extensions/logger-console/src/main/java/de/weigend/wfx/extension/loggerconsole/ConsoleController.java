@@ -35,7 +35,6 @@ import java.util.ResourceBundle;
 /**
  * UI Controller to show the last log messages.
  *
- * @author Software-EKG Team
  */
 public class ConsoleController implements Initializable {
     @FXML

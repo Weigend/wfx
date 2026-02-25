@@ -40,7 +40,6 @@ import static org.hamcrest.Matchers.is;
 /**
  * Unit test for the {@link ServiceLoaderLookupStrategy}.
  *
- * @author Software-EKG Team
  */
 public class ServiceLoaderLookupStrategyTest {
 

@@ -20,6 +20,5 @@
 /**
  * The Main Package contains the full startup.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.main;

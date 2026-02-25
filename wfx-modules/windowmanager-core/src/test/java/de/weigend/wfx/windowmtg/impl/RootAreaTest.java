@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * Test the root area.
  *
- * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class RootAreaTest {

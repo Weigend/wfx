@@ -38,7 +38,6 @@ import java.util.Objects;
 /**
  * Handles the correct context activation when the focus switches to a different view.
  *
- * @author Software-EKG Team
  */
 @Eager
 @Singleton

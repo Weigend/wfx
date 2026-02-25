@@ -6,7 +6,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <Pane prefHeight="400.0" prefWidth="590.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="de.weigend.wfx.platform.impl.ProgressController">
+      fx:controller="io.softwareecg.wfx.platform.impl.ProgressController">
     <ImageView id="splash.png" fitHeight="400" fitWidth="590.0" layoutX="0.0" layoutY="0.0">
         <Image url="@splash.png" preserveRatio="true" smooth="true"/>
     </ImageView>

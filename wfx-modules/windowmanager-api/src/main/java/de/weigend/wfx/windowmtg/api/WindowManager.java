@@ -29,7 +29,6 @@ import java.util.Optional;
 /**
  * A Window manager which is able to handle views dynamically.
  *
- * @author Software-EKG Team
  */
 public interface WindowManager {
 

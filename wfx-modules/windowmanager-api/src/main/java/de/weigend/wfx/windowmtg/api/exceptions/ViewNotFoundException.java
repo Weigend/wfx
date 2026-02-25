@@ -24,7 +24,6 @@ import java.io.IOException;
 /**
  * Special exception in case of the fxml view is not found.
  *
- * @author Software-EKG Team
  */
 public class ViewNotFoundException extends IOException {
 

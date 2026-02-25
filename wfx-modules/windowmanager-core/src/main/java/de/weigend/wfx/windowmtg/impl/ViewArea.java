@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 /**
  * A ViewArea is a node within the area tree. It has two children which are self view areas.
  *
- * @author Software-EKG Team
  */
 public class ViewArea {
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewArea.class);

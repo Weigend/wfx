@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.api;
 /**
  * The possible positions to place a view within the a window.
  *
- * @author Software-EKG Team
  */
 public enum Position {
 

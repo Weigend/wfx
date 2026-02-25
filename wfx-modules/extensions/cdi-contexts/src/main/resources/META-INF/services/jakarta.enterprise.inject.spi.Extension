@@ -1,2 +1,2 @@
-de.weigend.wfx.extensions.cdi.contexts.view.ViewContextExtension
-de.weigend.wfx.extensions.cdi.contexts.EagerExtension
+io.softwareecg.wfx.extensions.cdi.contexts.view.ViewContextExtension
+io.softwareecg.wfx.extensions.cdi.contexts.EagerExtension

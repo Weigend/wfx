@@ -25,7 +25,6 @@ import java.util.EventObject;
  * The event bus for loose coupling of separate ui components.
  *
  * @param <T> the type of the Event
- * @author Software-EKG Team
  */
 public interface EventBus<T extends EventObject> {
 

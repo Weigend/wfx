@@ -4,8 +4,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.weigend.software-ekg-wfx</groupId>
-        <artifactId>software-ekg-wfx</artifactId>
+        <groupId>io.softwareecg.wfx</groupId>
+        <artifactId>wfx</artifactId>
         <version>${revision}</version>
         <relativePath>../wfx-modules/pom.xml</relativePath>
     </parent>
@@ -170,7 +170,7 @@
                             <!-- Only include wfx modules, not third-party deps -->
                             <artifactSet>
                                 <includes>
-                                    <include>de.weigend.software-ekg-wfx:*</include>
+                                    <include>io.softwareecg.wfx:*</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

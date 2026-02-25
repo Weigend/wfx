@@ -28,7 +28,6 @@ import java.lang.annotation.Annotation;
 /**
  * Implementation for the {@link ViewContext}.
  *
- * @author Software-EKG Team
  */
 public class ViewContextImpl extends AbstractJfxContext<String> implements ViewContext {
     /**

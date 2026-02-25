@@ -37,7 +37,6 @@ import java.util.ResourceBundle;
 /**
  * This is a example editor controller.
  *
- * @author Software-EKG Team
  */
 public class ExampleExplorerController implements Initializable {
 

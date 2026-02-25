@@ -10,5 +10,5 @@
 
     <!-- feiner steuern -->
     <logger name="org.jboss.weld" level="WARN"/>
-    <logger name="de.weigend.wfx" level="INFO"/>
+    <logger name="io.softwareecg.wfx" level="INFO"/>
 </configuration>

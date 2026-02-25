@@ -27,7 +27,6 @@ import javafx.stage.Stage;
 /**
  * The drag&drop manager. The implementations handles the full dnd management of views.
  *
- * @author Christian Fritz
  */
 public interface DragNDropManager {
 

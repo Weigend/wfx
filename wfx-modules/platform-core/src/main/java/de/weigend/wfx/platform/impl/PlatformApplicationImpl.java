@@ -44,7 +44,6 @@ import java.util.List;
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for wfx platform.
  *
- * @author Software-EKG Team
  */
 @Singleton
 @Priority(Integer.MIN_VALUE)

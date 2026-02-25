@@ -38,7 +38,6 @@ import static java.lang.Integer.min;
 /**
  * This class contains some utils for easier handling of javafx' {@link Menu Menus} and {@link MenuItem MenuItems}.
  *
- * @author Software-EKG Team
  */
 public final class MenuUtil {
     private MenuUtil() {

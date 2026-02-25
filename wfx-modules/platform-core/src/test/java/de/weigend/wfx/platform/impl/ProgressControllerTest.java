@@ -48,7 +48,6 @@ import static org.mockito.Mockito.when;
 /**
  * Unit Test for the {@link ProgressController}.
  *
- * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ProgressControllerTest  {

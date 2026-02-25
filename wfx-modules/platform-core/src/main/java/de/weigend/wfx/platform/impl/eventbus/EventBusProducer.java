@@ -31,7 +31,6 @@ import jakarta.inject.Singleton;
  * This producer is needed because CDI cannot automatically resolve generic interfaces
  * like {@code EventBus<EventObject>} when looking up by raw type {@code EventBus.class}.
  *
- * @author johannes.weigend
  */
 @ApplicationScoped
 public class EventBusProducer {

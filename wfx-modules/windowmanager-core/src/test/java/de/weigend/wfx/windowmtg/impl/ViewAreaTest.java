@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * Test for the {@link ViewArea}.
  *
- * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class ViewAreaTest {

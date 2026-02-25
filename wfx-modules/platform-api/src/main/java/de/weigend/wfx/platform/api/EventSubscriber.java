@@ -27,7 +27,6 @@ import java.lang.annotation.Target;
 /**
  * Subscribes events.
  *
- * @author Software-EKG Team
  */
 @Target(value = ElementType.METHOD)
 @Retention(value = RetentionPolicy.RUNTIME)

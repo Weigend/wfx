@@ -46,7 +46,6 @@ import static org.hamcrest.Matchers.*;
 /**
  * Unit test for the {@link de.weigend.wfx.extensions.cdi.contexts.FXMLLoaderProducer}.
  *
- * @author Software-EKG Team
  */
 @RunWith(Arquillian.class)
 public class FXMLLoaderProducerTest {
@@ -93,7 +92,6 @@ public class FXMLLoaderProducerTest {
     /**
      * Controller for testing the correct initialization
      *
-     * @author Software-EKG Team
      */
     public static class TestController {
         @FXML

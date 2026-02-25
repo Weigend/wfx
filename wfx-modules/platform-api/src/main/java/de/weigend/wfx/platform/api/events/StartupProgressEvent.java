@@ -23,7 +23,6 @@ package de.weigend.wfx.platform.api.events;
 /**
  * Event to publish the startup progress of an defined module.
  *
- * @author Software-EKG Team
  */
 public class StartupProgressEvent extends ProgressEvent {
     /**

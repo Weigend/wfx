@@ -36,7 +36,6 @@ import static org.mockito.Mockito.when;
 /**
  * Unit test for the {@link LoggerConsoleAppender}.
  *
- * @author Software-EKG Team
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LoggerConsoleAppenderTest {

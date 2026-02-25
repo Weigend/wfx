@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>de.weigend.software-ekg-wfx</groupId>
-        <artifactId>software-ekg-wfx</artifactId>
+        <groupId>io.softwareecg.wfx</groupId>
+        <artifactId>wfx</artifactId>
         <version>${revision}</version>
     </parent>
 

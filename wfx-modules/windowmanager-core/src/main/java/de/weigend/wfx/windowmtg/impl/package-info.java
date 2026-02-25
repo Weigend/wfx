@@ -20,6 +20,5 @@
 /**
  * This is the internal implementation of the wfx window management.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.windowmtg.impl;

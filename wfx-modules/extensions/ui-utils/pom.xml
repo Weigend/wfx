@@ -5,7 +5,7 @@
     <description>wfx - Extension - UI-Utils</description>
 
     <parent>
-        <groupId>de.weigend.software-ekg-wfx</groupId>
+        <groupId>io.softwareecg.wfx</groupId>
         <artifactId>extensions</artifactId>
         <version>${revision}</version>
     </parent>
@@ -14,13 +14,13 @@
     <dependencies>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>lookup</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -28,7 +28,7 @@
         <!-- Test dependencies -->
 
         <dependency>
-            <groupId>de.weigend.software-ekg-wfx</groupId>
+            <groupId>io.softwareecg.wfx</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>

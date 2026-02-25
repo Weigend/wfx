@@ -20,6 +20,5 @@
 /**
  * This package contains all exceptions which can be thrown from the window management.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.windowmtg.api.exceptions;

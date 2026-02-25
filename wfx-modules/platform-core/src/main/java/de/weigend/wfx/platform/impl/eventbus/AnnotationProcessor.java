@@ -28,7 +28,6 @@ import java.lang.reflect.Method;
 /**
  * Processes the {@link EventSubscriber} annotation of a given instance.
  *
- * @author Software-EKG Team
  */
 public final class AnnotationProcessor {
 

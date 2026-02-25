@@ -37,7 +37,6 @@ import java.util.Set;
 /**
  * Handles the View focus based on the {@link Scene#focusOwnerProperty()}.
  *
- * @author Software-EKG Team
  */
 @Singleton
 public class ViewFocusHandler {

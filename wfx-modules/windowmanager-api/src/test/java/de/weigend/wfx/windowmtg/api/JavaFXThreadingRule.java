@@ -37,7 +37,6 @@ import org.junit.runners.model.Statement;
  * This rule is adopted from the following blog entry:
  * {@see http://andrewtill.blogspot.de/2012/10/junit-rule-for-javafx-controller-testing.html}
  *
- * @author Christian Fritz
  */
 public class JavaFXThreadingRule implements TestRule {
 

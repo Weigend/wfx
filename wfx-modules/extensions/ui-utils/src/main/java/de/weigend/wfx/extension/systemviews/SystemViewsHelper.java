@@ -35,7 +35,6 @@ import static de.weigend.wfx.extension.uiutils.MenuUtil.*;
 /**
  * Helper class to register the system views.
  *
- * @author Software-EKG Team
  */
 public final class SystemViewsHelper {
     private static final Logger LOGGER = LoggerFactory.getLogger(SystemViewsHelper.class);

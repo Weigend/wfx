@@ -39,7 +39,6 @@ import static org.mockito.Mockito.*;
 /**
  * Some utility methods to test java fx.
  *
- * @author Software-EKG Team
  */
 public final class JavaFxTestUtils {
 

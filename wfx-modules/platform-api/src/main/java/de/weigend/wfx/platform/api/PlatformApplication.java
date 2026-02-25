@@ -25,7 +25,6 @@ import javafx.stage.Stage;
 /**
  * The platform application. It implements the concrete views of preloader and main application window.
  *
- * @author Software-EKG Team
  */
 public interface PlatformApplication {
 

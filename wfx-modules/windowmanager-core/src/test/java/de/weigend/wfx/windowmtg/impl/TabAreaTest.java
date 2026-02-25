@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.impl;
 /**
  * Test for {@link TabArea}.
  *
- * @author Software-EKG Team
  */
 //@RunWith(MockitoJUnitRunner.class)
 public class TabAreaTest {

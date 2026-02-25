@@ -22,7 +22,6 @@ package de.weigend.wfx.windowmtg.windows;
 /**
  * Unit test for the {@link DefaultApplicationWindow}.
  *
- * @author Software-EKG Team
  */
 //@ R unWith(MockitoJUnitRunner.class)
 public class DefaultApplicationWindowTest {

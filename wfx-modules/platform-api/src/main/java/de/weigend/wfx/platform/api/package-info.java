@@ -20,6 +20,5 @@
 /**
  * This is the platform core api.
  *
- * @author Software-EKG Team
  */
 package de.weigend.wfx.platform.api;

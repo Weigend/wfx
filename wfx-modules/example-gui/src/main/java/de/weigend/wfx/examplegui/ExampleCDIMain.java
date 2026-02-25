@@ -25,7 +25,6 @@ import javafx.application.Application;
 /**
  * Example class for starting the application with cdi as lookup strategy.
  *
- * @author Software-EKG Team
  */
 public class ExampleCDIMain extends CDIMain {
 
