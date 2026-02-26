@@ -24,7 +24,9 @@ import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
+import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.exceptions.PlatformException;
+import io.softwareecg.wfx.platform.api.events.StartupProgressEvent;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -34,6 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * wfx application startup class. It controls the full application lifecycle beginning with showing the
@@ -94,17 +97,41 @@ public class Main extends Application {
     /**
      * Startup all modules.
      */
+    @SuppressWarnings("unchecked")
     private void startupModules() {
-        modules.parallelStream().forEach((module) -> {
+        EventBus<StartupProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+        int total = modules.size();
+        for (int i = 0; i < total; i++) {
+            Module module = modules.get(i);
             try {
                 LOGGER.info("Startup module {}:{}", module.getName(), module.getVersion());
+                double steps = 2.0 * total + 1;
+                eventBus.publish(new StartupProgressEvent(
+                        "Loading " + module.getName() + "...", (2.0 * i + 1) / steps, this));
+                awaitFxThread();
                 module.preload();
                 LOGGER.debug("Finished startup of module {}:{}", module.getName(), module.getVersion());
+                eventBus.publish(new StartupProgressEvent(
+                        "Loaded " + module.getName(), (2.0 * i + 2) / steps, this));
+                awaitFxThread();
             }
             catch (PlatformException e) {
                 LOGGER.warn("Can not start module: " + module.getName(), e);
             }
-        });
+        }
+    }
+
+    /**
+     * Blocks until the FX thread has processed its pending events, ensuring UI updates are rendered.
+     */
+    private void awaitFxThread() {
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(latch::countDown);
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     /**

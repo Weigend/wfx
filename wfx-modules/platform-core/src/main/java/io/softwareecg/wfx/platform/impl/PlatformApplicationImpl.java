@@ -21,6 +21,7 @@ package io.softwareecg.wfx.platform.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.platform.api.EventBus;
+import io.softwareecg.wfx.platform.api.EventBusListener;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.platform.api.events.ProgressEvent;
 import io.softwareecg.wfx.platform.api.events.StartupProgressEvent;
@@ -53,6 +54,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
     private Stage mainApplicationStage;
     private Stage preloaderStage;
     private ProgressController progressController;
+    private EventBusListener<StartupProgressEvent> startupProgressListener;
     private EventBus<ProgressEvent> eventBus;
 
     /**
@@ -106,6 +108,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
      * @throws PlatformException In case of errors while loading the fxml.
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void showPreloader(Stage stage) throws PlatformException {
         try {
             URL splashFxmlUrl = findSplashScreen();
@@ -113,7 +116,12 @@ public class PlatformApplicationImpl implements PlatformApplication {
             loader.setLocation(splashFxmlUrl);
             Parent parent = loader.load();
             progressController = loader.getController();
-            getEventBus().subscribe(StartupProgressEvent.class, progressController::progress);
+            progressController.unsubscribeProgressEvent();
+            startupProgressListener = event ->
+                    progressController.progress(
+                        new ProgressEvent(event.getMessage(), event.getProgress(), event.getSource()));
+            EventBus<StartupProgressEvent> bus = Lookup.lookup(EventBus.class);
+            bus.subscribe(StartupProgressEvent.class, startupProgressListener);
             Scene scene = new Scene(parent);
             stage.setScene(scene);
             stage.initStyle(StageStyle.UNDECORATED);
@@ -135,9 +143,11 @@ public class PlatformApplicationImpl implements PlatformApplication {
         if (preloaderStage != null) {
             preloaderStage.close();
         }
-        if (progressController != null) {
-            getEventBus().unsubscribe(ProgressEvent.class, progressController::progress);
-            getEventBus().unsubscribe(StartupProgressEvent.class, progressController::progress);
+        if (startupProgressListener != null) {
+            @SuppressWarnings("unchecked")
+            EventBus<StartupProgressEvent> bus = Lookup.lookup(EventBus.class);
+            bus.unsubscribe(StartupProgressEvent.class, startupProgressListener);
+            startupProgressListener = null;
         }
     }
 

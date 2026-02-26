@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package io.softwareecg.wfx.platform.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.platform.api.EventBus;
+import io.softwareecg.wfx.platform.api.EventBusListener;
 import io.softwareecg.wfx.platform.api.events.ProgressEvent;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -42,16 +43,34 @@ public class ProgressController implements Initializable {
     @FXML
     private Label progressText;
 
+    private EventBusListener<ProgressEvent> progressListener;
+
     @Override
+    @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
-        EventBus<ProgressEvent> lookup = Lookup.lookup(EventBus.class);
-        lookup.subscribe(ProgressEvent.class, this::progress);
+        EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+        progressListener = this::progress;
+        eventBus.subscribe(ProgressEvent.class, progressListener);
 
         progressBar.visibleProperty().bind(
                 progressBar.progressProperty().isNotEqualTo(0).and(
                         progressBar.progressProperty().isEqualTo(1).not()
                 )
         );
+    }
+
+    /**
+     * Unsubscribe this controller from {@link ProgressEvent} on the EventBus.
+     * Used by the splash screen to prevent module-internal progress events
+     * from overriding the startup progress.
+     */
+    @SuppressWarnings("unchecked")
+    public void unsubscribeProgressEvent() {
+        if (progressListener != null) {
+            EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+            eventBus.unsubscribe(ProgressEvent.class, progressListener);
+            progressListener = null;
+        }
     }
 
     /**
