@@ -22,6 +22,7 @@ package io.softwareecg.wfx.main;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
+import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.windowmtg.api.GuiTestHelper;
@@ -56,6 +57,8 @@ public class MainTest {
     private LookupStrategy lookupStrategy;
     @Mock
     private PlatformApplication platformApplication;
+    @Mock
+    private EventBus eventBus;
 
     private List<Module> modules;
 
@@ -63,6 +66,7 @@ public class MainTest {
     public void setUp() throws Exception {
         Lookup.init(lookupStrategy);
         when(lookupStrategy.lookup(PlatformApplication.class)).thenReturn(platformApplication);
+        when(lookupStrategy.lookup(EventBus.class)).thenReturn(eventBus);
         modules = new ArrayList<>();
         when(lookupStrategy.lookupAll(Module.class)).thenReturn(modules);
         mockModule("Test 1", "1.0");
