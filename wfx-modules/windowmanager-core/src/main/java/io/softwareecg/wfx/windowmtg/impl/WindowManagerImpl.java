@@ -169,6 +169,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         viewsStatus.put(viewStatus.getView().getViewId(), viewStatus);
         views.add(viewStatus.getView());
+        setDividerPositions();
     }
 
     @Override
