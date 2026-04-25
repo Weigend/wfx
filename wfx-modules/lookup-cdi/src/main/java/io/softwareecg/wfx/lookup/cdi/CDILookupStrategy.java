@@ -22,6 +22,7 @@ package io.softwareecg.wfx.lookup.cdi;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.inject.Instance;
 import jakarta.enterprise.util.TypeLiteral;
 import jakarta.inject.Inject;
@@ -62,12 +63,37 @@ public class CDILookupStrategy implements LookupStrategy {
 
     @Override
     public <T> T lookup(Class<T> clazz) {
-        return weldInstance.select(clazz).get();
+        return resolveOne(weldInstance.select(clazz));
     }
 
     @Override
     public <U> U lookup(TypeLiteral<U> type) {
-        return weldInstance.select(type).get();
+        return resolveOne(weldInstance.select(type));
+    }
+
+    /**
+     * Pick a single bean from a CDI {@link Instance}, breaking ambiguity with
+     * {@link Priority}: smaller priority value wins, beans without the
+     * annotation default to {@link Integer#MAX_VALUE}. Standard CDI throws on
+     * ambiguous {@code @Default} resolution; this gives WFX clients a way to
+     * register multiple implementations and pick the "winning" one without
+     * having to use {@code @Alternative} + {@code beans.xml} activation.
+     */
+    private <T> T resolveOne(Instance<T> instance) {
+        if (instance.isUnsatisfied()) {
+            return null;
+        }
+        if (instance.isAmbiguous()) {
+            return StreamSupport.stream(instance.spliterator(), false)
+                    .min(Comparator.comparingInt(t -> getPriorityValue(t.getClass())))
+                    .orElse(null);
+        }
+        return instance.get();
+    }
+
+    private static int getPriorityValue(Class<?> c) {
+        Priority p = c.getAnnotation(Priority.class);
+        return p != null ? p.value() : Integer.MAX_VALUE;
     }
 
     @Override
