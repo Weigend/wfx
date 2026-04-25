@@ -78,17 +78,29 @@ public class CDILookupStrategy implements LookupStrategy {
      * ambiguous {@code @Default} resolution; this gives WFX clients a way to
      * register multiple implementations and pick the "winning" one without
      * having to use {@code @Alternative} + {@code beans.xml} activation.
+     * <p>
+     * Critical: this iterates {@link Instance.Handle handles}, NOT instances.
+     * Handles expose the bean metadata (and thus the priority annotation on
+     * the bean's class) without triggering construction. Iterating
+     * {@code Instance<T>} directly would call every candidate's constructor —
+     * which causes infinite recursion when one of the candidates looks the
+     * same type up in its own initialiser (e.g. RepositorySelectorProxy).
      */
     private <T> T resolveOne(Instance<T> instance) {
         if (instance.isUnsatisfied()) {
             return null;
         }
-        if (instance.isAmbiguous()) {
-            return StreamSupport.stream(instance.spliterator(), false)
-                    .min(Comparator.comparingInt(t -> getPriorityValue(t.getClass())))
-                    .orElse(null);
+        if (!instance.isAmbiguous()) {
+            return instance.get();
         }
-        return instance.get();
+        return instance.handlesStream()
+                .min(Comparator.comparingInt(h -> getPriorityValue(beanClass(h))))
+                .map(Instance.Handle::get)
+                .orElse(null);
+    }
+
+    private static Class<?> beanClass(Instance.Handle<?> handle) {
+        return handle.getBean() != null ? handle.getBean().getBeanClass() : Object.class;
     }
 
     private static int getPriorityValue(Class<?> c) {
