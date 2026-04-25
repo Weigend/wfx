@@ -25,28 +25,44 @@ import jakarta.enterprise.inject.Default;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Singleton;
 
+import java.util.EventObject;
+
 /**
  * CDI Producer for EventBus.
  * <p>
- * This producer is needed because CDI cannot automatically resolve generic interfaces
- * like {@code EventBus<EventObject>} when looking up by raw type {@code EventBus.class}.
- *
+ * Produces the singleton {@link SimpleEventBus} instance for CDI injection.
+ * Two methods are exposed:
+ * <ul>
+ *   <li>{@link #produceEventBus()} returns the parameterised
+ *       {@code EventBus<EventObject>} type that satisfies typed inject points
+ *       like {@code @Inject EventBus<EventObject> eventBus}.</li>
+ *   <li>{@link #produceRawEventBus()} returns the raw {@code EventBus} type
+ *       that {@code Lookup.lookup(EventBus.class)} resolves against.</li>
+ * </ul>
+ * Both methods return the same instance, so subscribers and publishers always
+ * meet on the same bus regardless of how they look it up.
+ * <p>
+ * {@link SimpleEventBus} is annotated {@code @Vetoed} so CDI does not also
+ * pick it up as a managed bean — that would create two candidates for
+ * {@code EventBus.class} and lead to non-deterministic resolution.
  */
 @ApplicationScoped
 public class EventBusProducer {
 
     private static final SimpleEventBus INSTANCE = new SimpleEventBus();
 
-    /**
-     * Produces the singleton EventBus instance for CDI injection.
-     *
-     * @return the EventBus singleton
-     */
+    @Produces
+    @Singleton
+    @Default
+    public EventBus<EventObject> produceEventBus() {
+        return INSTANCE;
+    }
+
     @Produces
     @Singleton
     @Default
     @SuppressWarnings("rawtypes")
-    public EventBus produceEventBus() {
+    public EventBus produceRawEventBus() {
         return INSTANCE;
     }
 }
