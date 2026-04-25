@@ -40,7 +40,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 /**
  * The JavaFX application. It initialize the javafx application thread and the main stage for wfx platform.
@@ -173,19 +172,18 @@ public class PlatformApplicationImpl implements PlatformApplication {
         preloaderStage = null;
         mainApplicationStage = stage;
         WindowManager windowManager = Lookup.lookup(WindowManager.class);
-        List<ApplicationWindow> windowList = Lookup.lookupAll(ApplicationWindow.class);
-        for (ApplicationWindow window : windowList) {
-            try {
-                window.setStage(stage);
-                window.setWindowManager(windowManager);
-                window.init();
-                stage.show();
-                windowManager.init();
-                break;
-            }
-            catch (IOException e) {
-                LOGGER.warn("Can not load Application Window", e);
-            }
+        ApplicationWindow window = Lookup.lookupAll(ApplicationWindow.class).stream()
+                .findFirst()
+                .orElseThrow(() -> new PlatformException("No ApplicationWindow registered"));
+        try {
+            window.setStage(stage);
+            window.setWindowManager(windowManager);
+            window.init();
+            stage.show();
+            windowManager.init();
+        }
+        catch (IOException e) {
+            throw new PlatformException("Can not initialise application window: " + e.getMessage(), e);
         }
     }
 

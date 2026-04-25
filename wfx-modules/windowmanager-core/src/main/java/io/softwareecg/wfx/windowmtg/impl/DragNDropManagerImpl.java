@@ -46,9 +46,9 @@ public class DragNDropManagerImpl implements DragNDropManager {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(DragNDropManagerImpl.class);
     /**
-     * Temporal storage for the draged view
+     * Temporal storage for the dragged view.
      */
-    private static ViewStatus dragedViewStatus;
+    private static ViewStatus draggedViewStatus;
     /**
      * The window manager.
      */
@@ -98,7 +98,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * @return Value for property draggedViewStatus.
      */
     public static ViewStatus getDraggedViewStatus() {
-        return dragedViewStatus;
+        return draggedViewStatus;
     }
 
     /**
@@ -107,7 +107,7 @@ public class DragNDropManagerImpl implements DragNDropManager {
      * @param draggedViewStatus The view to set as current dragged view.
      */
     public static void setDraggedViewStatus(ViewStatus draggedViewStatus) {
-        DragNDropManagerImpl.dragedViewStatus = draggedViewStatus;
+        DragNDropManagerImpl.draggedViewStatus = draggedViewStatus;
     }
 
     /**

@@ -449,7 +449,12 @@ public class WindowManagerImpl implements MultiWindowManager {
      * Set the divider positions for all current views.
      */
     private void setDividerPositions() {
-        viewsStatus.values().forEach(ViewStatus::setDividerPositions);
+        // Only views that are actually attached can have a divider position;
+        // closed/detached views (area == null) would otherwise cause a useless
+        // sweep through the chain to a SplitPane that no longer holds them.
+        viewsStatus.values().stream()
+                .filter(vs -> vs.getArea() != null)
+                .forEach(ViewStatus::setDividerPositions);
     }
 
     /**

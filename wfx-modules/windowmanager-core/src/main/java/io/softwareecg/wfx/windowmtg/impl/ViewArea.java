@@ -163,58 +163,33 @@ public class ViewArea {
      */
     public void add(ViewStatus view, Position position) {
         LOGGER.debug("Add view {} on {} to area {}", view.getView().getViewId(), position, this);
-        ViewContainerAreaFactory viewContainerFactory = Lookup.lookup(ViewContainerAreaFactory.class);
-        switch (position) {
-            case CENTER:
-                ViewArea editorArea = getEditorArea();
-                if (editorArea != null) {
-                    editorArea.add(view, position);
-                }
-                break;
-            case TOP:
-                if (orientation == Orientation.VERTICAL) {
-                    getFirstChild().add(view, position);
-                }
-                else {
-                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
-                    target.add(view, Position.CENTER);
-                    split(target, this, Orientation.VERTICAL);
-                }
-                break;
-            case BOTTOM:
-                if (orientation == Orientation.VERTICAL) {
-                    getSecondChild().add(view, position);
-                }
-                else {
-                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
-                    target.add(view, Position.CENTER);
-                    split(this, target, Orientation.VERTICAL);
-                }
-                break;
-            case LEFT:
-                if (orientation == Orientation.HORIZONTAL) {
-                    // recurse into the left half (firstChild). Using secondChild here
-                    // would push every LEFT registration into the right side of the
-                    // existing split, breaking registration-order independence.
-                    getFirstChild().add(view, position);
+        if (position == Position.CENTER) {
+            ViewArea editorArea = getEditorArea();
+            if (editorArea != null) {
+                editorArea.add(view, position);
+            }
+        }
+        else {
+            // TOP/BOTTOM/LEFT/RIGHT all share the same shape, parameterised
+            // by the split orientation and which slot the new view occupies.
+            // If this area is already split in the matching orientation,
+            // recurse into the matching slot; otherwise create a new split.
+            Orientation needed = position.getSplitOrientation();
+            boolean firstSlot = position.isFirstSlot();
+            if (orientation == needed) {
+                (firstSlot ? getFirstChild() : getSecondChild()).add(view, position);
+            }
+            else {
+                ViewContainerAreaFactory viewContainerFactory = Lookup.lookup(ViewContainerAreaFactory.class);
+                ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
+                target.add(view, Position.CENTER);
+                if (firstSlot) {
+                    split(target, this, needed);
                 }
                 else {
-                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
-                    target.add(view, Position.CENTER);
-                    split(target, this, Orientation.HORIZONTAL);
+                    split(this, target, needed);
                 }
-                break;
-            case RIGHT:
-                if (orientation == Orientation.HORIZONTAL) {
-                    getSecondChild().add(view, position);
-                }
-                else {
-                    ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
-                    target.add(view, Position.CENTER);
-                    split(this, target, Orientation.HORIZONTAL);
-                }
-                break;
-            default:
+            }
         }
         view.setPosition(position);
         view.getArea().getNode().requestLayout();

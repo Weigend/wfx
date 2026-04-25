@@ -27,6 +27,7 @@ import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.exceptions.PlatformException;
 import io.softwareecg.wfx.platform.api.events.StartupProgressEvent;
+import jakarta.annotation.Priority;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -60,8 +62,28 @@ public class Main extends Application {
             lookupStrategy.init(FXMLLoader.class, (Producer<FXMLLoader>) FXMLLoader::new);
             Lookup.init(lookupStrategy);
         }
-        modules = Lookup.lookupAll(Module.class);
+        modules = sortByPriority(Lookup.lookupAll(Module.class));
         platformApplication = Lookup.lookup(PlatformApplication.class);
+    }
+
+    /**
+     * Sort modules by their {@link Priority} annotation (smaller value = earlier).
+     * <p>
+     * Modules without the annotation default to {@link Integer#MAX_VALUE}, so they
+     * load after explicitly priorised ones. {@code preload()} and {@code start()}
+     * are then invoked in this stable order, allowing a module to declare itself
+     * "should run last" without alphabetical-classname or {@code Platform.runLater}
+     * tricks.
+     */
+    static List<Module> sortByPriority(List<Module> input) {
+        List<Module> sorted = new ArrayList<>(input);
+        sorted.sort(Comparator.comparingInt(Main::priorityOf));
+        return sorted;
+    }
+
+    private static int priorityOf(Module module) {
+        Priority p = module.getClass().getAnnotation(Priority.class);
+        return p != null ? p.value() : Integer.MAX_VALUE;
     }
 
     /**

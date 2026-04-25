@@ -126,4 +126,34 @@ public class MainTest {
         when(module.getVersion()).thenReturn(version);
         modules.add(module);
     }
+
+    @Test
+    public void testSortByPriorityOrdersAnnotated() {
+        // Smaller @Priority value = earlier; unannotated modules end up last.
+        Module high = new HighPriorityModule();
+        Module low = new LowPriorityModule();
+        Module none = new UnannotatedModule();
+        List<Module> sorted = Main.sortByPriority(java.util.Arrays.asList(none, low, high));
+        assertThat(sorted, contains(high, low, none));
+    }
+
+    @jakarta.annotation.Priority(10)
+    private static class HighPriorityModule implements Module {
+        public void preload() {}
+        public void start() {}
+        public void stop() {}
+    }
+
+    @jakarta.annotation.Priority(1000)
+    private static class LowPriorityModule implements Module {
+        public void preload() {}
+        public void start() {}
+        public void stop() {}
+    }
+
+    private static class UnannotatedModule implements Module {
+        public void preload() {}
+        public void start() {}
+        public void stop() {}
+    }
 }

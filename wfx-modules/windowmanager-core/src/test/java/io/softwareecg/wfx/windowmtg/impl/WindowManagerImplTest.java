@@ -122,9 +122,13 @@ public class WindowManagerImplTest {
 
     @Test
     public void testInit() {
+        // The setDividerPositions sweep skips views without an attached area
+        // (closed / detached views), so make these mocks "attached".
         ViewStatus v1 = mock(ViewStatus.class);
+        when(v1.getArea()).thenReturn(mock(TabArea.class));
         views.put("view1", v1);
         ViewStatus v2 = mock(ViewStatus.class);
+        when(v2.getArea()).thenReturn(mock(TabArea.class));
         views.put("view2", v2);
         windowManager.init();
         verify(dragNDropManager).init();
