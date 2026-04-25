@@ -1,18 +1,19 @@
 # WFX - Window Framework for JavaFX
 
-[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)
+[![Java](https://img.shields.io/badge/Java-21-orange.svg)](https://openjdk.org/)
 [![JavaFX](https://img.shields.io/badge/JavaFX-21-blue.svg)](https://openjfx.io/)
 [![License](https://img.shields.io/badge/License-Apache%202.0-green.svg)](LICENSE.txt)
 
-WFX (formerly wfx) is a lightweight rich client platform for JavaFX applications. Inspired by NetBeans RCP, it enables rapid development of JavaFX applications with typical window management features like tab views, split panes, and docking.
+WFX is a lightweight rich client platform for JavaFX applications. Inspired by the NetBeans RCP, it enables rapid development of JavaFX applications with the typical workbench features: tab views, splittable areas, and drag-and-drop docking.
 
 ## Features
 
-- **Window Management** - Tab-based views with drag & drop support, split panes, and flexible layouts
-- **CDI Integration** - Full support for Jakarta CDI (Context and Dependency Injection)
-- **ServiceLoader Support** - Alternative lightweight dependency injection via Java ServiceLoader
-- **Modular Architecture** - Plugin-based module system for extending applications
-- **FXML Integration** - Seamless integration with JavaFX FXML views
+- **Window Management** — Tab-based views with drag & drop, splittable areas, registration-order independent layouts
+- **Module System** — Plugin-style modules discovered via Java `ServiceLoader` or CDI
+- **Optional Priority** — Modules can declare a `@Priority` to control startup order
+- **CDI Integration** — Full Jakarta CDI 4.0 support via Weld SE
+- **ServiceLoader Support** — Lightweight alternative without a CDI container
+- **FXML Integration** — `FXMLView.Builder` ties FXML files to controllers and registration metadata
 
 ## Architecture
 
@@ -20,7 +21,7 @@ WFX (formerly wfx) is a lightweight rich client platform for JavaFX applications
 
 ## Requirements
 
-- **Java 17** or higher
+- **Java 21** or higher
 - **JavaFX 21** or higher
 - **Maven 3.8+** for building
 
@@ -35,54 +36,54 @@ mvn clean install -DskipTests
 ### Running the Example Application
 
 ```bash
-cd example-gui
-mvn compile exec:java
+mvn -pl wfx-modules/example-gui exec:java \
+    -Dexec.mainClass=io.softwareecg.wfx.examplegui.ExampleServiceLoaderMain
 ```
 
-Or with CDI as lookup strategy:
+Or with CDI as the lookup strategy:
 
 ```bash
-cd example-gui
-mvn compile exec:java -Dexec.mainClass=io.softwareecg.wfx.examplegui.ExampleCDIMain
+mvn -pl wfx-modules/example-gui exec:java \
+    -Dexec.mainClass=io.softwareecg.wfx.examplegui.ExampleCDIMain
 ```
 
 ## Project Structure
 
 | Module | Description |
 |--------|-------------|
-| `lookup` | Core lookup/service locator API |
-| `lookup-cdi` | CDI-based lookup implementation |
-| `platform-api` | Platform API interfaces |
-| `platform-core` | Platform core implementation |
-| `platform-runner` | Application launcher and lifecycle management |
-| `windowmanager-api` | Window management API |
-| `windowmanager-core` | Window management implementation |
-| `extensions/cdi-contexts` | CDI context extensions (ViewScoped, etc.) |
-| `extensions/ui-utils` | UI utility classes |
+| `wfx-modules/lookup` | Core lookup / service-locator API |
+| `wfx-modules/lookup-cdi` | CDI-based lookup implementation (Weld SE) |
+| `wfx-modules/platform-api` | Platform API interfaces (`Module`, `EventBus`, …) |
+| `wfx-modules/platform-core` | Platform core implementation |
+| `wfx-modules/platform-runner` | Application launcher and lifecycle (`Main`, `CDIMain`) |
+| `wfx-modules/windowmanager-api` | Window-management API (`WindowManager`, `View`, `Position`) |
+| `wfx-modules/windowmanager-core` | Window-management implementation (split areas, drag&drop) |
+| `wfx-modules/extensions/cdi-contexts` | CDI scope extensions (`@ViewScoped`) |
+| `wfx-modules/extensions/ui-utils` | UI utility classes (menu/toolbar helpers, system views) |
+| `wfx-modules/example-gui` | Example application demonstrating the framework |
 | `wfx-all` | All-in-One JAR with all modules bundled |
-| `example-gui` | Example application demonstrating the framework |
 
 ## Maven Dependency
 
-The easiest way to use WFX is to add the `wfx-all` dependency which includes all modules and their required runtime dependencies:
+The easiest way to use WFX is the `wfx-all` aggregator dependency, which bundles every WFX module and its required runtime dependencies:
 
 ```xml
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>wfx-all</artifactId>
-    <version>6.2.1-SNAPSHOT</version>
+    <version>7.0.0-SNAPSHOT</version>
 </dependency>
 ```
 
 This single dependency provides:
-- All WFX modules bundled in one JAR
+- All WFX modules
 - CDI API and Weld SE implementation
 - JavaFX FXML and Controls
 - SLF4J logging API
-- Logback as optional logging implementation
+- Logback as logging implementation
 - Apache Commons Lang3
 
-If you prefer to pick individual modules, you can also add them separately (e.g., `lookup`, `platform-runner`, `windowmanager-core`).
+If you prefer to pick individual modules, you can also add them separately (e.g. `lookup`, `platform-runner`, `windowmanager-core`).
 
 ## Creating a Simple Application
 
@@ -93,85 +94,93 @@ import io.softwareecg.wfx.main.Main;
 import javafx.application.Application;
 
 public class MyApp extends Main {
-    static void main(String[] args) {
+    public static void main(String[] args) {
         Application.launch(MyApp.class, args);
     }
 }
 ```
 
+For CDI-based dependency injection, extend [`CDIMain`](wfx-modules/platform-runner/src/main/java/io/softwareecg/wfx/main/CDIMain.java) instead.
+
 ### 2. Create a Module
 
 ```java
-import io.softwareecg.wfx.platform.api.Module;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
-import io.softwareecg.wfx.windowmtg.api.FXMLViewBuilder;
-import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.platform.api.Module;
+import io.softwareecg.wfx.platform.api.exceptions.PlatformException;
+import io.softwareecg.wfx.windowmtg.api.FXMLView;
+import io.softwareecg.wfx.windowmtg.api.Position;
+import io.softwareecg.wfx.windowmtg.api.WindowManager;
+
+import java.io.IOException;
 
 public class MyModule implements Module {
-    
+
     @Override
-    public void preload() {
-        WindowManager wm = Lookup.lookup(WindowManager.class);
-        wm.registerView(FXMLViewBuilder.create()
-            .id("my-view")
-            .title("My View")
-            .fxml(getClass().getResource("/my-view.fxml"))
-            .position(Position.CENTER)
-            .build());
+    public void preload() throws PlatformException {
+        try {
+            FXMLView<MyController> view = new FXMLView.Builder<MyController>()
+                    .withId("my-view")
+                    .withTitle("My View")
+                    .withPos(Position.CENTER)
+                    .withFile(getClass().getResource("my-view.fxml"))
+                    .build();
+            Lookup.lookup(WindowManager.class).register(view);
+        } catch (IOException e) {
+            throw new PlatformException(e);
+        }
     }
-    
+
     @Override
-    public void start() {
-        // Called after preload phase
-    }
-    
+    public void start() { /* called on FX thread after main window is shown */ }
+
     @Override
-    public void stop() {
-        // Called on application shutdown
-    }
+    public void stop()  { /* called on application shutdown */ }
 }
 ```
 
-### 3. Register the Module
+### 3. Register the Module (ServiceLoader)
 
 Create `META-INF/services/io.softwareecg.wfx.platform.api.Module`:
 ```
 com.example.MyModule
 ```
 
-## CDI Support
+For CDI-based discovery, annotate the module with `@Singleton` and ensure a `META-INF/beans.xml` is present in the JAR. The bean is then picked up automatically when running with `CDIMain`.
 
-For CDI-based dependency injection, extend `CDIMain` instead:
+### Optional: declare a startup order
+
+Module discovery order is not specified. If your module must run before/after others (e.g. a sidebar that depends on the editor area being registered first), declare a `@Priority`:
 
 ```java
-import io.softwareecg.wfx.main.CDIMain;
-import javafx.application.Application;
+import jakarta.annotation.Priority;
+import jakarta.inject.Singleton;
 
-public class MyCDIApp extends CDIMain {
-    static void main(String[] args) {
-        Application.launch(MyCDIApp.class, args);
-    }
-}
+@Singleton
+@Priority(1000)   // smaller value = earlier; default is Integer.MAX_VALUE (last)
+public class MySidebarModule implements Module { … }
 ```
 
-See [CDI Contexts README](extensions/cdi-contexts/README.md) for more details on CDI integration.
+## CDI Support
+
+The [`cdi-contexts`](wfx-modules/extensions/cdi-contexts/) extension adds JavaFX-aware CDI scopes — currently `@ViewScoped` (one bean instance per registered view). See its [README](wfx-modules/extensions/cdi-contexts/README.md) for details.
 
 ## Dependencies
 
 The framework uses:
-- **Weld SE 5.1.x** - CDI implementation (Jakarta EE 10)
-- **SLF4J 2.x** + **Logback 1.5.x** - Logging
-- **JavaFX 21** - UI framework
+- **Weld SE 5.1.x** — CDI implementation (Jakarta EE 10)
+- **SLF4J 2.0.x** + **Logback 1.5.x** — Logging
+- **JavaFX 21** — UI framework
+- **JUnit 4.13** + **Mockito 5.7** — Test stack
 
 ## License
 
-This project is licensed under the Apache License 2.0 - see the [LICENSE.txt](LICENSE.txt) file for details.
+This project is licensed under the Apache License 2.0 — see the [LICENSE.txt](LICENSE.txt) file for details.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome. Please feel free to submit a Pull Request.
 
 ## History
 
-This project was originally developed as "wfx" at Weigend AM and has been modernized to support Java 17+ and Jakarta EE 10.
+This project was originally developed as "wfx" at Weigend AM and has been modernised to support Java 21 and Jakarta EE 10. Package namespaces were renamed from `de.weigend.*` to `io.softwareecg.*` during the rebrand.
