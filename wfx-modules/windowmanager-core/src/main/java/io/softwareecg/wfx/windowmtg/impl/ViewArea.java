@@ -193,7 +193,10 @@ public class ViewArea {
                 break;
             case LEFT:
                 if (orientation == Orientation.HORIZONTAL) {
-                    getSecondChild().add(view, position);
+                    // recurse into the left half (firstChild). Using secondChild here
+                    // would push every LEFT registration into the right side of the
+                    // existing split, breaking registration-order independence.
+                    getFirstChild().add(view, position);
                 }
                 else {
                     ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
