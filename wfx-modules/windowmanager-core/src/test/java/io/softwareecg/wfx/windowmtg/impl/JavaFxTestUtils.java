@@ -24,6 +24,7 @@ import io.softwareecg.wfx.windowmtg.api.View;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Pane;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.scene.input.Dragboard;
@@ -107,9 +108,28 @@ public final class JavaFxTestUtils {
         when(view.getViewId()).thenReturn(id);
         when(view.getTitle()).thenReturn(title);
         when(view.getDefaultPosition()).thenReturn(Position.CENTER);
-        when(view.getRootNode()).thenReturn(mock(Parent.class));
+        // Use a real Pane: Mockito's inline mockmaker cannot mock JavaFX Parent
+        // because of its @IDProperty annotation across module boundaries.
+        when(view.getRootNode()).thenReturn(new Pane());
         ViewStatus status = new ViewStatus(view);
-        status.setArea(mock(TabArea.class));
+        // Provide a TabArea with a parent + node so that ViewStatus.setDividerPositions()
+        // can run without NPE. The parent's node is a non-SplitPane (Pane), so the
+        // method early-returns — exactly what we want for unit tests that only
+        // care about the surrounding registration logic.
+        TabArea area = mock(TabArea.class);
+        ViewArea parent = mock(ViewArea.class);
+        when(area.getParent()).thenReturn(parent);
+        when(parent.getNode()).thenReturn(new Pane());
+        // When tests register a new view via this area, simulate the real
+        // TabArea.add() side effect of attaching the area to the new ViewStatus.
+        // Otherwise, the WindowManagerImpl's subsequent setDividerPositions()
+        // sweep NPEs on the freshly created ViewStatus.
+        Mockito.doAnswer(invocation -> {
+            ViewStatus added = invocation.getArgument(0);
+            added.setArea(area);
+            return null;
+        }).when(area).add(Mockito.any(ViewStatus.class), Mockito.any(Position.class));
+        status.setArea(area);
         return spy(status);
     }
 

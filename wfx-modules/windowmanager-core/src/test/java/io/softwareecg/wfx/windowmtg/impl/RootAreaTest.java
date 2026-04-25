@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,83 +19,101 @@
  */
 package io.softwareecg.wfx.windowmtg.impl;
 
+import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.LookupStrategy;
+import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
+import io.softwareecg.wfx.windowmtg.api.Position;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.stage.Stage;
+import org.apache.commons.lang3.reflect.FieldUtils;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 /**
  * Test the root area.
- *
  */
-//@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class RootAreaTest {
-//    @ClassRule
-//    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
-//    private RootArea rootArea;
-//
-//    @Mock
-//    private ViewArea firstChild;
-//
-//    @Mock
-//    private DragNDropManager dragNDropManager;
-//
-//    @Mock
-//    private MultiWindowManager windowManager;
-//
-//    @Before
-//    public void setUp() throws Exception {
-//        Lookup.init(new ServiceLoaderLookupStrategy());
-//        when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
-//        when(firstChild.getNode()).thenReturn(new Label("abc"));
-//        rootArea = new RootArea(dragNDropManager, false);
-//        rootArea.setFirstChild(firstChild);
-//    }
-//
-//    @Test
-//    public void testSetFirstChild() throws Exception {
-//
-//    }
-//
-//
-//    @Test(expected = UnsupportedOperationException.class)
-//    public void testSetSecondChild() throws Exception {
-//        rootArea.setSecondChild(null);
-//    }
-//
-//    @Test(expected = UnsupportedOperationException.class)
-//    public void testSplit() throws Exception {
-//        rootArea.split(null, null, null);
-//    }
-//
-//    @Test
-//    public void testAdd() throws Exception {
-//        ViewStatus status = mock(ViewStatus.class);
-//        rootArea.add(status, Position.CENTER);
-//        verify(firstChild).add(status, Position.CENTER);
-//    }
-//
-//    @Test(expected = UnsupportedOperationException.class)
-//    public void testRemove() throws Exception {
-//        rootArea.remove(firstChild);
-//    }
-//
-//    @Test(expected = UnsupportedOperationException.class)
-//    public void testRemoveCloseNoClose() throws Exception {
-//        rootArea.remove(firstChild);
-//    }
-//
-//    @Test
-//    @SuppressWarnings("unchecked")
-//    public void testRemoveArea() throws Exception {
-//        FieldUtils.writeField(rootArea, "closeStage", true, true);
-//        Scene scene = new Scene(rootArea.getNode());
-//        Stage stage = mock(Stage.class);
-//        scene.windowProperty();
-//        ReadOnlyObjectWrapper<Stage> stageProperty = (ReadOnlyObjectWrapper<Stage>) FieldUtils.readField(scene, "window", true);
-//        FieldUtils.writeField(stageProperty, "value", stage, true);
-//
-//        rootArea.remove(firstChild);
-//        verify(stage).close();
-//    }
-//
-//    @Test(expected = UnsupportedOperationException.class)
-//    public void testSetParent() throws Exception {
-//        rootArea.setParent(null);
-//    }
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+
+    @Mock
+    private ViewArea firstChild;
+
+    @Mock
+    private DragNDropManager dragNDropManager;
+
+    @Mock
+    private MultiWindowManager windowManager;
+
+    @Mock
+    private LookupStrategy lookupStrategy;
+
+    private RootArea rootArea;
+
+    @Before
+    public void setUp() {
+        when(lookupStrategy.lookup(ViewContainerAreaFactory.class)).thenReturn(new ViewContainerAreaFactoryMockImpl());
+        Lookup.init(lookupStrategy);
+        when(dragNDropManager.getWindowManager()).thenReturn(windowManager);
+        when(firstChild.getNode()).thenReturn(new Label("abc"));
+        rootArea = new RootArea(dragNDropManager, false);
+        rootArea.setFirstChild(firstChild);
+    }
+
+    @Test
+    public void testAddDelegatesToFirstChild() {
+        ViewStatus status = mock(ViewStatus.class);
+        rootArea.add(status, Position.CENTER);
+        verify(firstChild).add(status, Position.CENTER);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSetSecondChildIsForbidden() {
+        rootArea.setSecondChild(null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSplitIsForbidden() {
+        rootArea.split(null, null, null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testSetParentIsForbidden() {
+        rootArea.setParent(null);
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testRemoveOnNonClosingRootIsForbidden() {
+        // RootArea created with closeStage=false rejects remove() to enforce
+        // its single-child invariant.
+        rootArea.remove(firstChild);
+    }
+
+    @Test
+    public void testRemoveOnClosingRootClosesStage() throws ReflectiveOperationException {
+        // RootArea with closeStage=true closes the containing Stage when its
+        // (single) child is removed. Use a real Stage rather than reflectively
+        // patching Scene.window — that hack relies on a private JavaFX field
+        // and breaks across JavaFX/Java versions.
+        FieldUtils.writeField(rootArea, "closeStage", true, true);
+        Stage stage = new Stage();
+        stage.setScene(new Scene(rootArea.getNode()));
+        stage.show();
+        assertThat(stage.isShowing(), is(true));
+
+        rootArea.remove(firstChild);
+        assertThat(stage.isShowing(), is(false));
+    }
 }

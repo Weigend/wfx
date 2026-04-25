@@ -195,6 +195,10 @@ public class ViewStatus {
      * Resize the area of this view to the defined value.
      */
     public void setDividerPositions() {
+        // A closed/unattached view has no area — nothing to do.
+        if (getArea() == null || getArea().getParent() == null) {
+            return;
+        }
         SplitPane splitPane;
         final double space = getView().getViewAreaSize();
 
