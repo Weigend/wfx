@@ -19,6 +19,7 @@
  */
 package io.softwareecg.wfx.lookup.avaje;
 
+import io.avaje.inject.BeanScope;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
@@ -94,6 +95,18 @@ public class AvajeLookupStrategyTest {
         });
         assertThat(services, hasSize(1));
         assertThat(services.get(0), instanceOf(Service4.class));
+    }
+
+    /**
+     * Avaje auto-registers its own {@link BeanScope} as a queryable bean.
+     * Verifies that {@code Lookup.lookup(BeanScope.class)} resolves the live
+     * scope so SDK helpers (e.g. AvajeInjection) can locate it without taking
+     * a direct dependency on the lookup-avaje module.
+     */
+    @Test
+    public void beanScopeIsResolvableViaLookup() {
+        BeanScope scope = Lookup.lookup(BeanScope.class);
+        assertThat(scope, instanceOf(BeanScope.class));
     }
 
     public interface TestService1 {

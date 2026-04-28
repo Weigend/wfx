@@ -98,6 +98,13 @@ public class AvajeLookupStrategy implements LookupStrategy {
 
     @Override
     public <T> T lookup(Class<T> clazz) {
+        // Avaje does not auto-register its own BeanScope as an injectable bean.
+        // Expose it explicitly so SDK helpers like AvajeInjection can locate
+        // the scope through Lookup without taking a hard dependency on
+        // lookup-avaje.
+        if (clazz == BeanScope.class) {
+            return clazz.cast(scope);
+        }
         List<T> candidates = scope.list(clazz);
         if (candidates.isEmpty()) {
             return null;
