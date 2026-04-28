@@ -27,6 +27,12 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-avaje</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>platform-api</artifactId>
             <version>${project.version}</version>
         </dependency>
