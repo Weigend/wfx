@@ -26,6 +26,7 @@
         <module>wfx-modules/extensions</module>
         <module>wfx-modules/lookup</module>
         <module>wfx-modules/lookup-cdi</module>
+        <module>wfx-modules/lookup-avaje</module>
         <module>wfx-modules/platform-api</module>
         <module>wfx-modules/platform-core</module>
         <module>wfx-modules/platform-runner</module>
