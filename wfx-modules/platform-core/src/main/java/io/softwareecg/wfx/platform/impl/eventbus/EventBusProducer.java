@@ -49,13 +49,11 @@ import java.util.EventObject;
 @ApplicationScoped
 public class EventBusProducer {
 
-    private static final SimpleEventBus INSTANCE = new SimpleEventBus();
-
     @Produces
     @Singleton
     @Default
     public EventBus<EventObject> produceEventBus() {
-        return INSTANCE;
+        return SimpleEventBusHolder.INSTANCE;
     }
 
     @Produces
@@ -63,6 +61,6 @@ public class EventBusProducer {
     @Default
     @SuppressWarnings("rawtypes")
     public EventBus produceRawEventBus() {
-        return INSTANCE;
+        return SimpleEventBusHolder.INSTANCE;
     }
 }

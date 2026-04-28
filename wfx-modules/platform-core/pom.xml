@@ -11,6 +11,9 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <avaje.version>11.4</avaje.version>
+    </properties>
 
     <dependencies>
         <!-- project dependencies -->
@@ -31,6 +34,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>lookup</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!-- Avaje Inject runtime; coexists with CDI/Weld during migration -->
+        <dependency>
+            <groupId>io.avaje</groupId>
+            <artifactId>avaje-inject</artifactId>
+            <version>${avaje.version}</version>
         </dependency>
 
         <!-- unit test dependencies -->
@@ -57,5 +67,23 @@
         </dependency>
 
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths combine.children="append">
+                        <path>
+                            <groupId>io.avaje</groupId>
+                            <artifactId>avaje-inject-generator</artifactId>
+                            <version>${avaje.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
