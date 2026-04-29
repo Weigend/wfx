@@ -81,9 +81,10 @@ If you prefer to pick individual modules, add them separately, for example
 
 ## Creating a Simple Application
 
-A minimal WFX application has three pieces: a launcher class, an
-`ApplicationWindow` that hosts the menu/tool bars and the docking area, and
-one or more `Module`s that register FXML views at a `Position`.
+A minimal WFX application has four pieces: a launcher class, an
+`ApplicationWindow` that hosts the menu/tool bars and the docking area, one
+or more views (FXML + controller), and one or more `Module`s that register
+those views at a `Position`.
 
 ### 1. Create a Main Class
 
@@ -189,7 +190,61 @@ container that the central docking area can be plugged into:
 `getWindowManager().getRootPane()` is set as the `BorderPane`'s center at
 runtime — that is the area where module-registered views appear.
 
-### 3. Register an FXML View at a Position
+### 3. Build a View (FXML + Controller)
+
+A WFX view is a JavaFX scene loaded from an FXML file together with a
+controller class. The controller carries the per-view state and event
+handlers; the FXML wires UI elements to it via `fx:controller` and `@FXML`.
+
+A minimal controller:
+
+```java
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+
+public class MyController {
+
+    @FXML
+    private Label messageLabel;
+
+    @FXML
+    private Button refreshButton;
+
+    @FXML
+    public void initialize() {
+        messageLabel.setText("Hello WFX");
+        refreshButton.setOnAction(e -> messageLabel.setText("Refreshed."));
+    }
+}
+```
+
+Matching `my-view.fxml`, placed next to the controller on the classpath:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.MyController"
+      spacing="10" style="-fx-padding: 12;">
+    <Label fx:id="messageLabel" />
+    <Button fx:id="refreshButton" text="Refresh" />
+</VBox>
+```
+
+The controller is constructed by JavaFX's `FXMLLoader`. WFX hooks the loader
+into the active `Lookup` strategy (Avaje by default), so a controller can
+constructor-inject managed beans if it needs any. A controller with no
+dependencies — like the one above — is simply instantiated via
+`newInstance()`; no annotations required.
+
+If the controller does need DI and should be created fresh per FXML load,
+mark it `@Prototype`. Use `@Singleton` only when there is genuinely one
+controller for the whole application (rare for views).
+
+### 4. Register the View at a Position
 
 Modules register views with the `WindowManager`. The `Position` enum
 (`TOP`, `LEFT`, `CENTER`, `RIGHT`, `BOTTOM`) decides where the view docks
@@ -232,11 +287,11 @@ public class MyModule implements Module {
 }
 ```
 
-Each `FXMLView.Builder` call binds a controller class to an FXML file. The
-controller is resolved through the active `Lookup` strategy (Avaje by
-default), so it can use constructor or field injection.
+`FXMLView.Builder` binds the FXML file from step 3 to its controller class
+and adds the registration metadata (id, title, dock position) the
+`WindowManager` needs.
 
-### 4. Follow the WFX DI Boundary
+### 5. Follow the WFX DI Boundary
 
 WFX uses DI for long-lived infrastructure:
 
