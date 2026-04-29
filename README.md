@@ -308,7 +308,79 @@ container that the central docking area can be plugged into:
 `getWindowManager().getRootPane()` is set as the `BorderPane`'s center at
 runtime — that is the area where module-registered views appear.
 
-### 6. Follow the WFX DI Boundary
+### 6. Subscribe to and Fire Events
+
+WFX exposes a synchronous in-process `EventBus<EventObject>` via `Lookup`.
+Modules, controllers, and items use it to communicate without depending on
+each other directly.
+
+A custom event extends `EventObject`:
+
+```java
+import java.util.EventObject;
+
+public class GreetingEvent extends EventObject {
+
+    private final String message;
+
+    public GreetingEvent(Object source, String message) {
+        super(source);
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}
+```
+
+Firing the event from anywhere that has access to `Lookup`:
+
+```java
+import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.platform.api.EventBus;
+
+EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
+bus.publish(new GreetingEvent(this, "Hello from MyModule"));
+```
+
+Subscribing — two ways. The explicit lambda form, suitable everywhere:
+
+```java
+Lookup.lookup(EventBus.class).subscribe(GreetingEvent.class, event -> {
+    System.out.println(event.getMessage());
+    return true;   // false marks the event as not handled
+});
+```
+
+Or the annotation form on a class:
+
+```java
+import io.softwareecg.wfx.platform.api.EventSubscriber;
+
+public class MyController {
+
+    @EventSubscriber(eventClass = GreetingEvent.class)
+    public boolean handleGreeting(GreetingEvent event) {
+        System.out.println(event.getMessage());
+        return true;
+    }
+}
+```
+
+`@EventSubscriber` methods are wired automatically when the annotated
+instance is created by `FXMLLoader` (i.e. the FXML controller path). For
+beans that are not loaded through FXML, call
+`AnnotationProcessor.process(this)` once after construction to register
+their handlers.
+
+Listeners run synchronously on the publishing thread. If a handler needs to
+touch the UI, switch to the JavaFX thread itself with `Platform.runLater`.
+
+Event types are matched along the class hierarchy — a listener for the
+parent type also receives subclass events.
+
+### 7. Follow the WFX DI Boundary
 
 WFX uses DI for long-lived infrastructure:
 
