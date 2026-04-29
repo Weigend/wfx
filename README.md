@@ -12,10 +12,13 @@ synchronous in-process event bus.
 ## Features
 
 - **Window Management** - tab-based views with drag & drop, splittable areas, and registration-order independent layouts
+- **Application Window** - `DefaultApplicationWindow` ships with menu, tool, and status bar slots ready to be populated; can be subclassed for a custom shell
 - **Module System** - modules discovered via Avaje Inject or Java `ServiceLoader`
 - **Optional Priority** - modules can declare `@Priority` to control startup order
 - **Preloader** - splash window shown while modules run their `preload()` work, with progress events on the platform event bus
 - **Bootstrapping Support** - clear `init` → preloader → `preload()` → main window → `start()` lifecycle so expensive work happens at the right phase
+- **Event Bus** - synchronous in-process bus with type-hierarchy dispatch and `@EventSubscriber` auto-wiring
+- **Lookup** - service-locator boundary with pluggable strategies (Avaje / ServiceLoader); used at framework edges, not for domain logic
 - **Avaje Inject Integration** - compile-time DI for framework infrastructure
 - **ServiceLoader Support** - lightweight non-DI fallback for simple applications and tests
 - **FXML Integration** - `FXMLView.Builder` ties FXML files to controllers and registration metadata
