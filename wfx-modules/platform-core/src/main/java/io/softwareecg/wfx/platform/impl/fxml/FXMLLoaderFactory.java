@@ -31,13 +31,9 @@ import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 
 /**
- * Avaje Inject equivalent of the legacy CDI {@code FXMLLoaderProducer} from the
- * {@code cdi-contexts} module. Produces a new {@link FXMLLoader} per inject point
- * (via {@link Prototype}) with a controller factory that resolves controllers
- * through {@link Lookup}, so the active strategy (CDI or Avaje) decides.
- * <p>
- * Will replace {@code FXMLLoaderProducer} once the {@code cdi-contexts} module is
- * removed in S1.6.
+ * Produces a fresh {@link FXMLLoader} per lookup with a controller factory
+ * that first resolves Avaje-managed controllers through {@link Lookup} and then
+ * falls back to normal controller construction.
  */
 @Factory
 public class FXMLLoaderFactory {
@@ -90,8 +86,8 @@ public class FXMLLoaderFactory {
                 try {
                     String qualifier = qualifierName(field);
                     if (!scope.contains(field.getType())) {
-                        // No bean for this type at all — leave field null,
-                        // matching CDI's tolerant behaviour.
+                        // No bean for this type at all; leave the legacy
+                        // field-injection point untouched.
                         continue;
                     }
                     Object dep = (qualifier != null)

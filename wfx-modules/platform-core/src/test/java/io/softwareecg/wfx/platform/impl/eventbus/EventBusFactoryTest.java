@@ -29,26 +29,27 @@ import java.util.EventObject;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.sameInstance;
 
 /**
- * Verifies the Avaje-based {@link EventBusFactory} provides the same
- * {@link SimpleEventBus} instance that the legacy {@link EventBusProducer}
- * exposes via CDI.
+ * Verifies the Avaje-based {@link EventBusFactory} provides one shared
+ * {@link SimpleEventBus} for typed and raw event bus lookups.
  */
 public class EventBusFactoryTest {
 
     @Test
     public void parameterisedEventBusResolves() {
         try (BeanScope scope = BeanScope.builder().build()) {
+            EventBus<?> raw = scope.get(EventBus.class);
             Type parameterised = new ParameterizedTypeReference<EventBus<EventObject>>() {
             }.getType();
             List<EventBus<EventObject>> beans = scope.list(parameterised);
             assertThat(beans, is(notNullValue()));
             assertThat(beans.size() >= 1, is(true));
-            assertThat(beans.get(0), sameInstance(SimpleEventBusHolder.INSTANCE));
+            assertThat(beans.get(0), sameInstance(raw));
         }
     }
 
@@ -56,13 +57,13 @@ public class EventBusFactoryTest {
     public void rawEventBusResolves() {
         try (BeanScope scope = BeanScope.builder().build()) {
             EventBus<?> bean = scope.get(EventBus.class);
-            assertThat(bean, sameInstance(SimpleEventBusHolder.INSTANCE));
+            assertThat(bean, is(notNullValue()));
+            assertThat(bean, instanceOf(SimpleEventBus.class));
         }
     }
 
     /**
-     * Local TypeLiteral variant so the test does not pull in jakarta.enterprise
-     * just for one parameterised lookup.
+     * Local type reference for one parameterised lookup.
      */
     private abstract static class ParameterizedTypeReference<T> {
         Type getType() {

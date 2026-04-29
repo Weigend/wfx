@@ -21,12 +21,6 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>lookup-cdi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>lookup-avaje</artifactId>
             <version>${project.version}</version>
         </dependency>

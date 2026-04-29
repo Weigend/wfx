@@ -23,8 +23,8 @@ package io.softwareecg.wfx.lookup;
 /**
  * Sample service to test strict typed lookups.
  *
- * @see {@link LookupStrategy#lookupAll(javax.enterprise.util.TypeLiteral)} and
- * {@link LookupStrategy#lookup(javax.enterprise.util.TypeLiteral)}
+ * @see LookupStrategy#lookupAll(TypeRef)
+ * @see LookupStrategy#lookup(TypeRef)
  */
 public interface TypedTestService<T> {
     /**

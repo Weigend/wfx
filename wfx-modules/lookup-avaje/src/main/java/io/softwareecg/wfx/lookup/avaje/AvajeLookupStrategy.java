@@ -22,8 +22,8 @@ package io.softwareecg.wfx.lookup.avaje;
 import io.avaje.inject.BeanScope;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
+import io.softwareecg.wfx.lookup.TypeRef;
 import jakarta.annotation.Priority;
-import jakarta.enterprise.util.TypeLiteral;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,22 +34,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Avaje-Inject backed {@link LookupStrategy}. Replaces {@code CDILookupStrategy} for
- * projects that prefer compile-time DI over Weld/CDI.
+ * Avaje-Inject backed {@link LookupStrategy}.
  * <p>
  * Drop-in semantically:
  * <ul>
  *   <li>{@link #lookup(Class)}: smaller {@link Priority#value()} wins; classes without
  *       the annotation default to {@link Integer#MAX_VALUE} (lowest priority). Mirrors
- *       the existing CDILookupStrategy resolution.</li>
+ *       WFX single-result lookup resolution.</li>
  *   <li>{@link #lookupAll(Class)}: descending priority order (highest first); classes
  *       without the annotation default to 0. Mirrors ServiceLoaderLookupStrategy.</li>
  * </ul>
  * <p>
  * Construction-recursion safety: Avaje builds all beans eagerly when {@link BeanScope}
  * is constructed. Lookup-time iteration touches already-constructed instances only,
- * so the recursion problem documented in {@code CDILookupStrategy.resolveOne} cannot
- * occur here. Beans that look up other beans of the same type during their constructor
+ * so lookup-time iteration does not construct new matching instances. Beans
+ * that look up other beans of the same type during their constructor
  * must use {@link io.avaje.inject.BeanScope}-aware constructor parameters
  * ({@code List<T>} or {@code Provider<T>}), not {@link Lookup}.
  */
@@ -131,11 +130,11 @@ public class AvajeLookupStrategy implements LookupStrategy {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> T lookup(TypeLiteral<T> typeLiteral) {
+    public <T> T lookup(TypeRef<T> typeRef) {
         // Avaje registers parameterised beans by their full Type signature
         // (e.g. "TypedTestService<java.lang.String>"). Use the Type from the
-        // TypeLiteral to match — raw-class lookup would miss them.
-        Type type = typeLiteral.getType();
+        // TypeRef to match; raw-class lookup would miss them.
+        Type type = typeRef.getType();
         List<?> candidates = scope.list(type);
         if (candidates.isEmpty()) {
             return null;
@@ -157,8 +156,8 @@ public class AvajeLookupStrategy implements LookupStrategy {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> List<T> lookupAll(TypeLiteral<T> typeLiteral) {
-        Type type = typeLiteral.getType();
+    public <T> List<T> lookupAll(TypeRef<T> typeRef) {
+        Type type = typeRef.getType();
         return (List<T>) scope.list(type).stream()
                 .sorted(Comparator.comparingInt((Object o) -> getPriorityForList(o.getClass())).reversed())
                 .collect(Collectors.toList());
@@ -166,7 +165,7 @@ public class AvajeLookupStrategy implements LookupStrategy {
 
     /**
      * Priority for single-result resolution: smaller value wins, default is MAX_VALUE.
-     * Mirrors CDILookupStrategy.getPriorityValue.
+     * Mirrors WFX single-result priority resolution.
      */
     private static int getPriorityValue(Class<?> c) {
         Priority p = c.getAnnotation(Priority.class);

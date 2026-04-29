@@ -22,6 +22,7 @@ package io.softwareecg.wfx.windowmtg.windows;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.windowmtg.api.ApplicationWindow;
 import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import jakarta.inject.Singleton;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -45,6 +46,7 @@ import java.util.Objects;
  * menu, tool and status bar.
  *
  */
+@Singleton
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationWindow.class);

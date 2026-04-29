@@ -26,31 +26,31 @@ import io.softwareecg.wfx.platform.api.EventBus;
 import java.util.EventObject;
 
 /**
- * Avaje Inject equivalent of {@link EventBusProducer}. Coexists with the CDI
- * producer during the migration; both register the SAME static
- * {@link SimpleEventBus} instance, so subscribers/publishers always meet on
- * the same bus regardless of which DI container is active.
+ * Avaje Inject event bus provider.
  * <p>
- * Two methods are exposed for the same reasons as the CDI producer:
+ * Both bean methods return the same {@link SimpleEventBus} instance so raw
+ * {@code EventBus} lookups and typed {@code EventBus<EventObject>} injections
+ * publish and subscribe on one shared bus.
  * <ul>
  *   <li>{@link #produceEventBus()} for parameterised
  *       {@code EventBus<EventObject>} inject points.</li>
  *   <li>{@link #produceRawEventBus()} for {@code Lookup.lookup(EventBus.class)}
  *       calls that operate on the raw type.</li>
  * </ul>
- * Will replace EventBusProducer when CDI/Weld is removed in S1.6.
  */
 @Factory
 public class EventBusFactory {
 
+    private final SimpleEventBus eventBus = new SimpleEventBus();
+
     @Bean
     public EventBus<EventObject> produceEventBus() {
-        return SimpleEventBusHolder.INSTANCE;
+        return eventBus;
     }
 
     @Bean
     @SuppressWarnings("rawtypes")
     public EventBus produceRawEventBus() {
-        return SimpleEventBusHolder.INSTANCE;
+        return eventBus;
     }
 }

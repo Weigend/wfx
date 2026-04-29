@@ -25,6 +25,7 @@ import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.windowmtg.api.FXMLView;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,6 +35,7 @@ import java.io.IOException;
  * Register the a example view within the window manager.
  *
  */
+@Singleton
 public class ExampleGuiModule implements Module {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleGuiModule.class);

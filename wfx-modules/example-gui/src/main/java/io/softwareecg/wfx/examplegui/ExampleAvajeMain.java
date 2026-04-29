@@ -1,6 +1,6 @@
 /*
  * #%L
- * wfx is a rich-client-platform for JavaFX.
+ * Example GUI Implementation for wfx
  * %%
  * Copyright (C) 2013 - 2026 Weigend AM
  * %%
@@ -17,18 +17,22 @@
  * limitations under the License.
  * #L%
  */
-package io.softwareecg.wfx.platform.impl.eventbus;
+package io.softwareecg.wfx.examplegui;
+
+import io.softwareecg.wfx.main.AvajeMain;
+import javafx.application.Application;
 
 /**
- * Single shared {@link SimpleEventBus} instance used by both the CDI
- * {@link EventBusProducer} and the Avaje {@link EventBusFactory}. Ensures
- * subscribers/publishers always meet on the same bus regardless of which DI
- * container is active during the migration.
+ * Example main class to demonstrate running the application with Avaje Inject as lookup strategy.
  */
-final class SimpleEventBusHolder {
+public class ExampleAvajeMain extends AvajeMain {
 
-    static final SimpleEventBus INSTANCE = new SimpleEventBus();
-
-    private SimpleEventBusHolder() {
+    /**
+     * Application entry point.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        Application.launch(ExampleAvajeMain.class, args);
     }
 }

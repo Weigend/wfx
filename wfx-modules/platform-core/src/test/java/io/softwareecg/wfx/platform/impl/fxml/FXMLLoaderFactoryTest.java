@@ -31,8 +31,7 @@ import static org.hamcrest.Matchers.sameInstance;
 
 /**
  * Verifies the Avaje-based {@link FXMLLoaderFactory} produces a fresh
- * {@link FXMLLoader} per request, mirroring the legacy CDI behaviour
- * (CDI's @Dependent → new instance per inject point).
+ * {@link FXMLLoader} per request.
  */
 public class FXMLLoaderFactoryTest {
 

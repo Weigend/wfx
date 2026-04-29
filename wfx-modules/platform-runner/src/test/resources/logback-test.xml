@@ -9,6 +9,5 @@
     </root>
 
     <!-- feiner steuern -->
-    <logger name="org.jboss.weld" level="WARN"/>
     <logger name="io.softwareecg.wfx" level="INFO"/>
 </configuration>

@@ -19,7 +19,6 @@
  */
 package io.softwareecg.wfx.lookup;
 
-import jakarta.enterprise.util.TypeLiteral;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,22 +87,22 @@ public final class Lookup {
     }
 
     /**
-     * Lookup an instance from the registry. The {@link TypeLiteral} allows to return a strong typed generic instance.
+     * Lookup an instance from the registry. The {@link TypeRef} allows to return a strong typed generic instance.
      * <p>
      * The returned service is that service that have the highest service ranking.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
-     * {@link TypeLiteral}:
+     * {@link TypeRef}:
      * <pre>{@code
-     * EventBus<ProgressEvent> eventBus = Lookup.lookup(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * EventBus<ProgressEvent> eventBus = Lookup.lookup(new TypeRef<EventBus<ProgressEvent>>(){});
      * }</pre>
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return A instance of the requested class or null if not found.
-     * @see #find(TypeLiteral) for an Optional-returning alternative
+     * @see #find(TypeRef) for an Optional-returning alternative
      */
-    public static <T> T lookup(TypeLiteral<T> type) {
+    public static <T> T lookup(TypeRef<T> type) {
         LookupStrategy strategy = getLookupStrategy();
         if (strategy != null) {
             return strategy.lookup(type);
@@ -112,16 +111,16 @@ public final class Lookup {
     }
 
     /**
-     * Lookup an instance from the registry using a TypeLiteral, returning an {@link Optional}.
+     * Lookup an instance from the registry using a TypeRef, returning an {@link Optional}.
      * <p>
-     * This is the {@link Optional}-returning alternative to {@link #lookup(TypeLiteral)}.
+     * This is the {@link Optional}-returning alternative to {@link #lookup(TypeRef)}.
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return An Optional containing the found instance, or empty if not found.
      * @since 6.3.0
      */
-    public static <T> Optional<T> find(TypeLiteral<T> type) {
+    public static <T> Optional<T> find(TypeRef<T> type) {
         return Optional.ofNullable(lookup(type));
     }
 
@@ -160,23 +159,23 @@ public final class Lookup {
     }
 
     /**
-     * Lookup all services for one class from the registry. The {@link TypeLiteral} allows to return a strong typed
+     * Lookup all services for one class from the registry. The {@link TypeRef} allows to return a strong typed
      * generic instance.
      * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
-     * {@link TypeLiteral}:
+     * {@link TypeRef}:
      * <pre>{@code
-     * List<EventBus<ProgressEvent>> eventBusList = strategy.lookupAll(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * List<EventBus<ProgressEvent>> eventBusList = strategy.lookupAll(new TypeRef<EventBus<ProgressEvent>>(){});
      * }</pre>
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return A list with all found service instances for the searched class, or null if no strategy is set.
-     * @see #findAll(TypeLiteral) for an empty-list-returning alternative
+     * @see #findAll(TypeRef) for an empty-list-returning alternative
      */
-    public static <T> List<T> lookupAll(TypeLiteral<T> type) {
+    public static <T> List<T> lookupAll(TypeRef<T> type) {
         LookupStrategy strategy = getLookupStrategy();
         if (strategy != null) {
             return strategy.lookupAll(type);
@@ -185,9 +184,9 @@ public final class Lookup {
     }
 
     /**
-     * Lookup all services using a TypeLiteral from the registry.
+     * Lookup all services using a TypeRef from the registry.
      * <p>
-     * Unlike {@link #lookupAll(TypeLiteral)}, this method returns an empty list instead of null
+     * Unlike {@link #lookupAll(TypeRef)}, this method returns an empty list instead of null
      * when no services are found or no strategy is set.
      *
      * @param type The type literal to search.
@@ -195,7 +194,7 @@ public final class Lookup {
      * @return A list with all found service instances, never null.
      * @since 6.3.0
      */
-    public static <T> List<T> findAll(TypeLiteral<T> type) {
+    public static <T> List<T> findAll(TypeRef<T> type) {
         List<T> result = lookupAll(type);
         return result != null ? result : Collections.emptyList();
     }

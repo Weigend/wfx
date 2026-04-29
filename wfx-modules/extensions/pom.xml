@@ -12,7 +12,6 @@
     </parent>
 
     <modules>
-        <module>cdi-contexts</module>
         <module>ui-utils</module>
     </modules>
 </project>

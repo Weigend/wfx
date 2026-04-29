@@ -23,11 +23,6 @@ import io.softwareecg.wfx.lookup.avaje.AvajeLookupStrategy;
 
 /**
  * wfx application startup class with Avaje Inject as lookup strategy.
- * <p>
- * Drop-in replacement for {@link CDIMain}: same lifecycle, same {@link Main}
- * parent, but boots Avaje's compile-time DI container instead of Weld.
- * Application-level subclasses can switch DI worlds simply by changing
- * {@code extends CDIMain} to {@code extends AvajeMain}.
  */
 public class AvajeMain extends Main {
 

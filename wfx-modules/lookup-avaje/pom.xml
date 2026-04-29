@@ -12,8 +12,7 @@
     <artifactId>lookup-avaje</artifactId>
 
     <description>
-        Avaje-Inject backed implementation of the WFX LookupStrategy. Replaces lookup-cdi
-        for projects that prefer compile-time DI over Weld/CDI runtime container.
+        Avaje Inject backed implementation of the WFX LookupStrategy.
     </description>
 
     <properties>

@@ -60,7 +60,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <mainClass>io.softwareecg.wfx.examplegui.ExampleServiceLoaderMain</mainClass>
+                    <mainClass>io.softwareecg.wfx.examplegui.ExampleAvajeMain</mainClass>
                 </configuration>
             </plugin>
         </plugins>

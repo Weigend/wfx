@@ -36,7 +36,7 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Avaje Inject runtime; coexists with CDI/Weld during migration -->
+        <!-- Avaje Inject runtime -->
         <dependency>
             <groupId>io.avaje</groupId>
             <artifactId>avaje-inject</artifactId>

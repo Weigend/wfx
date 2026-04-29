@@ -27,7 +27,7 @@ import io.softwareecg.wfx.lookup.avaje.testbeans.Service1;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service2;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service3;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service4;
-import jakarta.enterprise.util.TypeLiteral;
+import io.softwareecg.wfx.lookup.TypeRef;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,8 +41,7 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 
 /**
- * Drop-in equivalent of {@code CDILookupStrategyTest} against the Avaje-backed strategy.
- * Verifies that all four LookupStrategy methods resolve correctly under priority sorting.
+ * Verifies that all four LookupStrategy methods resolve correctly with the Avaje-backed strategy.
  */
 public class AvajeLookupStrategyTest {
 
@@ -83,7 +82,7 @@ public class AvajeLookupStrategyTest {
 
     @Test
     public void testTypedLookup() {
-        TypedTestService<String> service = Lookup.lookup(new TypeLiteral<TypedTestService<String>>() {
+        TypedTestService<String> service = Lookup.lookup(new TypeRef<TypedTestService<String>>() {
         });
         assertThat(service, instanceOf(Service4.class));
         assertThat(service.sayGoodbye(), is(equalTo("Goodbye typed Avaje")));
@@ -91,7 +90,7 @@ public class AvajeLookupStrategyTest {
 
     @Test
     public void testTypedLookupAll() {
-        List<TypedTestService<String>> services = Lookup.lookupAll(new TypeLiteral<TypedTestService<String>>() {
+        List<TypedTestService<String>> services = Lookup.lookupAll(new TypeRef<TypedTestService<String>>() {
         });
         assertThat(services, hasSize(1));
         assertThat(services.get(0), instanceOf(Service4.class));
