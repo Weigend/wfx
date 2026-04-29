@@ -79,6 +79,10 @@ If you prefer to pick individual modules, add them separately, for example
 
 ## Creating a Simple Application
 
+A minimal WFX application has three pieces: a launcher class, an
+`ApplicationWindow` that hosts the menu/tool bars and the docking area, and
+one or more `Module`s that register FXML views at a `Position`.
+
 ### 1. Create a Main Class
 
 Use `AvajeMain` when the application uses Avaje-managed WFX infrastructure:
@@ -96,7 +100,81 @@ public class MyApp extends AvajeMain {
 
 Use `Main` only for a pure `ServiceLoader` setup.
 
-### 2. Create a Module
+### 2. Define an Application Window
+
+WFX picks the registered `ApplicationWindow` bean during startup and lets it
+load its own scene. Subclass `DefaultApplicationWindow` and load an FXML that
+declares the menu/tool/status bars plus the central docking area:
+
+```java
+import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
+import jakarta.inject.Singleton;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+
+import java.io.IOException;
+
+@Singleton
+public class MyApplicationWindow extends DefaultApplicationWindow {
+
+    @javafx.fxml.FXML
+    private BorderPane root;
+
+    @Override
+    public void init() throws IOException {
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(getClass().getResource("MyApplicationWindow.fxml"));
+        loader.setController(this);
+
+        Parent scene = loader.load();
+        getStage().setScene(new Scene(scene));
+        getStage().setMaximized(true);
+
+        // Hand the WFX docking area into the layout.
+        root.setCenter(getWindowManager().getRootPane());
+
+        useSystemMenuBarIfPossible();
+    }
+}
+```
+
+The matching `MyApplicationWindow.fxml` only needs to wire the IDs that
+`DefaultApplicationWindow` expects (`menuBar`, `toolbar`, `statusBar`) and a
+container that the central docking area can be plugged into:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <VBox>
+            <MenuBar fx:id="menuBar">
+                <Menu text="File">
+                    <MenuItem text="Exit" />
+                </Menu>
+            </MenuBar>
+            <ToolBar fx:id="toolbar" />
+        </VBox>
+    </top>
+    <bottom>
+        <HBox fx:id="statusBar" />
+    </bottom>
+</BorderPane>
+```
+
+`getWindowManager().getRootPane()` is set as the `BorderPane`'s center at
+runtime — that is the area where module-registered views appear.
+
+### 3. Register an FXML View at a Position
+
+Modules register views with the `WindowManager`. The `Position` enum
+(`TOP`, `LEFT`, `CENTER`, `RIGHT`, `BOTTOM`) decides where the view docks
+inside the application window's central area.
 
 ```java
 import io.softwareecg.wfx.lookup.Lookup;
@@ -118,7 +196,7 @@ public class MyModule implements Module {
             FXMLView<MyController> view = new FXMLView.Builder<MyController>()
                     .withId("my-view")
                     .withTitle("My View")
-                    .withPos(Position.CENTER)
+                    .withPos(Position.CENTER)         // try LEFT/RIGHT/TOP/BOTTOM
                     .withFile(getClass().getResource("my-view.fxml"))
                     .build();
             Lookup.lookup(WindowManager.class).register(view);
@@ -135,7 +213,11 @@ public class MyModule implements Module {
 }
 ```
 
-### 3. Follow the WFX DI Boundary
+Each `FXMLView.Builder` call binds a controller class to an FXML file. The
+controller is resolved through the active `Lookup` strategy (Avaje by
+default), so it can use constructor or field injection.
+
+### 4. Follow the WFX DI Boundary
 
 WFX uses DI for long-lived infrastructure:
 
