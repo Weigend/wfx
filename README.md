@@ -121,74 +121,8 @@ public class MyApplicationWindow extends DefaultApplicationWindow {
 That's it. `DefaultApplicationWindow` already carries the FXML scene with
 menu bar, tool bar and status bar. WFX's `PlatformApplicationImpl` finds the
 bean, calls `setStage(...)`, `setWindowManager(...)`, `init()`, and then
-`stage.show()`.
-
-If you want a custom shell — a different FXML, a different layout, a custom
-icon, branded title bar — override `init()` and load your own FXML:
-
-```java
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
-import jakarta.inject.Singleton;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.layout.BorderPane;
-
-import java.io.IOException;
-
-@Singleton
-public class MyApplicationWindow extends DefaultApplicationWindow {
-
-    @javafx.fxml.FXML
-    private BorderPane root;
-
-    @Override
-    public void init() throws IOException {
-        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
-        loader.setLocation(getClass().getResource("MyApplicationWindow.fxml"));
-        loader.setController(this);
-
-        Parent scene = loader.load();
-        getStage().setScene(new Scene(scene));
-        getStage().setMaximized(true);
-
-        // Hand the WFX docking area into the layout.
-        root.setCenter(getWindowManager().getRootPane());
-
-        useSystemMenuBarIfPossible();
-    }
-}
-```
-
-The matching `MyApplicationWindow.fxml` only needs to wire the IDs that
-`DefaultApplicationWindow` expects (`menuBar`, `toolbar`, `statusBar`) and a
-container that the central docking area can be plugged into:
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml">
-    <top>
-        <VBox>
-            <MenuBar fx:id="menuBar">
-                <Menu text="File">
-                    <MenuItem text="Exit" />
-                </Menu>
-            </MenuBar>
-            <ToolBar fx:id="toolbar" />
-        </VBox>
-    </top>
-    <bottom>
-        <HBox fx:id="statusBar" />
-    </bottom>
-</BorderPane>
-```
-
-`getWindowManager().getRootPane()` is set as the `BorderPane`'s center at
-runtime — that is the area where module-registered views appear.
+`stage.show()`. The customization story (own FXML, branded shell) follows in
+step 5.
 
 ### 3. Build a View (FXML + Controller)
 
@@ -291,7 +225,77 @@ public class MyModule implements Module {
 and adds the registration metadata (id, title, dock position) the
 `WindowManager` needs.
 
-### 5. Follow the WFX DI Boundary
+### 5. Customize the Application Window (optional)
+
+If you want a custom shell — a different FXML, a different layout, a custom
+icon, a branded title bar — override `init()` on your `ApplicationWindow`
+subclass and load your own FXML:
+
+```java
+import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
+import jakarta.inject.Singleton;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
+
+import java.io.IOException;
+
+@Singleton
+public class MyApplicationWindow extends DefaultApplicationWindow {
+
+    @javafx.fxml.FXML
+    private BorderPane root;
+
+    @Override
+    public void init() throws IOException {
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(getClass().getResource("MyApplicationWindow.fxml"));
+        loader.setController(this);
+
+        Parent scene = loader.load();
+        getStage().setScene(new Scene(scene));
+        getStage().setMaximized(true);
+
+        // Hand the WFX docking area into the layout.
+        root.setCenter(getWindowManager().getRootPane());
+
+        useSystemMenuBarIfPossible();
+    }
+}
+```
+
+The matching `MyApplicationWindow.fxml` only needs to wire the IDs that
+`DefaultApplicationWindow` expects (`menuBar`, `toolbar`, `statusBar`) and a
+container that the central docking area can be plugged into:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane fx:id="root" xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <VBox>
+            <MenuBar fx:id="menuBar">
+                <Menu text="File">
+                    <MenuItem text="Exit" />
+                </Menu>
+            </MenuBar>
+            <ToolBar fx:id="toolbar" />
+        </VBox>
+    </top>
+    <bottom>
+        <HBox fx:id="statusBar" />
+    </bottom>
+</BorderPane>
+```
+
+`getWindowManager().getRootPane()` is set as the `BorderPane`'s center at
+runtime — that is the area where module-registered views appear.
+
+### 6. Follow the WFX DI Boundary
 
 WFX uses DI for long-lived infrastructure:
 
