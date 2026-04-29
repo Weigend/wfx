@@ -6,7 +6,45 @@
     <artifactId>wfx</artifactId>
     <version>${revision}</version>
     <packaging>pom</packaging>
-    <description>WFX - Window Framework for JavaFX</description>
+    <name>WFX - Window Framework for JavaFX</name>
+    <description>A lightweight rich-client platform for JavaFX with docking, modules, preloader, FXML integration and a synchronous in-process event bus.</description>
+    <url>https://github.com/jweigend/wfx</url>
+    <inceptionYear>2013</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <organization>
+        <name>Weigend AM</name>
+        <url>https://www.weigend.de</url>
+    </organization>
+
+    <developers>
+        <developer>
+            <id>jweigend</id>
+            <name>Johannes Weigend</name>
+            <email>johannes.weigend@weigend.de</email>
+            <organization>Weigend AM</organization>
+            <organizationUrl>https://www.weigend.de</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:https://github.com/jweigend/wfx.git</connection>
+        <developerConnection>scm:git:git@github.com:jweigend/wfx.git</developerConnection>
+        <url>https://github.com/jweigend/wfx</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/jweigend/wfx/issues</url>
+    </issueManagement>
 
     <!-- global properties for the whole project  -->
     <properties>
