@@ -37,5 +37,19 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Avaje Inject AP would refuse @Inject private weldInstance
+                 in CDILookupStrategy. This module is CDI-only and slated for
+                 deletion in S1.6, so we explicitly disable the AP here. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths combine.self="override"/>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

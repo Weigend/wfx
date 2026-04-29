@@ -81,4 +81,19 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <!-- Avaje Inject AP would refuse CDI-style @Inject private fields
+                 (FXMLLoaderProducer, ScopeHandler etc.). This module is
+                 CDI-only and slated for deletion in S1.6 — disable the AP. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths combine.self="override"/>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

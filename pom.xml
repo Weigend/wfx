@@ -20,6 +20,7 @@
         <jaxb.version>2.3.0</jaxb.version>
         <java.version>21</java.version>
         <javafx.version>21.0.5</javafx.version>
+        <avaje.version>11.4</avaje.version>
     </properties>
 
     <modules>
@@ -38,6 +39,18 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Avaje Inject (compile-time DI; coexists with Weld during the migration) -->
+            <dependency>
+                <groupId>io.avaje</groupId>
+                <artifactId>avaje-inject</artifactId>
+                <version>${avaje.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.avaje</groupId>
+                <artifactId>avaje-inject-generator</artifactId>
+                <version>${avaje.version}</version>
+            </dependency>
+
             <!-- CDI & annotations -->
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
@@ -177,6 +190,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Avaje Inject runtime, globally available so any @Singleton class
+             in any wfx-module is discoverable by BeanScope at startup. -->
+        <dependency>
+            <groupId>io.avaje</groupId>
+            <artifactId>avaje-inject</artifactId>
         </dependency>
         <!-- Backend -->
         <dependency>
@@ -361,6 +381,16 @@
                 <configuration>
                     <release>${java.version}</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
+
+                    <!-- Avaje Inject AP runs in every wfx child module so
+                         @Singleton classes get a generated DI + AvajeModule. -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>io.avaje</groupId>
+                            <artifactId>avaje-inject-generator</artifactId>
+                            <version>${avaje.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 

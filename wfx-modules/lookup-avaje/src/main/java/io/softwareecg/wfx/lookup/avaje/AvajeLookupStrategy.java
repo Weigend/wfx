@@ -63,7 +63,19 @@ public class AvajeLookupStrategy implements LookupStrategy {
      * Initialize the Avaje BeanScope and wire it into {@link Lookup}.
      */
     public static void initLookup() {
-        initLookup(BeanScope.builder().build());
+        // Diagnostic: dump every Avaje module ServiceLoader sees, so a missing
+        // multi-module wiring is obvious in the startup log. Use this class's
+        // classloader (NOT the thread-context one, which under JavaFX init may
+        // be a delegating loader that does not see our application jars).
+        ClassLoader cl = AvajeLookupStrategy.class.getClassLoader();
+        var modules = java.util.ServiceLoader.load(io.avaje.inject.spi.InjectExtension.class, cl);
+        StringBuilder list = new StringBuilder();
+        for (io.avaje.inject.spi.InjectExtension m : modules) {
+            if (list.length() > 0) list.append(", ");
+            list.append(m.getClass().getName());
+        }
+        LOGGER.info("Avaje InjectExtensions discovered via ServiceLoader: [{}]", list);
+        initLookup(BeanScope.builder().classLoader(cl).build());
     }
 
     /**
