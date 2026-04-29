@@ -128,6 +128,22 @@
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
                                     <addHeader>false</addHeader>
                                 </transformer>
+                                <!--
+                                    Replace the merged InjectExtension service file with a hand-curated
+                                    version. The avaje-inject annotation processor writes
+                                    'io.avaje.inject.events.spi.ObserverManagerPlugin' (a class that lives
+                                    in avaje-inject.jar) into every wfx module's generated service file.
+                                    When shade merges those, the resulting wfx-all entry references a class
+                                    that is not bundled here (avaje-inject is excluded by artifactSet),
+                                    which makes JPMS reject auto-module derivation for wfx-all.jar.
+                                    The avaje-inject runtime ships its own service file with the same
+                                    plugin entry, so consumers still get it transitively — we only need
+                                    to advertise wfx's own DI modules.
+                                -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.IncludeResourceTransformer">
+                                    <resource>META-INF/services/io.avaje.inject.spi.InjectExtension</resource>
+                                    <file>${project.basedir}/src/main/resources/META-INF/services/io.avaje.inject.spi.InjectExtension</file>
+                                </transformer>
                             </transformers>
                             <filters>
                                 <filter>
@@ -139,6 +155,16 @@
                                         <exclude>META-INF/*.RSA</exclude>
                                         <!-- Exclude module-info to avoid conflicts -->
                                         <exclude>module-info.class</exclude>
+                                    </excludes>
+                                </filter>
+                                <!--
+                                    Drop the AP-generated InjectExtension service files from the wfx
+                                    modules so the IncludeResourceTransformer's curated version wins.
+                                -->
+                                <filter>
+                                    <artifact>io.softwareecg.wfx:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/services/io.avaje.inject.spi.InjectExtension</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
