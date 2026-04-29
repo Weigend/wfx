@@ -20,11 +20,17 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
+    - name: Install Xvfb (virtual display for JavaFX tests)
+      # Ubuntu runners are headless. Any JavaFX test that constructs a Stage,
+      # Scene, or instantiates a Toolkit needs an X server — xvfb-run starts
+      # an in-memory one for the duration of the wrapped command.
+      run: sudo apt-get update && sudo apt-get install -y xvfb
+
     - name: Build with Maven
       # JavaFX (org.openjfx:javafx-controls, javafx-fxml, ...) is pulled in
       # as a regular Maven dependency; the platform classifier resolves to
       # 'linux' on this runner automatically.
-      run: mvn -B clean verify --file pom.xml
+      run: xvfb-run -a mvn -B clean verify --file pom.xml
 
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
