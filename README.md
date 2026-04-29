@@ -104,9 +104,26 @@ Use `Main` only for a pure `ServiceLoader` setup.
 
 ### 2. Define an Application Window
 
-WFX picks the registered `ApplicationWindow` bean during startup and lets it
-load its own scene. Subclass `DefaultApplicationWindow` and load an FXML that
-declares the menu/tool/status bars plus the central docking area:
+WFX needs exactly one `ApplicationWindow` bean. Every application picks it up
+explicitly — there is no auto-registered fallback, on purpose. The simplest
+form is an empty subclass of `DefaultApplicationWindow` with `@Singleton`:
+
+```java
+import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
+import jakarta.inject.Singleton;
+
+@Singleton
+public class MyApplicationWindow extends DefaultApplicationWindow {
+}
+```
+
+That's it. `DefaultApplicationWindow` already carries the FXML scene with
+menu bar, tool bar and status bar. WFX's `PlatformApplicationImpl` finds the
+bean, calls `setStage(...)`, `setWindowManager(...)`, `init()`, and then
+`stage.show()`.
+
+If you want a custom shell — a different FXML, a different layout, a custom
+icon, branded title bar — override `init()` and load your own FXML:
 
 ```java
 import io.softwareecg.wfx.lookup.Lookup;
