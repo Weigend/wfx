@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>platform-core</artifactId>
-    <description>wfx - Platform Core</description>
 
     <parent>
         <groupId>io.softwareecg.wfx</groupId>
@@ -11,22 +9,20 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
+    <artifactId>lookup-avaje</artifactId>
+
+    <description>
+        Avaje Inject backed implementation of the WFX LookupStrategy.
+    </description>
+
     <properties>
         <avaje.version>11.4</avaje.version>
     </properties>
 
     <dependencies>
-        <!-- project dependencies -->
-
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>windowmanager-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>platform-api</artifactId>
+            <artifactId>lookup</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -34,38 +30,15 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>lookup</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
         </dependency>
 
-        <!-- Avaje Inject runtime -->
         <dependency>
             <groupId>io.avaje</groupId>
             <artifactId>avaje-inject</artifactId>
             <version>${avaje.version}</version>
         </dependency>
-
-        <!-- unit test dependencies -->
-
-        <!-- https://mvnrepository.com/artifact/org.testfx/testfx-junit -->
-        <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>testfx-junit</artifactId>
-            <version>4.0.18</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.loadui</groupId>
-            <artifactId>testFx</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>windowmanager-api</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>

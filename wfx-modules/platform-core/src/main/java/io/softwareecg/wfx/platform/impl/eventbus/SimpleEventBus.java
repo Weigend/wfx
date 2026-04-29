@@ -21,7 +21,6 @@ package io.softwareecg.wfx.platform.impl.eventbus;
 
 import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.EventBusListener;
-import jakarta.enterprise.inject.Vetoed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +40,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * </ul>
  *
  */
-@Vetoed
 @SuppressWarnings({"rawtypes", "unchecked"})
 public class SimpleEventBus implements EventBus<EventObject> {
     private static final Logger LOG = LoggerFactory.getLogger(SimpleEventBus.class);

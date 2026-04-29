@@ -19,10 +19,13 @@
  */
 package io.softwareecg.wfx.windowmtg.impl;
 
+import jakarta.inject.Singleton;
+
 /**
  * Implementation for the view container areas. This Implementation will show the added views as tabs within a TabPane.
  *
  */
+@Singleton
 public class ViewContainerAreaFactoryImpl implements ViewContainerAreaFactory {
 
     @Override

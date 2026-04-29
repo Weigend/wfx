@@ -29,12 +29,6 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>lookup-cdi</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>platform-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -63,39 +57,20 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Extensions -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>cdi-contexts</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>ui-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-        <!-- 
-            Runtime dependencies - these are NOT included in the shaded JAR 
+        <!--
+            Runtime dependencies - these are NOT included in the shaded JAR
             but will be transitively pulled when a user adds wfx-all as dependency
         -->
-        
-        <!-- CDI API -->
-        <dependency>
-            <groupId>jakarta.enterprise</groupId>
-            <artifactId>jakarta.enterprise.cdi-api</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>jakarta.annotation</groupId>
             <artifactId>jakarta.annotation-api</artifactId>
-        </dependency>
-
-        <!-- Weld SE (CDI implementation) -->
-        <dependency>
-            <groupId>org.jboss.weld.se</groupId>
-            <artifactId>weld-se-core</artifactId>
         </dependency>
 
         <!-- Logging -->

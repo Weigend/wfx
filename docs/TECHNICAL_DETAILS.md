@@ -1,310 +1,250 @@
-# WFX — Technical Documentation
+# WFX Technical Documentation
 
 ## Overview
 
-WFX is a lightweight Rich Client Platform (RCP) for JavaFX applications. It provides a modular architecture with optional CDI-based dependency injection, a window manager with splittable areas and drag-and-drop docking, and a synchronous in-process event bus.
+WFX is a lightweight Rich Client Platform (RCP) for JavaFX applications. It
+provides a modular architecture, Avaje-based infrastructure wiring, a window
+manager with splittable areas and drag-and-drop docking, and a synchronous
+in-process event bus.
 
 ## Technology Stack
 
-| Component  | Version       | Notes                                              |
-|------------|---------------|----------------------------------------------------|
-| Java       | 21            | LTS                                                |
-| JavaFX     | 21.0.5        | LTS, modular via JPMS                              |
-| Weld SE    | 5.1.2.Final   | CDI 4.0 implementation (Jakarta EE 10)             |
-| Jakarta CDI| 4.0.1         | Contexts and Dependency Injection                  |
-| SLF4J      | 2.0.13        | Logging facade                                     |
-| Logback    | 1.5.20        | SLF4J implementation                               |
-| JUnit      | 4.13.2        | Unit testing                                       |
-| Mockito    | 5.7.0         | Mocking framework                                  |
-| Arquillian | 1.8.0.Final   | CDI integration testing                            |
+| Component | Version | Notes |
+|-----------|---------|-------|
+| Java | 21 | LTS |
+| JavaFX | 21.0.5 | UI toolkit |
+| Avaje Inject | 11.4 | Compile-time DI |
+| SLF4J | 2.0.13 | Logging facade |
+| Logback | 1.5.20 | SLF4J implementation |
+| JUnit | 4.13.2 | Unit testing |
+| Mockito | 5.7.0 | Mocking framework |
 
 ## Project Structure
 
-```
+```text
 wfx/
-├── pom.xml                       # Single parent POM for the whole reactor
+├── pom.xml                       # Single parent POM for the reactor
 ├── wfx-modules/
-│   ├── platform-api/             # Public API (Module, EventBus, …)
+│   ├── platform-api/             # Public API (Module, EventBus, ...)
 │   ├── platform-core/            # Core implementation
-│   ├── platform-runner/          # Application bootstrap (Main, CDIMain)
+│   ├── platform-runner/          # Application bootstrap (Main, AvajeMain)
 │   ├── lookup/                   # Service-lookup abstraction
-│   ├── lookup-cdi/               # CDI-based lookup implementation
+│   ├── lookup-avaje/             # Avaje-backed lookup strategy
 │   ├── windowmanager-api/        # Window-management API
 │   ├── windowmanager-core/       # Window-management implementation
 │   ├── extensions/
-│   │   ├── cdi-contexts/         # JavaFX-aware CDI scope (@ViewScoped)
 │   │   └── ui-utils/             # UI utilities (menus, system views)
 │   └── example-gui/              # Example application
 └── wfx-all/                      # Aggregator JAR with all modules bundled
 ```
 
-> Until 2026-04 the reactor had two near-identical parent POMs at `wfx/pom.xml` and `wfx/wfx-modules/pom.xml`. They have been consolidated into a single parent at `wfx/pom.xml`; submodules under `wfx-modules/` declare an explicit `<relativePath>../../pom.xml</relativePath>`.
-
 ## Module System
 
-### Module Interface
-
-Modules implement [`io.softwareecg.wfx.platform.api.Module`](../wfx-modules/platform-api/src/main/java/io/softwareecg/wfx/platform/api/Module.java):
+Modules implement `io.softwareecg.wfx.platform.api.Module`:
 
 ```java
 public interface Module {
     default String getName()    { return getClass().getSimpleName(); }
     default String getVersion() { return getClass().getPackage().getImplementationVersion(); }
 
-    void preload() throws PlatformException;  // background thread, splash visible
+    void preload() throws PlatformException;  // background thread, preloader visible
     void start();                              // FX thread, after main window
     void stop();                               // application shutdown
 }
 ```
 
-### Module Discovery
+## Module Discovery
 
-Two strategies, swappable at boot via `Main` vs. `CDIMain`:
+WFX supports two startup styles:
 
-1. **`ServiceLoader`** (default in `Main`)
+1. **Avaje Inject** via `AvajeMain`
+   - Modules are normal Avaje beans, typically annotated with `@Singleton`.
+   - Compile-time generated Avaje modules are discovered through
+     `META-INF/services/io.avaje.inject.spi.InjectExtension`.
+
+2. **ServiceLoader** via `Main`
    - Register fully-qualified module class names in
-     `META-INF/services/io.softwareecg.wfx.platform.api.Module`
-2. **CDI** (used by `CDIMain`)
-   - Annotate the module with `@Singleton` and ship a `META-INF/beans.xml`.
-     Discovery happens through Weld's bean scan.
+     `META-INF/services/io.softwareecg.wfx.platform.api.Module`.
+   - This is useful for small apps and tests that do not need DI.
 
-### Startup Order
+## Startup Order
 
-`Module.start()` is documented as **non-specific order** by the interface contract. After the QS round in 2026-04, `Main.init()` sorts modules by their `jakarta.annotation.@Priority` annotation (smaller value = earlier; unannotated modules default to `Integer.MAX_VALUE` and run last). Both `preload()` and `start()` then run in the resulting stable order. Modules without `@Priority` are unaffected.
+`Main.init()` sorts modules by `jakarta.annotation.Priority`:
+
+- smaller value = earlier
+- unannotated modules default to `Integer.MAX_VALUE`
+- both `preload()` and `start()` use the same order
 
 ## Lookup System
 
-The `Lookup` abstraction provides a service-locator pattern. It is the same idea as the NetBeans `Lookup`, on a deliberately small surface.
-
-### Lookup Strategies
-
-1. **`ServiceLoaderLookupStrategy`** (default with `Main`)
-   - Uses Java's `ServiceLoader`
-   - No CDI container required
-   - Services registered via `META-INF/services/`
-
-2. **`CDILookupStrategy`** (used with `CDIMain`)
-   - Uses Weld SE container
-   - Full CDI support: `@Inject`, `@Produces`, scopes
-   - Requires `lookup-cdi` on the classpath
-
-### Usage
+`Lookup` is a small framework boundary inspired by NetBeans Lookup. It is used
+for dynamic infrastructure access such as modules, windows, event bus, and FXML
+controller fallback resolution.
 
 ```java
 EventBus<ProgressEvent> bus = Lookup.lookup(EventBus.class);
-List<Module>            mods = Lookup.lookupAll(Module.class);
+List<Module> modules = Lookup.lookupAll(Module.class);
 ```
+
+For parameterised types, WFX provides its own CDI-free type reference:
+
+```java
+EventBus<ProgressEvent> bus =
+        Lookup.lookup(new TypeRef<EventBus<ProgressEvent>>() {});
+```
+
+## DI Boundary
+
+WFX uses DI for long-lived infrastructure:
+
+- platform services
+- modules
+- event bus
+- window manager
+- application windows
+- factories
+
+Concrete `FXMLView` instances are not DI beans. They are runtime registration
+objects containing IDs, positions, FXML files, icons, and parent relationships.
+
+FXML controllers are only DI-managed when explicitly annotated. Controllers
+with per-view state should be `@Prototype` or created directly by `FXMLLoader`.
 
 ## Event Bus
 
-### `SimpleEventBus`
+`SimpleEventBus` is a thread-safe synchronous event bus:
 
-Thread-safe synchronous event bus:
+- `ConcurrentHashMap` for subscriptions
+- `CopyOnWriteArrayList` for listener lists
+- superclass listeners receive subclass events
+- exceptions in one listener are logged and do not stop other listeners
 
-- **Thread Safety**: `ConcurrentHashMap` for subscriptions, `CopyOnWriteArrayList` for listeners
-- **Event Hierarchy**: Listeners on a superclass receive events of subclasses
-- **Error Isolation**: An exception in one listener does not affect others (logged via SLF4J)
-- **Consumed Semantics**: Listeners return `boolean` to indicate "still valid" (`true`) or "consumed" (`false`)
+`EventBusFactory` exposes one shared `SimpleEventBus` instance for both raw
+`EventBus` lookup and typed `EventBus<EventObject>` injection.
 
-### `@EventSubscriber`
+Built-in event types:
 
-```java
-@EventSubscriber(eventClass = ProgressEvent.class)
-public boolean onProgress(ProgressEvent event) {
-    // …
-    return true;
-}
-```
-
-### Built-in Event Types
-
-- `ProgressEvent` — message + progress fraction + source
-- `StartupProgressEvent` — extends `ProgressEvent`, used by the splash/preloader
+- `ProgressEvent` - message + progress fraction + source
+- `StartupProgressEvent` - extends `ProgressEvent`, used by the startup preloader
 
 ## Window Management
 
-### `WindowManager` API
-
-The window manager owns one main `RootArea` and a list of detachable `RootArea`s for sub-windows. Views are registered through the `register(...)` overloads:
+The window manager owns one main `RootArea` and detachable `RootArea`s for
+sub-windows. Views are registered through `WindowManager`:
 
 ```java
 WindowManager wm = Lookup.lookup(WindowManager.class);
-wm.register(view);                  // shows the view at view.getDefaultPosition()
-wm.register(view, parent);          // attaches relative to an existing parent view
-wm.register(view, parent, false);   // adds without showing
+wm.register(view);
+wm.register(view, parent);
+wm.register(view, parent, false);
 ```
 
-### `Position` and Splittable Areas
-
-`Position` is a richer enum than the usual cardinal directions: each direction carries the split orientation it requires and which slot of the split it occupies.
+`Position` defines how a view is placed:
 
 ```java
 public enum Position {
-    TOP   (Orientation.VERTICAL,   true),    // first slot
-    LEFT  (Orientation.HORIZONTAL, true),
-    CENTER(null,                   false),
-    RIGHT (Orientation.HORIZONTAL, false),
-    BOTTOM(Orientation.VERTICAL,   false);
-
-    public Orientation getSplitOrientation();
-    public boolean     isFirstSlot();
+    TOP, LEFT, CENTER, RIGHT, BOTTOM
 }
 ```
 
-This lets `ViewArea.add()` collapse all four side directions into a single shared parameterised path: if `this` is already split in the matching orientation, recurse into the matching slot; otherwise create a new split.
+Side positions create or reuse split panes. `CENTER` places a view in the
+current tab area.
 
-> Historical note (fixed 2026-04): the `LEFT` branch previously delegated to `getSecondChild()` when the area was already horizontally split — a copy-paste leftover from `RIGHT` that pushed every later `LEFT` registration into the existing right pane. The bug was masked by an `Platform.runLater()` workaround in client code (AI Chat sidebar). After the fix, registration order does not affect the final layout.
+## FXML Loading
 
-### `DragNDropManager`
+`FXMLLoaderFactory` creates a fresh `FXMLLoader` per lookup. Its controller
+factory uses a two-step strategy:
 
-Manages drag-and-drop of view tabs across panes and out into floating sub-windows. The currently dragged view is tracked via two static accessors on `DragNDropManagerImpl`:
+1. Ask `Lookup` for an Avaje-managed controller.
+2. If no managed controller exists, create the controller with its default
+   constructor and inject resolvable `@Inject` fields as a legacy fallback.
 
-```java
-DragNDropManagerImpl.setDraggedViewStatus(viewStatus);
-ViewStatus current = DragNDropManagerImpl.getDraggedViewStatus();
-```
-
-`ViewStatus` carries a `Status` enum (`VISIBLE` / `HIDDEN`) plus the `Position`, the parent `ViewStatus`, and the owning `TabArea`.
-
-## CDI Integration
-
-### `FXMLLoaderProducer`
-
-Produces CDI-aware `FXMLLoader` instances:
-
-```java
-@Inject
-FXMLLoader loader;
-```
-
-Controllers loaded through this `FXMLLoader` automatically support `@Inject` because the loader uses a `Callback<Class<?>, Object>` backed by the active CDI BeanManager.
-
-### JavaFX Scope (cdi-contexts extension)
-
-- `@ViewScoped` — one bean per registered view (lifecycle tied to the view's `ViewStatus`).
-
-(Earlier drafts of this document mentioned `@StageScoped`, `@SceneScoped`, and `@FxApplicationScoped`. Those scopes are not implemented; only `@ViewScoped` exists today.)
+This keeps simple controllers simple while still supporting DI-managed
+controllers where needed.
 
 ## Application Lifecycle
 
-```
+```text
 1. Main.init()
-   ├── Initialise Lookup strategy
-   ├── Discover modules via ServiceLoader (or CDI in CDIMain)
-   ├── Sort modules by @Priority
-   └── Get PlatformApplication instance
+   ├── initialize lookup strategy
+   ├── discover modules
+   ├── sort modules by @Priority
+   └── get PlatformApplication
 
 2. Main.start(primaryStage)
-   ├── Show preloader / splash screen
-   ├── Module.preload() for each module — sequential, on a background
-   │   thread, with progress events between each module
-   ├── Hide preloader
-   ├── Show main application window (first registered ApplicationWindow)
-   ├── Initialise WindowManager
-   └── Module.start() for each module — sequential, on the FX thread
+   ├── show preloader
+   ├── run Module.preload() sequentially on a background thread
+   ├── hide preloader
+   ├── show main application window
+   ├── initialize WindowManager
+   └── run Module.start() sequentially on the FX thread
 
 3. Main.stop()
-   ├── Module.stop() for each module
-   └── PlatformApplication.stop() (closes the main stage)
+   ├── run Module.stop()
+   ├── close PlatformApplication
+   └── AvajeMain closes the BeanScope
 ```
-
-The preload phase runs on a background `Thread "Background Startup"` so that the FX thread stays responsive for the splash screen. After preload, control hops back to the FX thread via `Platform.runLater(...)` for the `start()` sequence.
 
 ## Build System
 
-### Maven
-
-The only supported build system. Run from the `wfx/` directory:
+Run from the `wfx/` directory:
 
 ```bash
-mvn clean install              # build + tests
-mvn clean install -DskipTests  # skip tests
+mvn clean install
+mvn clean install -DskipTests
 ```
 
-### Surefire JVM flags
+`maven-surefire-plugin` is configured with JavaFX `--add-opens` flags required
+by the JavaFX tests.
 
-`maven-surefire-plugin` is configured (in `wfx/pom.xml`) with `--add-opens` flags for several JavaFX modules. They are required for `JavaFxTestUtils.mockReadOnlyProperty`, which reflectively patches private property fields in `Stage`/`Scene`/`Region`/`Tab` so that integration tests can inject mocked values without standing up real windows.
-
-### Running the Example
+## Running the Example
 
 ```bash
-mvn -pl wfx-modules/example-gui exec:java \
-    -Dexec.mainClass=io.softwareecg.wfx.examplegui.ExampleServiceLoaderMain
+mvn -pl wfx-modules/example-gui exec:java
 ```
 
-For the CDI variant use `ExampleCDIMain`.
+The example starts through `ExampleAvajeMain`.
 
 ## Key Design Decisions
 
 ### 1. No OSGi
 
-OSGi was removed during earlier refactoring because of:
-- Complexity at JavaFX platform startup
-- Classloader friction with FXML
-- Simpler alternatives that fit the use case (`ServiceLoader`, CDI)
+OSGi was removed during earlier refactoring because startup and classloader
+behavior made JavaFX/FXML integration harder than necessary.
 
-### 2. Jakarta EE 10 Migration
+### 2. No CDI Runtime
 
-Migrated from `javax.*` to `jakarta.*`:
-- `javax.inject` → `jakarta.inject`
-- `javax.enterprise.context` → `jakarta.enterprise.context`
-- Requires Weld 5.x and Arquillian 1.8.x
+WFX uses Avaje Inject instead of a runtime CDI container. This keeps startup
+lighter and makes bean wiring a build-time concern.
 
 ### 3. Single Parent POM
 
-`wfx-modules/pom.xml` was a near-identical duplicate of `wfx/pom.xml` and used to be the actual parent picked up by submodules under `wfx-modules/` (because `relativePath` defaults to `../pom.xml`). It has been removed; the only parent now is `wfx/pom.xml`, referenced via an explicit `<relativePath>../../pom.xml</relativePath>` from each submodule.
+The only parent is `wfx/pom.xml`; submodules under `wfx-modules/` reference it
+with `<relativePath>../../pom.xml</relativePath>`.
 
-### 4. Thread-Safe Collections
+### 4. Explicit UI Runtime Objects
 
-- `SimpleEventBus`: `ConcurrentHashMap` + `CopyOnWriteArrayList`
-- Event bus designed for multi-threaded JavaFX applications
-
-### 5. Lazy Initialisation
-
-`PlatformApplicationImpl.getEventBus()` uses lazy initialisation to avoid startup-order issues.
+Views are built explicitly. DI is reserved for infrastructure and stable
+services.
 
 ## Testing
-
-### Unit Tests
 
 ```bash
 mvn test
 ```
 
-Tests use JUnit 4 + Mockito 5.7. The `JavaFXThreadingRule` (in `windowmanager-api/src/test`) drives each test on the JavaFX application thread; `GuiTestHelper` brings up a hidden `TestFxApp` stage on first use.
-
-### Integration Tests (CDI)
-
-Uses Arquillian with Weld SE:
-
-```java
-@RunWith(Arquillian.class)
-public class CDITest {
-    @Deployment
-    public static JavaArchive createDeployment() {
-        return ShrinkWrap.create(JavaArchive.class)
-                .addClasses(MyService.class)
-                .addAsManifestResource(EmptyAsset.INSTANCE, "beans.xml");
-    }
-
-    @Inject MyService service;
-}
-```
-
-### GUI Tests
-
-```java
-GuiTestHelper.runInJavaFxThreadAndWait(() -> {
-    // any operation that must run on the FX thread
-});
-```
+Tests use JUnit 4 + Mockito 5.7. JavaFX-specific tests use helpers from
+`windowmanager-api/src/test`.
 
 ## Known Limitations
 
-1. **Event-bus hierarchy**: a listener registered for several event types in a class hierarchy may be called more than once for a subclass event.
-2. **No async events**: the event bus is synchronous; use `Platform.runLater()` for UI updates from background threads.
-3. **`ServiceLoader` caching**: discovered services are cached. Dynamic plugin loading at runtime is not supported.
+1. **Event-bus hierarchy**: a listener registered for several event types in a
+   class hierarchy may be called more than once for a subclass event.
+2. **No async events**: the event bus is synchronous; use `Platform.runLater()`
+   for UI updates from background threads.
+3. **`ServiceLoader` caching**: discovered services are cached. Dynamic plugin
+   loading at runtime is not supported.
 
 ## License
 
-Apache License 2.0 — see [LICENSE.txt](../LICENSE.txt).
+Apache License 2.0 - see [LICENSE.txt](../LICENSE.txt).

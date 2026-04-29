@@ -19,51 +19,46 @@
  */
 package io.softwareecg.wfx.lookup;
 
-import jakarta.enterprise.util.TypeLiteral;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Unit test for the {@link io.softwareecg.wfx.lookup.Lookup} class.
  *
  */
-@RunWith(MockitoJUnitRunner.class)
 public class LookupTest {
-    @Mock
-    private LookupStrategy strategy;
-    @Mock
+    private RecordingLookupStrategy strategy;
     private TestService service;
 
     @Before
     public void setUp() throws Exception {
+        service = new TestService() {
+            @Override
+            public String sayHello() {
+                return "hello";
+            }
+        };
+        strategy = new RecordingLookupStrategy(service);
         Lookup.init(strategy);
-        when(strategy.lookup(TestService.class)).thenReturn(service);
-        when(strategy.lookupAll(TestService.class)).thenReturn(List.of(service));
     }
 
     @Test
     public void testLookup() throws Exception {
         TestService actual = Lookup.lookup(TestService.class);
         assertThat(actual, is(service));
-        verify(strategy).lookup(TestService.class);
+        assertThat(strategy.lookupClass, equalTo((Class<?>) TestService.class));
     }
 
     @Test
     public void testLookupAll() throws Exception {
         List<TestService> actual = Lookup.lookupAll(TestService.class);
         assertThat(actual, hasItem(service));
-        verify(strategy).lookupAll(TestService.class);
+        assertThat(strategy.lookupAllClass, equalTo((Class<?>) TestService.class));
     }
 
     @Test
@@ -78,7 +73,39 @@ public class LookupTest {
         Lookup.init(null);
         assertThat(Lookup.lookup(TestService.class), is(nullValue()));
         assertThat(Lookup.lookupAll(TestService.class), is(nullValue()));
-        assertThat(Lookup.lookup(new TypeLiteral<TestService>() {}), is(nullValue()));
-        assertThat(Lookup.lookup(new TypeLiteral<TestService>() {}), is(nullValue()));
+        assertThat(Lookup.lookup(new TypeRef<TestService>() {}), is(nullValue()));
+        assertThat(Lookup.lookup(new TypeRef<TestService>() {}), is(nullValue()));
+    }
+
+    private static final class RecordingLookupStrategy implements LookupStrategy {
+        private final TestService service;
+        private Class<?> lookupClass;
+        private Class<?> lookupAllClass;
+
+        private RecordingLookupStrategy(TestService service) {
+            this.service = service;
+        }
+
+        @Override
+        public <T> T lookup(TypeRef<T> type) {
+            return null;
+        }
+
+        @Override
+        public <T> T lookup(Class<T> clazz) {
+            lookupClass = clazz;
+            return clazz.cast(service);
+        }
+
+        @Override
+        public <T> List<T> lookupAll(Class<T> clazz) {
+            lookupAllClass = clazz;
+            return List.of(clazz.cast(service));
+        }
+
+        @Override
+        public <T> List<T> lookupAll(TypeRef<T> type) {
+            return List.of();
+        }
     }
 }

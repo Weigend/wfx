@@ -19,8 +19,6 @@
  */
 package io.softwareecg.wfx.lookup;
 
-import jakarta.enterprise.util.TypeLiteral;
-
 import java.util.List;
 
 /**
@@ -31,21 +29,21 @@ import java.util.List;
  */
 public interface LookupStrategy {
     /**
-     * Lookup an instance from the registry. The {@link TypeLiteral} allows to return a strong typed generic instance.
+     * Lookup an instance from the registry. The {@link TypeRef} allows to return a strong typed generic instance.
      * <p>
      * The returned service is that service that have the highest service ranking.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
-     * {@link TypeLiteral}:
+     * {@link TypeRef}:
      * <pre>{@code
-     * EventBus<ProgressEvent> eventBus = strategy.lookup(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * EventBus<ProgressEvent> eventBus = strategy.lookup(new TypeRef<EventBus<ProgressEvent>>(){});
      * }</pre>
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return A instance of the requested class or null if not found.
      */
-    <T> T lookup(TypeLiteral<T> type);
+    <T> T lookup(TypeRef<T> type);
 
     /**
      * Lookup an instance from the registry.
@@ -70,20 +68,20 @@ public interface LookupStrategy {
     <T> List<T> lookupAll(Class<T> clazz);
 
     /**
-     * Lookup all services for one class from the registry. The {@link TypeLiteral} allows to return a strong typed
+     * Lookup all services for one class from the registry. The {@link TypeRef} allows to return a strong typed
      * generic instance.
      * <p>
      * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
-     * {@link TypeLiteral}:
+     * {@link TypeRef}:
      * <pre>{@code
-     * List<EventBus<ProgressEvent>> eventBusList = strategy.lookupAll(new TypeLiteral<EventBus<ProgressEvent>>(){});
+     * List<EventBus<ProgressEvent>> eventBusList = strategy.lookupAll(new TypeRef<EventBus<ProgressEvent>>(){});
      * }</pre>
      *
      * @param type The type literal to search.
      * @param <T>  The type of the class to search.
      * @return A list with all found service instances for the searched class.
      */
-    <T> List<T> lookupAll(TypeLiteral<T> type);
+    <T> List<T> lookupAll(TypeRef<T> type);
 }

@@ -23,7 +23,7 @@ import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import jakarta.annotation.Priority;
-import jakarta.enterprise.util.TypeLiteral;
+import io.softwareecg.wfx.lookup.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class ServiceLoaderLookupStrategyTest {
 
     @Test
     public void testTypedLookup() throws Exception {
-        TypedTestService<String> actual = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
+        TypedTestService<String> actual = lookupStrategy.lookup(new TypeRef<TypedTestService<String>>() {});
         assertThat(actual, is(notNullValue()));
         assertThat(actual, instanceOf(TypedTestServiceImpl.class));
     }
@@ -77,8 +77,8 @@ public class ServiceLoaderLookupStrategyTest {
 
     @Test
     public void testTypedLookupTwice() throws Exception {
-        TypedTestService<String> actual1 = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
-        TypedTestService<String> actual2 = lookupStrategy.lookup(new TypeLiteral<TypedTestService<String>>() {});
+        TypedTestService<String> actual1 = lookupStrategy.lookup(new TypeRef<TypedTestService<String>>() {});
+        TypedTestService<String> actual2 = lookupStrategy.lookup(new TypeRef<TypedTestService<String>>() {});
         assertThat(actual1, is(notNullValue()));
         assertThat(actual2, is(notNullValue()));
         assertThat(actual1, instanceOf(TypedTestServiceImpl.class));
@@ -172,11 +172,11 @@ public class ServiceLoaderLookupStrategyTest {
 
     @Test
     public void testTypedInit() throws Exception {
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
-        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(2));
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl(), true);
-        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(1));
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(new TypeRef<TypedTestService<String>>() {}), hasSize(2));
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, new TypedTestServiceImpl(), true);
+        assertThat(lookupStrategy.lookupAll(new TypeRef<TypedTestService<String>>() {}), hasSize(1));
     }
 
     @Test
@@ -190,11 +190,11 @@ public class ServiceLoaderLookupStrategyTest {
 
     @Test
     public void testTypedInitProducer() throws Exception {
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, new TypedTestServiceImpl());
-        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(2));
-        lookupStrategy.init(new TypeLiteral<TypedTestService<String>>() {}, (Producer<TypedTestService<String>>) TypedTestServiceImpl::new, true);
-        assertThat(lookupStrategy.lookupAll(new TypeLiteral<TypedTestService<String>>() {}), hasSize(1));
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, new TypedTestServiceImpl());
+        assertThat(lookupStrategy.lookupAll(new TypeRef<TypedTestService<String>>() {}), hasSize(2));
+        lookupStrategy.init(new TypeRef<TypedTestService<String>>() {}, (Producer<TypedTestService<String>>) TypedTestServiceImpl::new, true);
+        assertThat(lookupStrategy.lookupAll(new TypeRef<TypedTestService<String>>() {}), hasSize(1));
     }
 
     @Test

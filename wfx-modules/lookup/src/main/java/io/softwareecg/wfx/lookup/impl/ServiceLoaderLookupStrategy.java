@@ -20,7 +20,7 @@
 package io.softwareecg.wfx.lookup.impl;
 
 import io.softwareecg.wfx.lookup.LookupStrategy;
-import jakarta.enterprise.util.TypeLiteral;
+import io.softwareecg.wfx.lookup.TypeRef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,8 +73,8 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      * @param instance The added instance.
      * @param <T>      Type of the target instance.
      */
-    public <T> void init(TypeLiteral<T> type, T instance) {
-        init(type.getRawType(), instance);
+    public <T> void init(TypeRef<T> type, T instance) {
+        initRaw(type.getRawType(), instance);
     }
 
     /**
@@ -100,8 +100,11 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      * @param override True if existing instances should be removed previous.
      * @param <T>      Type of the target instance.
      */
-    public <T> void init(TypeLiteral<T> type, T instance, boolean override) {
-        init(type.getRawType(), instance, override);
+    public <T> void init(TypeRef<T> type, T instance, boolean override) {
+        if (override) {
+            lookupCache.remove(type.getRawType());
+        }
+        initRaw(type.getRawType(), instance);
     }
 
     /**
@@ -122,8 +125,8 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      * @param producer The producer instance.
      * @param <T>      Type of the target instance.
      */
-    public <T> void init(TypeLiteral<T> type, Producer<T> producer) {
-        init(type.getRawType(), producer);
+    public <T> void init(TypeRef<T> type, Producer<T> producer) {
+        initRaw(type.getRawType(), producer);
     }
 
     /**
@@ -149,13 +152,16 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
      * @param override True if existing instances should be removed previous.
      * @param <T>      Type of the target instance.
      */
-    public <T> void init(TypeLiteral<T> type, Producer<T> producer, boolean override) {
-        init(type.getRawType(), producer, override);
+    public <T> void init(TypeRef<T> type, Producer<T> producer, boolean override) {
+        if (override) {
+            lookupCache.remove(type.getRawType());
+        }
+        initRaw(type.getRawType(), producer);
     }
 
     @Override
-    public <T> T lookup(TypeLiteral<T> type) {
-        return lookup(type.getRawType());
+    public <T> T lookup(TypeRef<T> type) {
+        return lookup((Class<T>) type.getRawType());
     }
 
     @Override
@@ -211,8 +217,8 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
     }
 
     @Override
-    public <T> List<T> lookupAll(TypeLiteral<T> type) {
-        return lookupAll(type.getRawType());
+    public <T> List<T> lookupAll(TypeRef<T> type) {
+        return lookupAll((Class<T>) type.getRawType());
     }
 
     /**

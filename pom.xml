@@ -15,17 +15,16 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4jVersion>2.0.13</slf4jVersion>
         <logbackVersion>1.5.20</logbackVersion>
-        <weldVersion>5.1.2.Final</weldVersion>
-        <arquillianVersion>1.8.0.Final</arquillianVersion>
         <jaxb.version>2.3.0</jaxb.version>
         <java.version>21</java.version>
         <javafx.version>21.0.5</javafx.version>
+        <avaje.version>11.4</avaje.version>
     </properties>
 
     <modules>
         <module>wfx-modules/extensions</module>
         <module>wfx-modules/lookup</module>
-        <module>wfx-modules/lookup-cdi</module>
+        <module>wfx-modules/lookup-avaje</module>
         <module>wfx-modules/platform-api</module>
         <module>wfx-modules/platform-core</module>
         <module>wfx-modules/platform-runner</module>
@@ -37,17 +36,16 @@
 
     <dependencyManagement>
         <dependencies>
-            <!-- CDI & annotations -->
+            <!-- Avaje Inject (compile-time DI) -->
             <dependency>
-                <groupId>org.jboss.weld.se</groupId>
-                <artifactId>weld-se-core</artifactId>
-                <version>${weldVersion}</version>
+                <groupId>io.avaje</groupId>
+                <artifactId>avaje-inject</artifactId>
+                <version>${avaje.version}</version>
             </dependency>
-
             <dependency>
-                <groupId>jakarta.enterprise</groupId>
-                <artifactId>jakarta.enterprise.cdi-api</artifactId>
-                <version>4.0.1</version>
+                <groupId>io.avaje</groupId>
+                <artifactId>avaje-inject-generator</artifactId>
+                <version>${avaje.version}</version>
             </dependency>
 
             <dependency>
@@ -129,38 +127,6 @@
                 <scope>test</scope>
             </dependency>
 
-            <!-- Weld SE Arquillian container for CDI testing with Weld 5 -->
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-weld-embedded</artifactId>
-                <version>3.0.2.Final</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.container/arquillian-container-test-api -->
-            <dependency>
-                <groupId>org.jboss.arquillian.container</groupId>
-                <artifactId>arquillian-container-test-api</artifactId>
-                <version>${arquillianVersion}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.junit/arquillian-junit-container -->
-            <dependency>
-                <groupId>org.jboss.arquillian.junit</groupId>
-                <artifactId>arquillian-junit-container</artifactId>
-                <version>${arquillianVersion}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.jboss.arquillian.junit/arquillian-junit-core -->
-            <dependency>
-                <groupId>org.jboss.arquillian.junit</groupId>
-                <artifactId>arquillian-junit-core</artifactId>
-                <version>${arquillianVersion}</version>
-                <scope>test</scope>
-            </dependency>
-
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
@@ -176,6 +142,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Avaje Inject runtime, globally available so any @Singleton class
+             in any wfx-module is discoverable by BeanScope at startup. -->
+        <dependency>
+            <groupId>io.avaje</groupId>
+            <artifactId>avaje-inject</artifactId>
         </dependency>
         <!-- Backend -->
         <dependency>
@@ -231,21 +204,6 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
             <version>${javafx.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.container</groupId>
-            <artifactId>arquillian-container-test-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-container</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jboss.arquillian.junit</groupId>
-            <artifactId>arquillian-junit-core</artifactId>
         </dependency>
     </dependencies>
 
@@ -360,6 +318,16 @@
                 <configuration>
                     <release>${java.version}</release>
                     <encoding>${project.build.sourceEncoding}</encoding>
+
+                    <!-- Avaje Inject AP runs in every wfx child module so
+                         @Singleton classes get a generated DI + AvajeModule. -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>io.avaje</groupId>
+                            <artifactId>avaje-inject-generator</artifactId>
+                            <version>${avaje.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
 

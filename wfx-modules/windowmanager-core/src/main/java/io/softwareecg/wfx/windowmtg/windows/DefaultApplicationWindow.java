@@ -47,7 +47,6 @@ import java.util.Objects;
  *
  */
 @Singleton
-@jakarta.annotation.Priority(Integer.MIN_VALUE)
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationWindow.class);
