@@ -88,7 +88,15 @@ public class FXMLLoaderFactory {
                 }
                 field.setAccessible(true);
                 try {
-                    Object dep = scope.get(field.getType());
+                    String qualifier = qualifierName(field);
+                    if (!scope.contains(field.getType())) {
+                        // No bean for this type at all — leave field null,
+                        // matching CDI's tolerant behaviour.
+                        continue;
+                    }
+                    Object dep = (qualifier != null)
+                            ? scope.get(field.getType(), qualifier)
+                            : scope.get(field.getType());
                     field.set(instance, dep);
                 } catch (ReflectiveOperationException e) {
                     throw new IllegalStateException(
@@ -97,5 +105,24 @@ public class FXMLLoaderFactory {
             }
             cls = cls.getSuperclass();
         }
+    }
+
+    /**
+     * Extract the Avaje qualifier name from a field's annotations. Avaje stores
+     * a single name per bean (the simple name of the @Qualifier-meta annotation),
+     * so an annotation like {@code @Embedded} on a field requests the bean named
+     * "Embedded".
+     */
+    private static String qualifierName(Field field) {
+        for (java.lang.annotation.Annotation a : field.getAnnotations()) {
+            Class<? extends java.lang.annotation.Annotation> type = a.annotationType();
+            if (type == Inject.class) {
+                continue;
+            }
+            if (type.isAnnotationPresent(jakarta.inject.Qualifier.class)) {
+                return type.getSimpleName();
+            }
+        }
+        return null;
     }
 }
