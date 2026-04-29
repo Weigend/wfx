@@ -61,6 +61,7 @@ public class FXMLLoaderFactory {
     private static <T> T controllerFactory(Class<T> controllerClass) {
         T managed = Lookup.lookup(controllerClass);
         if (managed != null) {
+            io.softwareecg.wfx.platform.impl.eventbus.AnnotationProcessor.process(managed);
             return managed;
         }
         try {
@@ -69,6 +70,7 @@ public class FXMLLoaderFactory {
             if (scope != null) {
                 injectAnnotatedFields(instance, scope);
             }
+            io.softwareecg.wfx.platform.impl.eventbus.AnnotationProcessor.process(instance);
             return instance;
         } catch (ReflectiveOperationException e) {
             throw new IllegalStateException("Cannot create FXML controller " + controllerClass, e);
