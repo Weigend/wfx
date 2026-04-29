@@ -225,6 +225,16 @@ public class MyModule implements Module {
 and adds the registration metadata (id, title, dock position) the
 `WindowManager` needs.
 
+`preload()` is invoked by WFX on every discovered module after the preloader
+becomes visible, on a background thread. Each call advances the preloader's
+progress bar and emits a `StartupProgressEvent` (with the module's
+`getName()`) on the platform event bus, so users see the application warming
+up instead of a blank window. Long-running setup — building views, opening
+local data sources, fetching cached configuration — belongs here. UI work
+that needs the main window (menu binding, dock-area registrations the user
+should see immediately) belongs in `start()`, which runs on the JavaFX
+Application Thread after the main window is shown.
+
 ### 5. Customize the Application Window (optional)
 
 If you want a custom shell — a different FXML, a different layout, a custom
