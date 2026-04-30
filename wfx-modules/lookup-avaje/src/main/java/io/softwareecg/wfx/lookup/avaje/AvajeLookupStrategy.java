@@ -38,9 +38,15 @@ import java.util.stream.Collectors;
  * <p>
  * Drop-in semantically:
  * <ul>
- *   <li>{@link #lookup(Class)}: smaller {@link Priority#value()} wins; classes without
- *       the annotation default to {@link Integer#MAX_VALUE} (lowest priority). Mirrors
- *       WFX single-result lookup resolution.</li>
+ *   <li>{@link #lookup(Class)}: defers to Avaje's native single-bean resolution,
+ *       which honours {@link io.avaje.inject.Primary @Primary} (wins over plain),
+ *       plain {@code @Singleton} (wins over secondary), and
+ *       {@link io.avaje.inject.Secondary @Secondary} (fallback). Two equally-
+ *       ranked beans (e.g. two plain @Singletons or two @Primary) make Avaje
+ *       throw {@link IllegalStateException}; the strategy then falls back to
+ *       {@link Priority @Priority} sort (smaller value wins; default
+ *       {@link Integer#MAX_VALUE}) so consumers with that configuration keep
+ *       working.</li>
  *   <li>{@link #lookupAll(Class)}: descending priority order (highest first); classes
  *       without the annotation default to 0. Mirrors ServiceLoaderLookupStrategy.</li>
  * </ul>
@@ -116,16 +122,28 @@ public class AvajeLookupStrategy implements LookupStrategy {
         if (clazz == BeanScope.class) {
             return clazz.cast(scope);
         }
-        List<T> candidates = scope.list(clazz);
-        if (candidates.isEmpty()) {
-            return null;
+        // Defer to Avaje's native single-bean resolution: it correctly applies
+        // @Primary > regular > @Secondary precedence via DContextEntry's
+        // EntryMatcher.checkMatch. Walking scope.list and sorting by @Priority
+        // here would silently break @Secondary — both the regular and the
+        // @Secondary bean carry no @Priority and would tie at MAX_VALUE,
+        // letting registration order pick the winner (which is the WFX
+        // default, not the application's override).
+        try {
+            return scope.getOptional(clazz).orElse(null);
         }
-        if (candidates.size() == 1) {
-            return candidates.get(0);
+        catch (IllegalStateException ambiguous) {
+            // Avaje refuses to disambiguate (e.g. two @Primary beans for the
+            // same type). Fall back to the legacy @Priority-based tiebreaker
+            // — smaller value wins — so consumers that relied on it keep
+            // working.
+            LOGGER.warn("Avaje could not resolve a unique bean for {}; falling back to @Priority sort.",
+                    clazz.getName(), ambiguous);
+            List<T> candidates = scope.list(clazz);
+            return candidates.stream()
+                    .min(Comparator.comparingInt(c -> getPriorityValue(c.getClass())))
+                    .orElse(null);
         }
-        return candidates.stream()
-                .min(Comparator.comparingInt(c -> getPriorityValue(c.getClass())))
-                .orElse(null);
     }
 
     @Override
