@@ -21,6 +21,7 @@ package io.softwareecg.wfx.windowmtg.windows;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.windowmtg.api.ApplicationWindow;
+import io.softwareecg.wfx.windowmtg.api.ShutdownConfirmation;
 import io.softwareecg.wfx.windowmtg.api.WindowManager;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Objects;
 
 /**
  * This is the main window of the wfx platform. It supports the window management and the default bars like
@@ -145,32 +145,24 @@ public class DefaultApplicationWindow implements ApplicationWindow {
 
     /**
      * Event handler that will be executed when request to close the main stage.
-     * <p/>
-     * It can be overwritten to perform a own action.
+     * <p>
+     * Delegates the user-facing decision to a {@link ShutdownConfirmation}
+     * looked up via {@link Lookup}. Applications override the prompt by
+     * registering their own {@code @Singleton ShutdownConfirmation} bean —
+     * Avaje DI selects it over the {@code @Secondary} default. Subclasses
+     * that need to take over the close handler completely can still
+     * override this method.
      *
      * @param event The window event triggered the handler.
      */
     protected void platformShutdownRequestHandler(WindowEvent event) {
-        Dialog<Boolean> d = new Dialog<>();
-        d.initOwner(stage);
-        d.setResultConverter(b -> Objects.equals(b, ButtonType.YES));
-        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
-        loader.setLocation(getClass().getResource("/io/softwareecg/wfx/windowmtg/windows/ShutdownDialog.fxml"));
-        try {
-            d.setDialogPane(loader.load());
-            d.showAndWait().ifPresent(shouldClose -> {
-                if (!shouldClose) {
-                    event.consume();
-                }
-                else {
-                    Platform.exit();
-                    // Force JVM exit in case non-daemon threads are still running
-                    System.exit(0);
-                }
-            });
+        if (Lookup.lookup(ShutdownConfirmation.class).confirm(stage)) {
+            Platform.exit();
+            // Force JVM exit in case non-daemon threads are still running.
+            System.exit(0);
         }
-        catch (IOException e) {
-            LOGGER.error("Unable to load shutdown dialog.", e);
+        else {
+            event.consume();
         }
     }
 
