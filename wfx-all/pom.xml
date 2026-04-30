@@ -63,6 +63,12 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>view-menu</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!--
             Runtime dependencies - these are NOT included in the shaded JAR
             but will be transitively pulled when a user adds wfx-all as dependency
