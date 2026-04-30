@@ -23,6 +23,8 @@ import io.avaje.inject.BeanScope;
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
+import io.softwareecg.wfx.lookup.avaje.testbeans.OverridableService;
+import io.softwareecg.wfx.lookup.avaje.testbeans.OverrideService;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service1;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service2;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service3;
@@ -60,6 +62,23 @@ public class AvajeLookupStrategyTest {
         TestService1 service = Lookup.lookup(TestService1.class);
         assertThat(service.sayGoodbye(), is(equalTo("Goodbye Avaje")));
         assertThat(service, instanceOf(Service3.class));
+    }
+
+    @Test
+    public void testLookupHonoursSecondaryAsFallback() {
+        // Regression guard. Lookup.lookup(Class) used to walk scope.list and
+        // sort by @Priority — but both the @Secondary fallback and the
+        // consumer-supplied override carry the default priority
+        // (Integer.MAX_VALUE), so the tiebreaker degenerated into "first in
+        // the candidate list wins" and the @Secondary contract (regular >
+        // secondary) was silently broken whenever Avaje emitted the
+        // @Secondary bean first. The test bean is named A_SecondaryService
+        // intentionally so the AP emits it ahead of OverrideService;
+        // post-fix, scope.getOptional applies @Secondary precedence and
+        // returns the consumer override regardless of emission order.
+        OverridableService service = Lookup.lookup(OverridableService.class);
+        assertThat(service, instanceOf(OverrideService.class));
+        assertThat(service.identify(), is(equalTo("consumer-override")));
     }
 
     @Test
