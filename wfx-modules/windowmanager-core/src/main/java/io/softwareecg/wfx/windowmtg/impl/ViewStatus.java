@@ -21,6 +21,10 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.image.Image;
@@ -193,38 +197,119 @@ public class ViewStatus {
 
     /**
      * Resize the area of this view to the defined value.
+     * <p>
+     * The actual JavaFX call is routed through {@link #applyDividerPosition} so
+     * that the requested fraction survives the SplitPane skin's first layout
+     * pass even when the SplitPane has not yet been sized (a Stage that has
+     * not yet been shown — typical for module preload that registers views
+     * before the user-visible window is realized).
      */
     public void setDividerPositions() {
         // A closed/unattached view has no area — nothing to do.
         if (getArea() == null || getArea().getParent() == null) {
             return;
         }
-        SplitPane splitPane;
+        // Read the view's area size eagerly so subclass implementations get
+        // the chance to compute / log / etc, regardless of whether the parent
+        // turns out to host a SplitPane (mirrors the original 2013 ordering).
         final double space = getView().getViewAreaSize();
-
-        if (getArea().getParent().getNode() instanceof SplitPane) {
-            splitPane = (SplitPane) getArea().getParent().getNode();
-        }
-        else {
+        if (!(getArea().getParent().getNode() instanceof SplitPane splitPane)) {
             return;
         }
-
         if (space < 0.05 || space > 0.95) {
             return;
         }
+        final double target;
         switch (position) {
-            case LEFT:      // fall trough
+            case LEFT:      // fall through
             case TOP:
-                splitPane.setDividerPositions(space);
+                target = space;
                 break;
-            case RIGHT:     // fall trough
+            case RIGHT:     // fall through
             case BOTTOM:
-                splitPane.setDividerPositions(1 - space);
+                target = 1.0 - space;
                 break;
             default:
                 LOGGER.warn("Invalid position {} given for setting divider positions of {}", position, splitPane);
+                return;
         }
+        applyDividerPosition(splitPane, target);
         LOGGER.debug("Set the divider position to {} for position {}", space, position);
+    }
+
+    /**
+     * Apply {@code target} as the SplitPane's divider position robustly across
+     * the SplitPane lifecycle.
+     * <p>
+     * JavaFX's SplitPane skin recomputes divider positions during the layout
+     * pulse triggered by every size change. When views are registered before
+     * the Stage is shown (typical for module preload), the SplitPane goes
+     * through several size transitions (0 → intermediate → final), and on
+     * each transition the skin redistributes the dividers using its default
+     * fair-distribution heuristic — which clobbers any explicit
+     * setDividerPositions() call. Symptom: the side panel ends up roughly
+     * 50/50 regardless of the requested viewAreaSize. The fix has three parts:
+     * <ol>
+     *     <li>Set the value immediately so a sized SplitPane gets it right
+     *         away.</li>
+     *     <li>Re-apply once at the end of the next FX pulse via
+     *         {@link Platform#runLater(Runnable)} to win against an in-flight
+     *         layout pass.</li>
+     *     <li>Install a width/height listener that re-applies the value, via
+     *         {@link Platform#runLater(Runnable)}, every time the SplitPane
+     *         is resized — so each redistribution by the skin is followed by
+     *         our deferred write. The listener detaches after a bounded
+     *         number of firings so steady-state window resizes (after the
+     *         layout has stabilised) leave the user's manual divider
+     *         adjustments alone.</li>
+     * </ol>
+     */
+    private static final int MAX_REAPPLY_FIRINGS = 10;
+
+    private static void applyDividerPosition(SplitPane splitPane, double target) {
+        splitPane.setDividerPositions(target);
+
+        // Stubbed SplitPane mocks in unit tests return null for orientation /
+        // widthProperty / heightProperty; in real JavaFX both are always
+        // non-null. Skip the listener-based safety net rather than NPE.
+        Orientation orientation = splitPane.getOrientation();
+        if (orientation == null) {
+            return;
+        }
+        ObservableValue<Number> extent = orientation == Orientation.HORIZONTAL
+                ? splitPane.widthProperty() : splitPane.heightProperty();
+        if (extent == null) {
+            return;
+        }
+
+        Runnable reapply = () -> splitPane.setDividerPositions(target);
+
+        // Defer one reapply past the current FX pulse so an in-flight layout
+        // pass has a chance to settle before our final write wins.
+        Platform.runLater(reapply);
+
+        // The Stage typically resizes the SplitPane in stages (0 -> intermediate
+        // -> final) when first shown; the SplitPane skin recomputes divider
+        // positions on each size change. A one-shot listener would only catch
+        // the first transition and miss subsequent skin redistributions, so
+        // keep firing until the layout has had a chance to stabilize, then
+        // detach. Each firing schedules the reapply via Platform.runLater so
+        // the write happens AFTER the size-driven layout pulse — that is the
+        // pulse that would otherwise clobber our value.
+        ChangeListener<Number> sizeListener = new ChangeListener<>() {
+            int firingsLeft = MAX_REAPPLY_FIRINGS;
+
+            @Override
+            public void changed(ObservableValue<? extends Number> obs, Number old, Number newSize) {
+                if (newSize.doubleValue() > 0) {
+                    Platform.runLater(reapply);
+                    if (--firingsLeft <= 0) {
+                        extent.removeListener(this);
+                    }
+                }
+            }
+        };
+        extent.addListener(sizeListener);
     }
 
     @Override
