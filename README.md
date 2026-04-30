@@ -410,6 +410,227 @@ import jakarta.inject.Singleton;
 public class MySidebarModule implements Module { ... }
 ```
 
+## Application Lifecycle
+
+WFX has four phases. Knowing where each phase runs and what the platform
+does between them is what makes the difference between a slow black
+window and a clean splash-then-main-window startup.
+
+```
+   Application.launch(MyApp.class)
+              │
+              ▼
+   showPreloader(stage)               ◄── splash window appears
+              │
+              ▼
+   discover Module beans (Avaje | ServiceLoader)
+   sort by @Priority (lower = earlier)
+              │
+              ▼  for each module — background thread, sequential
+   ┌─ module.preload() ─────────────────────┐
+   │   long setup, load data,               │── publishes
+   │   build FXML views,                    │   StartupProgressEvent
+   │   register with WindowManager          │   → splash bar advances
+   └────────────────────────────────────────┘
+              │
+              ▼
+   hidePreloader()
+   showMainApplicationWindow(stage)   ◄── main window appears
+   windowManager.init()
+              │
+              ▼  for each module — FX thread, order unspecified
+   module.start()                     ◄── wire menus, focus initial view
+              │
+              ▼
+   ─── application running ───
+              │
+              ▼  user closes window
+   module.stop()                      ◄── cleanup, persist state
+```
+
+**`preload()`** runs on a background thread before the main window
+exists. Anything that takes time — opening a database, scanning the
+classpath, building view trees — belongs here. Each call advances the
+preloader.
+
+**`start()`** runs on the JavaFX Application Thread *after* the main
+window is shown. Use it for work that needs the live menu/toolbar/dock
+area: binding menu items, focusing an initial view, registering UI-side
+event subscribers.
+
+**`stop()`** runs on shutdown. Persist user state, close resources,
+unsubscribe long-lived listeners.
+
+## Recipes
+
+### Custom splash screen
+
+The default splash lives in `platform-core` at `/default/splash.fxml`.
+WFX checks for an application-specific override at `/splash/splash.fxml`
+on the classpath first. To replace the splash, drop a
+`src/main/resources/splash/splash.fxml` into your application module and
+keep `ProgressController` as its `fx:controller`:
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane prefHeight="300" prefWidth="500" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.softwareecg.wfx.platform.impl.ProgressController">
+    <ImageView fitHeight="300" fitWidth="500">
+        <Image url="@my-splash.png" preserveRatio="true"/>
+    </ImageView>
+    <ProgressBar fx:id="progressBar" layoutX="20" layoutY="260" prefWidth="460"/>
+    <Label fx:id="progressText" layoutX="20" layoutY="270" prefWidth="460"/>
+</Pane>
+```
+
+The `progressBar` and `progressText` IDs are required — the controller
+binds them to the `StartupProgressEvent` stream.
+
+A future 1.1 release will add a `SplashConfig.builder()` so you do not
+have to write FXML at all for simple branding overrides.
+
+### Replacing the built-in status bar
+
+`DefaultApplicationWindow.fxml` includes a small progress bar/label in
+the status bar via `<fx:include source="StatusBarProgress.fxml"/>`. The
+included controller subscribes to `ProgressEvent` on the event bus, so
+any module that publishes one updates the status bar.
+
+To replace it — for example with a custom user/connection indicator —
+override the application window with your own FXML and either drop the
+include or replace it with your own component:
+
+```java
+@Singleton
+public class MyApplicationWindow extends DefaultApplicationWindow {
+
+    @javafx.fxml.FXML
+    private BorderPane root;
+
+    @Override
+    public void init() throws IOException {
+        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        loader.setLocation(getClass().getResource("MyApplicationWindow.fxml"));
+        loader.setController(this);
+        Parent scene = loader.load();
+        getStage().setScene(new Scene(scene));
+        root.setCenter(getWindowManager().getRootPane());
+        useSystemMenuBarIfPossible();
+    }
+}
+```
+
+Your `MyApplicationWindow.fxml` keeps the `menuBar` / `toolbar` /
+`statusBar` ids that `DefaultApplicationWindow` expects, but populates
+the `<HBox fx:id="statusBar">` with whatever you want.
+
+### Programmatic views without FXML
+
+Most views are FXML + controller via `FXMLView.Builder`. When a view is
+small enough that an FXML file is overkill — a stub, a generated chart,
+a third-party node — implement `View` directly:
+
+```java
+public class MyProgrammaticView implements View {
+
+    private final BorderPane root;
+
+    public MyProgrammaticView() {
+        Label label = new Label("Hello from a programmatic view");
+        root = new BorderPane(label);
+    }
+
+    @Override public String getViewId()           { return "my-prog-view"; }
+    @Override public String getTitle()            { return "Programmatic"; }
+    @Override public String getToolTipInfo()      { return null; }
+    @Override public Position getDefaultPosition(){ return Position.CENTER; }
+    @Override public Parent getRootNode()         { return root; }
+    @Override public double getViewAreaSize()     { return 0.5; }
+}
+```
+
+Then register it like any other view:
+
+```java
+Lookup.lookup(WindowManager.class).register(new MyProgrammaticView());
+```
+
+A future 1.1 release will add a `SimpleView.Builder` that condenses the
+six-method boilerplate into a fluent builder call.
+
+### Cross-module communication via the event bus
+
+Two modules that do not depend on each other can still cooperate
+through the platform event bus. The event type is the only contract.
+
+A producer module loads data and announces it:
+
+```java
+public final class DataLoadedEvent extends EventObject {
+    private final List<Record> records;
+
+    public DataLoadedEvent(Object source, List<Record> records) {
+        super(source);
+        this.records = records;
+    }
+
+    public List<Record> records() { return records; }
+}
+
+@Singleton
+@Priority(100)
+public class DataModule implements Module {
+
+    @Override
+    public void preload() throws PlatformException {
+        List<Record> records = loadFromDatabase();   // long-running
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
+        bus.publish(new DataLoadedEvent(this, records));
+    }
+    @Override public void start() { }
+    @Override public void stop()  { }
+}
+```
+
+A consumer module — registered independently, possibly in another
+artifact — subscribes during `preload()` and reacts whenever data
+arrives, including data published before its own subscription if the
+producer keeps the latest event around (the bus itself does not):
+
+```java
+@Singleton
+@Priority(200)   // runs after DataModule
+public class ChartModule implements Module {
+
+    @Override
+    public void preload() {
+        EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
+        bus.subscribe(DataLoadedEvent.class, e -> {
+            Platform.runLater(() -> rebuildChart(e.records()));
+            return true;
+        });
+    }
+    @Override public void start() { }
+    @Override public void stop()  { }
+}
+```
+
+Two notes:
+
+- The bus is **synchronous**: the publishing thread runs every
+  subscriber inline. If a handler touches the UI, switch to the FX
+  thread itself with `Platform.runLater`.
+- **Subscribe before publish.** If `ChartModule` subscribes after
+  `DataModule` publishes, it misses the event. Use `@Priority` to order
+  modules — or have the producer hold the most recent event and replay
+  it for late subscribers.
+
 ## Dependencies
 
 The framework uses:
