@@ -229,6 +229,22 @@ public interface WindowManager {
     ReadOnlyListProperty<View> getRegisteredViews();
 
     /**
+     * Get the registry of {@link ViewKind#TOOL TOOL} views in the order they
+     * were first registered.
+     * <p>
+     * Stable across {@link #closeView(View) closeView} (closing a tool only
+     * hides it) — useful for an auto-built "View" menu that lists every
+     * available tool panel. Removed only by an explicit
+     * {@link #unregister(View)} or by registering a brand-new tool with the
+     * same {@code viewId}. {@link ViewKind#DOCUMENT DOCUMENT} views never
+     * appear in this list.
+     *
+     * @return read-only list of TOOL views in registration order.
+     * @since 1.1.0
+     */
+    ReadOnlyListProperty<View> getToolViews();
+
+    /**
      * Check if the given view is already registered.
      *
      * @param view The view to check.

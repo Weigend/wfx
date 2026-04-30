@@ -32,6 +32,8 @@ import javafx.scene.image.ImageView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Consumer;
+
 /**
  * Stores the current status and additional metadata of an window manager view.
  *
@@ -59,6 +61,14 @@ public class ViewStatus {
      * The tab which contains this view.
      */
     private Tab tab;
+    /**
+     * Optional hook invoked AFTER the default tab-close handling
+     * (area-remove + status=HIDDEN). The {@link WindowManagerImpl} attaches
+     * a handler here for {@code DOCUMENT} views so that closing the tab
+     * also unregisters them. Default is a no-op so {@code TOOL} views keep
+     * their historical "close hides, registry retains" behaviour.
+     */
+    private Consumer<ViewStatus> onTabClosed = vs -> { };
 
     /**
      * Create a new view status.
@@ -174,7 +184,25 @@ public class ViewStatus {
             ViewStatus viewStatus = ViewStatus.this;
             viewStatus.getArea().remove(viewStatus);
             viewStatus.setStatus(Status.HIDDEN);
+            onTabClosed.accept(viewStatus);
         });
+    }
+
+    /**
+     * Install a hook that runs after the tab's default close handling.
+     * <p>
+     * Used by the {@link WindowManagerImpl} to give
+     * {@link io.softwareecg.wfx.windowmtg.api.ViewKind#DOCUMENT DOCUMENT}
+     * views the additional behaviour of fully unregistering on tab-close
+     * (whereas {@link io.softwareecg.wfx.windowmtg.api.ViewKind#TOOL TOOL}
+     * views just hide and remain in the registry).
+     *
+     * @param handler the handler to invoke once the tab has been removed
+     *                from its area and marked HIDDEN. Must not be
+     *                {@code null}.
+     */
+    public void setOnTabClosed(Consumer<ViewStatus> handler) {
+        this.onTabClosed = handler;
     }
 
     /**

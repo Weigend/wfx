@@ -82,4 +82,20 @@ public interface View {
      * @return The view area size.
      */
     double getViewAreaSize();
+
+    /**
+     * Classify this view by lifecycle role.
+     * <p>
+     * The default is {@link ViewKind#TOOL}, which preserves the historical
+     * "every view is a persistent panel" behaviour for existing wfx
+     * consumers. Override and return {@link ViewKind#DOCUMENT} for transient,
+     * content-bound views (per-document, per-JAR, per-query …) that should
+     * disappear on close and on {@link WindowManager#restoreDefaultLayout()}.
+     *
+     * @return the lifecycle kind of this view.
+     * @since 1.1.0
+     */
+    default ViewKind getKind() {
+        return ViewKind.TOOL;
+    }
 }

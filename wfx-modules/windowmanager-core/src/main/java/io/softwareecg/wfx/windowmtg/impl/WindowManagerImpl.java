@@ -21,6 +21,7 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
+import io.softwareecg.wfx.windowmtg.api.ViewKind;
 import io.softwareecg.wfx.windowmtg.api.WindowFactory;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -55,6 +56,15 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final SimpleObjectProperty<View> focusedView = new SimpleObjectProperty<>(this, "focusedView");
     private final Map<String, ViewStatus> viewsStatus = new LinkedHashMap<>();
     private final ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
+    /**
+     * Insertion-ordered registry of {@link ViewKind#TOOL} views. Survives
+     * close (hide) operations so the auto-built View menu and
+     * {@link #restoreDefaultLayout()} have a stable list to work from.
+     * Cleared only by an explicit {@link #unregister(View)} or rebuilt by
+     * {@link #restoreDefaultLayout()}.
+     */
+    private final LinkedHashMap<String, ViewStatus> toolViewsByID = new LinkedHashMap<>();
+    private final ReadOnlyListWrapper<View> toolViews = new ReadOnlyListWrapper<>(this, "toolViews", FXCollections.observableArrayList());
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -175,6 +185,21 @@ public class WindowManagerImpl implements MultiWindowManager {
         // a half-registered view and skip the bind.
         viewsStatus.put(viewStatus.getView().getViewId(), viewStatus);
         views.add(viewStatus.getView());
+        // Track TOOL views in a stable registry: putIfAbsent means the very
+        // first registration wins, subsequent re-registers (e.g. after a
+        // close/showView round-trip, or during restoreDefaultLayout) are
+        // no-ops on the registry. DOCUMENT views are never tracked here.
+        if (viewStatus.getView().getKind() == ViewKind.TOOL) {
+            if (toolViewsByID.putIfAbsent(viewStatus.getView().getViewId(), viewStatus) == null) {
+                toolViews.add(viewStatus.getView());
+            }
+        }
+        else if (viewStatus.getView().getKind() == ViewKind.DOCUMENT) {
+            // Closing a DOCUMENT tab via the X button must fully unregister
+            // it. The default tab handler in ViewStatus only sets HIDDEN —
+            // good for TOOLs, leaks ViewStatus instances for DOCUMENTs.
+            viewStatus.setOnTabClosed(vs -> unregister(vs.getView()));
+        }
         boolean shown = false;
         if (show && viewArea != null && position != null) {
             viewArea.add(viewStatus, position);
@@ -198,6 +223,12 @@ public class WindowManagerImpl implements MultiWindowManager {
             return false;
         }
         unregisterImpl(view);
+        // Explicit unregister also evicts the view from the tool registry.
+        // closeView on a TOOL only hides; unregister is the "gone for good"
+        // path that should also strip it from the auto View menu.
+        if (toolViewsByID.remove(view.getViewId()) != null) {
+            toolViews.remove(view);
+        }
         return true;
     }
 
@@ -229,24 +260,38 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
-     * Restore the layout to default.
+     * Restore the layout to its default — the canonical "fresh workshop"
+     * action on the Window menu.
      * <p>
-     * The layout is recreated in the same way as it was the first time initialized.
+     * Every {@link ViewKind#DOCUMENT} view is closed and unregistered.
+     * Every {@link ViewKind#TOOL} view from the tool registry is
+     * re-registered in its original parent / position, even tools that the
+     * user had previously closed (the close was a hide, the registry kept
+     * the bookkeeping). Subwindows are collapsed into the main root area.
      */
     @Override
     public void restoreDefaultLayout() {
+        // Snapshot the tool registry FIRST — once we clear viewsStatus the
+        // ViewStatus references in toolViewsByID are still valid (positions,
+        // parent linkage) and that's what we replay onto the fresh canvas.
+        List<ViewStatus> toolSnapshot = new ArrayList<>(toolViewsByID.values());
+
         List<RootArea> currentSubwindows = new ArrayList<>(subWindows);
         currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
-        LinkedHashMap<String, ViewStatus> oldViews = new LinkedHashMap<>(viewsStatus);
         viewsStatus.clear();
         views.clear();
+        // Wipe the tool registry as well — the register loop below will
+        // re-populate it via the public register path with FRESH ViewStatus
+        // instances, keeping the registry consistent with viewsStatus.
+        toolViewsByID.clear();
+        toolViews.clear();
         // Swap mainRootArea atomically; setting it to null first would fire
         // listeners (e.g. ViewFocusHandler) with newValue == null.
         mainRootArea.set(new RootArea(rootPane, dragNDropManager, false));
         restoringLayout = true;
         try {
-            for (ViewStatus view : oldViews.values()) {
+            for (ViewStatus view : toolSnapshot) {
                 view.restoreDefault();
                 if (view.getParent() == null) {
                     register(view.getView());
@@ -272,6 +317,17 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public boolean closeView(View view) {
+        ViewStatus status = viewsStatus.get(view.getViewId());
+        if (status == null) {
+            return false;
+        }
+        // DOCUMENT views are transient: closing means "done with this
+        // content", so dispose the registration entirely. TOOL views keep
+        // their historical hide-only behaviour so the user can reopen them
+        // from the View menu.
+        if (view.getKind() == ViewKind.DOCUMENT) {
+            return unregister(view);
+        }
         return closeViewImpl(view) != null;
     }
 
@@ -459,6 +515,11 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public ReadOnlyListProperty<View> getRegisteredViews() {
         return views.getReadOnlyProperty();
+    }
+
+    @Override
+    public ReadOnlyListProperty<View> getToolViews() {
+        return toolViews.getReadOnlyProperty();
     }
 
     @Override

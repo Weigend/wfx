@@ -24,6 +24,7 @@ import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
+import io.softwareecg.wfx.windowmtg.api.ViewKind;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
@@ -281,15 +282,16 @@ public class WindowManagerImplTest {
     @Test
     public void testRestoreDefaultLayout() throws Exception {
         // After restoring, the views map is rebuilt: subWindows are cleared,
-        // fresh ViewStatus instances are created (so view1/view2 references
-        // change), and the parent linkage is preserved by reference to the
-        // original View objects.
+        // fresh ViewStatus instances are created (so the original ViewStatus
+        // references are no longer in viewsStatus), and the parent linkage is
+        // preserved by reference to the original View objects.
+        // Use the public register API so the tool registry is populated —
+        // restoreDefaultLayout works off that registry, not viewsStatus.
         RootArea area = mock(RootArea.class);
         mockStageForArea(area);
         subWindows.add(area);
-        views.put("view1", view1);
-        views.put("view2", view2);
-        FieldUtils.writeField(view2, "parent", view1, true);
+        windowManager.register(view1.getView());
+        windowManager.register(view2.getView(), view1.getView());
 
         windowManager.restoreDefaultLayout();
         assertThat(subWindows, hasSize(0));
@@ -297,10 +299,8 @@ public class WindowManagerImplTest {
         @SuppressWarnings("unchecked")
         Map<String, ViewStatus> reloaded = (Map<String, ViewStatus>) FieldUtils.readField(windowManager, "viewsStatus", true);
         assertThat(reloaded.size(), is(equalTo(2)));
-        assertThat(reloaded.get("view1"), is(not(equalTo(view1))));
         assertThat(reloaded.get("view1").getView(), is(equalTo(view1.getView())));
         assertThat(reloaded.get("view1").getParent(), is(nullValue()));
-        assertThat(reloaded.get("view2"), is(not(equalTo(view2))));
         assertThat(reloaded.get("view2").getView(), is(equalTo(view2.getView())));
         assertThat(reloaded.get("view2").getParent(), is(equalTo(reloaded.get("view1"))));
 
@@ -636,5 +636,154 @@ public class WindowManagerImplTest {
         assertThat(windowManager.hasRegisteredView(view1.getView()), is(true));
         assertThat(windowManager.hasRegisteredView(view2.getView()), is(false));
         assertThat(windowManager.hasRegisteredView(view3.getView()), is(false));
+    }
+
+    // ---------------------------------------------------------------------
+    // ViewKind / TOOL vs DOCUMENT lifecycle
+    // ---------------------------------------------------------------------
+
+    @Test
+    public void testCloseToolHidesButKeepsRegistration() {
+        // TOOLs are persistent panels — closing the tab hides them but
+        // leaves the registration alone so the View menu stays stable and
+        // showView() / restoreDefaultLayout can bring them back.
+        ViewStatus tool = mockView("tool", "tool");
+        windowManager.register(tool.getView());
+        assertThat(windowManager.hasRegisteredView(tool.getView()), is(true));
+
+        windowManager.closeView(tool.getView());
+
+        assertThat(windowManager.hasRegisteredView(tool.getView()), is(true));
+        assertThat(windowManager.getToolViews(), hasItem(tool.getView()));
+    }
+
+    @Test
+    public void testCloseDocumentUnregisters() {
+        // DOCUMENTs are transient — closing fully drops them from the
+        // registry. The owning module is responsible for opening fresh ones
+        // when the user asks again. Without this, closing chart tabs would
+        // accumulate ghost ViewStatus instances.
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        windowManager.register(doc.getView());
+        assertThat(windowManager.hasRegisteredView(doc.getView()), is(true));
+
+        windowManager.closeView(doc.getView());
+
+        assertThat(windowManager.hasRegisteredView(doc.getView()), is(false));
+        assertThat(windowManager.getToolViews(), not(hasItem(doc.getView())));
+    }
+
+    @Test
+    public void testTabCloseHandlerUnregistersDocument() {
+        // The X button on a tab triggers ViewStatus's own onClosed handler,
+        // which for DOCUMENTs must additionally call back into unregister
+        // — otherwise the tab vanishes visually but the registration leaks.
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        windowManager.register(doc.getView());
+
+        // Simulate the JavaFX tab-close gesture: the registered ViewStatus
+        // is the one inside viewsStatus, not the test fixture's `doc`.
+        ViewStatus registered = views.get("doc");
+        registered.getTab().getOnClosed().handle(null);
+
+        assertThat(windowManager.hasRegisteredView(doc.getView()), is(false));
+    }
+
+    @Test
+    public void testTabCloseHandlerKeepsToolRegistered() {
+        // TOOL: tab-X must NOT unregister — that would erase the entry
+        // from the View menu. The default ViewStatus handler sets HIDDEN
+        // and stops there.
+        ViewStatus tool = mockView("tool", "tool");
+        windowManager.register(tool.getView());
+
+        ViewStatus registered = views.get("tool");
+        registered.getTab().getOnClosed().handle(null);
+
+        assertThat(windowManager.hasRegisteredView(tool.getView()), is(true));
+        assertThat(windowManager.getToolViews(), hasItem(tool.getView()));
+    }
+
+    @Test
+    public void testGetToolViewsReflectsInsertionOrder() {
+        ViewStatus a = mockView("a", "a");
+        ViewStatus b = mockView("b", "b");
+        ViewStatus c = mockView("c", "c");
+        windowManager.register(a.getView());
+        windowManager.register(b.getView());
+        windowManager.register(c.getView());
+
+        assertThat(windowManager.getToolViews(),
+                contains(a.getView(), b.getView(), c.getView()));
+    }
+
+    @Test
+    public void testGetToolViewsExcludesDocuments() {
+        ViewStatus tool = mockView("tool", "tool");
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        windowManager.register(tool.getView());
+        windowManager.register(doc.getView());
+
+        assertThat(windowManager.getToolViews(), contains(tool.getView()));
+        assertThat(windowManager.getToolViews(), not(hasItem(doc.getView())));
+    }
+
+    @Test
+    public void testReRegisteringSameToolDoesNotDuplicate() {
+        // Re-register (same id) hits putIfAbsent in the tool registry —
+        // first registration wins, subsequent ones are no-ops on the list.
+        // This matters for showView() round-trips and for restoreDefaultLayout
+        // which re-registers via the public path.
+        ViewStatus tool = mockView("tool", "tool");
+        windowManager.register(tool.getView());
+        assertThat(windowManager.getToolViews(), hasSize(1));
+
+        windowManager.register(tool.getView());
+
+        assertThat(windowManager.getToolViews(), hasSize(1));
+    }
+
+    @Test
+    public void testUnregisterToolEvictsFromToolRegistry() {
+        // closeView on a TOOL hides; unregister is the explicit "gone for
+        // good" path that must also strip the entry from the auto View menu.
+        ViewStatus tool = mockView("tool", "tool");
+        windowManager.register(tool.getView());
+        assertThat(windowManager.getToolViews(), hasItem(tool.getView()));
+
+        windowManager.unregister(tool.getView());
+
+        assertThat(windowManager.getToolViews(), not(hasItem(tool.getView())));
+    }
+
+    @Test
+    public void testRestoreDefaultLayoutDropsDocumentsKeepsTools() {
+        ViewStatus tool = mockView("tool", "tool");
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        windowManager.register(tool.getView());
+        windowManager.register(doc.getView());
+
+        windowManager.restoreDefaultLayout();
+
+        assertThat(windowManager.findView("tool"), is(notNullValue()));
+        assertThat(windowManager.findView("doc"), is(nullValue()));
+    }
+
+    @Test
+    public void testRestoreDefaultLayoutReopensClosedTool() {
+        // The user closed a TOOL (so it's HIDDEN, gone from the canvas).
+        // restoreDefaultLayout must put it back — that is the whole point
+        // of the action.
+        ViewStatus tool = mockView("tool", "tool");
+        windowManager.register(tool.getView());
+        windowManager.closeView(tool.getView());
+
+        windowManager.restoreDefaultLayout();
+
+        assertThat(windowManager.findView("tool"), is(notNullValue()));
     }
 }
