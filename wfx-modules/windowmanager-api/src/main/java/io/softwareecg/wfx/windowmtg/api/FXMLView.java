@@ -44,8 +44,10 @@ public class FXMLView<C> implements View {
     private final double viewAreaSize;
     private final C controller;
     private final URL viewImagePath;
+    private final ViewKind kind;
 
-    private FXMLView(String id, String title, Position defaultPosition, Parent rootPane, String toolTipInfo, double viewAreaSize, C controller, URL viewImagePath) {
+    private FXMLView(String id, String title, Position defaultPosition, Parent rootPane, String toolTipInfo,
+                     double viewAreaSize, C controller, URL viewImagePath, ViewKind kind) {
         this.id = id;
         this.title = title;
         this.defaultPosition = defaultPosition;
@@ -54,6 +56,7 @@ public class FXMLView<C> implements View {
         this.viewAreaSize = viewAreaSize;
         this.controller = controller;
         this.viewImagePath = viewImagePath;
+        this.kind = kind;
     }
 
     @Override
@@ -107,6 +110,11 @@ public class FXMLView<C> implements View {
     }
 
     @Override
+    public ViewKind getKind() {
+        return kind;
+    }
+
+    @Override
     public String toString() {
         return "FXMLView{" +
                 "id='" + id + '\'' +
@@ -134,6 +142,7 @@ public class FXMLView<C> implements View {
         private URL viewImage;
         private Parent rootPane;
         private C controller;
+        private ViewKind kind = ViewKind.TOOL;
 
         /**
          * Set the builder value "id"
@@ -272,6 +281,24 @@ public class FXMLView<C> implements View {
         }
 
         /**
+         * Set the lifecycle kind of the view.
+         * <p>
+         * Defaults to {@link ViewKind#TOOL}. Override with {@link ViewKind#DOCUMENT}
+         * for transient, content-bound views (per-file editors, per-JAR charts,
+         * per-query result panels …) so the window manager closes them on
+         * tab-X and drops them on {@link WindowManager#restoreDefaultLayout()}.
+         *
+         * @param kind the lifecycle kind for the view.
+         * @return fluent builder interface
+         * @since 1.1.0
+         */
+        public Builder<C> withKind(ViewKind kind) {
+            Objects.requireNonNull(kind, "kind must not be null");
+            this.kind = kind;
+            return this;
+        }
+
+        /**
          * Build the real {@link FXMLView}.
          *
          * @return The new initialized view.
@@ -292,7 +319,7 @@ public class FXMLView<C> implements View {
             controller = loader.getController();
 
 
-            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind);
         }
 
         /**
@@ -307,7 +334,7 @@ public class FXMLView<C> implements View {
             Objects.requireNonNull(pos, "The initial position must be set");
             // Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
 
-            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage);
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind);
         }
     }
 }

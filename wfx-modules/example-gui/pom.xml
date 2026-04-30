@@ -38,6 +38,12 @@
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>io.softwareecg.wfx</groupId>
+            <artifactId>view-menu</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- Logging runtime -->
         <dependency>
             <groupId>ch.qos.logback</groupId>

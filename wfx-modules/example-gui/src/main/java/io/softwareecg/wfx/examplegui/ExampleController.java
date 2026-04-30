@@ -23,6 +23,7 @@ import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.windowmtg.api.FXMLView;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
+import io.softwareecg.wfx.windowmtg.api.ViewKind;
 import io.softwareecg.wfx.windowmtg.api.WindowManager;
 import javafx.event.ActionEvent;
 
@@ -46,9 +47,13 @@ public class ExampleController {
         WindowManager windowManager = Lookup.lookup(WindowManager.class);
         View explorerView = windowManager.findView("example-explorer-1");
 
+        // Demonstrates the DOCUMENT kind: each click spawns a transient tab.
+        // Closing the tab unregisters it, restoreDefaultLayout drops them all,
+        // and they do NOT clutter the auto-built View menu.
         FXMLView<Object> testView = new FXMLView.Builder<>().withId("test-" + getNextViewId())
                 .withTitle("Test View")
                 .withPos(Position.BOTTOM)
+                .withKind(ViewKind.DOCUMENT)
                 .withFile(getClass().getResource("test.fxml"))
                 .build();
 
