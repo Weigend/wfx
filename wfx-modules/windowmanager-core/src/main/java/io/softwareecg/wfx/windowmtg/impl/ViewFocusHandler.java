@@ -84,6 +84,9 @@ public class ViewFocusHandler {
      * @param rootArea The root area to register.
      */
     private void registerRootArea(RootArea rootArea) {
+        if (rootArea == null) {
+            return;
+        }
         rootArea.getNode().sceneProperty().addListener(this::registerScene);
     }
 

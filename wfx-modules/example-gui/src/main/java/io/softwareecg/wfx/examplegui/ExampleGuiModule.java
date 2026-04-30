@@ -98,7 +98,7 @@ public class ExampleGuiModule implements Module {
 
     @Override
     public void start() {
-        SystemViewsHelper.addViewOverview();
+        SystemViewsHelper.addStandardWindowActions();
     }
 
 

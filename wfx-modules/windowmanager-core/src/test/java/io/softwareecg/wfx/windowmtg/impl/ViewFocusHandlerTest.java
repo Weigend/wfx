@@ -21,12 +21,17 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
+import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
+
+import java.lang.reflect.Method;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -38,6 +43,10 @@ import static org.mockito.Mockito.when;
  */
 //unWith(MockitoJUnitRunner.class)
 public class ViewFocusHandlerTest {
+
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+
    /*
     static {
         stage = GuiTestHelper.getStage();
@@ -73,6 +82,21 @@ public class ViewFocusHandlerTest {
     public void setUp() throws Exception {
         windowManager.register(view1);
         windowManager.register(view2, view1);
+    }
+
+    /**
+     * Regression: the listener attached to {@code WindowManagerImpl.mainRootAreaProperty}
+     * could fire {@code newValue == null} (e.g. from {@code restoreDefaultLayout}'s
+     * earlier "set null then rebuild" sequence). The handler must tolerate null
+     * silently — there is nothing to register against.
+     */
+    @Test
+    public void testRegisterRootAreaTolerates_null() throws Exception {
+        ViewFocusHandler handler = new ViewFocusHandler(windowManager);
+        handler.init();
+        Method m = ViewFocusHandler.class.getDeclaredMethod("registerRootArea", RootArea.class);
+        m.setAccessible(true);
+        m.invoke(handler, (RootArea) null);
     }
 /*
     @Test
