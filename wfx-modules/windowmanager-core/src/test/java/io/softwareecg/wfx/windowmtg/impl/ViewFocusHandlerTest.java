@@ -21,12 +21,14 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
+import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
@@ -41,6 +43,10 @@ import static org.mockito.Mockito.when;
  */
 //unWith(MockitoJUnitRunner.class)
 public class ViewFocusHandlerTest {
+
+    @ClassRule
+    public static JavaFXThreadingRule threadingRule = new JavaFXThreadingRule();
+
    /*
     static {
         stage = GuiTestHelper.getStage();
