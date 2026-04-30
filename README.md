@@ -627,6 +627,13 @@ remove them via `MenuUtil.findItem`.
 | `WindowManager.restoreDefaultLayout()` | re-show in default position, even if currently closed | drop |
 | Auto View menu entry | yes | no |
 
+The `example-gui` module exercises both kinds end-to-end: "Example GUI"
+and "Example Explorer" register as `TOOL` and appear in the auto-built
+View menu, while the "Test View" tabs that the toolbar button spawns
+are registered with `withKind(ViewKind.DOCUMENT)` in
+[`ExampleController`](wfx-modules/example-gui/src/main/java/io/softwareecg/wfx/examplegui/ExampleController.java)
+and stay out of the menu.
+
 ### Custom shutdown confirmation dialog
 
 The close-confirmation prompt is a `ShutdownConfirmation` strategy
@@ -670,6 +677,13 @@ ServiceLoader-based applications register their implementation via
 before `Application.launch(...)` — the explicit override is required
 because ServiceLoader has no equivalent of Avaje's `@Secondary`
 fallback ordering.
+
+The `example-gui` module ships
+[`ExampleShutdownConfirmation`](wfx-modules/example-gui/src/main/java/io/softwareecg/wfx/examplegui/ExampleShutdownConfirmation.java)
+as a working override: closing the main window while the example app
+runs shows "Quit the WFX example application?" instead of the WFX
+default text — visible proof that the DI override works without any
+`DefaultApplicationWindow` subclass.
 
 ### Cross-module communication via the event bus
 
