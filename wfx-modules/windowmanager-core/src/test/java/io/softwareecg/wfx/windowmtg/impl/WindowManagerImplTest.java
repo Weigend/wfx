@@ -41,6 +41,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static io.softwareecg.wfx.windowmtg.impl.JavaFxTestUtils.mockReadOnlyProperty;
 import static io.softwareecg.wfx.windowmtg.impl.JavaFxTestUtils.mockStageForArea;
@@ -406,6 +408,123 @@ public class WindowManagerImplTest {
     @Test
     public void testFindViewNotFound() {
         assertThat(windowManager.findView("not found"), is(nullValue()));
+    }
+
+    @Test
+    public void testRegisterFocusesNewView() {
+        // register(view, true) must transfer the logical focus onto the new view.
+        // JavaFX's focusOwner only moves on user interaction, so without this
+        // consumers would have to call setFocusedView() explicitly to get
+        // focus-driven side panels to rebind.
+        ViewStatus initial = mockView("initial", "initial");
+        windowManager.register(initial.getView());
+        assertThat(windowManager.getFocusedView(), is(initial.getView()));
+
+        ViewStatus next = mockView("next", "next");
+        windowManager.register(next.getView());
+        assertThat(windowManager.getFocusedView(), is(next.getView()));
+        assertThat(windowManager.getLastFocusedView(), is(initial.getView()));
+    }
+
+    @Test
+    public void testRegisterDoNotShowDoesNotChangeFocus() {
+        // register(view, false) must not steal focus — the view is queued, not displayed.
+        ViewStatus initial = mockView("initial", "initial");
+        windowManager.register(initial.getView());
+        ViewStatus hidden = mockView("hidden", "hidden");
+
+        windowManager.register(hidden.getView(), false);
+
+        assertThat(windowManager.getFocusedView(), is(initial.getView()));
+    }
+
+    @Test
+    public void testRegisterParentFocusesNewView() {
+        // register(view, parent) routes through the same private register path,
+        // so the new view must also become focused.
+        views.put("view2", view2);
+        windowManager.setFocusedView(view2.getView());
+
+        windowManager.register(view1.getView(), view2.getView());
+
+        assertThat(windowManager.getFocusedView(), is(view1.getView()));
+        assertThat(windowManager.getLastFocusedView(), is(view2.getView()));
+    }
+
+    @Test
+    public void testRegisterPublishesViewBeforeFocusEvents() {
+        // TabArea's selectedItemProperty listener fires setFocusedView() from
+        // INSIDE viewArea.add() when the tab pane was previously empty. At that
+        // moment, focus listeners (e.g. side panels) routinely look the view
+        // up via findView() / getRegisteredViews(). The registry must be
+        // visible before the focus event fires, otherwise the listener sees a
+        // half-registered view and skips its bind. Simulate that callback
+        // pattern with a mainWindow.add() stub that calls setFocusedView from
+        // within add(), then assert the registry-visible invariant.
+        org.mockito.Mockito.doAnswer(invocation -> {
+            ViewStatus vs = invocation.getArgument(0);
+            TabArea area = mock(TabArea.class);
+            ViewArea parent = mock(ViewArea.class);
+            when(area.getParent()).thenReturn(parent);
+            when(parent.getNode()).thenReturn(new Pane());
+            vs.setArea(area);
+            windowManager.setFocusedView(vs.getView());
+            return null;
+        }).when(mainWindow).add(any(ViewStatus.class), any(Position.class));
+
+        ViewStatus newView = mockView("newView", "new");
+        AtomicReference<View> focusedAtFireTime = new AtomicReference<>();
+        AtomicBoolean registeredAtFireTime = new AtomicBoolean(false);
+        AtomicBoolean inListAtFireTime = new AtomicBoolean(false);
+
+        windowManager.focusedViewProperty().addListener((obs, old, focused) -> {
+            if (focused == newView.getView()) {
+                focusedAtFireTime.set(focused);
+                registeredAtFireTime.set(windowManager.findView("newView") != null);
+                inListAtFireTime.set(windowManager.getRegisteredViews().contains(newView.getView()));
+            }
+        });
+
+        windowManager.register(newView.getView());
+
+        assertThat("focusedViewProperty must fire for the new view",
+                focusedAtFireTime.get(), is(newView.getView()));
+        assertThat("findView must locate the new view when focusedViewProperty fires",
+                registeredAtFireTime.get(), is(true));
+        assertThat("getRegisteredViews() must contain the new view when focusedViewProperty fires",
+                inListAtFireTime.get(), is(true));
+    }
+
+    @Test
+    public void testSetFocusedViewIdempotent() {
+        // Double-invocation with the same view must not corrupt lastFocusedView.
+        // Without the idempotence guard, the second call would push the
+        // already-current view into lastFocusedView and the actual previous
+        // focus would be lost.
+        View v1 = mock(View.class);
+        View v2 = mock(View.class);
+        windowManager.setFocusedView(v1);
+        windowManager.setFocusedView(v2);
+        windowManager.setFocusedView(v2);
+        assertThat(windowManager.getFocusedView(), is(v2));
+        assertThat(windowManager.getLastFocusedView(), is(v1));
+    }
+
+    @Test
+    public void testRestoreDefaultLayoutPreservesFocus() throws Exception {
+        // restoreDefaultLayout re-registers every view; without the suppression
+        // flag the focus would surf through the chain and end on whichever view
+        // happens to be last in iteration order.
+        RootArea area = mock(RootArea.class);
+        mockStageForArea(area);
+        subWindows.add(area);
+        views.put("view1", view1);
+        views.put("view2", view2);
+        windowManager.setFocusedView(view1.getView());
+
+        windowManager.restoreDefaultLayout();
+
+        assertThat(windowManager.getFocusedView(), is(view1.getView()));
     }
 
     @Test

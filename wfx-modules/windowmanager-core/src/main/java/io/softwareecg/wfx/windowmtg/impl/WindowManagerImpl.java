@@ -57,6 +57,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     private final ReadOnlyListWrapper<View> views = new ReadOnlyListWrapper<>(this, "views", FXCollections.observableArrayList());
 
     private View lastFocusedView;
+    private boolean restoringLayout;
     private WindowFactory windowFactory = Stage::new;
 
     /**
@@ -164,12 +165,31 @@ public class WindowManagerImpl implements MultiWindowManager {
      * @param position   the real target position.
      */
     private void register(ViewStatus viewStatus, boolean show, ViewArea viewArea, Position position) {
-        if (show && viewArea != null && position != null) {
-            viewArea.add(viewStatus, position);
-        }
+        // Publish the view in viewsStatus/views BEFORE attaching it to the area.
+        // TabArea.add() fires its selectedItemProperty listener synchronously
+        // when the tab pane was previously empty, which calls back into
+        // setFocusedView(). Listeners on focusedViewProperty (e.g. side panels
+        // that bind to the focused view's properties) routinely look the view
+        // up via findView() / getRegisteredViews() — so the registry must be
+        // visible before the focus event fires, otherwise those listeners see
+        // a half-registered view and skip the bind.
         viewsStatus.put(viewStatus.getView().getViewId(), viewStatus);
         views.add(viewStatus.getView());
+        boolean shown = false;
+        if (show && viewArea != null && position != null) {
+            viewArea.add(viewStatus, position);
+            shown = true;
+        }
         setDividerPositions();
+        // A freshly shown view must own the logical focus. If TabArea.add()
+        // already fired setFocusedView via its selection listener this is a
+        // no-op (setFocusedView is idempotent for same-value calls); otherwise
+        // it covers cases where the area's add path does not auto-focus.
+        // Suppressed during restoreDefaultLayout so that bulk re-registration
+        // does not surf focus through every restored view.
+        if (shown && !restoringLayout) {
+            setFocusedView(viewStatus.getView());
+        }
     }
 
     @Override
@@ -224,14 +244,20 @@ public class WindowManagerImpl implements MultiWindowManager {
         // Swap mainRootArea atomically; setting it to null first would fire
         // listeners (e.g. ViewFocusHandler) with newValue == null.
         mainRootArea.set(new RootArea(rootPane, dragNDropManager, false));
-        for (ViewStatus view : oldViews.values()) {
-            view.restoreDefault();
-            if (view.getParent() == null) {
-                register(view.getView());
+        restoringLayout = true;
+        try {
+            for (ViewStatus view : oldViews.values()) {
+                view.restoreDefault();
+                if (view.getParent() == null) {
+                    register(view.getView());
+                }
+                else {
+                    register(view.getView(), view.getParent().getView());
+                }
             }
-            else {
-                register(view.getView(), view.getParent().getView());
-            }
+        }
+        finally {
+            restoringLayout = false;
         }
         setDividerPositions();
     }
@@ -329,11 +355,21 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     /**
      * Set the view that holds currently the focus and updates the last focused view.
+     * <p>
+     * Idempotent for same-value calls: if {@code focusedView} is already the
+     * current focused view, this is a no-op. Without this guard, double
+     * invocation (e.g. TabArea's selection listener firing during register
+     * followed by the explicit register-time focus call) would overwrite
+     * lastFocusedView with the current view and lose the actual previous
+     * focus.
      *
      * @param focusedView The view that should hold the focus.
      */
     @Override
     public void setFocusedView(View focusedView) {
+        if (this.focusedView.get() == focusedView) {
+            return;
+        }
         this.lastFocusedView = this.focusedView.get();
         this.focusedView.set(focusedView);
     }
