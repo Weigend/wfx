@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>view-menu</artifactId>
+    <description>wfx - Extension - Auto-built View menu listing every TOOL view</description>
+
+    <parent>
+        <groupId>io.softwareecg.wfx</groupId>
+        <artifactId>extensions</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>io.softwareecg.wfx</groupId>
+            <artifactId>lookup</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.softwareecg.wfx</groupId>
+            <artifactId>platform-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.softwareecg.wfx</groupId>
+            <artifactId>windowmanager-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.softwareecg.wfx</groupId>
+            <artifactId>ui-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+        </dependency>
+
+    </dependencies>
+
+</project>

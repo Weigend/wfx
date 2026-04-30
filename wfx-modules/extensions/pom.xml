@@ -13,5 +13,6 @@
 
     <modules>
         <module>ui-utils</module>
+        <module>view-menu</module>
     </modules>
 </project>
