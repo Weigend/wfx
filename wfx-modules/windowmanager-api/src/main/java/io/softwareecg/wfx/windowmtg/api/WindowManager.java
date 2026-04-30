@@ -52,6 +52,12 @@ public interface WindowManager {
      * Register a new view within this window manager.
      * <p>
      * The Position will give an advice where this view should be placed.
+     * <p>
+     * If {@code showView} is {@code true} the new view is also made the focused view
+     * (see {@link #focusedViewProperty()}). JavaFX's focus owner only moves on user
+     * interaction, so without this consumers would have to call
+     * {@link #setFocusedView(View)} explicitly to get focus-driven side panels to
+     * rebind to the freshly opened view.
      *
      * @param view     The view to register.
      * @param showView True if the view should be shown immediately, false otherwise
@@ -78,6 +84,9 @@ public interface WindowManager {
      * It use the given parent view with the views position to exactly define the displayed position. If the position is
      * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
      * value the area which contains the parent view will be split according to the value of position of the new view.
+     * <p>
+     * If {@code showView} is {@code true} the new view is also made the focused view
+     * (see {@link #focusedViewProperty()}).
      *
      * @param view     The view to register.
      * @param parent   An already registered view which defines the exact position to insert the view.
