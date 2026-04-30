@@ -23,8 +23,10 @@ import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.windowmtg.api.ApplicationWindow;
 import io.softwareecg.wfx.windowmtg.api.FXMLView;
 import io.softwareecg.wfx.windowmtg.api.Position;
+import io.softwareecg.wfx.windowmtg.api.WindowManager;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
+import javafx.scene.control.SeparatorMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,10 +45,13 @@ public final class SystemViewsHelper {
     }
 
     /**
-     * Get the windows menu.
+     * Get the legacy "View &rarr; Windows" submenu.
      *
      * @return the windows menu.
+     * @deprecated since 1.0.1 — prefer {@link #getWindowMenu()} for a top-level
+     * "Window" menu in the workbench convention.
      */
+    @Deprecated(since = "1.0.1", forRemoval = false)
     public static Menu getWindowsMenu() {
         final ApplicationWindow appWindow = Lookup.lookup(ApplicationWindow.class);
         ObservableList<Menu> menu = appWindow.getMenu();
@@ -55,22 +60,79 @@ public final class SystemViewsHelper {
     }
 
     /**
-     * Add the menu item to show the views overview.
+     * Add a "Views overview" entry to the legacy "View &rarr; Windows" menu.
+     *
+     * @deprecated since 1.0.1 — prefer {@link #addStandardWindowActions()},
+     * which adds the entry plus "Restore Default Layout" to the top-level
+     * "Window" menu.
      */
+    @Deprecated(since = "1.0.1", forRemoval = false)
     public static void addViewOverview() {
         try {
-            FXMLView<ViewOverview> overview = new FXMLView.Builder<ViewOverview>()
-                    .withId("viewOverview:1")
-                    .withTitle("Views Overview")
-                    .withPos(Position.RIGHT)
-                    .withViewAreaSize(0.3)
-                    .withFile(ViewOverview.class.getResource("ViewOverview.fxml"))
-                    .build();
+            FXMLView<ViewOverview> overview = buildOverviewView();
             findOrCreateItem(getWindowsMenu().getItems(), "viewOverview",
                     () -> createMenuItem("Views overview", showView(overview)), Integer.MAX_VALUE);
         }
         catch (IOException e) {
             LOGGER.error("Unable to create view", e);
         }
+    }
+
+    /**
+     * Get (or create) the top-level "Window" menu. Standard workbench location
+     * for layout and view-management actions.
+     *
+     * @return the top-level Window menu.
+     * @since 1.0.1
+     */
+    public static Menu getWindowMenu() {
+        final ApplicationWindow appWindow = Lookup.lookup(ApplicationWindow.class);
+        ObservableList<Menu> menu = appWindow.getMenu();
+        return findOrCreateItem(menu, "window", () -> new Menu("Window"), Integer.MAX_VALUE);
+    }
+
+    /**
+     * Add "Restore Default Layout" to the top-level Window menu. The action
+     * delegates to {@link WindowManager#restoreDefaultLayout()}.
+     *
+     * @since 1.0.1
+     */
+    public static void addRestoreDefaultLayoutAction() {
+        findOrCreateItem(getWindowMenu().getItems(), "restoreDefaultLayout",
+                () -> createMenuItem("Restore Default Layout",
+                        e -> Lookup.lookup(WindowManager.class).restoreDefaultLayout()),
+                0);
+    }
+
+    /**
+     * Populate the top-level Window menu with the standard workbench actions:
+     * "Restore Default Layout" followed by "Views Overview", separated.
+     *
+     * @since 1.0.1
+     */
+    public static void addStandardWindowActions() {
+        addRestoreDefaultLayoutAction();
+        Menu windowMenu = getWindowMenu();
+        findOrCreateItem(windowMenu.getItems(), "windowSeparator1",
+                SeparatorMenuItem::new, 1);
+        try {
+            FXMLView<ViewOverview> overview = buildOverviewView();
+            findOrCreateItem(windowMenu.getItems(), "viewOverview",
+                    () -> createMenuItem("Views Overview", showView(overview)),
+                    Integer.MAX_VALUE);
+        }
+        catch (IOException e) {
+            LOGGER.error("Unable to create Views Overview view", e);
+        }
+    }
+
+    private static FXMLView<ViewOverview> buildOverviewView() throws IOException {
+        return new FXMLView.Builder<ViewOverview>()
+                .withId("viewOverview:1")
+                .withTitle("Views Overview")
+                .withPos(Position.RIGHT)
+                .withViewAreaSize(0.3)
+                .withFile(ViewOverview.class.getResource("ViewOverview.fxml"))
+                .build();
     }
 }
