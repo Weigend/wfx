@@ -215,15 +215,15 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     @Override
     public void restoreDefaultLayout() {
-        mainRootArea.set(null);
         List<RootArea> currentSubwindows = new ArrayList<>(subWindows);
         currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
-        //save the old views
-        LinkedHashMap<String, ViewStatus> oldViews = new LinkedHashMap<>();
-        oldViews.putAll(viewsStatus);
+        LinkedHashMap<String, ViewStatus> oldViews = new LinkedHashMap<>(viewsStatus);
         viewsStatus.clear();
         views.clear();
+        // Swap mainRootArea atomically; setting it to null first would fire
+        // listeners (e.g. ViewFocusHandler) with newValue == null.
+        mainRootArea.set(new RootArea(rootPane, dragNDropManager, false));
         for (ViewStatus view : oldViews.values()) {
             view.restoreDefault();
             if (view.getParent() == null) {
