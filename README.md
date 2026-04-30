@@ -15,6 +15,7 @@ synchronous in-process event bus.
 - **View Lifecycle** - every view declares its kind via `ViewKind` (`TOOL` or `DOCUMENT`); close, `restoreDefaultLayout()`, and the auto-built View menu all follow that classification
 - **Auto-built View menu** - optional `view-menu` extension adds a top-level View entry per registered TOOL view, kept in sync with the registry
 - **Application Window** - `DefaultApplicationWindow` ships with menu, tool, and status bar slots ready to be populated; can be subclassed for a custom shell
+- **Customisable shutdown prompt** - the close-confirmation dialog is a `ShutdownConfirmation` strategy bean; applications register their own `@Singleton` to replace the default — no subclassing required
 - **Module System** - modules discovered via Avaje Inject or Java `ServiceLoader`
 - **Optional Priority** - modules can declare `@Priority` to control startup order
 - **Preloader** - splash window shown while modules run their `preload()` work, with progress events on the platform event bus
@@ -625,6 +626,50 @@ remove them via `MenuUtil.findItem`.
 | `WindowManager.unregister(view)` | remove from registry **and** View menu | same as close |
 | `WindowManager.restoreDefaultLayout()` | re-show in default position, even if currently closed | drop |
 | Auto View menu entry | yes | no |
+
+### Custom shutdown confirmation dialog
+
+The close-confirmation prompt is a `ShutdownConfirmation` strategy
+looked up via WFX's DI / `Lookup`. The default ships with a Yes/No
+dialog from a generic FXML; replace it by registering your own
+`@Singleton` implementation — Avaje selects it over the WFX default
+because the default is annotated `@Secondary`. No subclassing of
+`DefaultApplicationWindow` required.
+
+```java
+import io.softwareecg.wfx.windowmtg.api.ShutdownConfirmation;
+import jakarta.inject.Singleton;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.stage.Stage;
+
+@Singleton
+public class MyShutdownConfirmation implements ShutdownConfirmation {
+
+    @Override
+    public boolean confirm(Stage owner) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                "Quit MyApp? Unsaved changes will be lost.",
+                ButtonType.YES, ButtonType.NO);
+        alert.initOwner(owner);
+        alert.setHeaderText("Quit MyApp");
+        return alert.showAndWait()
+                .filter(b -> b == ButtonType.YES)
+                .isPresent();
+    }
+}
+```
+
+The bean can do anything: branded FXML, a "save unsaved changes?"
+flow that consults open editors, an unconditional `return true`
+to skip the prompt entirely. WFX only contracts on the boolean —
+`true` proceeds with shutdown, `false` cancels.
+
+ServiceLoader-based applications register their implementation via
+`ServiceLoaderLookupStrategy.init(ShutdownConfirmation.class, myImpl, true)`
+before `Application.launch(...)` — the explicit override is required
+because ServiceLoader has no equivalent of Avaje's `@Secondary`
+fallback ordering.
 
 ### Cross-module communication via the event bus
 
