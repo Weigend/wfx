@@ -21,6 +21,7 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
+import io.softwareecg.wfx.windowmtg.api.ViewKind;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -108,6 +109,10 @@ public final class JavaFxTestUtils {
         when(view.getViewId()).thenReturn(id);
         when(view.getTitle()).thenReturn(title);
         when(view.getDefaultPosition()).thenReturn(Position.CENTER);
+        // Mockito returns null for unstubbed default methods, so explicitly
+        // stub the kind to TOOL — that mirrors the production default and
+        // exercises the tool-registry tracking in WindowManagerImpl tests.
+        when(view.getKind()).thenReturn(ViewKind.TOOL);
         // Use a real Pane: Mockito's inline mockmaker cannot mock JavaFX Parent
         // because of its @IDProperty annotation across module boundaries.
         when(view.getRootNode()).thenReturn(new Pane());
