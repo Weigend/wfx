@@ -12,6 +12,8 @@ synchronous in-process event bus.
 ## Features
 
 - **Window Management** - tab-based views with drag & drop, splittable areas, and registration-order independent layouts
+- **View Lifecycle** - every view declares its kind via `ViewKind` (`TOOL` or `DOCUMENT`); close, `restoreDefaultLayout()`, and the auto-built View menu all follow that classification
+- **Auto-built View menu** - optional `view-menu` extension adds a top-level View entry per registered TOOL view, kept in sync with the registry
 - **Application Window** - `DefaultApplicationWindow` ships with menu, tool, and status bar slots ready to be populated; can be subclassed for a custom shell
 - **Module System** - modules discovered via Avaje Inject or Java `ServiceLoader`
 - **Optional Priority** - modules can declare `@Priority` to control startup order
@@ -61,6 +63,7 @@ This starts `io.softwareecg.wfx.examplegui.ExampleAvajeMain`.
 | `wfx-modules/windowmanager-api` | Window-management API (`WindowManager`, `View`, `Position`) |
 | `wfx-modules/windowmanager-core` | Window-management implementation (split areas, drag & drop) |
 | `wfx-modules/extensions/ui-utils` | UI utility classes (menu/toolbar helpers, system views) |
+| `wfx-modules/extensions/view-menu` | Optional auto-built top-level View menu listing every registered TOOL view |
 | `wfx-modules/example-gui` | Example application demonstrating the framework |
 | `wfx-all` | All-in-One JAR with all WFX modules bundled |
 
@@ -227,6 +230,24 @@ public class MyModule implements Module {
 `FXMLView.Builder` binds the FXML file from step 3 to its controller class
 and adds the registration metadata (id, title, dock position) the
 `WindowManager` needs.
+
+**Tool vs document views.** Every view has a `ViewKind`. The default
+`TOOL` describes a persistent panel — closing its tab hides the view but
+keeps it in the registry, `WindowManager.restoreDefaultLayout()` brings
+it back, and the auto-built View menu (see "Recipes") lists it. For
+transient, content-bound views (per-document editors, per-JAR charts,
+query results …) declare the kind explicitly so closing the tab fully
+unregisters the view and `restoreDefaultLayout()` drops it:
+
+```java
+FXMLView<EditorController> editor = new FXMLView.Builder<EditorController>()
+        .withId("editor-" + fileId)
+        .withTitle(file.getName())
+        .withPos(Position.CENTER)
+        .withKind(ViewKind.DOCUMENT)
+        .withFile(getClass().getResource("editor.fxml"))
+        .build();
+```
 
 `preload()` is invoked by WFX on every discovered module after the preloader
 becomes visible, on a background thread. Each call advances the preloader's
@@ -563,6 +584,47 @@ Lookup.lookup(WindowManager.class).register(new MyProgrammaticView());
 
 A future 1.1 release will add a `SimpleView.Builder` that condenses the
 six-method boilerplate into a fluent builder call.
+
+### Auto-built View menu
+
+The `view-menu` extension adds a top-level **View** menu to the
+application window with one entry per registered `ViewKind.TOOL` view,
+in registration order. Clicking an entry shows the view — re-displaying
+it when the user has previously closed its tab (a TOOL close hides, it
+does not unregister) and focusing it when it is already visible.
+`DOCUMENT` views never appear in the menu by design.
+
+Add the runtime dependency to the module that bundles your application
+(typically the one with your `Main` class):
+
+```xml
+<dependency>
+    <groupId>io.softwareecg.wfx</groupId>
+    <artifactId>view-menu</artifactId>
+    <version>7.0.0-SNAPSHOT</version>
+    <scope>runtime</scope>
+</dependency>
+```
+
+That is all the wiring required. Avaje discovers the `@Singleton`
+`ViewMenuModule` automatically, the module runs at `@Priority(50)`
+(after default-view-registering modules), reads the tool-view registry
+once on `start()`, and then keeps the menu in sync with later
+registrations through a `ListChangeListener` on
+`WindowManager.getToolViews()`.
+
+If the application already declares a `View` menu (e.g. for app-
+specific items that should sit alongside the auto-generated entries)
+the extension reuses it rather than creating a duplicate. Items have
+stable ids of the form `view.<viewId>` so other code can find or
+remove them via `MenuUtil.findItem`.
+
+| Action | TOOL view | DOCUMENT view |
+|---|---|---|
+| Close the tab (X button) | hide; stay in registry, View menu, layout-restore | unregister; gone |
+| `WindowManager.unregister(view)` | remove from registry **and** View menu | same as close |
+| `WindowManager.restoreDefaultLayout()` | re-show in default position, even if currently closed | drop |
+| Auto View menu entry | yes | no |
 
 ### Cross-module communication via the event bus
 
