@@ -382,6 +382,59 @@
             </plugin>
 
             <plugin>
+                <!--
+                    Strip foreign provider entries from the Avaje InjectExtension
+                    service file before each module is packaged into a jar.
+
+                    The avaje-inject annotation processor aggregates plugin
+                    entries from transitive deps (e.g. ObserverManagerPlugin
+                    from avaje-inject-events) into every consuming module's
+                    META-INF/services/io.avaje.inject.spi.InjectExtension.
+                    JPMS' ModuleDescriptor.read rejects jars whose declared
+                    providers do not live in the jar itself — tools like
+                    javafx-maven-plugin then drop such jars from the module
+                    path entirely. We keep only entries in our own package
+                    namespace; consumers still get ObserverManagerPlugin
+                    transitively from avaje-inject-events.jar via its own
+                    service file. Modules without a service file are silently
+                    skipped (failonerror=false / erroronmissingdir=false).
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>strip-foreign-avaje-providers</id>
+                        <phase>process-classes</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${project.build.directory}/avaje-services-filtered"
+                                      overwrite="true"
+                                      failonerror="false">
+                                    <fileset dir="${project.build.outputDirectory}/META-INF/services"
+                                             includes="io.avaje.inject.spi.InjectExtension"
+                                             erroronmissingdir="false"/>
+                                    <filterchain>
+                                        <linecontainsregexp>
+                                            <regexp pattern="^io\.softwareecg\."/>
+                                        </linecontainsregexp>
+                                    </filterchain>
+                                </copy>
+                                <copy todir="${project.build.outputDirectory}/META-INF/services"
+                                      overwrite="true"
+                                      failonerror="false">
+                                    <fileset dir="${project.build.directory}/avaje-services-filtered"
+                                             includes="io.avaje.inject.spi.InjectExtension"
+                                             erroronmissingdir="false"/>
+                                </copy>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <executions>
