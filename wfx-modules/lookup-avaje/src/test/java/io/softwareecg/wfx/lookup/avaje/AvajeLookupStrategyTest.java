@@ -20,7 +20,7 @@
 package io.softwareecg.wfx.lookup.avaje;
 
 import io.avaje.inject.BeanScope;
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
 import io.softwareecg.wfx.lookup.avaje.testbeans.OverridableService;
@@ -29,7 +29,7 @@ import io.softwareecg.wfx.lookup.avaje.testbeans.Service1;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service2;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service3;
 import io.softwareecg.wfx.lookup.avaje.testbeans.Service4;
-import io.softwareecg.wfx.lookup.TypeRef;
+import io.softwareecg.wfx.lookup.api.TypeRef;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

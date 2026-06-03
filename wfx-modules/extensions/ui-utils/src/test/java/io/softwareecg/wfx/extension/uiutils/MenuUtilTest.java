@@ -19,10 +19,10 @@
  */
 package io.softwareecg.wfx.extension.uiutils;
 
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.LookupStrategy;
-import io.softwareecg.wfx.windowmtg.api.View;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupStrategy;
+import io.softwareecg.wfx.windowmanager.api.View;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.event.ActionEvent;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;

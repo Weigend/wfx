@@ -18,7 +18,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>lookup</artifactId>
+            <artifactId>lookup-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -36,8 +36,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
-                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmtg.api=javafx.fxml
-                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmtg.testutil=javafx.graphics
+                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmanager.api=javafx.fxml
+                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmanager.testutil=javafx.graphics
                         --add-reads io.softwareecg.wfx.windowmanager.api=ALL-UNNAMED
                     </argLine>
                 </configuration>

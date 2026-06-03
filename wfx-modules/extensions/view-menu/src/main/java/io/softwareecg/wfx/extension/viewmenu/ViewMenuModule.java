@@ -20,11 +20,11 @@
 package io.softwareecg.wfx.extension.viewmenu;
 
 import io.softwareecg.wfx.extension.uiutils.MenuUtil;
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.platform.api.Module;
-import io.softwareecg.wfx.windowmtg.api.ApplicationWindow;
-import io.softwareecg.wfx.windowmtg.api.View;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.windowmanager.api.ApplicationWindow;
+import io.softwareecg.wfx.windowmanager.api.View;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import jakarta.annotation.Priority;
 import jakarta.inject.Singleton;
 import javafx.collections.ListChangeListener;
@@ -33,7 +33,7 @@ import javafx.scene.control.MenuItem;
 
 /**
  * Auto-builds the top-level "View" menu, with one entry per registered
- * {@link io.softwareecg.wfx.windowmtg.api.ViewKind#TOOL TOOL} view.
+ * {@link io.softwareecg.wfx.windowmanager.api.ViewKind#TOOL TOOL} view.
  * <p>
  * Clicking an entry shows the corresponding view: a hidden TOOL is brought
  * back to its last known position, a visible one is focused. Module

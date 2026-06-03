@@ -19,7 +19,7 @@
  */
 package io.softwareecg.wfx.main;
 
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.platform.api.EventBus;
