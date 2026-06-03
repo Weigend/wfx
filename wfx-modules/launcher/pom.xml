@@ -9,7 +9,7 @@
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>platform-runner</artifactId>
+    <artifactId>launcher</artifactId>
 
     <dependencies>
 
