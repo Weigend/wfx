@@ -16,7 +16,7 @@
     <dependencies>
         <dependency>
             <groupId>io.softwareecg.wfx</groupId>
-            <artifactId>platform-runner</artifactId>
+            <artifactId>launcher</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

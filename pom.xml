@@ -66,7 +66,7 @@
         <module>wfx-modules/lookup-avaje</module>
         <module>wfx-modules/platform-api</module>
         <module>wfx-modules/platform-core</module>
-        <module>wfx-modules/platform-runner</module>
+        <module>wfx-modules/launcher</module>
         <module>wfx-modules/windowmanager-api</module>
         <module>wfx-modules/windowmanager-core</module>
         <module>wfx-modules/example-gui</module>
