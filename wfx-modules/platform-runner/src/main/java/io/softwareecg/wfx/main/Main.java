@@ -20,8 +20,6 @@
 package io.softwareecg.wfx.main;
 
 import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
-import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.platform.api.EventBus;
@@ -30,7 +28,6 @@ import io.softwareecg.wfx.platform.api.events.StartupProgressEvent;
 import jakarta.annotation.Priority;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +55,7 @@ public class Main extends Application {
                 LOGGER.error("Uncaught Exception in thread '" + t.getName() + "': ", e));
 
         if (Lookup.getLookupStrategy() == null) {
-            ServiceLoaderLookupStrategy lookupStrategy = new ServiceLoaderLookupStrategy();
-            lookupStrategy.init(FXMLLoader.class, (Producer<FXMLLoader>) FXMLLoader::new);
-            Lookup.init(lookupStrategy);
+            Lookup.init();
         }
         modules = sortByPriority(Lookup.lookupAll(Module.class));
         platformApplication = Lookup.lookup(PlatformApplication.class);
@@ -190,6 +185,9 @@ public class Main extends Application {
         modules.forEach(Module::stop);
         platformApplication.stop();
         super.stop();
+        if (Lookup.getLookupStrategy() != null) {
+            Lookup.getLookupStrategy().shutdown();
+        }
         LOGGER.info("Stop application");
     }
 }

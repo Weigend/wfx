@@ -59,10 +59,29 @@ import java.util.stream.Collectors;
  * ({@code List<T>} or {@code Provider<T>}), not {@link Lookup}.
  */
 @Singleton
+@Priority(100)
 public class AvajeLookupStrategy implements LookupStrategy {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AvajeLookupStrategy.class);
     private static BeanScope scope;
+    private static volatile boolean initializing = false;
+
+    /**
+     * Called by {@link java.util.ServiceLoader} when discovered via META-INF/services.
+     * Triggers avaje bootstrap so {@link Lookup#init()} auto-wires without an explicit call.
+     * The {@code initializing} guard prevents the avaje-internal bean construction
+     * (which also calls this constructor) from re-entering {@link #initLookup()}.
+     */
+    public AvajeLookupStrategy() {
+        if (scope == null && !initializing) {
+            initializing = true;
+            try {
+                initLookup();
+            } finally {
+                initializing = false;
+            }
+        }
+    }
 
     /**
      * Initialize the Avaje BeanScope and wire it into {@link Lookup}.
@@ -94,6 +113,11 @@ public class AvajeLookupStrategy implements LookupStrategy {
         scope = externalScope;
         Lookup.init(scope.get(AvajeLookupStrategy.class));
         LOGGER.info("Successfully initialized Avaje and Lookup");
+    }
+
+    @Override
+    public void shutdown() {
+        shutdownLookup();
     }
 
     /**

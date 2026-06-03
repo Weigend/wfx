@@ -67,5 +67,37 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-serviceloader</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmtg.api=io.softwareecg.wfx.windowmanager.core
+                        --add-opens io.softwareecg.wfx.windowmanager.core/io.softwareecg.wfx.windowmtg.impl=ALL-UNNAMED
+                        --add-opens io.softwareecg.wfx.windowmanager.core/io.softwareecg.wfx.windowmtg.impl=org.apache.commons.lang3
+                        --add-opens io.softwareecg.wfx.windowmanager.core/io.softwareecg.wfx.windowmtg.windows=ALL-UNNAMED
+                        --add-opens javafx.graphics/javafx.stage=org.apache.commons.lang3
+                        --add-opens javafx.graphics/javafx.scene=org.apache.commons.lang3
+                        --add-opens javafx.graphics/javafx.scene.layout=org.apache.commons.lang3
+                        --add-opens javafx.base/javafx.beans.property=org.apache.commons.lang3
+                        --add-opens javafx.controls/javafx.scene.control=org.apache.commons.lang3
+                        --add-reads io.softwareecg.wfx.windowmanager.core=ALL-UNNAMED
+                        --add-reads io.softwareecg.wfx.windowmanager.core=org.mockito
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

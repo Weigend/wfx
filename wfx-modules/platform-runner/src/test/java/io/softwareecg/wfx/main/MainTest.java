@@ -21,11 +21,10 @@ package io.softwareecg.wfx.main;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
-import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
-import io.softwareecg.wfx.windowmtg.api.GuiTestHelper;
+import io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
@@ -90,7 +89,7 @@ public class MainTest {
     public void testInitNoLookupStrategy() throws Exception {
         Lookup.init(null);
         main.init();
-        assertThat(Lookup.getLookupStrategy(), is(instanceOf(ServiceLoaderLookupStrategy.class)));
+        assertThat(Lookup.getLookupStrategy(), is(instanceOf(LookupStrategy.class)));
     }
 
     @Test

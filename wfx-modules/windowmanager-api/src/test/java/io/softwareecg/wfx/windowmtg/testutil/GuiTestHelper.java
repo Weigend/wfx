@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.softwareecg.wfx.windowmtg.api;
+package io.softwareecg.wfx.windowmtg.testutil;
 
 import com.google.common.util.concurrent.SettableFuture;
 import javafx.application.Application;
