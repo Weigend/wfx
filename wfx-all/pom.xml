@@ -23,7 +23,19 @@
         <!-- Core modules -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>lookup</artifactId>
+            <artifactId>lookup-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-serviceloader</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-avaje</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -41,7 +53,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>platform-runner</artifactId>
+            <artifactId>launcher</artifactId>
             <version>${project.version}</version>
         </dependency>
 
