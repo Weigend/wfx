@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-package io.softwareecg.wfx.lookup.impl;
+package io.softwareecg.wfx.lookup.serviceloader;
 
 import io.softwareecg.wfx.lookup.LookupStrategy;
 import io.softwareecg.wfx.lookup.TypeRef;
@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * Use the javas {@link java.util.ServiceLoader} to lookup the actual instances.
  *
  */
+@jakarta.annotation.Priority(0)
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
     private final Map<Class<?>, List<Object>> lookupCache = new ConcurrentHashMap<>();

@@ -21,7 +21,7 @@ package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
-import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
+import io.softwareecg.wfx.windowmtg.testutil.JavaFXThreadingRule;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;

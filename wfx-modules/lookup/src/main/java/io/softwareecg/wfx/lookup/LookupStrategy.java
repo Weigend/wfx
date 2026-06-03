@@ -84,4 +84,7 @@ public interface LookupStrategy {
      * @return A list with all found service instances for the searched class.
      */
     <T> List<T> lookupAll(TypeRef<T> type);
+
+    /** Called when the application shuts down. Implementations may release resources. */
+    default void shutdown() {}
 }

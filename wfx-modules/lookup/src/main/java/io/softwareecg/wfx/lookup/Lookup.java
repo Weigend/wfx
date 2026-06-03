@@ -22,9 +22,13 @@ package io.softwareecg.wfx.lookup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import jakarta.annotation.Priority;
+
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.ServiceLoader;
 
 /**
  * The general service lookup for the platform.
@@ -39,6 +43,31 @@ public final class Lookup {
     private static final Logger LOGGER = LoggerFactory.getLogger(Lookup.class);
     private static LookupStrategy lookupStrategy;
     private static final Object LOCK = new Object();
+
+    /**
+     * Auto-initialize {@link Lookup} by discovering a {@link LookupStrategy} via {@link ServiceLoader}.
+     * Works in both JPMS (provides/uses) and classpath (META-INF/services) environments.
+     * <p>
+     * The strategy's constructor may itself call {@link #init(LookupStrategy)} (e.g. avaje
+     * initializes the DI scope and registers its own managed instance during construction).
+     * In that case the strategy is already set before {@code ifPresent} runs, so we do not
+     * overwrite it with the ServiceLoader-created bootstrap instance.
+     */
+    public static void init() {
+        ServiceLoader.load(LookupStrategy.class).stream()
+                .map(ServiceLoader.Provider::get)
+                .max(Comparator.comparingInt(Lookup::priority))
+                .ifPresent(s -> {
+                    if (getLookupStrategy() == null) {
+                        init(s);
+                    }
+                });
+    }
+
+    private static int priority(LookupStrategy s) {
+        Priority p = s.getClass().getAnnotation(Priority.class);
+        return p != null ? p.value() : 0;
+    }
 
     /**
      * Initialize {@link io.softwareecg.wfx.lookup.Lookup} with the given {@link io.softwareecg.wfx.lookup.LookupStrategy}.

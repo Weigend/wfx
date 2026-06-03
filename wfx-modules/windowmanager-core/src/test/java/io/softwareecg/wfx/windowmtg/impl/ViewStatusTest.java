@@ -19,7 +19,7 @@
  */
 package io.softwareecg.wfx.windowmtg.impl;
 
-import io.softwareecg.wfx.windowmtg.api.JavaFXThreadingRule;
+import io.softwareecg.wfx.windowmtg.testutil.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
 import javafx.scene.control.SplitPane;
@@ -148,7 +148,7 @@ public class ViewStatusTest {
 
     @Test
     public void testTabImage() {
-        when(view.getViewImagePath()).thenReturn(getClass().getResource("/io/softwareecg/wfx/windowmtg/api/test-icon.png"));
+        when(view.getViewImagePath()).thenReturn(getClass().getResource("/testresources/test-icon.png"));
         status = new ViewStatus(view);
         assertThat(((ImageView) status.getTab().getGraphic()).getImage(), is(notNullValue()));
     }

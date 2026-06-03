@@ -29,4 +29,20 @@
 
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmtg.api=javafx.fxml
+                        --add-opens io.softwareecg.wfx.windowmanager.api/io.softwareecg.wfx.windowmtg.testutil=javafx.graphics
+                        --add-reads io.softwareecg.wfx.windowmanager.api=ALL-UNNAMED
+                    </argLine>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

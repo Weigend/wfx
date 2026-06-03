@@ -38,7 +38,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static io.softwareecg.wfx.windowmtg.api.GuiTestHelper.getStage;
+import static io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper.getStage;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;

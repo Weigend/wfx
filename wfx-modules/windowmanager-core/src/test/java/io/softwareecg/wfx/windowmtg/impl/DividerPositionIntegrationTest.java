@@ -20,8 +20,8 @@
 package io.softwareecg.wfx.windowmtg.impl;
 
 import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy;
-import io.softwareecg.wfx.windowmtg.api.GuiTestHelper;
+import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy;
+import io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper;
 import io.softwareecg.wfx.windowmtg.api.Position;
 import io.softwareecg.wfx.windowmtg.api.View;
 import javafx.scene.Parent;

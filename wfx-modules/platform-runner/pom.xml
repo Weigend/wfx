@@ -33,6 +33,13 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>lookup-serviceloader</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>windowmanager-api</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>

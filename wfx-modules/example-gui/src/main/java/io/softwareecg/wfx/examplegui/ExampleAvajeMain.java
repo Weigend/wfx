@@ -19,13 +19,14 @@
  */
 package io.softwareecg.wfx.examplegui;
 
-import io.softwareecg.wfx.main.AvajeMain;
+import io.softwareecg.wfx.main.Main;
 import javafx.application.Application;
 
 /**
- * Example main class to demonstrate running the application with Avaje Inject as lookup strategy.
+ * Example main class — uses whatever {@link io.softwareecg.wfx.lookup.LookupStrategy}
+ * is on the classpath (auto-discovered via {@link io.softwareecg.wfx.lookup.Lookup#init()}).
  */
-public class ExampleAvajeMain extends AvajeMain {
+public class ExampleAvajeMain extends Main {
 
     /**
      * Application entry point.

@@ -17,11 +17,11 @@
  * limitations under the License.
  * #L%
  */
-package io.softwareecg.wfx.lookup.impl;
+package io.softwareecg.wfx.lookup.serviceloader;
 
 import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
-import io.softwareecg.wfx.lookup.impl.ServiceLoaderLookupStrategy.Producer;
+import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy.Producer;
 import jakarta.annotation.Priority;
 import io.softwareecg.wfx.lookup.TypeRef;
 import org.junit.Before;

@@ -21,6 +21,7 @@ package io.softwareecg.wfx.windowmtg.api;
 
 import io.softwareecg.wfx.lookup.Lookup;
 import io.softwareecg.wfx.lookup.LookupStrategy;
+import io.softwareecg.wfx.windowmtg.testutil.JavaFXThreadingRule;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
