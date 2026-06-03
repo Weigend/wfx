@@ -5,7 +5,7 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.layout.*?>
 <GridPane hgap="5.0" xmlns="http://javafx.com/javafx/8.0.72" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="io.softwareecg.wfx.platform.impl.ProgressController">
+          fx:controller="io.softwareecg.wfx.platform.core.ProgressController">
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>
