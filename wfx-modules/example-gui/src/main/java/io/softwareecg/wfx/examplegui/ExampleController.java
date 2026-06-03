@@ -19,12 +19,12 @@
  */
 package io.softwareecg.wfx.examplegui;
 
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.windowmtg.api.FXMLView;
-import io.softwareecg.wfx.windowmtg.api.Position;
-import io.softwareecg.wfx.windowmtg.api.View;
-import io.softwareecg.wfx.windowmtg.api.ViewKind;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.windowmanager.api.FXMLView;
+import io.softwareecg.wfx.windowmanager.api.Position;
+import io.softwareecg.wfx.windowmanager.api.View;
+import io.softwareecg.wfx.windowmanager.api.ViewKind;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.event.ActionEvent;
 
 import java.io.IOException;

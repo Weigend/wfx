@@ -19,11 +19,11 @@
  */
 package io.softwareecg.wfx.extension.systemviews;
 
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.windowmtg.api.ApplicationWindow;
-import io.softwareecg.wfx.windowmtg.api.FXMLView;
-import io.softwareecg.wfx.windowmtg.api.Position;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.windowmanager.api.ApplicationWindow;
+import io.softwareecg.wfx.windowmanager.api.FXMLView;
+import io.softwareecg.wfx.windowmanager.api.Position;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.SeparatorMenuItem;

@@ -23,8 +23,8 @@ import io.softwareecg.wfx.main.Main;
 import javafx.application.Application;
 
 /**
- * Example main class — uses whatever {@link io.softwareecg.wfx.lookup.LookupStrategy}
- * is on the classpath (auto-discovered via {@link io.softwareecg.wfx.lookup.Lookup#init()}).
+ * Example main class — uses whatever {@link io.softwareecg.wfx.lookup.api.LookupStrategy}
+ * is on the classpath (auto-discovered via {@link io.softwareecg.wfx.lookup.api.Lookup#init()}).
  */
 public class ExampleAvajeMain extends Main {
 

@@ -19,8 +19,8 @@
  */
 package io.softwareecg.wfx.lookup.serviceloader;
 
-import io.softwareecg.wfx.lookup.LookupStrategy;
-import io.softwareecg.wfx.lookup.TypeRef;
+import io.softwareecg.wfx.lookup.api.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.TypeRef;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

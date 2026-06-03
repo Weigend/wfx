@@ -7,6 +7,6 @@ module io.softwareecg.wfx.windowmanager.api {
     requires transitive javafx.controls;
     requires transitive javafx.fxml;
 
-    exports io.softwareecg.wfx.windowmtg.api;
-    exports io.softwareecg.wfx.windowmtg.api.exceptions;
+    exports io.softwareecg.wfx.windowmanager.api;
+    exports io.softwareecg.wfx.windowmanager.api.exceptions;
 }

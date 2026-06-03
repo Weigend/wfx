@@ -8,14 +8,14 @@ module io.softwareecg.wfx.windowmanager.core {
     requires org.apache.commons.lang3;
 
     // FXMLLoader needs reflective access to DefaultApplicationWindow (@FXML fields)
-    opens io.softwareecg.wfx.windowmtg.windows to javafx.fxml;
+    opens io.softwareecg.wfx.windowmanager.windows to javafx.fxml;
 
     provides io.avaje.inject.spi.InjectExtension
-        with io.softwareecg.wfx.windowmtg.WindowmtgModule;
-    provides io.softwareecg.wfx.windowmtg.api.WindowManager
-        with io.softwareecg.wfx.windowmtg.impl.WindowManagerImpl;
-    provides io.softwareecg.wfx.windowmtg.api.ApplicationWindow
-        with io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
-    provides io.softwareecg.wfx.windowmtg.impl.ViewContainerAreaFactory
-        with io.softwareecg.wfx.windowmtg.impl.ViewContainerAreaFactoryImpl;
+        with io.softwareecg.wfx.windowmanager.WindowmanagerModule;
+    provides io.softwareecg.wfx.windowmanager.api.WindowManager
+        with io.softwareecg.wfx.windowmanager.impl.WindowManagerImpl;
+    provides io.softwareecg.wfx.windowmanager.api.ApplicationWindow
+        with io.softwareecg.wfx.windowmanager.windows.DefaultApplicationWindow;
+    provides io.softwareecg.wfx.windowmanager.impl.ViewContainerAreaFactory
+        with io.softwareecg.wfx.windowmanager.impl.ViewContainerAreaFactoryImpl;
 }

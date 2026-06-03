@@ -30,7 +30,7 @@ import java.util.List;
 
 import static io.softwareecg.wfx.extension.uiutils.ToolBarUtils.addButtonAfter;
 import static io.softwareecg.wfx.extension.uiutils.ToolBarUtils.findIndex;
-import static io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper.getStage;
+import static io.softwareecg.wfx.windowmanager.testutil.GuiTestHelper.getStage;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 

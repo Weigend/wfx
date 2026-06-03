@@ -6,7 +6,7 @@
 <?import javafx.scene.text.Font?>
 <GridPane xmlns:fx="http://javafx.com/fxml/1" gridLinesVisible="false" hgap="0.0" layoutX="0.0" prefHeight="-1.0"
           prefWidth="-1.0" style="-fx-background-color: #FFFFFF;" xmlns="http://javafx.com/javafx/8"
-          fx:controller="io.softwareecg.wfx.platform.impl.ProgressController">
+          fx:controller="io.softwareecg.wfx.platform.core.ProgressController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0"/>

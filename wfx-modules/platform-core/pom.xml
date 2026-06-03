@@ -37,7 +37,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>lookup</artifactId>
+            <artifactId>lookup-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -93,9 +93,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <argLine>
-                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.impl=ALL-UNNAMED
-                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.impl.eventbus=ALL-UNNAMED
-                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.impl.fxml=ALL-UNNAMED
+                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.core=ALL-UNNAMED
+                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.core.eventbus=ALL-UNNAMED
+                        --add-opens io.softwareecg.wfx.platform.core/io.softwareecg.wfx.platform.core.fxml=ALL-UNNAMED
                         --add-reads io.softwareecg.wfx.platform.core=ALL-UNNAMED
                         --add-reads io.softwareecg.wfx.platform.core=org.mockito
                     </argLine>

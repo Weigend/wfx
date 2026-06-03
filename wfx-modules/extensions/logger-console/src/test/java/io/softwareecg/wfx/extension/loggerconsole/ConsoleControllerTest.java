@@ -20,8 +20,8 @@
 package io.softwareecg.wfx.extension.loggerconsole;
 
 import io.softwareecg.wfx.extension.loggerconsole.api.LoggerAdapter;
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupStrategy;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -38,7 +38,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper.getStage;
+import static io.softwareecg.wfx.windowmanager.testutil.GuiTestHelper.getStage;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.when;

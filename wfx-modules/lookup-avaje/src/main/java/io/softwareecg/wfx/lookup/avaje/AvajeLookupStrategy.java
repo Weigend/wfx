@@ -20,9 +20,9 @@
 package io.softwareecg.wfx.lookup.avaje;
 
 import io.avaje.inject.BeanScope;
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.LookupStrategy;
-import io.softwareecg.wfx.lookup.TypeRef;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.TypeRef;
 import jakarta.annotation.Priority;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;

@@ -19,7 +19,7 @@
  */
 package io.softwareecg.wfx.examplegui;
 
-import io.softwareecg.wfx.windowmtg.api.ShutdownConfirmation;
+import io.softwareecg.wfx.windowmanager.api.ShutdownConfirmation;
 import jakarta.inject.Singleton;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;

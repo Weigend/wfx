@@ -19,9 +19,9 @@
  */
 package io.softwareecg.wfx.examplegui;
 
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.windowmtg.api.View;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.windowmanager.api.View;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

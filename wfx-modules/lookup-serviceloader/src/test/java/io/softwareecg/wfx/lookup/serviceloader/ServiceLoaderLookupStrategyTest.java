@@ -23,7 +23,7 @@ import io.softwareecg.wfx.lookup.TestService;
 import io.softwareecg.wfx.lookup.TypedTestService;
 import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy.Producer;
 import jakarta.annotation.Priority;
-import io.softwareecg.wfx.lookup.TypeRef;
+import io.softwareecg.wfx.lookup.api.TypeRef;
 import org.junit.Before;
 import org.junit.Test;
 

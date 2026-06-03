@@ -19,12 +19,12 @@
  */
 package io.softwareecg.wfx.main;
 
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.lookup.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupStrategy;
 import io.softwareecg.wfx.platform.api.EventBus;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
-import io.softwareecg.wfx.windowmtg.testutil.GuiTestHelper;
+import io.softwareecg.wfx.windowmanager.testutil.GuiTestHelper;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;

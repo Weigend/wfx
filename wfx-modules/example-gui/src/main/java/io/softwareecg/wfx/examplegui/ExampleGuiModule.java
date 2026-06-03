@@ -20,11 +20,11 @@
 package io.softwareecg.wfx.examplegui;
 
 import io.softwareecg.wfx.extension.systemviews.SystemViewsHelper;
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.platform.api.Module;
-import io.softwareecg.wfx.windowmtg.api.FXMLView;
-import io.softwareecg.wfx.windowmtg.api.Position;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.windowmanager.api.FXMLView;
+import io.softwareecg.wfx.windowmanager.api.Position;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import jakarta.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

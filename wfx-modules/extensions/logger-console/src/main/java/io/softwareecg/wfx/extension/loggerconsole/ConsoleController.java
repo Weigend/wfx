@@ -20,7 +20,7 @@
 package io.softwareecg.wfx.extension.loggerconsole;
 
 import io.softwareecg.wfx.extension.loggerconsole.api.LoggerAdapter;
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;

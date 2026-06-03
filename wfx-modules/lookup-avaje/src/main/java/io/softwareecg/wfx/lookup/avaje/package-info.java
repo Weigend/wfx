@@ -18,7 +18,7 @@
  * #L%
  */
 /**
- * Avaje-Inject backed implementation of {@link io.softwareecg.wfx.lookup.LookupStrategy}.
+ * Avaje-Inject backed implementation of {@link io.softwareecg.wfx.lookup.api.LookupStrategy}.
  *
  * <p>The {@code @InjectModule(name="wfxLookup")} avoids a name collision between the
  * Avaje-generated module class (default name derived from package suffix would be
