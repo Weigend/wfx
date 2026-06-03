@@ -50,17 +50,18 @@ mvn clean install -DskipTests
 mvn -pl wfx-modules/example-gui exec:java
 ```
 
-This starts `io.softwareecg.wfx.examplegui.ExampleAvajeMain`.
+This starts `io.softwareecg.wfx.examplegui.ExampleAvajeMain` with Avaje as the lookup strategy.
 
 ## Project Structure
 
 | Module | Description |
 |--------|-------------|
-| `wfx-modules/lookup` | Core lookup / service-locator API |
-| `wfx-modules/lookup-avaje` | Avaje-backed lookup implementation |
+| `wfx-modules/lookup-api` | Core lookup / service-locator API (`Lookup`, `LookupStrategy`, `TypeRef`) |
+| `wfx-modules/lookup-serviceloader` | ServiceLoader-backed lookup strategy |
+| `wfx-modules/lookup-avaje` | Avaje-backed lookup strategy |
 | `wfx-modules/platform-api` | Platform API interfaces (`Module`, `EventBus`, ...) |
 | `wfx-modules/platform-core` | Platform core implementation |
-| `wfx-modules/platform-runner` | Application launcher and lifecycle (`Main`, `AvajeMain`) |
+| `wfx-modules/launcher` | Application bootstrap and lifecycle (`Main`) |
 | `wfx-modules/windowmanager-api` | Window-management API (`WindowManager`, `View`, `Position`) |
 | `wfx-modules/windowmanager-core` | Window-management implementation (split areas, drag & drop) |
 | `wfx-modules/extensions/ui-utils` | UI utility classes (menu/toolbar helpers, system views) |
@@ -84,7 +85,7 @@ This dependency provides the WFX modules, JavaFX FXML/Controls, Avaje Inject,
 SLF4J, Logback, and Apache Commons Lang3.
 
 If you prefer to pick individual modules, add them separately, for example
-`lookup`, `lookup-avaje`, `platform-runner`, and `windowmanager-core`.
+`lookup-api`, `lookup-avaje`, `launcher`, and `windowmanager-core`.
 
 ## Creating a Simple Application
 
@@ -95,20 +96,19 @@ those views at a `Position`.
 
 ### 1. Create a Main Class
 
-Use `AvajeMain` when the application uses Avaje-managed WFX infrastructure:
+Extend `Main` — it auto-discovers the active `LookupStrategy` via `ServiceLoader`
+(Avaje when `lookup-avaje` is on the classpath, plain ServiceLoader otherwise):
 
 ```java
-import io.softwareecg.wfx.main.AvajeMain;
+import io.softwareecg.wfx.main.Main;
 import javafx.application.Application;
 
-public class MyApp extends AvajeMain {
+public class MyApp extends Main {
     public static void main(String[] args) {
         Application.launch(MyApp.class, args);
     }
 }
 ```
-
-Use `Main` only for a pure `ServiceLoader` setup.
 
 ### 2. Define an Application Window
 
@@ -117,7 +117,7 @@ explicitly — there is no auto-registered fallback, on purpose. The simplest
 form is an empty subclass of `DefaultApplicationWindow` with `@Singleton`:
 
 ```java
-import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
+import io.softwareecg.wfx.windowmanager.windows.DefaultApplicationWindow;
 import jakarta.inject.Singleton;
 
 @Singleton
@@ -192,12 +192,12 @@ Modules register views with the `WindowManager`. The `Position` enum
 inside the application window's central area.
 
 ```java
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.exceptions.PlatformException;
-import io.softwareecg.wfx.windowmtg.api.FXMLView;
-import io.softwareecg.wfx.windowmtg.api.Position;
-import io.softwareecg.wfx.windowmtg.api.WindowManager;
+import io.softwareecg.wfx.windowmanager.api.FXMLView;
+import io.softwareecg.wfx.windowmanager.api.Position;
+import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import jakarta.inject.Singleton;
 
 import java.io.IOException;
@@ -267,8 +267,8 @@ icon, a branded title bar — override `init()` on your `ApplicationWindow`
 subclass and load your own FXML:
 
 ```java
-import io.softwareecg.wfx.lookup.Lookup;
-import io.softwareecg.wfx.windowmtg.windows.DefaultApplicationWindow;
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.windowmanager.windows.DefaultApplicationWindow;
 import jakarta.inject.Singleton;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -359,7 +359,7 @@ public class GreetingEvent extends EventObject {
 Firing the event from anywhere that has access to `Lookup`:
 
 ```java
-import io.softwareecg.wfx.lookup.Lookup;
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.platform.api.EventBus;
 
 EventBus<EventObject> bus = Lookup.lookup(EventBus.class);
@@ -502,7 +502,7 @@ keep `ProgressController` as its `fx:controller`:
 <?import javafx.scene.layout.Pane?>
 
 <Pane prefHeight="300" prefWidth="500" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="io.softwareecg.wfx.platform.impl.ProgressController">
+      fx:controller="io.softwareecg.wfx.platform.core.ProgressController">
     <ImageView fitHeight="300" fitWidth="500">
         <Image url="@my-splash.png" preserveRatio="true"/>
     </ImageView>
@@ -644,7 +644,7 @@ because the default is annotated `@Secondary`. No subclassing of
 `DefaultApplicationWindow` required.
 
 ```java
-import io.softwareecg.wfx.windowmtg.api.ShutdownConfirmation;
+import io.softwareecg.wfx.windowmanager.api.ShutdownConfirmation;
 import jakarta.inject.Singleton;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
