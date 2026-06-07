@@ -118,6 +118,14 @@ public class WindowManagerImplTest {
             ViewArea parent = mock(ViewArea.class);
             when(area.getParent()).thenReturn(parent);
             when(parent.getNode()).thenReturn(new Pane());
+            // Stub area.add() so that views added to this child area also get
+            // their area assigned — needed when view2 is registered into view1's
+            // area (findAreaToAdd returns view1's area, not mainWindow directly).
+            doAnswer(addInv -> {
+                ViewStatus added = addInv.getArgument(0);
+                added.setArea(area);
+                return null;
+            }).when(area).add(any(ViewStatus.class), any(Position.class));
             vs.setArea(area);
             return null;
         }).when(mainWindow).add(any(ViewStatus.class), any(Position.class));

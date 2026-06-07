@@ -80,6 +80,21 @@ public final class Lookup {
         }
     }
 
+    /**
+     * Shuts down the current {@link LookupStrategy} and clears the lookup registry.
+     * Intended for use in tests to reset state between test runs.
+     */
+    public static void shutdown() {
+        LookupStrategy strategy;
+        synchronized (LOCK) {
+            strategy = Lookup.lookupStrategy;
+            Lookup.lookupStrategy = null;
+        }
+        if (strategy != null) {
+            strategy.shutdown();
+        }
+    }
+
     private Lookup() {
     }
 

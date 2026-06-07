@@ -276,6 +276,17 @@ public class WindowManagerImpl implements MultiWindowManager {
         // parent linkage) and that's what we replay onto the fresh canvas.
         List<ViewStatus> toolSnapshot = new ArrayList<>(toolViewsByID.values());
 
+        // Remember which views were actually showing (in a tab area) before
+        // the layout is torn down.  area != null means the view's node is
+        // currently attached to the scene graph; area == null means it was
+        // registered but hidden (e.g. registered with showView=false and never
+        // opened by the user).  We must capture this BEFORE any cleanup code
+        // that might null out the area references.
+        Map<String, Boolean> wasShowing = toolSnapshot.stream()
+                .collect(Collectors.toMap(
+                        vs -> vs.getView().getViewId(),
+                        vs -> vs.getArea() != null));
+
         List<RootArea> currentSubwindows = new ArrayList<>(subWindows);
         currentSubwindows.forEach(this::remove);
         rootPane.getChildren().clear();
@@ -293,11 +304,12 @@ public class WindowManagerImpl implements MultiWindowManager {
         try {
             for (ViewStatus view : toolSnapshot) {
                 view.restoreDefault();
+                boolean show = wasShowing.getOrDefault(view.getView().getViewId(), false);
                 if (view.getParent() == null) {
-                    register(view.getView());
+                    register(view.getView(), show);
                 }
                 else {
-                    register(view.getView(), view.getParent().getView());
+                    register(view.getView(), view.getParent().getView(), show);
                 }
             }
         }
