@@ -64,9 +64,7 @@ public class ProgressControllerTest  {
     @Before
     public void getRootNode() {
         try {
-            CountDownLatch latch = new CountDownLatch(1);
-            Platform.startup(latch::countDown); // startet das JavaFX Toolkit
-            latch.await();
+            startToolkit();
             when(lookupStrategy.lookup(EventBus.class)).thenReturn(eventBus);
             Lookup.init(lookupStrategy);
             URL resource = ProgressControllerTest.class.getResource("/default/splash.fxml");
@@ -78,6 +76,26 @@ public class ProgressControllerTest  {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Startet das JavaFX Toolkit, falls es noch nicht läuft.
+     *
+     * Surefire führt alle Testklassen eines Moduls in einem JVM-Fork aus, und
+     * {@link Platform#startup} darf pro JVM nur einmal aufgerufen werden. Hat
+     * eine zuvor gelaufene Testklasse das Toolkit bereits gestartet, quittiert
+     * der zweite Aufruf das mit einer IllegalStateException - dann ist hier
+     * nichts mehr zu tun. Welche Klasse zuerst drankommt, hängt von der
+     * Ausführungsreihenfolge ab und unterscheidet sich zwischen Umgebungen.
+     */
+    private static void startToolkit() throws InterruptedException {
+        try {
+            CountDownLatch latch = new CountDownLatch(1);
+            Platform.startup(latch::countDown);
+            latch.await();
+        } catch (IllegalStateException toolkitAlreadyRunning) {
+            // Toolkit läuft bereits - kein Startup nötig.
         }
     }
 
