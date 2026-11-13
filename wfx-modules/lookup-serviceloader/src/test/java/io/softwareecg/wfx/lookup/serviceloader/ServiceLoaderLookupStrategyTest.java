@@ -207,6 +207,7 @@ public class ServiceLoaderLookupStrategyTest {
     }
 
 
+    @Priority(1)
     public static class TestServiceImpl implements TestService {
         @Override
         public String sayHello() {
@@ -214,12 +215,68 @@ public class ServiceLoaderLookupStrategyTest {
         }
     }
 
-    @Priority(-1000)
+    @Priority(1000)
     public static class TestServiceImpl2 implements TestService {
         @Override
         public String sayHello() {
             return "World2";
         }
+    }
+
+    /** No annotation: comes after every annotated implementation. */
+    public static class UnannotatedService implements TestService {
+        @Override
+        public String sayHello() {
+            return "unannotated";
+        }
+    }
+
+    @Priority(-5)
+    public static class UrgentService implements TestService {
+        @Override
+        public String sayHello() {
+            return "urgent";
+        }
+    }
+
+    @Test
+    public void testSmallerPriorityValueComesFirstAndUnannotatedLast() {
+        // registered deliberately in the "wrong" order
+        lookupStrategy.init(TestService.class, new UnannotatedService(), true);
+        lookupStrategy.init(TestService.class, new TestServiceImpl2());
+        lookupStrategy.init(TestService.class, new UrgentService());
+        lookupStrategy.init(TestService.class, new TestServiceImpl());
+
+        List<TestService> all = lookupStrategy.lookupAll(TestService.class);
+
+        assertThat(all.get(0), instanceOf(UrgentService.class));          // -5
+        assertThat(all.get(1), instanceOf(TestServiceImpl.class));        // 1
+        assertThat(all.get(2), instanceOf(TestServiceImpl2.class));       // 1000
+        assertThat(all.get(3), instanceOf(UnannotatedService.class));     // none
+    }
+
+    @Test
+    public void testLookupReturnsTheHeadOfLookupAll() {
+        // Regression: lookup() used to return the first registered instance
+        // regardless of @Priority, so it could disagree with lookupAll().
+        lookupStrategy.init(TestService.class, new TestServiceImpl2(), true);
+        lookupStrategy.init(TestService.class, new UrgentService());
+
+        TestService single = lookupStrategy.lookup(TestService.class);
+
+        assertThat(single, instanceOf(UrgentService.class));
+        assertThat(single, is(lookupStrategy.lookupAll(TestService.class).get(0)));
+    }
+
+    @Test
+    public void testEqualPrioritiesKeepRegistrationOrder() {
+        UnannotatedService first = new UnannotatedService();
+        UnannotatedService second = new UnannotatedService();
+        lookupStrategy.init(TestService.class, first, true);
+        lookupStrategy.init(TestService.class, second);
+
+        assertThat(lookupStrategy.lookupAll(TestService.class), contains(first, second));
+        assertThat(lookupStrategy.lookup(TestService.class), is((TestService) first));
     }
 
     public static class TypedTestServiceImpl implements TypedTestService<String> {

@@ -20,6 +20,7 @@
 package io.softwareecg.wfx.lookup.serviceloader;
 
 import io.softwareecg.wfx.lookup.api.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.Priorities;
 import io.softwareecg.wfx.lookup.api.TypeRef;
 
 import java.util.*;
@@ -28,9 +29,16 @@ import java.util.stream.Collectors;
 
 /**
  * Use the javas {@link java.util.ServiceLoader} to lookup the actual instances.
- *
+ * <p>
+ * {@link jakarta.annotation.Priority @Priority} is read by the one WFX-wide
+ * rule in {@link Priorities}: {@link #lookupAll(Class)} lists the instance
+ * with the smaller value first, {@link #lookup(Class)} returns the first of
+ * that list.
+ * <p>
+ * The strategy's own priority makes it the fallback: {@code Lookup.init()}
+ * prefers a DI-backed strategy when one is on the classpath.
  */
-@jakarta.annotation.Priority(0)
+@jakarta.annotation.Priority(1000)
 public class ServiceLoaderLookupStrategy implements LookupStrategy {
 
     private final Map<Class<?>, List<Object>> lookupCache = new ConcurrentHashMap<>();
@@ -175,11 +183,16 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
         if (objects.isEmpty()) {
             return null;
         }
-        Object first = objects.get(0);
-        if (first instanceof Producer) {
-            return ((Producer<T>) first).getInstance();
+        if (objects.size() > 1) {
+            // Several candidates: the one with precedence is the head of
+            // lookupAll, so lookup(X) and lookupAll(X).get(0) always agree.
+            return lookupAll(clazz).get(0);
         }
-        return (T) first;
+        Object only = objects.get(0);
+        if (only instanceof Producer) {
+            return ((Producer<T>) only).getInstance();
+        }
+        return (T) only;
     }
 
     @Override
@@ -196,25 +209,23 @@ public class ServiceLoaderLookupStrategy implements LookupStrategy {
                     }
                     return (T) object;
                 })
-                .sorted(Comparator.comparingInt((T o) -> getPriority(o.getClass())).reversed())
+                .sorted(Priorities.comparator())
                 .collect(Collectors.toList());
     }
 
     /**
      * Get the priority for a specified class.
-     * <p>
-     * First the value of {@link jakarta.annotation.Priority} is taken. If no
-     * {@link jakarta.annotation.Priority} is available it returns 0.
      *
      * @param c Determ the priority for this class.
      * @return The priority determed for the given class.
+     * @deprecated use {@link Priorities#of(Class)}, the single place that
+     *             defines how WFX reads {@link jakarta.annotation.Priority}.
+     *             Note that an unannotated class now has the priority
+     *             {@link Priorities#DEFAULT} (last) instead of 0.
      */
+    @Deprecated
     public static int getPriority(Class<?> c) {
-        int priority = 0;
-        if (c.isAnnotationPresent(jakarta.annotation.Priority.class)) {
-            priority = c.getAnnotation(jakarta.annotation.Priority.class).value();
-        }
-        return priority;
+        return Priorities.of(c);
     }
 
     @Override

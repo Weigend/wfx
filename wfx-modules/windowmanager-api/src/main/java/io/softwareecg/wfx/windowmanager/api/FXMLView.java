@@ -310,7 +310,7 @@ public class FXMLView<C> implements View {
             Objects.requireNonNull(pos, "The initial position must be set");
             Objects.requireNonNull(file, "Can not initialize a FXMLView without a FXML file.");
 
-            FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+            FXMLLoader loader = Lookup.require(FXMLLoader.class);
             loader.setLocation(file);
             if (classLoader != null) {
                 loader.setClassLoader(classLoader);

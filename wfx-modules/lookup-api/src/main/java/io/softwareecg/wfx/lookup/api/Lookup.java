@@ -22,10 +22,7 @@ package io.softwareecg.wfx.lookup.api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.annotation.Priority;
-
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -33,7 +30,22 @@ import java.util.ServiceLoader;
 /**
  * The general service lookup for the platform.
  * <p>
- * It can work with the osgi registry or with google guice if this module is not loaded with osgi.
+ * A service locator: it resolves an interface at the moment of the call rather
+ * than when the caller is constructed, and it is available to objects no
+ * container creates — FXML controllers, views, tree items. The actual
+ * resolution is delegated to a pluggable {@link LookupStrategy} (Avaje Inject
+ * or the Java {@link ServiceLoader}).
+ * <p>
+ * Three ways to ask for a single service:
+ * <ul>
+ *     <li>{@link #lookup(Class)} returns {@code null} when there is none,</li>
+ *     <li>{@link #find(Class)} wraps that in an {@link Optional},</li>
+ *     <li>{@link #require(Class)} fails with a descriptive exception — use it
+ *     for services the caller cannot work without.</li>
+ * </ul>
+ * When several implementations exist, {@link #lookupAll(Class)} returns them
+ * in order of precedence and {@link #lookup(Class)} returns the first of that
+ * order. See {@link Priorities} for how {@code @Priority} determines it.
  * <p>
  * This class is thread-safe.
  *
@@ -56,17 +68,12 @@ public final class Lookup {
     public static void init() {
         ServiceLoader.load(LookupStrategy.class).stream()
                 .map(ServiceLoader.Provider::get)
-                .max(Comparator.comparingInt(Lookup::priority))
+                .min(Priorities.comparator())
                 .ifPresent(s -> {
                     if (getLookupStrategy() == null) {
                         init(s);
                     }
                 });
-    }
-
-    private static int priority(LookupStrategy s) {
-        Priority p = s.getClass().getAnnotation(Priority.class);
-        return p != null ? p.value() : 0;
     }
 
     /**
@@ -101,12 +108,14 @@ public final class Lookup {
     /**
      * Lookup a class from the registry.
      * <p>
-     * The returned service is that service that have the highest service ranking.
+     * If several implementations are registered, the one with precedence is
+     * returned — the first element of {@link #lookupAll(Class)}.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
      * @return A instance of the requested class or null if not found.
      * @see #find(Class) for an Optional-returning alternative
+     * @see #require(Class) for an alternative that fails instead of returning null
      */
     public static <T> T lookup(Class<T> clazz) {
         LookupStrategy strategy = getLookupStrategy();
@@ -131,9 +140,60 @@ public final class Lookup {
     }
 
     /**
+     * Lookup a class from the registry and fail if there is none.
+     * <p>
+     * Use this instead of {@link #lookup(Class)} for a service the caller
+     * cannot do without: a missing registration then surfaces right here, with
+     * the name of the missing service, instead of as a
+     * {@link NullPointerException} somewhere downstream.
+     *
+     * @param clazz The class to search.
+     * @param <T>   The type of the class to search.
+     * @return The instance of the requested class, never null.
+     * @throws IllegalStateException if the lookup is not initialised or no
+     *                               implementation of the class is registered.
+     */
+    public static <T> T require(Class<T> clazz) {
+        T service = lookup(clazz);
+        if (service == null) {
+            throw missing(clazz.getName());
+        }
+        return service;
+    }
+
+    /**
+     * Lookup an instance from the registry using a TypeRef and fail if there is none.
+     *
+     * @param type The type literal to search.
+     * @param <T>  The type of the class to search.
+     * @return The instance of the requested type, never null.
+     * @throws IllegalStateException if the lookup is not initialised or no
+     *                               implementation of the type is registered.
+     * @see #require(Class)
+     */
+    public static <T> T require(TypeRef<T> type) {
+        T service = lookup(type);
+        if (service == null) {
+            throw missing(type.getType().getTypeName());
+        }
+        return service;
+    }
+
+    private static IllegalStateException missing(String typeName) {
+        LookupStrategy strategy = getLookupStrategy();
+        if (strategy == null) {
+            return new IllegalStateException("Cannot look up " + typeName
+                    + ": the Lookup is not initialised. Call Lookup.init() first.");
+        }
+        return new IllegalStateException("No implementation of " + typeName
+                + " is registered with the Lookup (strategy: " + strategy.getClass().getName() + ").");
+    }
+
+    /**
      * Lookup an instance from the registry. The {@link TypeRef} allows to return a strong typed generic instance.
      * <p>
-     * The returned service is that service that have the highest service ranking.
+     * If several implementations are registered, the one with precedence is
+     * returned — the first element of {@link #lookupAll(TypeRef)}.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeRef}:
@@ -171,7 +231,8 @@ public final class Lookup {
     /**
      * Lookup all services for one class from the registry.
      * <p>
-     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * The list is in order of precedence, see {@link Priorities}: the service
+     * with the smallest {@code @Priority} value is the first.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
@@ -206,7 +267,8 @@ public final class Lookup {
      * Lookup all services for one class from the registry. The {@link TypeRef} allows to return a strong typed
      * generic instance.
      * <p>
-     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * The list is in order of precedence, see {@link Priorities}: the service
+     * with the smallest {@code @Priority} value is the first.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeRef}:

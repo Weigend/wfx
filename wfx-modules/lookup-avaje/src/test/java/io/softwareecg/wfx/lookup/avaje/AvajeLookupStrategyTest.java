@@ -85,11 +85,21 @@ public class AvajeLookupStrategyTest {
     public void testLookupAll() {
         List<TestService> services = Lookup.lookupAll(TestService.class);
         assertThat(services, hasSize(2));
-        // sorted by priority descending: Service1(@Priority(1)) before Service2(@Priority(-1000))
+        // in order of precedence, smaller value first: Service1(@Priority(1)) before Service2(@Priority(1000))
         assertThat(services.get(0), instanceOf(Service1.class));
         assertThat(services.get(0).sayHello(), is(equalTo("Hello Avaje")));
         assertThat(services.get(1), instanceOf(Service2.class));
         assertThat(services.get(1).sayHello(), is(equalTo("Hello Alternative")));
+    }
+
+    @Test
+    public void testLookupOfAmbiguousTypeReturnsTheHeadOfLookupAll() {
+        // Service1 and Service2 are both plain singletons, so Avaje itself
+        // cannot choose. @Priority decides, by the same rule as lookupAll.
+        TestService single = Lookup.lookup(TestService.class);
+
+        assertThat(single, instanceOf(Service1.class));
+        assertThat(single, is(Lookup.lookupAll(TestService.class).get(0)));
     }
 
     @Test
