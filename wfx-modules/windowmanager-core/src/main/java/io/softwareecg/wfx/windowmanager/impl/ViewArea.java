@@ -146,10 +146,50 @@ public class ViewArea {
         LOGGER.debug("Split area {} into \n\t{}\n\tand\n\t{}", this, first, second);
         ViewArea area = new ViewArea(parent, dragNDropManager);
         parent.replace(this, area);
-        area.setOrientation(orientation);
-        area.setFirstChild(first);
-        area.setSecondChild(second);
-        area.setEditor(area.getFirstChild().isEditor() || area.getSecondChild().isEditor());
+        area.arrange(orientation, first, second);
+    }
+
+    /**
+     * Make this area the split of the two given areas.
+     *
+     * @param orientation The split orientation.
+     * @param first       The left or upper area.
+     * @param second      The right or lower area.
+     */
+    void arrange(Orientation orientation, ViewArea first, ViewArea second) {
+        setOrientation(orientation);
+        setFirstChild(first);
+        setSecondChild(second);
+        setEditor(getFirstChild().isEditor() || getSecondChild().isEditor());
+    }
+
+    /**
+     * Get the orientation in which this area is split.
+     *
+     * @return The orientation, or null if this area is not split.
+     */
+    Orientation getOrientation() {
+        return orientation;
+    }
+
+    /**
+     * Get the position of the divider between the two children.
+     *
+     * @return The position between 0 and 1.
+     */
+    double getDividerPosition() {
+        double[] positions = outerPane.getDividerPositions();
+        return positions.length > 0 ? positions[0] : 0.5;
+    }
+
+    /**
+     * Move the divider between the two children, in a way that survives the
+     * layout passes of a window that is still being shown.
+     *
+     * @param position The position between 0 and 1.
+     */
+    void applyDividerPosition(double position) {
+        ViewStatus.applyDividerPosition(outerPane, position);
     }
 
     /**
@@ -180,7 +220,7 @@ public class ViewArea {
                 (firstSlot ? getFirstChild() : getSecondChild()).add(view, position);
             }
             else {
-                ViewContainerAreaFactory viewContainerFactory = Lookup.lookup(ViewContainerAreaFactory.class);
+                ViewContainerAreaFactory viewContainerFactory = Lookup.require(ViewContainerAreaFactory.class);
                 ViewArea target = viewContainerFactory.getInstance(dragNDropManager);
                 target.add(view, Position.CENTER);
                 if (firstSlot) {

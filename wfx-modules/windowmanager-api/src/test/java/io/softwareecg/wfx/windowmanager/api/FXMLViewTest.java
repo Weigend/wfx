@@ -160,4 +160,39 @@ public class FXMLViewTest {
             return label;
         }
     }
+
+    private static FXMLView.Builder<Object> programmatic(Object controller) {
+        return new FXMLView.Builder<>().withId("lookup:1").withTitle("lookup").withPos(Position.CENTER)
+                .withRootPane(new javafx.scene.layout.Pane()).withController(controller);
+    }
+
+    @Test
+    public void viewWithoutContextDoesNotTakePart() {
+        FXMLView<Object> view = programmatic(new Object()).clone();
+
+        assertThat(view.getLookup(), is(sameInstance(io.softwareecg.wfx.lookup.api.LookupContext.EMPTY)));
+    }
+
+    @Test
+    public void viewOffersTheContextOfItsController() {
+        io.softwareecg.wfx.lookup.api.MutableLookupContext context =
+                new io.softwareecg.wfx.lookup.api.MutableLookupContext("selection");
+        io.softwareecg.wfx.lookup.api.LookupContext.Provider controller = () -> context;
+
+        FXMLView<Object> view = programmatic(controller).clone();
+
+        assertThat(view.getLookup(), is(sameInstance((Object) context)));
+    }
+
+    @Test
+    public void contextGivenToTheBuilderWinsOverTheControllers() {
+        io.softwareecg.wfx.lookup.api.MutableLookupContext explicit =
+                new io.softwareecg.wfx.lookup.api.MutableLookupContext();
+        io.softwareecg.wfx.lookup.api.LookupContext.Provider controller =
+                io.softwareecg.wfx.lookup.api.MutableLookupContext::new;
+
+        FXMLView<Object> view = programmatic(controller).withLookup(explicit).clone();
+
+        assertThat(view.getLookup(), is(sameInstance((Object) explicit)));
+    }
 }

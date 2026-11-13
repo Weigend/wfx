@@ -60,7 +60,7 @@ public class DefaultShutdownConfirmation implements ShutdownConfirmation {
         dialog.initOwner(owner);
         dialog.setResultConverter(button -> Objects.equals(button, ButtonType.YES));
 
-        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        FXMLLoader loader = Lookup.require(FXMLLoader.class);
         loader.setLocation(getClass().getResource(DIALOG_FXML));
         try {
             dialog.setDialogPane((DialogPane) loader.load());

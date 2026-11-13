@@ -21,11 +21,14 @@ package io.softwareecg.wfx.windowmanager.impl;
 
 import io.softwareecg.wfx.windowmanager.api.Position;
 import javafx.scene.Parent;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -177,5 +180,39 @@ public class TabArea extends ViewArea {
     @Override
     public boolean dropToCenter() {
         return true;
+    }
+
+    /**
+     * Get the views of this area in the order of their tabs.
+     *
+     * @return The views, first tab first.
+     */
+    List<ViewStatus> getViewsInTabOrder() {
+        List<ViewStatus> ordered = new ArrayList<>();
+        for (Tab tab : tabPane.getTabs()) {
+            if (tab.getUserData() instanceof ViewStatus view) {
+                ordered.add(view);
+            }
+        }
+        return ordered;
+    }
+
+    /**
+     * Get the view whose tab is selected.
+     *
+     * @return The selected view, or null if this area is empty.
+     */
+    ViewStatus getSelectedView() {
+        Tab tab = tabPane.getSelectionModel().getSelectedItem();
+        return tab != null && tab.getUserData() instanceof ViewStatus view ? view : null;
+    }
+
+    /**
+     * Select the tab of the given view.
+     *
+     * @param view A view of this area.
+     */
+    void select(ViewStatus view) {
+        tabPane.getSelectionModel().select(view.getTab());
     }
 }

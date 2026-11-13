@@ -50,6 +50,11 @@ import java.io.IOException;
 public class DefaultApplicationWindow implements ApplicationWindow {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultApplicationWindow.class);
+    /**
+     * Upper bound for the orderly shutdown before the JVM exit is forced, so a
+     * hanging {@code stop()} cannot keep a windowless process around forever.
+     */
+    private static final long SHUTDOWN_TIMEOUT_MILLIS = 30_000;
     @FXML
     private MenuBar menuBar;
     @FXML
@@ -67,7 +72,7 @@ public class DefaultApplicationWindow implements ApplicationWindow {
      * @throws IOException In case of the requested fxml file can not be found or read.
      */
     public void init() throws IOException {
-        FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+        FXMLLoader loader = Lookup.require(FXMLLoader.class);
         loader.setLocation(getClass().getResource("/io/softwareecg/wfx/windowmanager/windows/DefaultApplicationWindow.fxml"));
         loader.setController(this);
         BorderPane rootPane = loader.load();
@@ -156,14 +161,47 @@ public class DefaultApplicationWindow implements ApplicationWindow {
      * @param event The window event triggered the handler.
      */
     protected void platformShutdownRequestHandler(WindowEvent event) {
-        if (Lookup.lookup(ShutdownConfirmation.class).confirm(stage)) {
-            Platform.exit();
-            // Force JVM exit in case non-daemon threads are still running.
-            System.exit(0);
+        if (Lookup.require(ShutdownConfirmation.class).confirm(stage)) {
+            exitPlatform();
         }
         else {
             event.consume();
         }
+    }
+
+    /**
+     * End the application: let JavaFX run {@code Application.stop()} — which
+     * is where the modules get their {@code stop()} call — and only then force
+     * the JVM down, in case non-daemon threads are still running.
+     * <p>
+     * {@link Platform#exit()} merely schedules the shutdown; it is carried out
+     * on the FX thread after the current event handler has returned. Calling
+     * {@link System#exit(int)} right behind it would therefore kill the JVM
+     * before any module was stopped. The FX thread ends once the toolkit has
+     * shut down, so its termination is the signal to wait for.
+     */
+    private static void exitPlatform() {
+        Thread fxThread = Platform.isFxApplicationThread() ? Thread.currentThread() : null;
+        Platform.exit();
+        Thread exit = new Thread(() -> {
+            try {
+                if (fxThread != null) {
+                    fxThread.join(SHUTDOWN_TIMEOUT_MILLIS);
+                }
+                else {
+                    Thread.sleep(SHUTDOWN_TIMEOUT_MILLIS);
+                }
+            }
+            catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            if (fxThread != null && fxThread.isAlive()) {
+                LOGGER.warn("Application did not stop within {} ms, forcing the exit.", SHUTDOWN_TIMEOUT_MILLIS);
+            }
+            System.exit(0);
+        }, "wfx-exit");
+        exit.setDaemon(true);
+        exit.start();
     }
 
     /**

@@ -20,11 +20,15 @@
 package io.softwareecg.wfx.windowmanager.impl;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
+import io.softwareecg.wfx.lookup.api.MutableLookupContext;
 import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.windowmanager.testutil.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
+import io.softwareecg.wfx.windowmanager.api.ViewLifecycle;
+import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.Pane;
@@ -793,5 +797,263 @@ public class WindowManagerImplTest {
         windowManager.restoreDefaultLayout();
 
         assertThat(windowManager.findView("tool"), is(notNullValue()));
+    }
+
+    /**
+     * Let the FX thread — on which these tests run — work off what other
+     * threads have queued with {@code Platform.runLater} so far.
+     */
+    private static void drainFxQueue() {
+        Object key = new Object();
+        Platform.runLater(() -> Platform.exitNestedEventLoop(key, null));
+        Platform.enterNestedEventLoop(key);
+    }
+
+    @Test
+    public void testRegisterFromBackgroundThreadKeepsShowViewFalse() throws Exception {
+        // Regression: the hand-over to the FX thread dropped the flag, so a
+        // view registered hidden from Module.preload() was shown anyway.
+        ViewStatus view = mockView("bgView", "bg view");
+        Thread background = new Thread(() -> windowManager.register(view.getView(), false));
+        background.start();
+        background.join();
+        drainFxQueue();
+
+        assertThat(views, hasKey("bgView"));
+        verify(mainWindow, never()).add(any(ViewStatus.class), any(Position.class));
+    }
+
+    @Test
+    public void testRegisterWithParentFromBackgroundThreadKeepsShowViewFalse() throws Exception {
+        views.put("view1", view1);
+        ViewStatus view = mockView("bgChild", "bg child");
+        Thread background = new Thread(() -> windowManager.register(view.getView(), view1.getView(), false));
+        background.start();
+        background.join();
+        drainFxQueue();
+
+        assertThat(views, hasKey("bgChild"));
+        verify(view1.getArea(), never()).add(any(ViewStatus.class), any(Position.class));
+    }
+
+    /** Counts the lifecycle callbacks a view's root node receives. */
+    private static final class CountingHook implements ViewLifecycle.Hook {
+        private int attached;
+        private int detached;
+
+        static CountingHook on(View view) {
+            CountingHook hook = new CountingHook();
+            ViewLifecycle.bind(view.getRootNode(), hook);
+            return hook;
+        }
+
+        @Override
+        public void attached() {
+            attached++;
+        }
+
+        @Override
+        public void detached() {
+            detached++;
+        }
+    }
+
+    @Test
+    public void testUnregisterDetachesTheView() {
+        ViewStatus view = mockView("v", "v");
+        CountingHook hook = CountingHook.on(view.getView());
+
+        windowManager.register(view.getView());
+        assertThat(hook.attached, is(1));
+        assertThat(hook.detached, is(0));
+
+        windowManager.unregister(view.getView());
+        assertThat(hook.detached, is(1));
+    }
+
+    @Test
+    public void testClosingAToolDoesNotDetachIt() {
+        ViewStatus tool = mockView("tool", "tool");
+        CountingHook hook = CountingHook.on(tool.getView());
+        windowManager.register(tool.getView());
+
+        windowManager.closeView(tool.getView());
+        windowManager.showView(tool.getView());
+
+        assertThat("a hidden tool stays registered and must keep its subscriptions", hook.detached, is(0));
+    }
+
+    @Test
+    public void testReRegisterWithParentDoesNotDetach() {
+        ViewStatus parent = mockView("parent", "parent");
+        ViewStatus child = mockView("child", "child");
+        CountingHook hook = CountingHook.on(child.getView());
+        windowManager.register(parent.getView());
+        windowManager.register(child.getView(), parent.getView());
+
+        windowManager.register(child.getView(), parent.getView());
+
+        assertThat(hook.detached, is(0));
+        assertThat(windowManager.findView("child"), is(notNullValue()));
+    }
+
+    @Test
+    public void testClosingADocumentDetachesIt() {
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        CountingHook hook = CountingHook.on(doc.getView());
+        windowManager.register(doc.getView());
+
+        windowManager.closeView(doc.getView());
+
+        assertThat(hook.detached, is(1));
+    }
+
+    @Test
+    public void testRestoreDefaultLayoutDetachesDroppedDocumentsOnly() {
+        ViewStatus tool = mockView("tool", "tool");
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        CountingHook toolHook = CountingHook.on(tool.getView());
+        CountingHook docHook = CountingHook.on(doc.getView());
+        windowManager.register(tool.getView());
+        windowManager.register(doc.getView());
+
+        windowManager.restoreDefaultLayout();
+
+        assertThat(docHook.detached, is(1));
+        assertThat(toolHook.detached, is(0));
+    }
+
+    @Test
+    public void testRemoveWindowUnregistersItsDocuments() throws Exception {
+        ViewStatus doc = mockView("doc", "doc");
+        when(doc.getView().getKind()).thenReturn(ViewKind.DOCUMENT);
+        views.put("view1", view1);
+        views.put("doc", doc);
+
+        RootArea subWindow = mock(RootArea.class);
+        TabArea tabArea = mock(TabArea.class);
+        when(tabArea.getRootArea()).thenReturn(subWindow);
+        when(view1.getArea()).thenReturn(tabArea);
+        when(doc.getArea()).thenReturn(tabArea);
+        mockStageForArea(subWindow);
+
+        windowManager.remove(subWindow);
+
+        assertThat("a tool survives the window it was shown in", windowManager.findView("view1"), is(notNullValue()));
+        assertThat("a document does not", windowManager.findView("doc"), is(nullValue()));
+    }
+
+    /** A registered, shown view that offers the given context. */
+    private ViewStatus viewWithLookup(String id, LookupContext lookup) {
+        ViewStatus view = mockView(id, id);
+        when(view.getView().getLookup()).thenReturn(lookup);
+        windowManager.register(view.getView());
+        return view;
+    }
+
+    @Test
+    public void testActiveLookupIsEmptyWithoutAnyView() {
+        assertThat(windowManager.getActiveLookup().lookupAll(Object.class), hasSize(0));
+    }
+
+    @Test
+    public void testActiveLookupFollowsTheFocusedView() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus editor = viewWithLookup("editor", new MutableLookupContext("file X"));
+
+        windowManager.setFocusedView(explorer.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+
+        windowManager.setFocusedView(editor.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("file X"));
+    }
+
+    @Test
+    public void testActiveLookupStaysTheSameObjectAndNotifiesOnFocusChange() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus editor = viewWithLookup("editor", new MutableLookupContext("file X"));
+        LookupContext active = windowManager.getActiveLookup();
+        AtomicReference<List<String>> seen = new AtomicReference<>();
+        active.observe(String.class, seen::set);
+
+        windowManager.setFocusedView(explorer.getView());
+        assertThat(seen.get(), contains("project A"));
+        windowManager.setFocusedView(editor.getView());
+        assertThat(seen.get(), contains("file X"));
+
+        assertThat(windowManager.getActiveLookup(), is(sameInstance(active)));
+    }
+
+    @Test
+    public void testActiveLookupReportsChangesWithinTheFocusedView() {
+        MutableLookupContext selection = new MutableLookupContext();
+        ViewStatus explorer = viewWithLookup("explorer", selection);
+        windowManager.setFocusedView(explorer.getView());
+        AtomicReference<List<String>> seen = new AtomicReference<>();
+        windowManager.getActiveLookup().observe(String.class, seen::set);
+
+        selection.set(List.of("project B"));
+
+        assertThat(seen.get(), contains("project B"));
+    }
+
+    @Test
+    public void testViewWithoutLookupDoesNotTakeOverTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus console = viewWithLookup("console", LookupContext.EMPTY);
+        ViewStatus legacy = mockView("legacy", "legacy");     // getLookup() answers null
+        windowManager.register(legacy.getView());
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.setFocusedView(console.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+
+        windowManager.setFocusedView(legacy.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+    }
+
+    @Test
+    public void testViewWithEmptyMutableLookupClearsTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus welcome = viewWithLookup("welcome", new MutableLookupContext());
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.setFocusedView(welcome.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testUnregisteringTheSupplyingViewEmptiesTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.unregister(explorer.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testClosingTheSupplyingToolEmptiesTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.closeView(explorer.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testClosingAnotherViewKeepsTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus other = viewWithLookup("other", LookupContext.EMPTY);
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.closeView(other.getView());
+        windowManager.unregister(other.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
     }
 }

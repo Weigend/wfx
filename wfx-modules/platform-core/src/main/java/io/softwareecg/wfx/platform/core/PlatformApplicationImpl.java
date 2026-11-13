@@ -97,7 +97,10 @@ public class PlatformApplicationImpl implements PlatformApplication {
      */
     @Override
     public void stop() {
-        mainApplicationStage.close();
+        // Null when the startup failed before the main window was shown.
+        if (mainApplicationStage != null) {
+            mainApplicationStage.close();
+        }
     }
 
     /**
@@ -111,7 +114,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
     public void showPreloader(Stage stage) throws PlatformException {
         try {
             URL splashFxmlUrl = findSplashScreen();
-            FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+            FXMLLoader loader = Lookup.require(FXMLLoader.class);
             loader.setLocation(splashFxmlUrl);
             Parent parent = loader.load();
             progressController = loader.getController();
@@ -119,7 +122,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
             startupProgressListener = event ->
                     progressController.progress(
                         new ProgressEvent(event.getMessage(), event.getProgress(), event.getSource()));
-            EventBus<StartupProgressEvent> bus = Lookup.lookup(EventBus.class);
+            EventBus<StartupProgressEvent> bus = Lookup.require(EventBus.class);
             bus.subscribe(StartupProgressEvent.class, startupProgressListener);
             Scene scene = new Scene(parent);
             stage.setScene(scene);
@@ -144,7 +147,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
         }
         if (startupProgressListener != null) {
             @SuppressWarnings("unchecked")
-            EventBus<StartupProgressEvent> bus = Lookup.lookup(EventBus.class);
+            EventBus<StartupProgressEvent> bus = Lookup.require(EventBus.class);
             bus.unsubscribe(StartupProgressEvent.class, startupProgressListener);
             startupProgressListener = null;
         }
@@ -171,7 +174,7 @@ public class PlatformApplicationImpl implements PlatformApplication {
         }
         preloaderStage = null;
         mainApplicationStage = stage;
-        WindowManager windowManager = Lookup.lookup(WindowManager.class);
+        WindowManager windowManager = Lookup.require(WindowManager.class);
         ApplicationWindow window = Lookup.lookupAll(ApplicationWindow.class).stream()
                 .findFirst()
                 .orElseThrow(() -> new PlatformException("No ApplicationWindow registered"));

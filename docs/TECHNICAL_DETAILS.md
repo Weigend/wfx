@@ -67,13 +67,21 @@ WFX supports two startup styles:
      `META-INF/services/io.softwareecg.wfx.platform.api.Module`.
    - This is useful for small apps and tests that do not need DI.
 
-## Startup Order
+## Priority
 
-`Main.init()` sorts modules by `jakarta.annotation.Priority`:
+`jakarta.annotation.Priority` is read by one rule, defined in
+`io.softwareecg.wfx.lookup.api.Priorities`: **a smaller value takes
+precedence**, and a class without the annotation (`Integer.MAX_VALUE`)
+comes last. Equal priorities keep their registration order. The rule
+applies wherever WFX orders or picks candidates:
 
-- smaller value = earlier
-- unannotated modules default to `Integer.MAX_VALUE`
-- both `preload()` and `start()` use the same order
+- `Lookup.lookupAll(X)` lists the smaller value first
+- `Lookup.lookup(X)` returns the first of that order (with Avaje, after
+  `@Primary` / `@Secondary` have been honoured)
+- `Main.init()` sorts modules by it; `preload()`, `start()` and `stop()`
+  use that order
+- `Lookup.init()` picks the `LookupStrategy` with the smaller value
+  (Avaje: 100, ServiceLoader: 1000)
 
 ## Lookup System
 
@@ -86,12 +94,39 @@ EventBus<ProgressEvent> bus = Lookup.lookup(EventBus.class);
 List<Module> modules = Lookup.lookupAll(Module.class);
 ```
 
+`Lookup.lookup` returns `null` when nothing is registered,
+`Lookup.find` an empty `Optional`, and `Lookup.require` throws an
+`IllegalStateException` naming the missing service. WFX uses `require`
+for the services it cannot work without.
+
 For parameterised types, WFX provides its own CDI-free type reference:
 
 ```java
 EventBus<ProgressEvent> bus =
         Lookup.lookup(new TypeRef<EventBus<ProgressEvent>>() {});
 ```
+
+## Context Lookups
+
+`Lookup` is static and global; its content is fixed after startup. For
+state that belongs to one view and changes while the application runs,
+`lookup-api` has `LookupContext`:
+
+| Type | Role |
+|------|------|
+| `LookupContext` | read side: `lookup`, `find`, `lookupAll`, `observe(type, listener)` |
+| `MutableLookupContext` | content owned by a view or controller: `add`, `remove`, `set`, `clear` |
+| `ProxyLookupContext` | stands in for an exchangeable context; keeps observations across the exchange |
+| `LookupContext.Provider` | implemented by controllers; `FXMLView` exposes it as `View.getLookup()` |
+
+`WindowManagerImpl` owns one `ProxyLookupContext`, returned by
+`WindowManager.getActiveLookup()`. `setFocusedView` points it at the
+focused view's context unless that is `LookupContext.EMPTY`; closing or
+unregistering the supplying view resets it to empty. Observers are told
+only when the list of instances of their type actually differs, whether
+through a content change or a delegate exchange. `lookup-api` has no
+JavaFX dependency: listeners run on the thread that made the change,
+which for view state is the JavaFX Application Thread.
 
 ## DI Boundary
 

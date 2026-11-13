@@ -12,6 +12,7 @@ synchronous in-process event bus.
 ## Features
 
 - **Window Management** - tab-based views with drag & drop, splittable areas, and registration-order independent layouts
+- **Layout persistence** - `saveLayout()` / `restoreLayout()` capture the arrangement of the views (tabs, splits, dividers, detached windows) as text, so an application can reopen the way the user left it
 - **View Lifecycle** - every view declares its kind via `ViewKind` (`TOOL` or `DOCUMENT`); close, `restoreDefaultLayout()`, and the auto-built View menu all follow that classification
 - **Auto-built View menu** - optional `view-menu` extension adds a top-level View entry per registered TOOL view, kept in sync with the registry
 - **Application Window** - `DefaultApplicationWindow` ships with menu, tool, and status bar slots ready to be populated; can be subclassed for a custom shell
@@ -21,7 +22,8 @@ synchronous in-process event bus.
 - **Preloader** - splash window shown while modules run their `preload()` work, with progress events on the platform event bus
 - **Bootstrapping Support** - clear `init` → preloader → `preload()` → main window → `start()` lifecycle so expensive work happens at the right phase
 - **Event Bus** - synchronous in-process bus with type-hierarchy dispatch and `@EventSubscriber` auto-wiring
-- **Lookup** - service-locator boundary with pluggable strategies (Avaje / ServiceLoader); used at framework edges, not for domain logic
+- **Context lookups** - every view can offer a `LookupContext` (its selection, its document); `WindowManager.getActiveLookup()` follows the view the user works in and reports changes, so menus, toolbars and other views react to "the current selection" without knowing where it comes from
+- **Lookup** - service locator with pluggable strategies (Avaje / ServiceLoader): resolves an interface at the moment of the call, also from objects no container creates (FXML controllers, views, tree items)
 - **Avaje Inject Integration** - compile-time DI for framework infrastructure
 - **ServiceLoader Support** - lightweight non-DI fallback for simple applications and tests
 - **FXML Integration** - `FXMLView.Builder` ties FXML files to controllers and registration metadata
@@ -77,7 +79,7 @@ The easiest way to use WFX is the `wfx-all` aggregator dependency:
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>wfx-all</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -396,6 +398,19 @@ beans that are not loaded through FXML, call
 `AnnotationProcessor.process(this)` once after construction to register
 their handlers.
 
+A subscription keeps its subscriber alive: the bus holds on to the object
+until the subscription ends. For FXML controllers WFX ends it for you —
+when the view showing the loaded FXML is unregistered from the
+`WindowManager` (a `DOCUMENT` tab is closed, `unregister(view)` is
+called), the `@EventSubscriber` subscriptions of its controllers,
+including those of `<fx:include>` files, are removed, and they are
+restored should the same view instance be registered again. Application-
+wide `@Singleton` controllers are left alone. For everything you
+subscribed yourself with `AnnotationProcessor.process(obj)` — tree
+items, helper objects — call `AnnotationProcessor.unprocess(obj)` when
+the object is no longer needed; otherwise it lives as long as the
+application.
+
 Listeners run synchronously on the publishing thread. If a handler needs to
 touch the UI, switch to the JavaFX thread itself with `Platform.runLater`.
 
@@ -431,6 +446,107 @@ import jakarta.inject.Singleton;
 @Priority(1000)   // smaller value = earlier; default is Integer.MAX_VALUE
 public class MySidebarModule implements Module { ... }
 ```
+
+### Looking Up Services
+
+`Lookup` resolves an interface at the moment of the call. There are three
+ways to ask for a single service; pick by what should happen when there is
+none:
+
+```java
+WindowManager wm   = Lookup.require(WindowManager.class);   // fails with a message naming the missing service
+ImportModule first = Lookup.lookup(ImportModule.class);     // null if there is none
+Optional<ImportModule> maybe = Lookup.find(ImportModule.class);
+```
+
+`Lookup.lookupAll(X.class)` returns every implementation, in order of
+precedence, and `Lookup.lookup(X.class)` returns the first of them.
+
+**One rule for `@Priority`: a smaller value takes precedence.** It comes
+first in `lookupAll`, wins in `lookup`, and — for modules — is preloaded,
+started and stopped earlier. A class without `@Priority` comes last;
+equal priorities keep the order in which they were registered. With
+Avaje, `@Primary` and `@Secondary` are honoured by `lookup` before
+`@Priority` is consulted, exactly as for injection.
+
+> **Changed in 1.2.0.** `lookupAll` used to list the *larger*
+> value first (and treated a missing annotation as 0), while the module
+> order and the Avaje `lookup` already preferred the smaller one, and the
+> ServiceLoader `lookup` ignored `@Priority` altogether. If you rely on
+> the order of a `lookupAll` result for classes that carry `@Priority`,
+> swap their values. A custom `LookupStrategy` now needs a value below
+> 100 to be preferred over the Avaje strategy.
+
+### Sharing the Selection: Context Lookups
+
+`Lookup` answers "which service implements this interface?" — once, for
+the whole application. A `LookupContext` answers "what is this view
+currently about?", and the answer changes as the user works. It is the
+WFX counterpart of a NetBeans `TopComponent` lookup.
+
+**A view offers its context.** Let the controller implement
+`LookupContext.Provider` and keep the content up to date; `FXMLView`
+picks it up as `View.getLookup()`:
+
+```java
+public class ExplorerController implements LookupContext.Provider {
+
+    @FXML private TreeView<Project> tree;
+
+    private final MutableLookupContext lookup = new MutableLookupContext();
+
+    @Override
+    public LookupContext getLookup() { return lookup; }
+
+    @FXML
+    public void initialize() {
+        tree.getSelectionModel().selectedItemProperty().addListener((o, old, item) ->
+                lookup.set(item == null ? List.of() : List.of(item.getValue())));
+    }
+}
+```
+
+Put in whatever describes the selection: the domain object itself, or
+small capability objects (`Closeable`, `Renamable`, …) that actions look
+for. A programmatic `View` overrides `getLookup()` directly.
+
+**Everyone else observes the active context.**
+`WindowManager.getActiveLookup()` is the context of the view the user is
+working in. The object you get stays the same; its content follows the
+focus:
+
+```java
+LookupContext active = Lookup.require(WindowManager.class).getActiveLookup();
+
+// enable an action only while a project is selected — in whichever view
+active.observe(Project.class, projects -> closeItem.setDisable(projects.isEmpty()));
+
+// or just ask
+Project current = active.lookup(Project.class);          // null if none
+List<Project> all = active.lookupAll(Project.class);
+```
+
+The listener gets the new list whenever the instances of that type
+change — because the selection changed or because the user moved to
+another view — and is not bothered by changes to other types. It is not
+called for the state at the time of `observe`; ask `lookupAll` for that.
+`observe` returns a `Subscription`; `cancel()` it when the observer goes
+away (for a controller, when its view is closed), otherwise the context
+keeps the listener alive.
+
+Three rules decide what is active:
+
+- When a view gets the focus, its context becomes the active one.
+- A view that offers no context (`LookupContext.EMPTY`, the default)
+  does not take part: focusing a console or a log view leaves the active
+  context — and the actions enabled by it — as it is. A view that should
+  clear the selection when focused returns an empty
+  `MutableLookupContext` instead.
+- When the view that supplies the active context is closed or
+  unregistered, the active context becomes empty.
+
+The `example-gui` module shows both sides: the explorer publishes its
+selected tree item, the main view displays it.
 
 ## Application Lifecycle
 
@@ -480,8 +596,14 @@ window is shown. Use it for work that needs the live menu/toolbar/dock
 area: binding menu items, focusing an initial view, registering UI-side
 event subscribers.
 
-**`stop()`** runs on shutdown. Persist user state, close resources,
-unsubscribe long-lived listeners.
+**`stop()`** runs on shutdown, on the JavaFX Application Thread, while
+the windows are still open. Persist user state, close resources,
+unsubscribe long-lived listeners. Closing the main window lets every
+module finish its `stop()` before the JVM exits; a `stop()` that does not
+return is cut off after 30 seconds.
+
+A module that throws from `preload()`, `start()` or `stop()` is logged
+and skipped; the other modules and the application carry on.
 
 ## Recipes
 
@@ -514,7 +636,7 @@ keep `ProgressController` as its `fx:controller`:
 The `progressBar` and `progressText` IDs are required — the controller
 binds them to the `StartupProgressEvent` stream.
 
-A future 1.1 release will add a `SplashConfig.builder()` so you do not
+A future release will add a `SplashConfig.builder()` so you do not
 have to write FXML at all for simple branding overrides.
 
 ### Replacing the built-in status bar
@@ -583,8 +705,76 @@ Then register it like any other view:
 Lookup.lookup(WindowManager.class).register(new MyProgrammaticView());
 ```
 
-A future 1.1 release will add a `SimpleView.Builder` that condenses the
+A future release will add a `SimpleView.Builder` that condenses the
 six-method boilerplate into a fluent builder call.
+
+### Remembering the layout between sessions
+
+`WindowManager.saveLayout()` returns the current arrangement of the views
+as text: which views share a tab pane and in which order, how the panes
+are split and where the dividers sit, the selected tabs, the hidden
+views, and the detached windows with their position and size.
+`restoreLayout(text)` arranges the registered views accordingly. Where
+the text is kept is up to the application — a file in the user's
+configuration directory is the obvious place:
+
+```java
+@Singleton
+public class LayoutModule implements Module {
+
+    private static final Path FILE =
+            Path.of(System.getProperty("user.home"), ".myapp", "layout.properties");
+
+    @Override public void preload() { }
+
+    @Override
+    public void start() {            // FX thread, after every module's preload()
+        if (Files.isReadable(FILE)) {
+            try {
+                Lookup.require(WindowManager.class).restoreLayout(Files.readString(FILE));
+            } catch (IOException e) {
+                // keep the default layout
+            }
+        }
+    }
+
+    @Override
+    public void stop() {             // FX thread, windows are still open
+        try {
+            Files.createDirectories(FILE.getParent());
+            Files.writeString(FILE, Lookup.require(WindowManager.class).saveLayout());
+        } catch (IOException e) {
+            // not worth failing the shutdown
+        }
+    }
+}
+```
+
+Views registered in `preload()` are all in place when the first
+`start()` runs. If a module registers views in its own `start()`, give
+the module that restores the layout a larger `@Priority` value so it
+starts afterwards.
+
+The layout refers to views by id, so it only places views that are
+registered when `restoreLayout` runs:
+
+- A view the layout mentions but that is not registered — a document that
+  was not reopened, a tool that no longer exists — is skipped. A pane or
+  detached window left empty by that is dropped. To bring documents back,
+  register them before restoring.
+- A registered view the layout does not know — a tool added by a newer
+  version of the application — keeps its state; if it is shown, it goes
+  to its default position.
+- Text that is not a layout (or one written by an incompatible future
+  version) makes `restoreLayout` return `false` and leaves the current
+  arrangement untouched.
+
+The position and size of the main window are not part of the layout; the
+main window belongs to the `ApplicationWindow`. `restoreDefaultLayout()`
+still returns to the arrangement the modules registered.
+
+The `example-gui` module does exactly this in
+[`ExampleGuiModule`](wfx-modules/example-gui/src/main/java/io/softwareecg/wfx/examplegui/ExampleGuiModule.java).
 
 ### Auto-built View menu
 
@@ -602,7 +792,7 @@ Add the runtime dependency to the module that bundles your application
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>view-menu</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>1.2.0</version>
     <scope>runtime</scope>
 </dependency>
 ```

@@ -19,9 +19,13 @@
  */
 package io.softwareecg.wfx.windowmanager.impl;
 
+import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
+import io.softwareecg.wfx.lookup.api.ProxyLookupContext;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
+import io.softwareecg.wfx.windowmanager.api.ViewLifecycle;
 import io.softwareecg.wfx.windowmanager.api.WindowFactory;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -29,16 +33,21 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -65,6 +74,19 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     private final LinkedHashMap<String, ViewStatus> toolViewsByID = new LinkedHashMap<>();
     private final ReadOnlyListWrapper<View> toolViews = new ReadOnlyListWrapper<>(this, "toolViews", FXCollections.observableArrayList());
+
+    private static final double DEFAULT_WINDOW_WIDTH = 800;
+    private static final double DEFAULT_WINDOW_HEIGHT = 600;
+
+    /**
+     * The context of the view the user is working in, see
+     * {@link #getActiveLookup()}.
+     */
+    private final ProxyLookupContext activeLookup = new ProxyLookupContext();
+    /**
+     * The view whose context {@link #activeLookup} currently stands in for.
+     */
+    private View activeLookupOwner;
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -102,7 +124,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> register(view));
+            Platform.runLater(() -> register(view, showView));
             return;
         }
         ViewStatus v = new ViewStatus(view);
@@ -129,7 +151,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, final View parent, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> register(view, parent));
+            Platform.runLater(() -> register(view, parent, showView));
             return;
         }
         if (!viewsStatus.containsKey(parent.getViewId())) {
@@ -139,7 +161,9 @@ public class WindowManagerImpl implements MultiWindowManager {
         ViewStatus parentStatus = viewsStatus.get(parent.getViewId());
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
-        boolean show = unregister(view) || showView;
+        // Re-registering is not a goodbye: keep the lifecycle hooks of the
+        // view attached while it moves to its new place.
+        boolean show = unregister(view, false) || showView;
         ViewArea area = findAreaToAdd(parentStatus);
         if (area == null) {
             area = getMainRootArea();
@@ -193,6 +217,9 @@ public class WindowManagerImpl implements MultiWindowManager {
             if (toolViewsByID.putIfAbsent(viewStatus.getView().getViewId(), viewStatus) == null) {
                 toolViews.add(viewStatus.getView());
             }
+            // A tool closed via the X button stays registered, but it must
+            // not go on supplying the active context while hidden.
+            viewStatus.setOnTabClosed(vs -> releaseActiveLookupIfOwnerIsGone());
         }
         else if (viewStatus.getView().getKind() == ViewKind.DOCUMENT) {
             // Closing a DOCUMENT tab via the X button must fully unregister
@@ -200,12 +227,17 @@ public class WindowManagerImpl implements MultiWindowManager {
             // good for TOOLs, leaks ViewStatus instances for DOCUMENTs.
             viewStatus.setOnTabClosed(vs -> unregister(vs.getView()));
         }
+        // Tell whoever built the view's content that it is (still) in use.
+        ViewLifecycle.attached(viewStatus.getView().getRootNode());
         boolean shown = false;
         if (show && viewArea != null && position != null) {
             viewArea.add(viewStatus, position);
             shown = true;
         }
         setDividerPositions();
+        // Registering under an existing id replaces the old view instance,
+        // and a re-registration may leave the view hidden.
+        releaseActiveLookupIfOwnerIsGone();
         // A freshly shown view must own the logical focus. If TabArea.add()
         // already fired setFocusedView via its selection listener this is a
         // no-op (setFocusedView is idempotent for same-value calls); otherwise
@@ -219,10 +251,28 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     @Override
     public boolean unregister(View view) {
-        if (!viewsStatus.containsKey(view.getViewId())) {
+        return unregister(view, true);
+    }
+
+    /**
+     * Unregister a view and evict it from the tool registry.
+     *
+     * @param view   The view to unregister.
+     * @param detach True if the view is gone for good and its lifecycle hooks
+     *               should be told so; false if it is about to be registered
+     *               again.
+     * @return True if the view was registered.
+     */
+    private boolean unregister(View view, boolean detach) {
+        ViewStatus status = viewsStatus.get(view.getViewId());
+        if (status == null) {
             return false;
         }
         unregisterImpl(view);
+        releaseActiveLookupIfOwnerIsGone();
+        if (detach) {
+            ViewLifecycle.detached(status.getView().getRootNode());
+        }
         // Explicit unregister also evicts the view from the tool registry.
         // closeView on a TOOL only hides; unregister is the "gone for good"
         // path that should also strip it from the auto View menu.
@@ -289,6 +339,12 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         List<RootArea> currentSubwindows = new ArrayList<>(subWindows);
         currentSubwindows.forEach(this::remove);
+        // Everything that is not a tool is dropped by the reset below and
+        // never comes back: release those views like an unregister would.
+        List<View> dropped = viewsStatus.values().stream()
+                .map(ViewStatus::getView)
+                .filter(view -> !toolViewsByID.containsKey(view.getViewId()))
+                .collect(Collectors.toList());
         rootPane.getChildren().clear();
         viewsStatus.clear();
         views.clear();
@@ -317,6 +373,275 @@ public class WindowManagerImpl implements MultiWindowManager {
             restoringLayout = false;
         }
         setDividerPositions();
+        releaseActiveLookupIfOwnerIsGone();
+        dropped.forEach(view -> ViewLifecycle.detached(view.getRootNode()));
+    }
+
+    @Override
+    public String saveLayout() {
+        List<LayoutSnapshot.Window> windows = new ArrayList<>();
+        for (RootArea subWindow : subWindows) {
+            Stage stage = stageOf(subWindow);
+            if (stage != null) {
+                windows.add(new LayoutSnapshot.Window(
+                        finite(stage.getX(), 0), finite(stage.getY(), 0),
+                        finite(stage.getWidth(), DEFAULT_WINDOW_WIDTH), finite(stage.getHeight(), DEFAULT_WINDOW_HEIGHT),
+                        stage.isMaximized(), capture(subWindow.getFirstChild())));
+            }
+        }
+        List<String> hidden = viewsStatus.values().stream()
+                .filter(status -> status.getArea() == null)
+                .map(status -> status.getView().getViewId())
+                .collect(Collectors.toList());
+        View focused = getFocusedView();
+        String focusedId = focused != null && hasRegisteredView(focused) ? focused.getViewId() : null;
+        return new LayoutSnapshot(capture(getMainRootArea().getFirstChild()), windows, hidden, focusedId).write();
+    }
+
+    /**
+     * A stage that has not been placed yet reports NaN for its bounds.
+     */
+    private static double finite(double value, double fallback) {
+        return Double.isNaN(value) || Double.isInfinite(value) ? fallback : value;
+    }
+
+    /**
+     * Describe the given area and everything below it.
+     */
+    private static LayoutSnapshot.Area capture(ViewArea area) {
+        if (area instanceof TabArea tabs) {
+            ViewStatus selected = tabs.getSelectedView();
+            return new LayoutSnapshot.Tabs(tabs.isEditor(),
+                    tabs.getViewsInTabOrder().stream()
+                            .map(status -> status.getView().getViewId())
+                            .collect(Collectors.toList()),
+                    selected != null ? selected.getView().getViewId() : null);
+        }
+        if (area == null || area.getOrientation() == null
+                || area.getFirstChild() == null || area.getSecondChild() == null) {
+            // Not a tab pane and not a split: an area of a kind this window
+            // manager did not create. Record its place, it has no views of ours.
+            return new LayoutSnapshot.Tabs(area != null && area.isEditor(), List.of(), null);
+        }
+        return new LayoutSnapshot.Split(area.getOrientation(), area.getDividerPosition(),
+                capture(area.getFirstChild()), capture(area.getSecondChild()));
+    }
+
+    @Override
+    public boolean restoreLayout(String layout) {
+        final LayoutSnapshot snapshot;
+        try {
+            snapshot = LayoutSnapshot.parse(layout);
+        }
+        catch (IllegalArgumentException e) {
+            LOGGER.warn("Can not restore the layout, keeping the current one: {}", e.getMessage());
+            return false;
+        }
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> applyLayout(snapshot));
+        }
+        else {
+            applyLayout(snapshot);
+        }
+        return true;
+    }
+
+    /**
+     * State of one {@link #applyLayout(LayoutSnapshot)} run.
+     */
+    private static final class LayoutBuild {
+        /** Ids of the views that already have their place. */
+        private final Set<String> placed = new HashSet<>();
+        /** Divider moves, deferred until the whole tree is attached. */
+        private final List<Runnable> dividers = new ArrayList<>();
+        /** Whether the tree under construction still lacks its editor pane. */
+        private boolean editorMissing;
+        /** Whether an editor pane is kept even if none of its views is left. */
+        private boolean keepEmptyEditor;
+    }
+
+    /**
+     * Take the current arrangement apart and put the registered views
+     * together again as the snapshot describes.
+     */
+    private void applyLayout(LayoutSnapshot snapshot) {
+        Set<String> shownBefore = viewsStatus.values().stream()
+                .filter(status -> status.getArea() != null)
+                .map(status -> status.getView().getViewId())
+                .collect(Collectors.toSet());
+        Set<String> known = new HashSet<>(snapshot.hidden());
+        collectViewIds(snapshot.main(), known);
+        snapshot.windows().forEach(window -> collectViewIds(window.root(), known));
+
+        // Take everything apart. Unlike restoreDefaultLayout() this keeps
+        // every registration — documents included — and only moves the views.
+        for (ViewStatus status : viewsStatus.values()) {
+            TabArea area = status.getArea();
+            if (area != null) {
+                area.remove(status, false);
+            }
+            status.setStatus(ViewStatus.Status.HIDDEN);
+        }
+        for (RootArea subWindow : new ArrayList<>(subWindows)) {
+            Stage stage = stageOf(subWindow);
+            if (stage != null) {
+                stage.close();
+            }
+        }
+        subWindows.clear();
+        rootPane.getChildren().clear();
+        RootArea root = new RootArea(rootPane, dragNDropManager, false);
+        mainRootArea.set(root);
+
+        LayoutBuild build = new LayoutBuild();
+        // The main window always needs the pane that takes the CENTER views.
+        build.editorMissing = true;
+        build.keepEmptyEditor = true;
+        ViewArea mainTree = build(snapshot.main(), root, build);
+        if (mainTree != null) {
+            if (build.editorMissing) {
+                // The layout names no editor pane. Appoint the first pane, or
+                // views registered at CENTER would have nowhere to go.
+                for (ViewArea area = mainTree; area != null; area = area.getFirstChild()) {
+                    area.setEditor(true);
+                }
+            }
+            root.setFirstChild(mainTree);
+        }
+        for (LayoutSnapshot.Window window : snapshot.windows()) {
+            openWindow(window, build);
+        }
+
+        // Views the layout has never heard of stay as they were: shown ones
+        // go to their default position.
+        List<ViewStatus> unknownShown = viewsStatus.values().stream()
+                .filter(status -> !known.contains(status.getView().getViewId()))
+                .filter(status -> shownBefore.contains(status.getView().getViewId()))
+                .collect(Collectors.toList());
+        for (ViewStatus status : unknownShown) {
+            status.restoreDefault();
+            ViewArea target = status.getParent() != null ? findAreaToAdd(status.getParent()) : null;
+            (target != null ? target : root).add(status, status.getPosition());
+        }
+        unknownShown.forEach(ViewStatus::setDividerPositions);
+        build.dividers.forEach(Runnable::run);
+
+        releaseActiveLookupIfOwnerIsGone();
+        ViewStatus focused = snapshot.focused() != null ? viewsStatus.get(snapshot.focused()) : null;
+        if (focused != null && focused.getArea() != null) {
+            focused.getArea().select(focused);
+            setFocusedView(focused.getView());
+        }
+    }
+
+    private static void collectViewIds(LayoutSnapshot.Area area, Set<String> ids) {
+        if (area instanceof LayoutSnapshot.Tabs tabs) {
+            ids.addAll(tabs.views());
+        }
+        else if (area instanceof LayoutSnapshot.Split split) {
+            collectViewIds(split.first(), ids);
+            collectViewIds(split.second(), ids);
+        }
+    }
+
+    /**
+     * Build the areas for one node of a snapshot and fill them with the
+     * registered views.
+     *
+     * @param node   the node to build
+     * @param parent the area the result will be attached to
+     * @param build  the state of the current run
+     * @return the area, not yet attached to {@code parent}; null if none of
+     *         the node's views is registered any more
+     */
+    private ViewArea build(LayoutSnapshot.Area node, ViewArea parent, LayoutBuild build) {
+        if (node instanceof LayoutSnapshot.Tabs tabs) {
+            return buildTabs(tabs, parent, build);
+        }
+        LayoutSnapshot.Split split = (LayoutSnapshot.Split) node;
+        ViewArea area = new ViewArea(parent, dragNDropManager);
+        ViewArea first = build(split.first(), area, build);
+        ViewArea second = build(split.second(), area, build);
+        if (first == null || second == null) {
+            // One side has nothing to show: no need for a split, the other
+            // side (if any) takes the whole place.
+            return first != null ? first : second;
+        }
+        area.arrange(split.orientation(), first, second);
+        build.dividers.add(() -> area.applyDividerPosition(split.divider()));
+        return area;
+    }
+
+    private ViewArea buildTabs(LayoutSnapshot.Tabs tabs, ViewArea parent, LayoutBuild build) {
+        List<ViewStatus> content = new ArrayList<>();
+        for (String viewId : tabs.views()) {
+            ViewStatus status = viewsStatus.get(viewId);
+            if (status != null && build.placed.add(viewId)) {
+                content.add(status);
+            }
+        }
+        // Only one pane per tree can be the editor; a layout claiming more
+        // is taken at its first word.
+        boolean editor = tabs.editor() && build.editorMissing;
+        if (content.isEmpty() && !(editor && build.keepEmptyEditor)) {
+            return null;
+        }
+        if (editor) {
+            build.editorMissing = false;
+        }
+        ViewArea area = Lookup.require(ViewContainerAreaFactory.class).getInstance(parent, dragNDropManager);
+        area.setEditor(editor);
+        for (ViewStatus status : content) {
+            area.add(status, Position.CENTER);
+            status.setStatus(ViewStatus.Status.VISIBLE);
+        }
+        ViewStatus selected = tabs.selected() != null ? viewsStatus.get(tabs.selected()) : null;
+        if (selected != null && area instanceof TabArea tabArea && selected.getArea() == tabArea) {
+            tabArea.select(selected);
+        }
+        return area;
+    }
+
+    /**
+     * Bring back a detached window, unless none of its views is left.
+     */
+    private void openWindow(LayoutSnapshot.Window window, LayoutBuild build) {
+        RootArea area = new RootArea(dragNDropManager, true);
+        build.editorMissing = true;
+        build.keepEmptyEditor = false;
+        ViewArea tree = build(window.root(), area, build);
+        if (tree == null) {
+            return;
+        }
+        area.setFirstChild(tree);
+
+        Stage stage = windowFactory.initializeWindow();
+        stage.setScene(new Scene(area.getNode()));
+        // The screen the window was on may be gone; then let the platform
+        // place it rather than opening it out of sight.
+        if (!Screen.getScreensForRectangle(window.x(), window.y(), window.width(), window.height()).isEmpty()) {
+            stage.setX(window.x());
+            stage.setY(window.y());
+        }
+        stage.setWidth(window.width());
+        stage.setHeight(window.height());
+        stage.setMaximized(window.maximized());
+        stage.setOnCloseRequest(event -> remove(area));
+        getForRootArea(area).stream().findFirst()
+                .ifPresent(status -> stage.setTitle(status.getView().getTitle()));
+        stage.show();
+        register(area);
+    }
+
+    /**
+     * Get the stage that shows the given root area.
+     *
+     * @return the stage, or null if the area is not shown in one.
+     */
+    private static Stage stageOf(RootArea area) {
+        Scene scene = area.getNode().getScene();
+        Window window = scene != null ? scene.getWindow() : null;
+        return window instanceof Stage stage ? stage : null;
     }
 
     /**
@@ -340,7 +665,9 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (view.getKind() == ViewKind.DOCUMENT) {
             return unregister(view);
         }
-        return closeViewImpl(view) != null;
+        boolean closed = closeViewImpl(view) != null;
+        releaseActiveLookupIfOwnerIsGone();
+        return closed;
     }
 
     /**
@@ -440,6 +767,43 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         this.lastFocusedView = this.focusedView.get();
         this.focusedView.set(focusedView);
+        activateLookupOf(focusedView);
+    }
+
+    @Override
+    public LookupContext getActiveLookup() {
+        return activeLookup;
+    }
+
+    /**
+     * Make the context of the given view the active one, if the view takes
+     * part at all.
+     */
+    private void activateLookupOf(View view) {
+        LookupContext lookup = view != null ? view.getLookup() : null;
+        if (lookup == null || lookup == LookupContext.EMPTY) {
+            return;
+        }
+        activeLookupOwner = view;
+        activeLookup.setDelegate(lookup);
+    }
+
+    /**
+     * Empty the active context if the view that supplies it is no longer
+     * shown — closed, unregistered, or replaced by another view with its id.
+     * Without this the context of a view that is gone would stay active (and
+     * referenced) until the user happens to focus another participating view.
+     */
+    private void releaseActiveLookupIfOwnerIsGone() {
+        if (activeLookupOwner == null) {
+            return;
+        }
+        ViewStatus status = viewsStatus.get(activeLookupOwner.getViewId());
+        if (status == null || status.getView() != activeLookupOwner
+                || status.getArea() == null || status.getStatus() == ViewStatus.Status.HIDDEN) {
+            activeLookupOwner = null;
+            activeLookup.setDelegate(LookupContext.EMPTY);
+        }
     }
 
     @Override
@@ -478,10 +842,19 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void remove(RootArea area) {
         LOGGER.info("Remove existing window");
         for (ViewStatus view : getForRootArea(area)) {
-            view.getArea().remove(view);
+            if (view.getView().getKind() == ViewKind.DOCUMENT) {
+                // Closing the window closes its documents, and a closed
+                // document is unregistered — it has no View menu entry that
+                // could bring it back.
+                unregister(view.getView());
+            }
+            else {
+                view.getArea().remove(view);
+            }
         }
         ((Stage) area.getNode().getScene().getWindow()).close();
         subWindows.remove(area);
+        releaseActiveLookupIfOwnerIsGone();
     }
 
     /**

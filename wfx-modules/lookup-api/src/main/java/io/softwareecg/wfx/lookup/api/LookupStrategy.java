@@ -31,7 +31,8 @@ public interface LookupStrategy {
     /**
      * Lookup an instance from the registry. The {@link TypeRef} allows to return a strong typed generic instance.
      * <p>
-     * The returned service is that service that have the highest service ranking.
+     * If several implementations are registered, the one with precedence is returned — the first
+     * element of the corresponding {@code lookupAll}. See {@link Priorities}.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeRef}:
@@ -48,7 +49,8 @@ public interface LookupStrategy {
     /**
      * Lookup an instance from the registry.
      * <p>
-     * The returned service is that service that have the highest service ranking.
+     * If several implementations are registered, the one with precedence is returned — the first
+     * element of the corresponding {@code lookupAll}. See {@link Priorities}.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
@@ -59,7 +61,8 @@ public interface LookupStrategy {
     /**
      * Lookup all services for one class from the registry.
      * <p>
-     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * The list is in order of precedence, see {@link Priorities}: the service with the smallest
+     * {@code @Priority} value is the first.
      *
      * @param clazz The class to search.
      * @param <T>   The type of the class to search.
@@ -71,7 +74,8 @@ public interface LookupStrategy {
      * Lookup all services for one class from the registry. The {@link TypeRef} allows to return a strong typed
      * generic instance.
      * <p>
-     * The list of services is ordered by the service ranking. The service with the highest ranking is the first.
+     * The list is in order of precedence, see {@link Priorities}: the service with the smallest
+     * {@code @Priority} value is the first.
      * <p>
      * The following example shows how to lookup a strong typed instance of {@code EventBus<ProgressEvent>} using the
      * {@link TypeRef}:

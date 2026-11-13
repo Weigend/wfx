@@ -20,6 +20,7 @@
 package io.softwareecg.wfx.main;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.Priorities;
 import io.softwareecg.wfx.platform.api.Module;
 import io.softwareecg.wfx.platform.api.PlatformApplication;
 import io.softwareecg.wfx.platform.api.EventBus;
@@ -33,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -72,13 +72,8 @@ public class Main extends Application {
      */
     static List<Module> sortByPriority(List<Module> input) {
         List<Module> sorted = new ArrayList<>(input);
-        sorted.sort(Comparator.comparingInt(Main::priorityOf));
+        sorted.sort(Priorities.comparator());
         return sorted;
-    }
-
-    private static int priorityOf(Module module) {
-        Priority p = module.getClass().getAnnotation(Priority.class);
-        return p != null ? p.value() : Integer.MAX_VALUE;
     }
 
     /**
@@ -101,14 +96,21 @@ public class Main extends Application {
             Stage preloaderStage = new Stage();
             preloaderStage.initOwner(primaryStage);
             platformApplication.showPreloader(preloaderStage);
-            new Thread(() -> {
-                startupModules();
-                Platform.runLater(() -> finishStartup(primaryStage));
-            }, "Background Startup").start();
         }
         catch (Exception e) {
+            // A broken splash screen must not keep the application from starting.
             LOGGER.warn("Can not show preloader!", e);
         }
+        new Thread(() -> {
+            try {
+                startupModules();
+            }
+            finally {
+                // Always hand over to the FX thread: if this were skipped the
+                // user would be left with the splash screen and no window.
+                Platform.runLater(() -> finishStartup(primaryStage));
+            }
+        }, "Background Startup").start();
     }
 
     /**
@@ -116,7 +118,7 @@ public class Main extends Application {
      */
     @SuppressWarnings("unchecked")
     private void startupModules() {
-        EventBus<StartupProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+        EventBus<StartupProgressEvent> eventBus = Lookup.require(EventBus.class);
         int total = modules.size();
         for (int i = 0; i < total; i++) {
             Module module = modules.get(i);
@@ -132,9 +134,24 @@ public class Main extends Application {
                         "Loaded " + module.getName(), (2.0 * i + 2) / steps, this));
                 awaitFxThread();
             }
-            catch (PlatformException e) {
-                LOGGER.warn("Can not start module: " + module.getName(), e);
+            catch (Exception e) {
+                // One failing module must not stop the others, nor the
+                // startup as a whole.
+                LOGGER.error("Can not preload module: " + nameOf(module), e);
             }
+        }
+    }
+
+    /**
+     * The module name for log messages, without letting a broken
+     * {@link Module#getName()} get in the way of reporting the actual error.
+     */
+    private static String nameOf(Module module) {
+        try {
+            return module.getName();
+        }
+        catch (RuntimeException e) {
+            return module.getClass().getName();
         }
     }
 
@@ -162,11 +179,20 @@ public class Main extends Application {
             platformApplication.hidePreloader();
             platformApplication.showMainApplicationWindow(primaryStage);
             platformApplication.start();
-            modules.forEach(Module::start);
         }
-        catch (PlatformException e) {
-            LOGGER.warn("Can not start application", e);
+        catch (Exception e) {
+            // Without a main window there is nothing the user could do.
+            LOGGER.error("Can not start application", e);
             Platform.exit();
+            return;
+        }
+        for (Module module : modules) {
+            try {
+                module.start();
+            }
+            catch (RuntimeException e) {
+                LOGGER.error("Can not start module: " + nameOf(module), e);
+            }
         }
     }
 
@@ -182,7 +208,14 @@ public class Main extends Application {
     @SuppressWarnings("PMD.SignatureDeclareThrowsException")
     public void stop() throws Exception {
         LOGGER.info("Begin shutdown of platform. Stop modules.");
-        modules.forEach(Module::stop);
+        for (Module module : modules) {
+            try {
+                module.stop();
+            }
+            catch (RuntimeException e) {
+                LOGGER.error("Can not stop module: " + nameOf(module), e);
+            }
+        }
         platformApplication.stop();
         super.stop();
         if (Lookup.getLookupStrategy() != null) {

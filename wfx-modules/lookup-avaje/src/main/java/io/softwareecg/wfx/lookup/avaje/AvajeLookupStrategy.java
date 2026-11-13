@@ -22,6 +22,7 @@ package io.softwareecg.wfx.lookup.avaje;
 import io.avaje.inject.BeanScope;
 import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.lookup.api.LookupStrategy;
+import io.softwareecg.wfx.lookup.api.Priorities;
 import io.softwareecg.wfx.lookup.api.TypeRef;
 import jakarta.annotation.Priority;
 import jakarta.inject.Singleton;
@@ -29,26 +30,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Type;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Avaje-Inject backed {@link LookupStrategy}.
  * <p>
- * Drop-in semantically:
+ * {@link Priority @Priority} is read by the one WFX-wide rule in
+ * {@link Priorities}: a smaller value takes precedence, unannotated classes
+ * come last.
  * <ul>
- *   <li>{@link #lookup(Class)}: defers to Avaje's native single-bean resolution,
- *       which honours {@link io.avaje.inject.Primary @Primary} (wins over plain),
- *       plain {@code @Singleton} (wins over secondary), and
- *       {@link io.avaje.inject.Secondary @Secondary} (fallback). Two equally-
- *       ranked beans (e.g. two plain @Singletons or two @Primary) make Avaje
- *       throw {@link IllegalStateException}; the strategy then falls back to
- *       {@link Priority @Priority} sort (smaller value wins; default
- *       {@link Integer#MAX_VALUE}) so consumers with that configuration keep
- *       working.</li>
- *   <li>{@link #lookupAll(Class)}: descending priority order (highest first); classes
- *       without the annotation default to 0. Mirrors ServiceLoaderLookupStrategy.</li>
+ *   <li>{@link #lookupAll(Class)}: all beans of the type in that order.</li>
+ *   <li>{@link #lookup(Class)}: the bean Avaje itself would inject. That is
+ *       the first of {@code lookupAll}, with one refinement only the container
+ *       knows about: {@link io.avaje.inject.Primary @Primary} wins over a
+ *       plain bean, which wins over {@link io.avaje.inject.Secondary
+ *       @Secondary}. Avaje refuses to choose between equally ranked beans
+ *       (it throws {@link IllegalStateException}); the strategy then picks
+ *       by {@code @Priority}.</li>
  * </ul>
  * <p>
  * Construction-recursion safety: Avaje builds all beans eagerly when {@link BeanScope}
@@ -157,16 +156,27 @@ public class AvajeLookupStrategy implements LookupStrategy {
             return scope.getOptional(clazz).orElse(null);
         }
         catch (IllegalStateException ambiguous) {
-            // Avaje refuses to disambiguate (e.g. two @Primary beans for the
-            // same type). Fall back to the legacy @Priority-based tiebreaker
-            // — smaller value wins — so consumers that relied on it keep
-            // working.
-            LOGGER.warn("Avaje could not resolve a unique bean for {}; falling back to @Priority sort.",
-                    clazz.getName(), ambiguous);
-            List<T> candidates = scope.list(clazz);
-            return candidates.stream()
-                    .min(Comparator.comparingInt(c -> getPriorityValue(c.getClass())))
-                    .orElse(null);
+            // Avaje refuses to disambiguate (e.g. two plain beans for the
+            // same type). Pick by @Priority, i.e. the head of lookupAll.
+            List<T> candidates = scope.list(clazz).stream()
+                    .sorted(Priorities.comparator())
+                    .collect(Collectors.toList());
+            if (candidates.isEmpty()) {
+                return null;
+            }
+            T chosen = candidates.get(0);
+            if (candidates.size() > 1 && Priorities.of(chosen) == Priorities.of(candidates.get(1))) {
+                // Not even @Priority tells the candidates apart: the pick
+                // depends on registration order. Worth telling the developer.
+                LOGGER.warn("{} beans of type {} are equally eligible; using {}. "
+                                + "Declare a @Priority (smaller value wins) or mark one @Primary.",
+                        candidates.size(), clazz.getName(), chosen.getClass().getName());
+            }
+            else {
+                LOGGER.debug("Several beans of type {}; {} has precedence by @Priority.",
+                        clazz.getName(), chosen.getClass().getName());
+            }
+            return chosen;
         }
     }
 
@@ -185,14 +195,14 @@ public class AvajeLookupStrategy implements LookupStrategy {
             return (T) candidates.get(0);
         }
         return (T) candidates.stream()
-                .min(Comparator.comparingInt(c -> getPriorityValue(c.getClass())))
+                .min(Priorities.comparator())
                 .orElse(null);
     }
 
     @Override
     public <T> List<T> lookupAll(Class<T> clazz) {
         return scope.list(clazz).stream()
-                .sorted(Comparator.comparingInt((T t) -> getPriorityForList(t.getClass())).reversed())
+                .sorted(Priorities.comparator())
                 .collect(Collectors.toList());
     }
 
@@ -201,26 +211,8 @@ public class AvajeLookupStrategy implements LookupStrategy {
     public <T> List<T> lookupAll(TypeRef<T> typeRef) {
         Type type = typeRef.getType();
         return (List<T>) scope.list(type).stream()
-                .sorted(Comparator.comparingInt((Object o) -> getPriorityForList(o.getClass())).reversed())
+                .sorted(Priorities.comparator())
                 .collect(Collectors.toList());
-    }
-
-    /**
-     * Priority for single-result resolution: smaller value wins, default is MAX_VALUE.
-     * Mirrors WFX single-result priority resolution.
-     */
-    private static int getPriorityValue(Class<?> c) {
-        Priority p = c.getAnnotation(Priority.class);
-        return p != null ? p.value() : Integer.MAX_VALUE;
-    }
-
-    /**
-     * Priority for list ordering: higher value comes first, default is 0.
-     * Mirrors ServiceLoaderLookupStrategy.getPriority.
-     */
-    private static int getPriorityForList(Class<?> c) {
-        Priority p = c.getAnnotation(Priority.class);
-        return p != null ? p.value() : 0;
     }
 
     static BeanScope getScope() {

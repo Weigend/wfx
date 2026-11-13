@@ -48,7 +48,7 @@ public class ProgressController implements Initializable {
     @Override
     @SuppressWarnings("unchecked")
     public void initialize(URL location, ResourceBundle resources) {
-        EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+        EventBus<ProgressEvent> eventBus = Lookup.require(EventBus.class);
         progressListener = this::progress;
         eventBus.subscribe(ProgressEvent.class, progressListener);
 
@@ -67,7 +67,7 @@ public class ProgressController implements Initializable {
     @SuppressWarnings("unchecked")
     public void unsubscribeProgressEvent() {
         if (progressListener != null) {
-            EventBus<ProgressEvent> eventBus = Lookup.lookup(EventBus.class);
+            EventBus<ProgressEvent> eventBus = Lookup.require(EventBus.class);
             eventBus.unsubscribe(ProgressEvent.class, progressListener);
             progressListener = null;
         }

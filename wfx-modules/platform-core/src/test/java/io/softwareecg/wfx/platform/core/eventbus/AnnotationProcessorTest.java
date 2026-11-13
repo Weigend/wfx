@@ -153,6 +153,42 @@ public class AnnotationProcessorTest {
     /**
      * EventListener which does not consume the event.
      */
+    @Test
+    public void testUnprocessEndsTheSubscriptions() {
+        VoidResultEventListener listener = new VoidResultEventListener();
+        AnnotationProcessor.process(listener);
+        assertThat(AnnotationProcessor.isProcessed(listener), is(true));
+
+        assertThat(AnnotationProcessor.unprocess(listener), is(true));
+        Lookup.lookup(EventBus.class).publish(new EventObject(""));
+
+        assertThat(listener.executed, is(false));
+        assertThat(AnnotationProcessor.isProcessed(listener), is(false));
+        assertThat("a second unprocess has nothing left to remove", AnnotationProcessor.unprocess(listener), is(false));
+    }
+
+    @Test
+    public void testProcessAfterUnprocessSubscribesAgain() {
+        VoidResultEventListener listener = new VoidResultEventListener();
+        AnnotationProcessor.process(listener);
+        AnnotationProcessor.unprocess(listener);
+
+        AnnotationProcessor.process(listener);
+        Lookup.lookup(EventBus.class).publish(new EventObject(""));
+
+        assertThat(listener.executed, is(true));
+        AnnotationProcessor.unprocess(listener);
+    }
+
+    @Test
+    public void testObjectWithoutSubscriberMethodsIsNotTracked() {
+        Object plain = new Object();
+        AnnotationProcessor.process(plain);
+
+        assertThat(AnnotationProcessor.isProcessed(plain), is(false));
+        assertThat(AnnotationProcessor.unprocess(plain), is(false));
+    }
+
     private static class NonConsumingEventListener {
 
         @EventSubscriber(eventClass = EventObject.class)

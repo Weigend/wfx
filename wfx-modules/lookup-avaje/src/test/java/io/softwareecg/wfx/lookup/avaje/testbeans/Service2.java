@@ -24,7 +24,7 @@ import jakarta.annotation.Priority;
 import jakarta.inject.Singleton;
 
 @Singleton
-@Priority(-1000)
+@Priority(1000)
 public class Service2 implements TestService {
     @Override
     public String sayHello() {

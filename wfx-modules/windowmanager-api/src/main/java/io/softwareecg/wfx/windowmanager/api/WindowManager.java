@@ -19,6 +19,7 @@
  */
 package io.softwareecg.wfx.windowmanager.api;
 
+import io.softwareecg.wfx.lookup.api.LookupContext;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.Parent;
@@ -105,6 +106,51 @@ public interface WindowManager {
      * Restore the default layout according to the views position and insertion order.
      */
     void restoreDefaultLayout();
+
+    /**
+     * Capture the current arrangement of the views as text, so that it can be
+     * stored and brought back with {@link #restoreLayout(String)} — typically
+     * on the next start of the application.
+     * <p>
+     * The layout records which views share a tab pane and in which order, how
+     * the panes are split and where the dividers sit, which tab is selected,
+     * which views are hidden, and which views live in detached windows
+     * together with the position and size of those windows. Views are
+     * referred to by their {@linkplain View#getViewId() id}. The position and
+     * size of the main window are not part of it; the main window belongs to
+     * the {@link ApplicationWindow}.
+     * <p>
+     * Call this on the JavaFX Application Thread, for example from
+     * {@code Module.stop()}.
+     *
+     * @return the layout as text; where to keep it is up to the application
+     */
+    String saveLayout();
+
+    /**
+     * Arrange the registered views as described by a layout that
+     * {@link #saveLayout()} produced.
+     * <p>
+     * Only views that are registered at the time of the call can be placed, so
+     * call this after the views have been registered — for example from
+     * {@code Module.start()}. The layout and the registry need not match:
+     * <ul>
+     *     <li>a view the layout mentions but that is not registered (a
+     *     document that was not reopened, a tool that no longer exists) is
+     *     skipped, and a pane or window left empty by that is dropped;</li>
+     *     <li>a registered view the layout does not know (a tool added by a
+     *     newer version of the application) keeps its current state: if it is
+     *     shown, it is placed at its default position.</li>
+     * </ul>
+     * When called from another thread the layout is applied later on the
+     * JavaFX Application Thread.
+     *
+     * @param layout the text returned by {@link #saveLayout()}
+     * @return {@code true} if the layout was understood and is (being)
+     *         applied; {@code false} if the text is not a layout this version
+     *         can read, in which case the current arrangement is left alone
+     */
+    boolean restoreLayout(String layout);
 
     /**
      * Close the specified view.
@@ -213,6 +259,30 @@ public interface WindowManager {
      * @return the focused view property.
      */
     ObjectProperty<View> focusedViewProperty();
+
+    /**
+     * Get the context of the view the user is working in.
+     * <p>
+     * The returned object stays the same for the lifetime of the window
+     * manager; what it contains follows the user. When a view gets the focus,
+     * its {@link View#getLookup() context} becomes the active one — unless the
+     * view does not take part (its context is
+     * {@link LookupContext#EMPTY}), in which case the active context is left
+     * as it is, so that for example looking at a console view does not
+     * disable the actions for the current selection. When the view that
+     * supplies the active context is closed or unregistered, the active
+     * context becomes empty.
+     * <p>
+     * This is the place to observe for anything that depends on "the current
+     * selection" regardless of the view it was made in:
+     * <pre>{@code
+     * windowManager.getActiveLookup().observe(Project.class,
+     *         projects -> closeProjectItem.setDisable(projects.isEmpty()));
+     * }</pre>
+     *
+     * @return the active context, never null
+     */
+    LookupContext getActiveLookup();
 
     /**
      * Get all views that are visible at the moment.

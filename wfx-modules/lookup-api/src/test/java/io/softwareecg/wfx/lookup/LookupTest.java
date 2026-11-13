@@ -81,6 +81,46 @@ public class LookupTest {
         assertThat(Lookup.lookup(new TypeRef<TestService>() {}), is(nullValue()));
     }
 
+    @Test
+    public void testRequireReturnsTheService() {
+        assertThat(Lookup.require(TestService.class), is(service));
+    }
+
+    @Test
+    public void testRequireNamesTheMissingService() {
+        try {
+            Lookup.require(Runnable.class);
+            org.junit.Assert.fail("expected an IllegalStateException");
+        }
+        catch (IllegalStateException e) {
+            assertThat(e.getMessage(), org.hamcrest.Matchers.containsString("java.lang.Runnable"));
+            assertThat(e.getMessage(), org.hamcrest.Matchers.containsString("RecordingLookupStrategy"));
+        }
+    }
+
+    @Test
+    public void testRequireTellsWhenLookupIsNotInitialised() {
+        Lookup.init(null);
+        try {
+            Lookup.require(TestService.class);
+            org.junit.Assert.fail("expected an IllegalStateException");
+        }
+        catch (IllegalStateException e) {
+            assertThat(e.getMessage(), org.hamcrest.Matchers.containsString("not initialised"));
+        }
+    }
+
+    @Test
+    public void testRequireWithTypeRefNamesTheMissingType() {
+        try {
+            Lookup.require(new TypeRef<List<String>>() {});
+            org.junit.Assert.fail("expected an IllegalStateException");
+        }
+        catch (IllegalStateException e) {
+            assertThat(e.getMessage(), org.hamcrest.Matchers.containsString("java.util.List<java.lang.String>"));
+        }
+    }
+
     private static final class RecordingLookupStrategy implements LookupStrategy {
         private final TestService service;
         private Class<?> lookupClass;
@@ -98,7 +138,7 @@ public class LookupTest {
         @Override
         public <T> T lookup(Class<T> clazz) {
             lookupClass = clazz;
-            return clazz.cast(service);
+            return clazz.isInstance(service) ? clazz.cast(service) : null;
         }
 
         @Override

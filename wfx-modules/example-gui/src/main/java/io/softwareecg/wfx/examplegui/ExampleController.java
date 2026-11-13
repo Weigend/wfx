@@ -26,6 +26,8 @@ import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
 import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 
 import java.io.IOException;
 
@@ -36,6 +38,21 @@ import java.io.IOException;
 public class ExampleController {
 
     private static int id = 0;
+
+    @FXML
+    private Label content;
+
+    /**
+     * Show what is selected, wherever that selection is made. This view knows
+     * nothing about the explorer: it observes the active context for the type
+     * it is interested in. Clicking into this view does not clear the
+     * selection, because this view offers no context of its own.
+     */
+    @FXML
+    public void initialize() {
+        Lookup.require(WindowManager.class).getActiveLookup().observe(String.class,
+                selection -> content.setText(selection.isEmpty() ? "Content" : "Selected: " + selection.get(0)));
+    }
 
     /**
      * Add a new tab to the bottom of explorer view.

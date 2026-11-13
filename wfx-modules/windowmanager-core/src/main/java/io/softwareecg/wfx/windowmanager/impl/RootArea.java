@@ -62,7 +62,7 @@ public class RootArea extends ViewArea {
         super(dragNDropManager);
         this.closeStage = closeStage;
         this.box = box;
-        ViewArea editorArea = Lookup.lookup(ViewContainerAreaFactory.class).getInstance(this, dragNDropManager);
+        ViewArea editorArea = Lookup.require(ViewContainerAreaFactory.class).getInstance(this, dragNDropManager);
         editorArea.setEditor(true);
         this.box.getChildren().add(editorArea.getNode());
         setFirstChild(editorArea);

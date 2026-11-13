@@ -20,6 +20,7 @@
 package io.softwareecg.wfx.windowmanager.api;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
@@ -45,9 +46,10 @@ public class FXMLView<C> implements View {
     private final C controller;
     private final URL viewImagePath;
     private final ViewKind kind;
+    private final LookupContext lookup;
 
     private FXMLView(String id, String title, Position defaultPosition, Parent rootPane, String toolTipInfo,
-                     double viewAreaSize, C controller, URL viewImagePath, ViewKind kind) {
+                     double viewAreaSize, C controller, URL viewImagePath, ViewKind kind, LookupContext lookup) {
         this.id = id;
         this.title = title;
         this.defaultPosition = defaultPosition;
@@ -57,6 +59,7 @@ public class FXMLView<C> implements View {
         this.controller = controller;
         this.viewImagePath = viewImagePath;
         this.kind = kind;
+        this.lookup = lookup;
     }
 
     @Override
@@ -114,6 +117,19 @@ public class FXMLView<C> implements View {
         return kind;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * For an {@code FXMLView} this is the context given to the builder with
+     * {@link Builder#withLookup(LookupContext)}, otherwise the context of the
+     * controller if that implements {@link LookupContext.Provider}, otherwise
+     * {@link LookupContext#EMPTY}.
+     */
+    @Override
+    public LookupContext getLookup() {
+        return lookup;
+    }
+
     @Override
     public String toString() {
         return "FXMLView{" +
@@ -143,6 +159,7 @@ public class FXMLView<C> implements View {
         private Parent rootPane;
         private C controller;
         private ViewKind kind = ViewKind.TOOL;
+        private LookupContext lookup;
 
         /**
          * Set the builder value "id"
@@ -292,6 +309,32 @@ public class FXMLView<C> implements View {
          * @return fluent builder interface
          * @since 1.1.0
          */
+        /**
+         * Set the context of the view, see {@link View#getLookup()}.
+         * <p>
+         * Usually not needed: let the controller implement
+         * {@link LookupContext.Provider} and the view offers the
+         * controller's context.
+         *
+         * @param lookup the context the view should offer
+         * @return this builder
+         */
+        public Builder<C> withLookup(LookupContext lookup) {
+            Objects.requireNonNull(lookup, "lookup must not be null");
+            this.lookup = lookup;
+            return this;
+        }
+
+        private LookupContext resolveLookup() {
+            if (lookup != null) {
+                return lookup;
+            }
+            if (controller instanceof LookupContext.Provider provider && provider.getLookup() != null) {
+                return provider.getLookup();
+            }
+            return LookupContext.EMPTY;
+        }
+
         public Builder<C> withKind(ViewKind kind) {
             Objects.requireNonNull(kind, "kind must not be null");
             this.kind = kind;
@@ -310,7 +353,7 @@ public class FXMLView<C> implements View {
             Objects.requireNonNull(pos, "The initial position must be set");
             Objects.requireNonNull(file, "Can not initialize a FXMLView without a FXML file.");
 
-            FXMLLoader loader = Lookup.lookup(FXMLLoader.class);
+            FXMLLoader loader = Lookup.require(FXMLLoader.class);
             loader.setLocation(file);
             if (classLoader != null) {
                 loader.setClassLoader(classLoader);
@@ -319,7 +362,8 @@ public class FXMLView<C> implements View {
             controller = loader.getController();
 
 
-            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind);
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind,
+                    resolveLookup());
         }
 
         /**
@@ -334,7 +378,8 @@ public class FXMLView<C> implements View {
             Objects.requireNonNull(pos, "The initial position must be set");
             // Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
 
-            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind);
+            return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind,
+                    resolveLookup());
         }
     }
 }

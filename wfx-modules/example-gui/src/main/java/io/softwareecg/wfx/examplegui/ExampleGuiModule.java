@@ -30,6 +30,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Register the a example view within the window manager.
@@ -39,6 +41,12 @@ import java.io.IOException;
 public class ExampleGuiModule implements Module {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleGuiModule.class);
+
+    /**
+     * Where the example keeps the arrangement of its views between runs.
+     */
+    private static final Path LAYOUT_FILE =
+            Path.of(System.getProperty("user.home"), ".wfx-example", "layout.properties");
 
     /**
      * Get the human readable module name.
@@ -99,8 +107,8 @@ public class ExampleGuiModule implements Module {
     @Override
     public void start() {
         SystemViewsHelper.addStandardWindowActions();
+        restoreLayout();
     }
-
 
     /**
      * Stop the module.
@@ -109,6 +117,32 @@ public class ExampleGuiModule implements Module {
      */
     @Override
     public void stop() {
+        saveLayout();
+    }
 
+    /**
+     * Arrange the views the way the user left them in the previous run. All
+     * views are registered by now, so the saved layout finds them.
+     */
+    private void restoreLayout() {
+        if (!Files.isReadable(LAYOUT_FILE)) {
+            return;
+        }
+        try {
+            Lookup.require(WindowManager.class).restoreLayout(Files.readString(LAYOUT_FILE));
+        }
+        catch (IOException e) {
+            LOGGER.warn("Can not read the saved layout, starting with the default one", e);
+        }
+    }
+
+    private void saveLayout() {
+        try {
+            Files.createDirectories(LAYOUT_FILE.getParent());
+            Files.writeString(LAYOUT_FILE, Lookup.require(WindowManager.class).saveLayout());
+        }
+        catch (IOException e) {
+            LOGGER.warn("Can not save the layout", e);
+        }
     }
 }

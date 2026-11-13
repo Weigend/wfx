@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.Pane?>
+
+<Pane xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.softwareecg.wfx.platform.core.fxml.FXMLLoaderFactoryTest$SubscriberController">
+    <fx:include source="subscriber-nested.fxml"/>
+</Pane>
