@@ -67,13 +67,21 @@ WFX supports two startup styles:
      `META-INF/services/io.softwareecg.wfx.platform.api.Module`.
    - This is useful for small apps and tests that do not need DI.
 
-## Startup Order
+## Priority
 
-`Main.init()` sorts modules by `jakarta.annotation.Priority`:
+`jakarta.annotation.Priority` is read by one rule, defined in
+`io.softwareecg.wfx.lookup.api.Priorities`: **a smaller value takes
+precedence**, and a class without the annotation (`Integer.MAX_VALUE`)
+comes last. Equal priorities keep their registration order. The rule
+applies wherever WFX orders or picks candidates:
 
-- smaller value = earlier
-- unannotated modules default to `Integer.MAX_VALUE`
-- both `preload()` and `start()` use the same order
+- `Lookup.lookupAll(X)` lists the smaller value first
+- `Lookup.lookup(X)` returns the first of that order (with Avaje, after
+  `@Primary` / `@Secondary` have been honoured)
+- `Main.init()` sorts modules by it; `preload()`, `start()` and `stop()`
+  use that order
+- `Lookup.init()` picks the `LookupStrategy` with the smaller value
+  (Avaje: 100, ServiceLoader: 1000)
 
 ## Lookup System
 
@@ -85,6 +93,11 @@ controller fallback resolution.
 EventBus<ProgressEvent> bus = Lookup.lookup(EventBus.class);
 List<Module> modules = Lookup.lookupAll(Module.class);
 ```
+
+`Lookup.lookup` returns `null` when nothing is registered,
+`Lookup.find` an empty `Optional`, and `Lookup.require` throws an
+`IllegalStateException` naming the missing service. WFX uses `require`
+for the services it cannot work without.
 
 For parameterised types, WFX provides its own CDI-free type reference:
 
