@@ -8,7 +8,7 @@
 <BorderPane prefHeight="180.0" prefWidth="414.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="io.softwareecg.wfx.examplegui.ExampleController">
     <center>
-        <Label text="Content">
+        <Label fx:id="content" text="Content">
             <font>
                 <Font name="System Bold" size="20.0"/>
             </font>

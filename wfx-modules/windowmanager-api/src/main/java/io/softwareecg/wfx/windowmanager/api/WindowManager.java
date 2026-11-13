@@ -19,6 +19,7 @@
  */
 package io.softwareecg.wfx.windowmanager.api;
 
+import io.softwareecg.wfx.lookup.api.LookupContext;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyListProperty;
 import javafx.scene.Parent;
@@ -258,6 +259,30 @@ public interface WindowManager {
      * @return the focused view property.
      */
     ObjectProperty<View> focusedViewProperty();
+
+    /**
+     * Get the context of the view the user is working in.
+     * <p>
+     * The returned object stays the same for the lifetime of the window
+     * manager; what it contains follows the user. When a view gets the focus,
+     * its {@link View#getLookup() context} becomes the active one — unless the
+     * view does not take part (its context is
+     * {@link LookupContext#EMPTY}), in which case the active context is left
+     * as it is, so that for example looking at a console view does not
+     * disable the actions for the current selection. When the view that
+     * supplies the active context is closed or unregistered, the active
+     * context becomes empty.
+     * <p>
+     * This is the place to observe for anything that depends on "the current
+     * selection" regardless of the view it was made in:
+     * <pre>{@code
+     * windowManager.getActiveLookup().observe(Project.class,
+     *         projects -> closeProjectItem.setDisable(projects.isEmpty()));
+     * }</pre>
+     *
+     * @return the active context, never null
+     */
+    LookupContext getActiveLookup();
 
     /**
      * Get all views that are visible at the moment.

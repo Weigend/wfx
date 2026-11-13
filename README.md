@@ -22,6 +22,7 @@ synchronous in-process event bus.
 - **Preloader** - splash window shown while modules run their `preload()` work, with progress events on the platform event bus
 - **Bootstrapping Support** - clear `init` → preloader → `preload()` → main window → `start()` lifecycle so expensive work happens at the right phase
 - **Event Bus** - synchronous in-process bus with type-hierarchy dispatch and `@EventSubscriber` auto-wiring
+- **Context lookups** - every view can offer a `LookupContext` (its selection, its document); `WindowManager.getActiveLookup()` follows the view the user works in and reports changes, so menus, toolbars and other views react to "the current selection" without knowing where it comes from
 - **Lookup** - service locator with pluggable strategies (Avaje / ServiceLoader): resolves an interface at the moment of the call, also from objects no container creates (FXML controllers, views, tree items)
 - **Avaje Inject Integration** - compile-time DI for framework infrastructure
 - **ServiceLoader Support** - lightweight non-DI fallback for simple applications and tests
@@ -475,6 +476,77 @@ Avaje, `@Primary` and `@Secondary` are honoured by `lookup` before
 > the order of a `lookupAll` result for classes that carry `@Priority`,
 > swap their values. A custom `LookupStrategy` now needs a value below
 > 100 to be preferred over the Avaje strategy.
+
+### Sharing the Selection: Context Lookups
+
+`Lookup` answers "which service implements this interface?" — once, for
+the whole application. A `LookupContext` answers "what is this view
+currently about?", and the answer changes as the user works. It is the
+WFX counterpart of a NetBeans `TopComponent` lookup.
+
+**A view offers its context.** Let the controller implement
+`LookupContext.Provider` and keep the content up to date; `FXMLView`
+picks it up as `View.getLookup()`:
+
+```java
+public class ExplorerController implements LookupContext.Provider {
+
+    @FXML private TreeView<Project> tree;
+
+    private final MutableLookupContext lookup = new MutableLookupContext();
+
+    @Override
+    public LookupContext getLookup() { return lookup; }
+
+    @FXML
+    public void initialize() {
+        tree.getSelectionModel().selectedItemProperty().addListener((o, old, item) ->
+                lookup.set(item == null ? List.of() : List.of(item.getValue())));
+    }
+}
+```
+
+Put in whatever describes the selection: the domain object itself, or
+small capability objects (`Closeable`, `Renamable`, …) that actions look
+for. A programmatic `View` overrides `getLookup()` directly.
+
+**Everyone else observes the active context.**
+`WindowManager.getActiveLookup()` is the context of the view the user is
+working in. The object you get stays the same; its content follows the
+focus:
+
+```java
+LookupContext active = Lookup.require(WindowManager.class).getActiveLookup();
+
+// enable an action only while a project is selected — in whichever view
+active.observe(Project.class, projects -> closeItem.setDisable(projects.isEmpty()));
+
+// or just ask
+Project current = active.lookup(Project.class);          // null if none
+List<Project> all = active.lookupAll(Project.class);
+```
+
+The listener gets the new list whenever the instances of that type
+change — because the selection changed or because the user moved to
+another view — and is not bothered by changes to other types. It is not
+called for the state at the time of `observe`; ask `lookupAll` for that.
+`observe` returns a `Subscription`; `cancel()` it when the observer goes
+away (for a controller, when its view is closed), otherwise the context
+keeps the listener alive.
+
+Three rules decide what is active:
+
+- When a view gets the focus, its context becomes the active one.
+- A view that offers no context (`LookupContext.EMPTY`, the default)
+  does not take part: focusing a console or a log view leaves the active
+  context — and the actions enabled by it — as it is. A view that should
+  clear the selection when focused returns an empty
+  `MutableLookupContext` instead.
+- When the view that supplies the active context is closed or
+  unregistered, the active context becomes empty.
+
+The `example-gui` module shows both sides: the explorer publishes its
+selected tree item, the main view displays it.
 
 ## Application Lifecycle
 

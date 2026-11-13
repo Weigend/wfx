@@ -20,6 +20,8 @@
 package io.softwareecg.wfx.examplegui;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
+import io.softwareecg.wfx.lookup.api.MutableLookupContext;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.WindowManager;
 import javafx.event.ActionEvent;
@@ -32,18 +34,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
  * This is a example editor controller.
  *
  */
-public class ExampleExplorerController implements Initializable {
+public class ExampleExplorerController implements Initializable, LookupContext.Provider {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExampleExplorerController.class);
 
     @FXML
     protected TreeView<String> tree;
+
+    /**
+     * What this view is about: the selected tree item. The FXMLView offers it
+     * as the view's context, and while the explorer has the focus it is the
+     * window manager's active context — see ExampleController for a consumer.
+     */
+    private final MutableLookupContext lookup = new MutableLookupContext();
+
+    @Override
+    public LookupContext getLookup() {
+        return lookup;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -55,6 +70,8 @@ public class ExampleExplorerController implements Initializable {
                 new TreeItem<>("Item 3")
         );
         tree.setRoot(root);
+        tree.getSelectionModel().selectedItemProperty().addListener((observable, old, item) ->
+                lookup.set(item == null ? List.of() : List.of(item.getValue())));
     }
 
     /**

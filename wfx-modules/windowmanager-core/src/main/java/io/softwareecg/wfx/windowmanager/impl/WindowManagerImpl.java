@@ -20,6 +20,8 @@
 package io.softwareecg.wfx.windowmanager.impl;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
+import io.softwareecg.wfx.lookup.api.ProxyLookupContext;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
@@ -75,6 +77,16 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     private static final double DEFAULT_WINDOW_WIDTH = 800;
     private static final double DEFAULT_WINDOW_HEIGHT = 600;
+
+    /**
+     * The context of the view the user is working in, see
+     * {@link #getActiveLookup()}.
+     */
+    private final ProxyLookupContext activeLookup = new ProxyLookupContext();
+    /**
+     * The view whose context {@link #activeLookup} currently stands in for.
+     */
+    private View activeLookupOwner;
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -205,6 +217,9 @@ public class WindowManagerImpl implements MultiWindowManager {
             if (toolViewsByID.putIfAbsent(viewStatus.getView().getViewId(), viewStatus) == null) {
                 toolViews.add(viewStatus.getView());
             }
+            // A tool closed via the X button stays registered, but it must
+            // not go on supplying the active context while hidden.
+            viewStatus.setOnTabClosed(vs -> releaseActiveLookupIfOwnerIsGone());
         }
         else if (viewStatus.getView().getKind() == ViewKind.DOCUMENT) {
             // Closing a DOCUMENT tab via the X button must fully unregister
@@ -220,6 +235,9 @@ public class WindowManagerImpl implements MultiWindowManager {
             shown = true;
         }
         setDividerPositions();
+        // Registering under an existing id replaces the old view instance,
+        // and a re-registration may leave the view hidden.
+        releaseActiveLookupIfOwnerIsGone();
         // A freshly shown view must own the logical focus. If TabArea.add()
         // already fired setFocusedView via its selection listener this is a
         // no-op (setFocusedView is idempotent for same-value calls); otherwise
@@ -251,6 +269,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             return false;
         }
         unregisterImpl(view);
+        releaseActiveLookupIfOwnerIsGone();
         if (detach) {
             ViewLifecycle.detached(status.getView().getRootNode());
         }
@@ -354,6 +373,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             restoringLayout = false;
         }
         setDividerPositions();
+        releaseActiveLookupIfOwnerIsGone();
         dropped.forEach(view -> ViewLifecycle.detached(view.getRootNode()));
     }
 
@@ -506,6 +526,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         unknownShown.forEach(ViewStatus::setDividerPositions);
         build.dividers.forEach(Runnable::run);
 
+        releaseActiveLookupIfOwnerIsGone();
         ViewStatus focused = snapshot.focused() != null ? viewsStatus.get(snapshot.focused()) : null;
         if (focused != null && focused.getArea() != null) {
             focused.getArea().select(focused);
@@ -644,7 +665,9 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (view.getKind() == ViewKind.DOCUMENT) {
             return unregister(view);
         }
-        return closeViewImpl(view) != null;
+        boolean closed = closeViewImpl(view) != null;
+        releaseActiveLookupIfOwnerIsGone();
+        return closed;
     }
 
     /**
@@ -744,6 +767,43 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         this.lastFocusedView = this.focusedView.get();
         this.focusedView.set(focusedView);
+        activateLookupOf(focusedView);
+    }
+
+    @Override
+    public LookupContext getActiveLookup() {
+        return activeLookup;
+    }
+
+    /**
+     * Make the context of the given view the active one, if the view takes
+     * part at all.
+     */
+    private void activateLookupOf(View view) {
+        LookupContext lookup = view != null ? view.getLookup() : null;
+        if (lookup == null || lookup == LookupContext.EMPTY) {
+            return;
+        }
+        activeLookupOwner = view;
+        activeLookup.setDelegate(lookup);
+    }
+
+    /**
+     * Empty the active context if the view that supplies it is no longer
+     * shown — closed, unregistered, or replaced by another view with its id.
+     * Without this the context of a view that is gone would stay active (and
+     * referenced) until the user happens to focus another participating view.
+     */
+    private void releaseActiveLookupIfOwnerIsGone() {
+        if (activeLookupOwner == null) {
+            return;
+        }
+        ViewStatus status = viewsStatus.get(activeLookupOwner.getViewId());
+        if (status == null || status.getView() != activeLookupOwner
+                || status.getArea() == null || status.getStatus() == ViewStatus.Status.HIDDEN) {
+            activeLookupOwner = null;
+            activeLookup.setDelegate(LookupContext.EMPTY);
+        }
     }
 
     @Override
@@ -794,6 +854,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         ((Stage) area.getNode().getScene().getWindow()).close();
         subWindows.remove(area);
+        releaseActiveLookupIfOwnerIsGone();
     }
 
     /**

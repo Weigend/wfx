@@ -106,6 +106,28 @@ EventBus<ProgressEvent> bus =
         Lookup.lookup(new TypeRef<EventBus<ProgressEvent>>() {});
 ```
 
+## Context Lookups
+
+`Lookup` is static and global; its content is fixed after startup. For
+state that belongs to one view and changes while the application runs,
+`lookup-api` has `LookupContext`:
+
+| Type | Role |
+|------|------|
+| `LookupContext` | read side: `lookup`, `find`, `lookupAll`, `observe(type, listener)` |
+| `MutableLookupContext` | content owned by a view or controller: `add`, `remove`, `set`, `clear` |
+| `ProxyLookupContext` | stands in for an exchangeable context; keeps observations across the exchange |
+| `LookupContext.Provider` | implemented by controllers; `FXMLView` exposes it as `View.getLookup()` |
+
+`WindowManagerImpl` owns one `ProxyLookupContext`, returned by
+`WindowManager.getActiveLookup()`. `setFocusedView` points it at the
+focused view's context unless that is `LookupContext.EMPTY`; closing or
+unregistering the supplying view resets it to empty. Observers are told
+only when the list of instances of their type actually differs, whether
+through a content change or a delegate exchange. `lookup-api` has no
+JavaFX dependency: listeners run on the thread that made the change,
+which for view state is the JavaFX Application Thread.
+
 ## DI Boundary
 
 WFX uses DI for long-lived infrastructure:

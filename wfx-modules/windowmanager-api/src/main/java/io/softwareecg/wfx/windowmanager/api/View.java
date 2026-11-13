@@ -19,6 +19,7 @@
  */
 package io.softwareecg.wfx.windowmanager.api;
 
+import io.softwareecg.wfx.lookup.api.LookupContext;
 import javafx.scene.Parent;
 
 import java.net.URL;
@@ -97,5 +98,25 @@ public interface View {
      */
     default ViewKind getKind() {
         return ViewKind.TOOL;
+    }
+
+    /**
+     * Get the context of this view: what it is currently about — its
+     * selection, the document it shows, the capabilities that go with them.
+     * <p>
+     * While the user works in this view, the window manager offers this
+     * context as {@link WindowManager#getActiveLookup()}, so that menus,
+     * toolbars and other views can react to it without knowing this view.
+     * <p>
+     * The default is {@link LookupContext#EMPTY}, which means the view does
+     * not take part: focusing it leaves the active context as it is. A view
+     * that should clear the active context when it gets the focus returns an
+     * empty {@link io.softwareecg.wfx.lookup.api.MutableLookupContext}
+     * instead.
+     *
+     * @return the context, never null; always the same instance
+     */
+    default LookupContext getLookup() {
+        return LookupContext.EMPTY;
     }
 }

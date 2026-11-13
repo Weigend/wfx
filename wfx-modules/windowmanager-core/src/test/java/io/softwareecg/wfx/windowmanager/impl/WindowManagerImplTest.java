@@ -20,6 +20,8 @@
 package io.softwareecg.wfx.windowmanager.impl;
 
 import io.softwareecg.wfx.lookup.api.Lookup;
+import io.softwareecg.wfx.lookup.api.LookupContext;
+import io.softwareecg.wfx.lookup.api.MutableLookupContext;
 import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.windowmanager.testutil.JavaFXThreadingRule;
 import io.softwareecg.wfx.windowmanager.api.Position;
@@ -941,5 +943,117 @@ public class WindowManagerImplTest {
 
         assertThat("a tool survives the window it was shown in", windowManager.findView("view1"), is(notNullValue()));
         assertThat("a document does not", windowManager.findView("doc"), is(nullValue()));
+    }
+
+    /** A registered, shown view that offers the given context. */
+    private ViewStatus viewWithLookup(String id, LookupContext lookup) {
+        ViewStatus view = mockView(id, id);
+        when(view.getView().getLookup()).thenReturn(lookup);
+        windowManager.register(view.getView());
+        return view;
+    }
+
+    @Test
+    public void testActiveLookupIsEmptyWithoutAnyView() {
+        assertThat(windowManager.getActiveLookup().lookupAll(Object.class), hasSize(0));
+    }
+
+    @Test
+    public void testActiveLookupFollowsTheFocusedView() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus editor = viewWithLookup("editor", new MutableLookupContext("file X"));
+
+        windowManager.setFocusedView(explorer.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+
+        windowManager.setFocusedView(editor.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("file X"));
+    }
+
+    @Test
+    public void testActiveLookupStaysTheSameObjectAndNotifiesOnFocusChange() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus editor = viewWithLookup("editor", new MutableLookupContext("file X"));
+        LookupContext active = windowManager.getActiveLookup();
+        AtomicReference<List<String>> seen = new AtomicReference<>();
+        active.observe(String.class, seen::set);
+
+        windowManager.setFocusedView(explorer.getView());
+        assertThat(seen.get(), contains("project A"));
+        windowManager.setFocusedView(editor.getView());
+        assertThat(seen.get(), contains("file X"));
+
+        assertThat(windowManager.getActiveLookup(), is(sameInstance(active)));
+    }
+
+    @Test
+    public void testActiveLookupReportsChangesWithinTheFocusedView() {
+        MutableLookupContext selection = new MutableLookupContext();
+        ViewStatus explorer = viewWithLookup("explorer", selection);
+        windowManager.setFocusedView(explorer.getView());
+        AtomicReference<List<String>> seen = new AtomicReference<>();
+        windowManager.getActiveLookup().observe(String.class, seen::set);
+
+        selection.set(List.of("project B"));
+
+        assertThat(seen.get(), contains("project B"));
+    }
+
+    @Test
+    public void testViewWithoutLookupDoesNotTakeOverTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus console = viewWithLookup("console", LookupContext.EMPTY);
+        ViewStatus legacy = mockView("legacy", "legacy");     // getLookup() answers null
+        windowManager.register(legacy.getView());
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.setFocusedView(console.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+
+        windowManager.setFocusedView(legacy.getView());
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
+    }
+
+    @Test
+    public void testViewWithEmptyMutableLookupClearsTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus welcome = viewWithLookup("welcome", new MutableLookupContext());
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.setFocusedView(welcome.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testUnregisteringTheSupplyingViewEmptiesTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.unregister(explorer.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testClosingTheSupplyingToolEmptiesTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.closeView(explorer.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is(nullValue()));
+    }
+
+    @Test
+    public void testClosingAnotherViewKeepsTheActiveLookup() {
+        ViewStatus explorer = viewWithLookup("explorer", new MutableLookupContext("project A"));
+        ViewStatus other = viewWithLookup("other", LookupContext.EMPTY);
+        windowManager.setFocusedView(explorer.getView());
+
+        windowManager.closeView(other.getView());
+        windowManager.unregister(other.getView());
+
+        assertThat(windowManager.getActiveLookup().lookup(String.class), is("project A"));
     }
 }
