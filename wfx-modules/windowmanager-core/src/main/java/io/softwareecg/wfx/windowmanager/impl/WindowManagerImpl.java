@@ -22,6 +22,7 @@ package io.softwareecg.wfx.windowmanager.impl;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
+import io.softwareecg.wfx.windowmanager.api.ViewLifecycle;
 import io.softwareecg.wfx.windowmanager.api.WindowFactory;
 import jakarta.inject.Singleton;
 import javafx.application.Platform;
@@ -102,7 +103,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> register(view));
+            Platform.runLater(() -> register(view, showView));
             return;
         }
         ViewStatus v = new ViewStatus(view);
@@ -129,7 +130,7 @@ public class WindowManagerImpl implements MultiWindowManager {
     @Override
     public void register(final View view, final View parent, boolean showView) {
         if (!Platform.isFxApplicationThread()) {
-            Platform.runLater(() -> register(view, parent));
+            Platform.runLater(() -> register(view, parent, showView));
             return;
         }
         if (!viewsStatus.containsKey(parent.getViewId())) {
@@ -139,7 +140,9 @@ public class WindowManagerImpl implements MultiWindowManager {
         ViewStatus parentStatus = viewsStatus.get(parent.getViewId());
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
-        boolean show = unregister(view) || showView;
+        // Re-registering is not a goodbye: keep the lifecycle hooks of the
+        // view attached while it moves to its new place.
+        boolean show = unregister(view, false) || showView;
         ViewArea area = findAreaToAdd(parentStatus);
         if (area == null) {
             area = getMainRootArea();
@@ -200,6 +203,8 @@ public class WindowManagerImpl implements MultiWindowManager {
             // good for TOOLs, leaks ViewStatus instances for DOCUMENTs.
             viewStatus.setOnTabClosed(vs -> unregister(vs.getView()));
         }
+        // Tell whoever built the view's content that it is (still) in use.
+        ViewLifecycle.attached(viewStatus.getView().getRootNode());
         boolean shown = false;
         if (show && viewArea != null && position != null) {
             viewArea.add(viewStatus, position);
@@ -219,10 +224,27 @@ public class WindowManagerImpl implements MultiWindowManager {
 
     @Override
     public boolean unregister(View view) {
-        if (!viewsStatus.containsKey(view.getViewId())) {
+        return unregister(view, true);
+    }
+
+    /**
+     * Unregister a view and evict it from the tool registry.
+     *
+     * @param view   The view to unregister.
+     * @param detach True if the view is gone for good and its lifecycle hooks
+     *               should be told so; false if it is about to be registered
+     *               again.
+     * @return True if the view was registered.
+     */
+    private boolean unregister(View view, boolean detach) {
+        ViewStatus status = viewsStatus.get(view.getViewId());
+        if (status == null) {
             return false;
         }
         unregisterImpl(view);
+        if (detach) {
+            ViewLifecycle.detached(status.getView().getRootNode());
+        }
         // Explicit unregister also evicts the view from the tool registry.
         // closeView on a TOOL only hides; unregister is the "gone for good"
         // path that should also strip it from the auto View menu.
@@ -289,6 +311,12 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         List<RootArea> currentSubwindows = new ArrayList<>(subWindows);
         currentSubwindows.forEach(this::remove);
+        // Everything that is not a tool is dropped by the reset below and
+        // never comes back: release those views like an unregister would.
+        List<View> dropped = viewsStatus.values().stream()
+                .map(ViewStatus::getView)
+                .filter(view -> !toolViewsByID.containsKey(view.getViewId()))
+                .collect(Collectors.toList());
         rootPane.getChildren().clear();
         viewsStatus.clear();
         views.clear();
@@ -317,6 +345,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             restoringLayout = false;
         }
         setDividerPositions();
+        dropped.forEach(view -> ViewLifecycle.detached(view.getRootNode()));
     }
 
     /**
@@ -478,7 +507,15 @@ public class WindowManagerImpl implements MultiWindowManager {
     public void remove(RootArea area) {
         LOGGER.info("Remove existing window");
         for (ViewStatus view : getForRootArea(area)) {
-            view.getArea().remove(view);
+            if (view.getView().getKind() == ViewKind.DOCUMENT) {
+                // Closing the window closes its documents, and a closed
+                // document is unregistered — it has no View menu entry that
+                // could bring it back.
+                unregister(view.getView());
+            }
+            else {
+                view.getArea().remove(view);
+            }
         }
         ((Stage) area.getNode().getScene().getWindow()).close();
         subWindows.remove(area);

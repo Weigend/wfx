@@ -111,6 +111,57 @@ public class MainTest {
     }
 
     @Test
+    public void testStartSurvivesModuleFailingInPreload() throws Exception {
+        // Regression: an unchecked exception in preload() used to kill the
+        // startup thread, leaving the splash screen up and no main window.
+        org.mockito.Mockito.doThrow(new IllegalStateException("boom")).when(modules.get(0)).preload();
+        Stage stage = GuiTestHelper.getStage();
+
+        GuiTestHelper.runInJavaFxThreadAndWait(() -> main.start(stage));
+        Thread.sleep(1000);
+
+        verify(modules.get(1)).preload();
+        verify(platformApplication).hidePreloader();
+        verify(platformApplication).showMainApplicationWindow(stage);
+        for (Module module : modules) {
+            verify(module).start();
+        }
+    }
+
+    @Test
+    public void testStartSurvivesBrokenPreloader() throws Exception {
+        org.mockito.Mockito.doThrow(new IllegalStateException("no splash"))
+                .when(platformApplication).showPreloader(any(Stage.class));
+        Stage stage = GuiTestHelper.getStage();
+
+        GuiTestHelper.runInJavaFxThreadAndWait(() -> main.start(stage));
+        Thread.sleep(1000);
+
+        verify(platformApplication).showMainApplicationWindow(stage);
+    }
+
+    @Test
+    public void testStartSurvivesModuleFailingInStart() throws Exception {
+        org.mockito.Mockito.doThrow(new IllegalStateException("boom")).when(modules.get(0)).start();
+        Stage stage = GuiTestHelper.getStage();
+
+        GuiTestHelper.runInJavaFxThreadAndWait(() -> main.start(stage));
+        Thread.sleep(1000);
+
+        verify(modules.get(1)).start();
+    }
+
+    @Test
+    public void testStopReachesEveryModuleDespiteFailure() throws Exception {
+        org.mockito.Mockito.doThrow(new IllegalStateException("boom")).when(modules.get(0)).stop();
+
+        main.stop();
+
+        verify(modules.get(1)).stop();
+        verify(platformApplication).stop();
+    }
+
+    @Test
     public void testStop() throws Exception {
         main.stop();
         verify(platformApplication).stop();
