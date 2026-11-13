@@ -79,7 +79,7 @@ The easiest way to use WFX is the `wfx-all` aggregator dependency:
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>wfx-all</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>1.2.0</version>
 </dependency>
 ```
 
@@ -469,7 +469,7 @@ equal priorities keep the order in which they were registered. With
 Avaje, `@Primary` and `@Secondary` are honoured by `lookup` before
 `@Priority` is consulted, exactly as for injection.
 
-> **Changed in this release.** `lookupAll` used to list the *larger*
+> **Changed in 1.2.0.** `lookupAll` used to list the *larger*
 > value first (and treated a missing annotation as 0), while the module
 > order and the Avaje `lookup` already preferred the smaller one, and the
 > ServiceLoader `lookup` ignored `@Priority` altogether. If you rely on
@@ -636,7 +636,7 @@ keep `ProgressController` as its `fx:controller`:
 The `progressBar` and `progressText` IDs are required — the controller
 binds them to the `StartupProgressEvent` stream.
 
-A future 1.1 release will add a `SplashConfig.builder()` so you do not
+A future release will add a `SplashConfig.builder()` so you do not
 have to write FXML at all for simple branding overrides.
 
 ### Replacing the built-in status bar
@@ -705,7 +705,7 @@ Then register it like any other view:
 Lookup.lookup(WindowManager.class).register(new MyProgrammaticView());
 ```
 
-A future 1.1 release will add a `SimpleView.Builder` that condenses the
+A future release will add a `SimpleView.Builder` that condenses the
 six-method boilerplate into a fluent builder call.
 
 ### Remembering the layout between sessions
@@ -792,7 +792,7 @@ Add the runtime dependency to the module that bundles your application
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>view-menu</artifactId>
-    <version>7.0.0-SNAPSHOT</version>
+    <version>1.2.0</version>
     <scope>runtime</scope>
 </dependency>
 ```
