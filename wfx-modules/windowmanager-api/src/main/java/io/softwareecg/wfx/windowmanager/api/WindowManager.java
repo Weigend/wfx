@@ -107,6 +107,51 @@ public interface WindowManager {
     void restoreDefaultLayout();
 
     /**
+     * Capture the current arrangement of the views as text, so that it can be
+     * stored and brought back with {@link #restoreLayout(String)} — typically
+     * on the next start of the application.
+     * <p>
+     * The layout records which views share a tab pane and in which order, how
+     * the panes are split and where the dividers sit, which tab is selected,
+     * which views are hidden, and which views live in detached windows
+     * together with the position and size of those windows. Views are
+     * referred to by their {@linkplain View#getViewId() id}. The position and
+     * size of the main window are not part of it; the main window belongs to
+     * the {@link ApplicationWindow}.
+     * <p>
+     * Call this on the JavaFX Application Thread, for example from
+     * {@code Module.stop()}.
+     *
+     * @return the layout as text; where to keep it is up to the application
+     */
+    String saveLayout();
+
+    /**
+     * Arrange the registered views as described by a layout that
+     * {@link #saveLayout()} produced.
+     * <p>
+     * Only views that are registered at the time of the call can be placed, so
+     * call this after the views have been registered — for example from
+     * {@code Module.start()}. The layout and the registry need not match:
+     * <ul>
+     *     <li>a view the layout mentions but that is not registered (a
+     *     document that was not reopened, a tool that no longer exists) is
+     *     skipped, and a pane or window left empty by that is dropped;</li>
+     *     <li>a registered view the layout does not know (a tool added by a
+     *     newer version of the application) keeps its current state: if it is
+     *     shown, it is placed at its default position.</li>
+     * </ul>
+     * When called from another thread the layout is applied later on the
+     * JavaFX Application Thread.
+     *
+     * @param layout the text returned by {@link #saveLayout()}
+     * @return {@code true} if the layout was understood and is (being)
+     *         applied; {@code false} if the text is not a layout this version
+     *         can read, in which case the current arrangement is left alone
+     */
+    boolean restoreLayout(String layout);
+
+    /**
      * Close the specified view.
      * <p>
      * The given view must be registered within the {@link WindowManager}. If the view is not registered it returns

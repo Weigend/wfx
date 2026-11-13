@@ -257,6 +257,10 @@ public class ViewStatus {
             case BOTTOM:
                 target = 1.0 - space;
                 break;
+            case CENTER:
+                // A view in the centre claims no share of its own; the
+                // divider belongs to whatever sits beside it.
+                return;
             default:
                 LOGGER.warn("Invalid position {} given for setting divider positions of {}", position, splitPane);
                 return;
@@ -294,7 +298,7 @@ public class ViewStatus {
      */
     private static final int MAX_REAPPLY_FIRINGS = 10;
 
-    private static void applyDividerPosition(SplitPane splitPane, double target) {
+    static void applyDividerPosition(SplitPane splitPane, double target) {
         splitPane.setDividerPositions(target);
 
         // Stubbed SplitPane mocks in unit tests return null for orientation /

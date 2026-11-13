@@ -19,6 +19,7 @@
  */
 package io.softwareecg.wfx.windowmanager.impl;
 
+import io.softwareecg.wfx.lookup.api.Lookup;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
@@ -30,16 +31,21 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +72,9 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     private final LinkedHashMap<String, ViewStatus> toolViewsByID = new LinkedHashMap<>();
     private final ReadOnlyListWrapper<View> toolViews = new ReadOnlyListWrapper<>(this, "toolViews", FXCollections.observableArrayList());
+
+    private static final double DEFAULT_WINDOW_WIDTH = 800;
+    private static final double DEFAULT_WINDOW_HEIGHT = 600;
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -346,6 +355,272 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         setDividerPositions();
         dropped.forEach(view -> ViewLifecycle.detached(view.getRootNode()));
+    }
+
+    @Override
+    public String saveLayout() {
+        List<LayoutSnapshot.Window> windows = new ArrayList<>();
+        for (RootArea subWindow : subWindows) {
+            Stage stage = stageOf(subWindow);
+            if (stage != null) {
+                windows.add(new LayoutSnapshot.Window(
+                        finite(stage.getX(), 0), finite(stage.getY(), 0),
+                        finite(stage.getWidth(), DEFAULT_WINDOW_WIDTH), finite(stage.getHeight(), DEFAULT_WINDOW_HEIGHT),
+                        stage.isMaximized(), capture(subWindow.getFirstChild())));
+            }
+        }
+        List<String> hidden = viewsStatus.values().stream()
+                .filter(status -> status.getArea() == null)
+                .map(status -> status.getView().getViewId())
+                .collect(Collectors.toList());
+        View focused = getFocusedView();
+        String focusedId = focused != null && hasRegisteredView(focused) ? focused.getViewId() : null;
+        return new LayoutSnapshot(capture(getMainRootArea().getFirstChild()), windows, hidden, focusedId).write();
+    }
+
+    /**
+     * A stage that has not been placed yet reports NaN for its bounds.
+     */
+    private static double finite(double value, double fallback) {
+        return Double.isNaN(value) || Double.isInfinite(value) ? fallback : value;
+    }
+
+    /**
+     * Describe the given area and everything below it.
+     */
+    private static LayoutSnapshot.Area capture(ViewArea area) {
+        if (area instanceof TabArea tabs) {
+            ViewStatus selected = tabs.getSelectedView();
+            return new LayoutSnapshot.Tabs(tabs.isEditor(),
+                    tabs.getViewsInTabOrder().stream()
+                            .map(status -> status.getView().getViewId())
+                            .collect(Collectors.toList()),
+                    selected != null ? selected.getView().getViewId() : null);
+        }
+        if (area == null || area.getOrientation() == null
+                || area.getFirstChild() == null || area.getSecondChild() == null) {
+            // Not a tab pane and not a split: an area of a kind this window
+            // manager did not create. Record its place, it has no views of ours.
+            return new LayoutSnapshot.Tabs(area != null && area.isEditor(), List.of(), null);
+        }
+        return new LayoutSnapshot.Split(area.getOrientation(), area.getDividerPosition(),
+                capture(area.getFirstChild()), capture(area.getSecondChild()));
+    }
+
+    @Override
+    public boolean restoreLayout(String layout) {
+        final LayoutSnapshot snapshot;
+        try {
+            snapshot = LayoutSnapshot.parse(layout);
+        }
+        catch (IllegalArgumentException e) {
+            LOGGER.warn("Can not restore the layout, keeping the current one: {}", e.getMessage());
+            return false;
+        }
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(() -> applyLayout(snapshot));
+        }
+        else {
+            applyLayout(snapshot);
+        }
+        return true;
+    }
+
+    /**
+     * State of one {@link #applyLayout(LayoutSnapshot)} run.
+     */
+    private static final class LayoutBuild {
+        /** Ids of the views that already have their place. */
+        private final Set<String> placed = new HashSet<>();
+        /** Divider moves, deferred until the whole tree is attached. */
+        private final List<Runnable> dividers = new ArrayList<>();
+        /** Whether the tree under construction still lacks its editor pane. */
+        private boolean editorMissing;
+        /** Whether an editor pane is kept even if none of its views is left. */
+        private boolean keepEmptyEditor;
+    }
+
+    /**
+     * Take the current arrangement apart and put the registered views
+     * together again as the snapshot describes.
+     */
+    private void applyLayout(LayoutSnapshot snapshot) {
+        Set<String> shownBefore = viewsStatus.values().stream()
+                .filter(status -> status.getArea() != null)
+                .map(status -> status.getView().getViewId())
+                .collect(Collectors.toSet());
+        Set<String> known = new HashSet<>(snapshot.hidden());
+        collectViewIds(snapshot.main(), known);
+        snapshot.windows().forEach(window -> collectViewIds(window.root(), known));
+
+        // Take everything apart. Unlike restoreDefaultLayout() this keeps
+        // every registration — documents included — and only moves the views.
+        for (ViewStatus status : viewsStatus.values()) {
+            TabArea area = status.getArea();
+            if (area != null) {
+                area.remove(status, false);
+            }
+            status.setStatus(ViewStatus.Status.HIDDEN);
+        }
+        for (RootArea subWindow : new ArrayList<>(subWindows)) {
+            Stage stage = stageOf(subWindow);
+            if (stage != null) {
+                stage.close();
+            }
+        }
+        subWindows.clear();
+        rootPane.getChildren().clear();
+        RootArea root = new RootArea(rootPane, dragNDropManager, false);
+        mainRootArea.set(root);
+
+        LayoutBuild build = new LayoutBuild();
+        // The main window always needs the pane that takes the CENTER views.
+        build.editorMissing = true;
+        build.keepEmptyEditor = true;
+        ViewArea mainTree = build(snapshot.main(), root, build);
+        if (mainTree != null) {
+            if (build.editorMissing) {
+                // The layout names no editor pane. Appoint the first pane, or
+                // views registered at CENTER would have nowhere to go.
+                for (ViewArea area = mainTree; area != null; area = area.getFirstChild()) {
+                    area.setEditor(true);
+                }
+            }
+            root.setFirstChild(mainTree);
+        }
+        for (LayoutSnapshot.Window window : snapshot.windows()) {
+            openWindow(window, build);
+        }
+
+        // Views the layout has never heard of stay as they were: shown ones
+        // go to their default position.
+        List<ViewStatus> unknownShown = viewsStatus.values().stream()
+                .filter(status -> !known.contains(status.getView().getViewId()))
+                .filter(status -> shownBefore.contains(status.getView().getViewId()))
+                .collect(Collectors.toList());
+        for (ViewStatus status : unknownShown) {
+            status.restoreDefault();
+            ViewArea target = status.getParent() != null ? findAreaToAdd(status.getParent()) : null;
+            (target != null ? target : root).add(status, status.getPosition());
+        }
+        unknownShown.forEach(ViewStatus::setDividerPositions);
+        build.dividers.forEach(Runnable::run);
+
+        ViewStatus focused = snapshot.focused() != null ? viewsStatus.get(snapshot.focused()) : null;
+        if (focused != null && focused.getArea() != null) {
+            focused.getArea().select(focused);
+            setFocusedView(focused.getView());
+        }
+    }
+
+    private static void collectViewIds(LayoutSnapshot.Area area, Set<String> ids) {
+        if (area instanceof LayoutSnapshot.Tabs tabs) {
+            ids.addAll(tabs.views());
+        }
+        else if (area instanceof LayoutSnapshot.Split split) {
+            collectViewIds(split.first(), ids);
+            collectViewIds(split.second(), ids);
+        }
+    }
+
+    /**
+     * Build the areas for one node of a snapshot and fill them with the
+     * registered views.
+     *
+     * @param node   the node to build
+     * @param parent the area the result will be attached to
+     * @param build  the state of the current run
+     * @return the area, not yet attached to {@code parent}; null if none of
+     *         the node's views is registered any more
+     */
+    private ViewArea build(LayoutSnapshot.Area node, ViewArea parent, LayoutBuild build) {
+        if (node instanceof LayoutSnapshot.Tabs tabs) {
+            return buildTabs(tabs, parent, build);
+        }
+        LayoutSnapshot.Split split = (LayoutSnapshot.Split) node;
+        ViewArea area = new ViewArea(parent, dragNDropManager);
+        ViewArea first = build(split.first(), area, build);
+        ViewArea second = build(split.second(), area, build);
+        if (first == null || second == null) {
+            // One side has nothing to show: no need for a split, the other
+            // side (if any) takes the whole place.
+            return first != null ? first : second;
+        }
+        area.arrange(split.orientation(), first, second);
+        build.dividers.add(() -> area.applyDividerPosition(split.divider()));
+        return area;
+    }
+
+    private ViewArea buildTabs(LayoutSnapshot.Tabs tabs, ViewArea parent, LayoutBuild build) {
+        List<ViewStatus> content = new ArrayList<>();
+        for (String viewId : tabs.views()) {
+            ViewStatus status = viewsStatus.get(viewId);
+            if (status != null && build.placed.add(viewId)) {
+                content.add(status);
+            }
+        }
+        // Only one pane per tree can be the editor; a layout claiming more
+        // is taken at its first word.
+        boolean editor = tabs.editor() && build.editorMissing;
+        if (content.isEmpty() && !(editor && build.keepEmptyEditor)) {
+            return null;
+        }
+        if (editor) {
+            build.editorMissing = false;
+        }
+        ViewArea area = Lookup.require(ViewContainerAreaFactory.class).getInstance(parent, dragNDropManager);
+        area.setEditor(editor);
+        for (ViewStatus status : content) {
+            area.add(status, Position.CENTER);
+            status.setStatus(ViewStatus.Status.VISIBLE);
+        }
+        ViewStatus selected = tabs.selected() != null ? viewsStatus.get(tabs.selected()) : null;
+        if (selected != null && area instanceof TabArea tabArea && selected.getArea() == tabArea) {
+            tabArea.select(selected);
+        }
+        return area;
+    }
+
+    /**
+     * Bring back a detached window, unless none of its views is left.
+     */
+    private void openWindow(LayoutSnapshot.Window window, LayoutBuild build) {
+        RootArea area = new RootArea(dragNDropManager, true);
+        build.editorMissing = true;
+        build.keepEmptyEditor = false;
+        ViewArea tree = build(window.root(), area, build);
+        if (tree == null) {
+            return;
+        }
+        area.setFirstChild(tree);
+
+        Stage stage = windowFactory.initializeWindow();
+        stage.setScene(new Scene(area.getNode()));
+        // The screen the window was on may be gone; then let the platform
+        // place it rather than opening it out of sight.
+        if (!Screen.getScreensForRectangle(window.x(), window.y(), window.width(), window.height()).isEmpty()) {
+            stage.setX(window.x());
+            stage.setY(window.y());
+        }
+        stage.setWidth(window.width());
+        stage.setHeight(window.height());
+        stage.setMaximized(window.maximized());
+        stage.setOnCloseRequest(event -> remove(area));
+        getForRootArea(area).stream().findFirst()
+                .ifPresent(status -> stage.setTitle(status.getView().getTitle()));
+        stage.show();
+        register(area);
+    }
+
+    /**
+     * Get the stage that shows the given root area.
+     *
+     * @return the stage, or null if the area is not shown in one.
+     */
+    private static Stage stageOf(RootArea area) {
+        Scene scene = area.getNode().getScene();
+        Window window = scene != null ? scene.getWindow() : null;
+        return window instanceof Stage stage ? stage : null;
     }
 
     /**
