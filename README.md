@@ -28,6 +28,65 @@ synchronous in-process event bus.
 - **ServiceLoader Support** - lightweight non-DI fallback for simple applications and tests
 - **FXML Integration** - `FXMLView.Builder` ties FXML files to controllers and registration metadata
 
+## Status and Scope
+
+WFX is the core of a rich client platform, not a complete one. It grows with
+the applications built on it: so far there are two, and a feature was added
+when one of them needed it. Read the feature list
+above as what exists, and this section as what to expect from it.
+
+**Proven in use**
+
+- `Lookup`, the event bus, the module lifecycle and the preloader.
+- Registering views, the `TOOL` / `DOCUMENT` lifecycle, the application window
+  with its menu, tool and status bar slots.
+
+**New in 1.2.0**
+
+- Context lookups and layout persistence are covered by tests and shown in the
+  example application, but neither of the two applications uses them yet.
+
+**Works, with rough edges**
+
+- The window manager. Tabs, splits, drag and drop and detached windows work,
+  but the docking is not on the level of a dedicated docking library. There are
+  no auto-hiding tool windows, no maximising of a single view, and no
+  perspectives to switch between. Applications program against the
+  `WindowManager` interface, which leaves room to replace what is underneath.
+
+**Not there yet**
+
+- **Actions.** No registry that ties a menu item, a toolbar button, a context
+  menu entry and a keyboard shortcut to one action and enables it according to
+  the current selection. `MenuUtil` and `ToolBarUtils` help to place items;
+  the wiring is the application's job. `WindowManager.getActiveLookup()` is the
+  foundation such a system would build on.
+- **Documents.** No notion of a file opened in an editor: no modified state,
+  no save, no undo and redo.
+- **Background tasks.** No task service with progress display and cancel.
+  Progress events exist for the startup phase only.
+- **Settings.** No preferences API and no options dialog. `saveLayout()`
+  returns text; where it is stored is up to the application.
+- **Localisation.** `FXMLView` takes no resource bundle, and the texts of
+  WFX's own dialogs are fixed English. To translate the shutdown prompt,
+  replace it with your own `ShutdownConfirmation`.
+- **Plugins at runtime.** Modules are found on the classpath at startup. They
+  cannot be loaded, unloaded or updated while the application runs, and they
+  are not isolated from each other.
+- **Theming.** No API for application-wide stylesheets.
+- **Notifications, wizards, standard dialogs.** None.
+
+**Distribution and compatibility**
+
+- WFX is not published to Maven Central. Check out a release tag and run
+  `mvn clean install` to put it into your local repository.
+- A minor release can change behaviour. 1.2.0 did: it reversed the order of
+  `lookupAll()` for classes with `@Priority`. The release notes (in German)
+  list every such change.
+
+Missing pieces are built when an application needs them. If you need one, an
+issue that describes the use case is the way to move it up.
+
 ## Architecture
 
 ![WFX Architecture](docs/wfx-architecture.png)

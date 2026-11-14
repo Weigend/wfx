@@ -145,3 +145,6 @@ gradle-app.setting
 
 # flatten-maven-plugin
 .flattened-pom.xml
+
+# VS Code workspace settings
+.vscode/
