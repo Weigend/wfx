@@ -88,12 +88,13 @@ public class WindowManagerImpl implements MultiWindowManager {
      */
     private View activeLookupOwner;
     /**
-     * The registered views that have supplied the active context, the most
-     * recent one last. When the current supplier goes away, the latest of
-     * them that is still on screen takes over. Views that are no longer
-     * registered are dropped, so that a closed document is not kept alive.
+     * The registered views that have held the focus, the most recent one
+     * last. When the focused view or the view that supplies the active
+     * context goes away, the latest of them that is still on screen takes
+     * over. Views that are no longer registered are dropped, so that a closed
+     * document is not kept alive.
      */
-    private final List<View> activeLookupHistory = new ArrayList<>();
+    private final List<View> focusHistory = new ArrayList<>();
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -164,8 +165,28 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (!viewsStatus.containsKey(parent.getViewId())) {
             throw new IllegalArgumentException("Can not find parent view");
         }
+        registerNextTo(view, viewsStatus.get(parent.getViewId()), showView);
+    }
 
-        ViewStatus parentStatus = viewsStatus.get(parent.getViewId());
+    /**
+     * Register a view at the place that its position and its parent describe.
+     * <p>
+     * Unlike {@link #register(View, View, boolean)} this accepts a parent
+     * that is no longer registered — a tool that was docked next to a
+     * document outlives the document. {@link #findAreaToAdd(ViewStatus)}
+     * decides where the view goes then.
+     *
+     * @param view         The view to register.
+     * @param parent       The status of the view that defines the position;
+     *                     it may belong to a view that is gone.
+     * @param showView     True if the view should be shown immediately.
+     */
+    private void registerNextTo(View view, ViewStatus parent, boolean showView) {
+        // Link to the status the parent has now: after a re-registration the
+        // one at hand is outdated. Only a parent that is gone keeps its old
+        // status, as the record of where it used to be.
+        ViewStatus registered = viewsStatus.get(parent.getView().getViewId());
+        ViewStatus parentStatus = registered != null && registered.getView() == parent.getView() ? registered : parent;
         ViewStatus viewStatus = new ViewStatus(view, parentStatus);
 
         // Re-registering is not a goodbye: keep the lifecycle hooks of the
@@ -179,20 +200,35 @@ public class WindowManagerImpl implements MultiWindowManager {
     }
 
     /**
-     * Find the deepest view area defined by the parent view.
+     * Find the area that a view placed relative to the given parent goes
+     * into: the pane of the parent, or of the nearest of the parent's own
+     * parents that is shown.
+     * <p>
+     * If none of them is shown — hidden, or gone for good like a closed
+     * document — the view goes where the parent itself would go: next to the
+     * editor pane for a parent at {@link Position#CENTER}. A panel docked
+     * under the first document thus keeps its place under the editor pane
+     * when that document is closed.
      *
      * @param parentView start the search for a visible parent view area.
-     * @return the found view area to add the view. otherwise false.
+     * @return the area to add the view to; null if the view has to be placed
+     *         by its own position alone.
      */
     private ViewArea findAreaToAdd(ViewStatus parentView) {
         ViewStatus parent = parentView;
 
         while (parent != null) {
-            TabArea area = parent.getArea();
+            // Ask the registry, not the status at hand: the status of a view
+            // that is gone may still point at the pane it once was in.
+            ViewStatus current = viewsStatus.get(parent.getView().getViewId());
+            TabArea area = current != null && current.getView() == parent.getView() ? current.getArea() : null;
             if (area != null) {
                 return area;
             }
             parent = parent.getParent();
+        }
+        if (parentView != null && parentView.getView().getDefaultPosition() == Position.CENTER) {
+            return getMainRootArea().getEditorPane();
         }
         return null;
     }
@@ -226,7 +262,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             }
             // A tool closed via the X button stays registered, but it must
             // not go on supplying the active context while hidden.
-            viewStatus.setOnTabClosed(vs -> releaseActiveLookupIfOwnerIsGone());
+            viewStatus.setOnTabClosed(vs -> releaseViewsThatAreGone());
         }
         else if (viewStatus.getView().getKind() == ViewKind.DOCUMENT) {
             // Closing a DOCUMENT tab via the X button must fully unregister
@@ -244,7 +280,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         setDividerPositions();
         // Registering under an existing id replaces the old view instance,
         // and a re-registration may leave the view hidden.
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
         // A freshly shown view must own the logical focus. If TabArea.add()
         // already fired setFocusedView via its selection listener this is a
         // no-op (setFocusedView is idempotent for same-value calls); otherwise
@@ -286,7 +322,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             return false;
         }
         unregisterImpl(view);
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
         if (detach) {
             ViewLifecycle.detached(status.getView().getRootNode());
         }
@@ -382,7 +418,8 @@ public class WindowManagerImpl implements MultiWindowManager {
                     register(view.getView(), show);
                 }
                 else {
-                    register(view.getView(), view.getParent().getView(), show);
+                    // The parent may have been a document, which is gone now.
+                    registerNextTo(view.getView(), view.getParent(), show);
                 }
             }
         }
@@ -390,7 +427,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             restoringLayout = false;
         }
         setDividerPositions();
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
         dropped.forEach(view -> ViewLifecycle.detached(view.getRootNode()));
     }
 
@@ -543,7 +580,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         unknownShown.forEach(ViewStatus::setDividerPositions);
         build.dividers.forEach(Runnable::run);
 
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
         ViewStatus focused = snapshot.focused() != null ? viewsStatus.get(snapshot.focused()) : null;
         if (focused != null && focused.getArea() != null) {
             focused.getArea().select(focused);
@@ -683,7 +720,7 @@ public class WindowManagerImpl implements MultiWindowManager {
             return unregister(view);
         }
         boolean closed = closeViewImpl(view) != null;
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
         return closed;
     }
 
@@ -732,7 +769,8 @@ public class WindowManagerImpl implements MultiWindowManager {
 
         ViewStatus parent = viewStatus.getParent();
         if (parent != null) {
-            register(view, parent.getView(), true);
+            // The parent may be gone by now, e.g. a document that was closed.
+            registerNextTo(view, parent, true);
         }
         else {
             register(view, true);
@@ -782,7 +820,18 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (this.focusedView.get() == focusedView) {
             return;
         }
+        if (restoringLayout) {
+            // Putting the default layout back builds new panes, and each of
+            // them selects its first tab. That is not the user going to
+            // another view: the focus stays where it was, and
+            // releaseViewsThatAreGone() settles it once the layout stands.
+            return;
+        }
         this.lastFocusedView = this.focusedView.get();
+        if (focusedView != null) {
+            focusHistory.remove(focusedView);
+            focusHistory.add(focusedView);
+        }
         this.focusedView.set(focusedView);
         activateLookupOf(focusedView);
     }
@@ -797,42 +846,78 @@ public class WindowManagerImpl implements MultiWindowManager {
      * part at all.
      */
     private void activateLookupOf(View view) {
-        LookupContext lookup = view != null ? view.getLookup() : null;
-        if (lookup == null || lookup == LookupContext.EMPTY) {
+        if (view == null || !takesPart(view)) {
             return;
         }
-        activeLookupHistory.remove(view);
-        activeLookupHistory.add(view);
+        LookupContext lookup = view.getLookup();
         activeLookupOwner = view;
         activeLookup.setDelegate(lookup);
     }
 
     /**
-     * Take the active context away from the view that supplies it if that
-     * view is no longer shown — closed, unregistered, or replaced by another
-     * view with its id. Without this the context of a view that is gone would
-     * stay active (and referenced) until the user happens to focus another
-     * participating view.
+     * Let go of the views that are no longer shown — closed, unregistered, or
+     * replaced by another view with their id. Without this the window manager
+     * would go on naming a view that is gone as the focused one, and its
+     * context would stay active (and referenced) until the user happens to
+     * focus another view.
      * <p>
-     * The context goes to the view that supplied it before and is still on
-     * screen: closing one of two documents shown side by side leaves the
-     * other one active, although the focus never moved there. Only if there
-     * is no such view does the active context become empty.
+     * What such a view held goes to the view that had it before and is still
+     * on screen. The focus goes to the view that was focused most recently;
+     * the active context to the most recent one that takes part. Closing one
+     * of two documents shown side by side leaves the other one focused and
+     * active, although the user never clicked into it. If there is no such
+     * view, nobody has the focus, and the active context becomes empty.
      */
-    private void releaseActiveLookupIfOwnerIsGone() {
-        activeLookupHistory.removeIf(view -> !hasRegisteredView(view));
-        if (activeLookupOwner == null || isShown(activeLookupOwner)) {
+    private void releaseViewsThatAreGone() {
+        if (restoringLayout) {
+            // The default layout takes every tool out and puts it back in.
+            // Whoever is back when that is done keeps what it held; this is
+            // settled once, at the end.
             return;
         }
-        View successor = null;
-        for (int i = activeLookupHistory.size() - 1; i >= 0 && successor == null; i--) {
-            View candidate = activeLookupHistory.get(i);
-            if (candidate != activeLookupOwner && isOnScreen(candidate)) {
-                successor = candidate;
+        focusHistory.removeIf(view -> !hasRegisteredView(view));
+        if (lastFocusedView != null && !isShown(lastFocusedView)) {
+            lastFocusedView = null;
+        }
+        View focused = focusedView.get();
+        if (focused != null && !isShown(focused)) {
+            View successor = mostRecentOnScreen(false);
+            if (lastFocusedView == successor) {
+                // It is the focused view again, not the one before it.
+                lastFocusedView = null;
+            }
+            focusedView.set(successor);
+            activateLookupOf(successor);
+        }
+        if (activeLookupOwner != null && !isShown(activeLookupOwner)) {
+            View successor = mostRecentOnScreen(true);
+            activeLookupOwner = successor;
+            activeLookup.setDelegate(successor != null ? successor.getLookup() : LookupContext.EMPTY);
+        }
+    }
+
+    /**
+     * The view that held the focus most recently and can still be seen.
+     *
+     * @param takingPart true to consider only views that offer a context
+     * @return the view, or null if there is none
+     */
+    private View mostRecentOnScreen(boolean takingPart) {
+        for (int i = focusHistory.size() - 1; i >= 0; i--) {
+            View candidate = focusHistory.get(i);
+            if (isOnScreen(candidate) && (!takingPart || takesPart(candidate))) {
+                return candidate;
             }
         }
-        activeLookupOwner = successor;
-        activeLookup.setDelegate(successor != null ? successor.getLookup() : LookupContext.EMPTY);
+        return null;
+    }
+
+    /**
+     * Whether the view offers a context, see {@link View#getLookup()}.
+     */
+    private static boolean takesPart(View view) {
+        LookupContext lookup = view.getLookup();
+        return lookup != null && lookup != LookupContext.EMPTY;
     }
 
     /**
@@ -903,7 +988,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         ((Stage) area.getNode().getScene().getWindow()).close();
         subWindows.remove(area);
-        releaseActiveLookupIfOwnerIsGone();
+        releaseViewsThatAreGone();
     }
 
     /**

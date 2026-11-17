@@ -26,6 +26,8 @@ import io.softwareecg.wfx.lookup.serviceloader.ServiceLoaderLookupStrategy;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
+import io.softwareecg.wfx.windowmanager.impl.LayoutSnapshot.Split;
+import io.softwareecg.wfx.windowmanager.impl.LayoutSnapshot.Tabs;
 import io.softwareecg.wfx.windowmanager.testutil.GuiTestHelper;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -44,7 +46,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
 /**
@@ -315,6 +319,178 @@ public class MultiDocumentIntegrationTest {
         assertThat("no empty state in between", seen, contains(left));
     }
 
+    @Test
+    public void theFocusGoesBackToTheViewThatHadItBefore() throws Exception {
+        View leftView = documentView("left", Position.CENTER, new Document("left"));
+        View rightView = documentView("right", Position.RIGHT, new Document("right"));
+        onFx(() -> {
+            windowManager.register(leftView);
+            windowManager.register(rightView, leftView);
+        });
+        AtomicReference<View> afterRight = new AtomicReference<>();
+        AtomicReference<View> afterLeft = new AtomicReference<>(rightView);
+        AtomicReference<View> lastAfterLeft = new AtomicReference<>(rightView);
+
+        onFx(() -> {
+            windowManager.setFocusedView(leftView);
+            windowManager.setFocusedView(rightView);
+            windowManager.closeView(rightView);
+            afterRight.set(windowManager.getFocusedView());
+            windowManager.closeView(leftView);
+            afterLeft.set(windowManager.getFocusedView());
+            lastAfterLeft.set(windowManager.getLastFocusedView());
+        });
+
+        assertThat("not the view that is gone", afterRight.get(), is(leftView));
+        assertThat("nothing is left to hold the focus", afterLeft.get(), is(nullValue()));
+        assertThat(lastAfterLeft.get(), is(nullValue()));
+    }
+
+    @Test
+    public void aToolThatIsClosedDoesNotKeepTheFocus() throws Exception {
+        View document = documentView("doc", Position.CENTER, new Document("doc"));
+        View outline = silentTool("outline", Position.LEFT);
+        onFx(() -> {
+            windowManager.register(document);
+            windowManager.register(outline, document);
+        });
+        AtomicReference<View> focused = new AtomicReference<>();
+        AtomicReference<Document> active = new AtomicReference<>();
+
+        onFx(() -> {
+            windowManager.setFocusedView(document);
+            windowManager.setFocusedView(outline);
+            windowManager.closeView(outline);       // hidden, still registered
+            focused.set(windowManager.getFocusedView());
+            active.set(activeDocument());
+        });
+
+        assertThat(focused.get(), is(document));
+        assertThat(active.get(), is(new Document("doc")));
+    }
+
+    /* ----- a tool docked next to a document --------------------------------- */
+
+    private LayoutSnapshot layout() throws Exception {
+        AtomicReference<String> text = new AtomicReference<>();
+        onFx(() -> text.set(windowManager.saveLayout()));
+        return LayoutSnapshot.parse(text.get());
+    }
+
+    /** The main area is the editor pane with the given views, and the panel below it. */
+    private static void assertPanelBelowEditor(LayoutSnapshot layout, String panel, String... editorViews) {
+        assertThat(layout.main(), instanceOf(Split.class));
+        Split split = (Split) layout.main();
+        assertThat(split.orientation(), is(javafx.geometry.Orientation.VERTICAL));
+        Tabs editor = (Tabs) split.first();
+        assertThat(editor.editor(), is(true));
+        assertThat(editor.views(), is(List.of(editorViews)));
+        assertThat(((Tabs) split.second()).views(), contains(panel));
+    }
+
+    @Test
+    public void aPanelDockedUnderADocumentKeepsItsPlaceInTheDefaultLayout() throws Exception {
+        View document = documentView("doc", Position.CENTER, new Document("doc"));
+        View panel = silentTool("panel", Position.BOTTOM);
+        onFx(() -> {
+            windowManager.register(document);
+            windowManager.register(panel, document);
+        });
+        assertPanelBelowEditor(layout(), "panel", "doc");
+
+        // Drops the document the panel was docked to.
+        onFx(() -> windowManager.restoreDefaultLayout());
+
+        assertThat(windowManager.findView("doc"), is(nullValue()));
+        assertThat("the panel is a tool and stays", windowManager.findView("panel"), is(notNullValue()));
+        assertThat(windowManager.getToolViews(), hasItem(panel));
+        assertPanelBelowEditor(layout(), "panel");
+
+        onFx(() -> windowManager.register(documentView("next", Position.CENTER, new Document("next"))));
+
+        assertPanelBelowEditor(layout(), "panel", "next");
+    }
+
+    @Test
+    public void aPanelDockedUnderAClosedDocumentCanBeShownAgain() throws Exception {
+        View document = documentView("doc", Position.CENTER, new Document("doc"));
+        View panel = silentTool("panel", Position.BOTTOM);
+        onFx(() -> {
+            windowManager.register(document);
+            windowManager.register(panel, document);
+        });
+
+        onFx(() -> {
+            windowManager.closeView(panel);         // hidden
+            windowManager.closeView(document);      // gone for good
+            windowManager.showView(panel);          // what the View menu does
+        });
+
+        assertPanelBelowEditor(layout(), "panel");
+    }
+
+    @Test
+    public void theDefaultLayoutDoesNotLeaveTheFocusOnADocumentItDropped() throws Exception {
+        View document = documentView("doc", Position.CENTER, new Document("doc"));
+        View outline = silentTool("outline", Position.LEFT);
+        onFx(() -> {
+            windowManager.register(document);
+            windowManager.register(outline, document);
+        });
+        AtomicReference<View> focused = new AtomicReference<>();
+
+        onFx(() -> {
+            windowManager.setFocusedView(document);
+            windowManager.restoreDefaultLayout();
+            focused.set(windowManager.getFocusedView());
+        });
+
+        assertThat("the document is gone; the focus is not left on it",
+                focused.get() == document, is(false));
+    }
+
+    @Test
+    public void aToolPutBackLastKeepsFocusAndContextInTheDefaultLayout() throws Exception {
+        assertExplorerKeepsFocusAndContext(false);
+    }
+
+    @Test
+    public void aToolPutBackFirstKeepsFocusAndContextInTheDefaultLayout() throws Exception {
+        assertExplorerKeepsFocusAndContext(true);
+    }
+
+    /**
+     * The default layout takes every tool out and puts it back, in the order
+     * of their registration. Neither a tool that is not registered for a
+     * moment nor the panes that select their first tab as they are built may
+     * take the focus and the active context away from the tool that had them.
+     */
+    private void assertExplorerKeepsFocusAndContext(boolean explorerFirst) throws Exception {
+        View console = silentTool("console", Position.BOTTOM);
+        View explorer = view("explorer", Position.LEFT, ViewKind.TOOL, new MutableLookupContext("project A"));
+        onFx(() -> {
+            windowManager.register(explorerFirst ? explorer : console);
+            windowManager.register(explorerFirst ? console : explorer);
+        });
+        AtomicReference<String> active = new AtomicReference<>();
+        AtomicReference<View> focused = new AtomicReference<>();
+        List<String> seen = new ArrayList<>();
+
+        onFx(() -> {
+            windowManager.setFocusedView(explorer);
+            LookupContext.Subscription subscription = windowManager.getActiveLookup()
+                    .observe(String.class, now -> seen.add(now.isEmpty() ? "nothing" : now.get(0)));
+            windowManager.restoreDefaultLayout();
+            subscription.cancel();
+            active.set(windowManager.getActiveLookup().lookup(String.class));
+            focused.set(windowManager.getFocusedView());
+        });
+
+        assertThat(active.get(), is("project A"));
+        assertThat("observers are not told that the selection went away and came back", seen, is(empty()));
+        assertThat(focused.get(), is(explorer));
+    }
+
     /* ----- one document, several views -------------------------------------- */
 
     @Test
@@ -366,7 +542,7 @@ public class MultiDocumentIntegrationTest {
             windowManager.closeView(first);
         });
 
-        List<View> remembered = (List<View>) FieldUtils.readField(windowManager, "activeLookupHistory", true);
+        List<View> remembered = (List<View>) FieldUtils.readField(windowManager, "focusHistory", true);
         assertThat("a closed document must be free to go", remembered, is(empty()));
     }
 }

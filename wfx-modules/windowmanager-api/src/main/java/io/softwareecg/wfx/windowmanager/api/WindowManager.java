@@ -110,6 +110,13 @@ public interface WindowManager {
 
     /**
      * Restore the default layout according to the views position and insertion order.
+     * <p>
+     * Every {@link ViewKind#DOCUMENT DOCUMENT} view is closed and unregistered,
+     * every {@link ViewKind#TOOL TOOL} view goes back to where it was first
+     * registered. A tool that was registered next to a document — a panel
+     * docked under the first editor tab, say — outlives that document: it is
+     * placed where the document would go, which for a document at
+     * {@link Position#CENTER} is next to the editor pane.
      */
     void restoreDefaultLayout();
 
@@ -183,6 +190,9 @@ public interface WindowManager {
      * Show a closed view again. The view will be shown at the same position where it was on close. The given view must
      * be registered within the {@link WindowManager}. If it is not registered a {@link IllegalArgumentException} will
      * be thrown.
+     * <p>
+     * A view that was registered next to a parent view is shown next to that parent again. If the parent is not shown
+     * any more — hidden, or gone for good like a closed document — the view is placed where the parent would go.
      *
      * @param view The view to show.
      */
@@ -214,6 +224,10 @@ public interface WindowManager {
 
     /**
      * Get that view that currently holds the focus within this window.
+     * <p>
+     * A view that is closed or unregistered does not keep the focus. It goes
+     * back to the view that held it most recently and can still be seen — its
+     * tab is the selected one of its pane —, and to nobody if there is none.
      *
      * @return That view that holds the focus, or null if no view has focus.
      * @see #currentFocusedView() for an Optional-returning alternative
@@ -235,7 +249,8 @@ public interface WindowManager {
     /**
      * Get that view that holds recently the focus within this window..
      *
-     * @return That view that holds recently the focus, or null if none.
+     * @return That view that holds recently the focus, or null if none — also
+     *         if that view has been closed or unregistered since.
      * @see #previousFocusedView() for an Optional-returning alternative
      */
     View getLastFocusedView();
