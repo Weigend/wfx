@@ -527,16 +527,36 @@ public class WindowManagerImplTest {
         // restoreDefaultLayout re-registers every view; without the suppression
         // flag the focus would surf through the chain and end on whichever view
         // happens to be last in iteration order.
+        // Registered through the public API: only tools of the tool registry
+        // come back, and only a view that is back can still hold the focus.
         RootArea area = mock(RootArea.class);
         mockStageForArea(area);
         subWindows.add(area);
-        views.put("view1", view1);
-        views.put("view2", view2);
+        windowManager.register(view1.getView());
+        windowManager.register(view2.getView(), view1.getView());
         windowManager.setFocusedView(view1.getView());
 
         windowManager.restoreDefaultLayout();
 
         assertThat(windowManager.getFocusedView(), is(view1.getView()));
+    }
+
+    @Test
+    public void testUnregisteringTheFocusedViewReleasesTheFocus() {
+        windowManager.register(view1.getView());
+        windowManager.register(view2.getView());
+        windowManager.setFocusedView(view1.getView());
+        windowManager.setFocusedView(view2.getView());
+
+        windowManager.unregister(view2.getView());
+
+        assertThat("a view that is gone does not hold the focus",
+                windowManager.getFocusedView(), is(not(view2.getView())));
+
+        windowManager.unregister(view1.getView());
+
+        assertThat(windowManager.getFocusedView(), is(nullValue()));
+        assertThat(windowManager.getLastFocusedView(), is(nullValue()));
     }
 
     @Test

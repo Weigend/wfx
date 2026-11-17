@@ -122,10 +122,12 @@ state that belongs to one view and changes while the application runs,
 `WindowManagerImpl` owns one `ProxyLookupContext`, returned by
 `WindowManager.getActiveLookup()`. `setFocusedView` points it at the
 focused view's context unless that is `LookupContext.EMPTY`. The window
-manager remembers which views have supplied the active context; when the
-supplying view is closed or unregistered, the most recent of them that
-is still the selected tab of its pane takes over, and only if there is
-none is the proxy reset to empty. Observers are told
+manager remembers which views have held the focus. When the focused view
+is closed or unregistered, the most recent of them that is still the
+selected tab of its pane gets the focus; when the view that supplies the
+active context goes, the most recent such view that offers a context
+takes over, and only if there is none is the proxy reset to empty.
+Observers are told
 only when the list of instances of their type actually differs, whether
 through a content change or a delegate exchange. `lookup-api` has no
 JavaFX dependency: listeners run on the thread that made the change,

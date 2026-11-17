@@ -296,6 +296,30 @@ public class ViewArea {
     }
 
     /**
+     * Get the pane that takes the views at {@link Position#CENTER}: the area
+     * below this one that is marked as editor and is not split any further.
+     *
+     * @return The editor pane, or null if there is none below this area.
+     */
+    ViewArea getEditorPane() {
+        ViewArea area = this;
+        while (area != null) {
+            ViewArea first = area.getFirstChild();
+            ViewArea second = area.getSecondChild();
+            if (first != null && first.isEditor()) {
+                area = first;
+            }
+            else if (second != null && second.isEditor()) {
+                area = second;
+            }
+            else {
+                return area != this && area.isEditor() ? area : null;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Is this area or one of its childs the editor area.
      *
      * @return True if this or one of the childs is the editor area.
