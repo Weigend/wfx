@@ -59,6 +59,12 @@ public interface WindowManager {
      * interaction, so without this consumers would have to call
      * {@link #setFocusedView(View)} explicitly to get focus-driven side panels to
      * rebind to the freshly opened view.
+     * <p>
+     * A shown {@link ViewKind#DOCUMENT DOCUMENT} view is also brought to the
+     * front of its pane: it was opened on request, and what holds the focus
+     * should be what the user sees. A {@link ViewKind#TOOL TOOL} view that
+     * joins a pane with other tabs stays behind the selected one, so that the
+     * tools registered into one pane at startup show the first of them.
      *
      * @param view     The view to register.
      * @param showView True if the view should be shown immediately, false otherwise
@@ -269,9 +275,19 @@ public interface WindowManager {
      * view does not take part (its context is
      * {@link LookupContext#EMPTY}), in which case the active context is left
      * as it is, so that for example looking at a console view does not
-     * disable the actions for the current selection. When the view that
-     * supplies the active context is closed or unregistered, the active
-     * context becomes empty.
+     * disable the actions for the current selection.
+     * <p>
+     * When the view that supplies the active context is closed or
+     * unregistered, the context goes back to the view that supplied it before
+     * and can still be seen — a view whose tab lies behind another one is
+     * passed over. Closing one of two documents shown side by side therefore
+     * leaves the other one active, without the user having to click into it.
+     * If no such view is left, the active context becomes empty.
+     * <p>
+     * Several views can show the same thing: each of them puts the same
+     * object — the document — into its context. Whoever observes that type
+     * here is then told when the user moves to another document, and not when
+     * they move between two views of the same one.
      * <p>
      * This is the place to observe for anything that depends on "the current
      * selection" regardless of the view it was made in:

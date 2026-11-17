@@ -53,6 +53,8 @@ public enum ViewKind {
      *     <li>{@code restoreDefaultLayout} drops every {@code DOCUMENT}.</li>
      *     <li>{@code DOCUMENT} views never appear in the auto-built View
      *     menu.</li>
+     *     <li>Registering it shown brings it to the front of its pane; a
+     *     {@code TOOL} joins a pane behind the selected tab.</li>
      * </ul>
      */
     DOCUMENT
