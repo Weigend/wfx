@@ -23,6 +23,7 @@ synchronous in-process event bus.
 - **Bootstrapping Support** - clear `init` → preloader → `preload()` → main window → `start()` lifecycle so expensive work happens at the right phase
 - **Event Bus** - synchronous in-process bus with type-hierarchy dispatch and `@EventSubscriber` auto-wiring
 - **Context lookups** - every view can offer a `LookupContext` (its selection, its document); `WindowManager.getActiveLookup()` follows the view the user works in and reports changes, so menus, toolbars and other views react to "the current selection" without knowing where it comes from
+- **Several documents, several views each** - views that show the same thing put the same object into their context; observers are told when the user moves to another document, not when they move between two views of one, and when a document is closed the one still on screen takes over
 - **Lookup** - service locator with pluggable strategies (Avaje / ServiceLoader): resolves an interface at the moment of the call, also from objects no container creates (FXML controllers, views, tree items)
 - **Avaje Inject Integration** - compile-time DI for framework infrastructure
 - **ServiceLoader Support** - lightweight non-DI fallback for simple applications and tests
@@ -41,10 +42,14 @@ above as what exists, and this section as what to expect from it.
 - Registering views, the `TOOL` / `DOCUMENT` lifecycle, the application window
   with its menu, tool and status bar slots.
 
-**New in 1.2.0**
+**New**
 
-- Context lookups and layout persistence are covered by tests and shown in the
-  example application, but neither of the two applications uses them yet.
+- Context lookups (1.2.0) are covered by tests and shown in the example
+  application. 1.3.0 adds what an application with several documents needs
+  from them; it was built for one of the two applications, which is being
+  moved onto context lookups.
+- Layout persistence (1.2.0) is covered by tests and shown in the example
+  application, but neither of the two applications uses it yet.
 
 **Works, with rough edges**
 
@@ -62,7 +67,10 @@ above as what exists, and this section as what to expect from it.
   the wiring is the application's job. `WindowManager.getActiveLookup()` is the
   foundation such a system would build on.
 - **Documents.** No notion of a file opened in an editor: no modified state,
-  no save, no undo and redo.
+  no save, no undo and redo. What exists is the part that concerns the window
+  manager: several views can show one document, and the active context
+  follows the document the user works in (see
+  [One Document, Several Views](#one-document-several-views)).
 - **Background tasks.** No task service with progress display and cancel.
   Progress events exist for the startup phase only.
 - **Settings.** No preferences API and no options dialog. `saveLayout()`
@@ -81,8 +89,10 @@ above as what exists, and this section as what to expect from it.
 - WFX is not published to Maven Central. Check out a release tag and run
   `mvn clean install` to put it into your local repository.
 - A minor release can change behaviour. 1.2.0 did: it reversed the order of
-  `lookupAll()` for classes with `@Priority`. The release notes (in German)
-  list every such change.
+  `lookupAll()` for classes with `@Priority`. 1.3.0 did: a document view that
+  is registered comes to the front of its pane, and closing the view that
+  supplies the active context hands the context to the view that had it
+  before. The release notes (in German) list every such change.
 
 Missing pieces are built when an application needs them. If you need one, an
 issue that describes the use case is the way to move it up.
@@ -138,7 +148,7 @@ The easiest way to use WFX is the `wfx-all` aggregator dependency:
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>wfx-all</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
 </dependency>
 ```
 
@@ -602,10 +612,91 @@ Three rules decide what is active:
   clear the selection when focused returns an empty
   `MutableLookupContext` instead.
 - When the view that supplies the active context is closed or
-  unregistered, the active context becomes empty.
+  unregistered, the context goes back to the view that supplied it
+  before, provided the user can still see that view: its tab must be the
+  selected one of its pane. If there is no such view, the active context
+  becomes empty.
+
+> **Changed in 1.3.0.** Until 1.2.0 the active context always became
+> empty when its view was closed. With two documents side by side,
+> closing one left every panel blank although the other document was
+> still on screen.
 
 The `example-gui` module shows both sides: the explorer publishes its
 selected tree item, the main view displays it.
+
+### One Document, Several Views
+
+An application that opens several things at once — files, models, the
+analysis of an archive — usually shows each of them in more than one
+view: an overview and a detail, a diagram and a table. Two questions then
+have to have one answer everywhere: *which document does this view
+show?* and *which document is the user working on?* WFX answers both with
+context lookups and needs no document type of its own. The document is
+whatever object the application chooses.
+
+**Every view of a document puts that document into its context**, next
+to whatever is specific to the view:
+
+```java
+public class DiagramView implements View {
+
+    private final MutableLookupContext lookup;
+
+    public DiagramView(Analysis document, Diagram diagram) {
+        // the document, shared with the other views that show it,
+        // and this view's own contribution
+        this.lookup = new MutableLookupContext(document, diagram);
+    }
+
+    @Override public LookupContext getLookup() { return lookup; }
+    @Override public ViewKind getKind()        { return ViewKind.DOCUMENT; }
+    // ...
+}
+```
+
+**Panels and actions observe the document type in the active context.**
+They are told when the user moves to another document — and not when
+they move between two views of the same one, because the list of
+documents did not change:
+
+```java
+LookupContext active = Lookup.require(WindowManager.class).getActiveLookup();
+
+active.observe(Analysis.class, documents ->
+        outline.show(documents.isEmpty() ? null : documents.get(0)));
+
+// an action works on the document the user is in, whichever view has the focus
+Analysis current = active.lookup(Analysis.class);
+```
+
+A panel that needs the view itself, not only its document, observes the
+type of the view's own contribution (`Diagram` above) in the same way.
+
+**The views of a document are the registered views that carry it:**
+
+```java
+List<View> views = windowManager.getRegisteredViews().stream()
+        .filter(view -> view.getLookup().lookupAll(Analysis.class).contains(document))
+        .toList();
+```
+
+This is all it takes to close a document with all its views, or to
+apply a change to every view of one document and to no view of another.
+State that belongs to the document — what has been edited, what is
+marked — lives in the document object, where every view of it finds it,
+not in one of the views and not in a service shared by all documents.
+
+Three things the window manager does make this hold together:
+
+- A `DOCUMENT` view that is registered comes to the front of its pane.
+  What supplies the active context is what the user sees.
+- A panel without a context of its own (the default) keeps the active
+  context when it gets the focus. Working in the outline does not make
+  the outline forget which document it shows.
+- When the active document's view is closed, the document that was
+  active before and is still on screen takes over. The panels follow it
+  without the user having to click into it first.
 
 ## Application Lifecycle
 
@@ -851,7 +942,7 @@ Add the runtime dependency to the module that bundles your application
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>view-menu</artifactId>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <scope>runtime</scope>
 </dependency>
 ```

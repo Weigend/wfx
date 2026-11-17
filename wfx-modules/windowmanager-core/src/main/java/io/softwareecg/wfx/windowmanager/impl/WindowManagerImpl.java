@@ -87,6 +87,13 @@ public class WindowManagerImpl implements MultiWindowManager {
      * The view whose context {@link #activeLookup} currently stands in for.
      */
     private View activeLookupOwner;
+    /**
+     * The registered views that have supplied the active context, the most
+     * recent one last. When the current supplier goes away, the latest of
+     * them that is still on screen takes over. Views that are no longer
+     * registered are dropped, so that a closed document is not kept alive.
+     */
+    private final List<View> activeLookupHistory = new ArrayList<>();
 
     private View lastFocusedView;
     private boolean restoringLayout;
@@ -245,6 +252,16 @@ public class WindowManagerImpl implements MultiWindowManager {
         // Suppressed during restoreDefaultLayout so that bulk re-registration
         // does not surf focus through every restored view.
         if (shown && !restoringLayout) {
+            // A document is opened because the user asked for it, so it comes
+            // to the front of its pane. A TabPane leaves a tab that joins
+            // others behind the selected one; without this the new document
+            // would hold the focus — and supply the active context — while
+            // the user still looks at the previous one. Tools keep the
+            // TabPane's rule: several of them are registered into one pane at
+            // startup, and the first is the one to show.
+            if (viewStatus.getView().getKind() == ViewKind.DOCUMENT && viewStatus.getArea() != null) {
+                viewStatus.getArea().select(viewStatus);
+            }
             setFocusedView(viewStatus.getView());
         }
     }
@@ -784,26 +801,58 @@ public class WindowManagerImpl implements MultiWindowManager {
         if (lookup == null || lookup == LookupContext.EMPTY) {
             return;
         }
+        activeLookupHistory.remove(view);
+        activeLookupHistory.add(view);
         activeLookupOwner = view;
         activeLookup.setDelegate(lookup);
     }
 
     /**
-     * Empty the active context if the view that supplies it is no longer
-     * shown — closed, unregistered, or replaced by another view with its id.
-     * Without this the context of a view that is gone would stay active (and
-     * referenced) until the user happens to focus another participating view.
+     * Take the active context away from the view that supplies it if that
+     * view is no longer shown — closed, unregistered, or replaced by another
+     * view with its id. Without this the context of a view that is gone would
+     * stay active (and referenced) until the user happens to focus another
+     * participating view.
+     * <p>
+     * The context goes to the view that supplied it before and is still on
+     * screen: closing one of two documents shown side by side leaves the
+     * other one active, although the focus never moved there. Only if there
+     * is no such view does the active context become empty.
      */
     private void releaseActiveLookupIfOwnerIsGone() {
-        if (activeLookupOwner == null) {
+        activeLookupHistory.removeIf(view -> !hasRegisteredView(view));
+        if (activeLookupOwner == null || isShown(activeLookupOwner)) {
             return;
         }
-        ViewStatus status = viewsStatus.get(activeLookupOwner.getViewId());
-        if (status == null || status.getView() != activeLookupOwner
-                || status.getArea() == null || status.getStatus() == ViewStatus.Status.HIDDEN) {
-            activeLookupOwner = null;
-            activeLookup.setDelegate(LookupContext.EMPTY);
+        View successor = null;
+        for (int i = activeLookupHistory.size() - 1; i >= 0 && successor == null; i--) {
+            View candidate = activeLookupHistory.get(i);
+            if (candidate != activeLookupOwner && isOnScreen(candidate)) {
+                successor = candidate;
+            }
         }
+        activeLookupOwner = successor;
+        activeLookup.setDelegate(successor != null ? successor.getLookup() : LookupContext.EMPTY);
+    }
+
+    /**
+     * Whether the given view instance is registered and has a tab — in the
+     * front or behind another tab of its pane.
+     */
+    private boolean isShown(View view) {
+        ViewStatus status = viewsStatus.get(view.getViewId());
+        return status != null && status.getView() == view
+                && status.getArea() != null && status.getStatus() != ViewStatus.Status.HIDDEN;
+    }
+
+    /**
+     * Whether the user can see the given view: it is shown and its tab is the
+     * selected one of its pane. A view behind another tab must not take over
+     * the active context — the user would be told about something that is not
+     * in front of them.
+     */
+    private boolean isOnScreen(View view) {
+        return isShown(view) && viewsStatus.get(view.getViewId()).getTab().isSelected();
     }
 
     @Override
