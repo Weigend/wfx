@@ -32,6 +32,20 @@ jobs:
       # 'linux' on this runner automatically.
       run: xvfb-run -a mvn -B clean verify --file pom.xml
 
+    - name: Check for class files that differ only in case
+      # Windows and macOS file systems ignore case. Two such class files
+      # overwrite each other there, so the build breaks on those systems
+      # while it passes on this runner. Typical cause: an Avaje-generated
+      # module class next to a hand-written one, e.g. ViewmenuModule beside
+      # ViewMenuModule; give the generated one a name with @InjectModule.
+      run: |
+        dupes="$(find . -path '*/target/*' -name '*.class' | tr '[:upper:]' '[:lower:]' | sort | uniq -d)"
+        if [ -n "$dupes" ]; then
+          echo "Class files that differ only in case:"
+          echo "$dupes"
+          exit 1
+        fi
+
     - name: Upload Test Results
       uses: actions/upload-artifact@v4
       if: always()
