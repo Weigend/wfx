@@ -153,7 +153,7 @@ The easiest way to use WFX is the `wfx-all` aggregator dependency:
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>wfx-all</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
 </dependency>
 ```
 
@@ -991,7 +991,7 @@ Add the runtime dependency to the module that bundles your application
 <dependency>
     <groupId>io.softwareecg.wfx</groupId>
     <artifactId>view-menu</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <scope>runtime</scope>
 </dependency>
 ```

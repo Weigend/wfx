@@ -22,5 +22,13 @@
  *
  * It is placed within the platform codebase because tho it is easier to handle the development.
  *
+ * <p>The {@code @InjectModule(name="wfxExampleGui")} names the Avaje-generated module
+ * class {@code WfxExampleGuiModule}. The default name, derived from the package suffix,
+ * would be {@code ExampleguiModule}, which differs from {@link ExampleGuiModule} only in
+ * case. On Windows and macOS, whose file systems ignore case, the two class files
+ * would overwrite each other and the module could not be built.
  */
+@InjectModule(name = "wfxExampleGui")
 package io.softwareecg.wfx.examplegui;
+
+import io.avaje.inject.InjectModule;

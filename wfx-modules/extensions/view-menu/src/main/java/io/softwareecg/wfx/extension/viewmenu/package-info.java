@@ -20,7 +20,16 @@
 /**
  * Auto-built top-level "View" menu with one entry per registered TOOL view.
  *
+ * <p>The {@code @InjectModule(name="wfxViewMenu")} names the Avaje-generated module
+ * class {@code WfxViewMenuModule}. The default name, derived from the package suffix,
+ * would be {@code ViewmenuModule}, which differs from {@link ViewMenuModule} only in
+ * case. On Windows and macOS, whose file systems ignore case, the two class files
+ * would overwrite each other and the module could not be built.
+ *
  * @see io.softwareecg.wfx.extension.viewmenu.ViewMenuModule
  * @since 1.1.0
  */
+@InjectModule(name = "wfxViewMenu")
 package io.softwareecg.wfx.extension.viewmenu;
+
+import io.avaje.inject.InjectModule;
