@@ -47,9 +47,11 @@ public class FXMLView<C> implements View {
     private final URL viewImagePath;
     private final ViewKind kind;
     private final LookupContext lookup;
+    private final ViewAnchor defaultAnchor;
 
     private FXMLView(String id, String title, Position defaultPosition, Parent rootPane, String toolTipInfo,
-                     double viewAreaSize, C controller, URL viewImagePath, ViewKind kind, LookupContext lookup) {
+                     double viewAreaSize, C controller, URL viewImagePath, ViewKind kind, LookupContext lookup,
+                     ViewAnchor defaultAnchor) {
         this.id = id;
         this.title = title;
         this.defaultPosition = defaultPosition;
@@ -60,6 +62,7 @@ public class FXMLView<C> implements View {
         this.viewImagePath = viewImagePath;
         this.kind = kind;
         this.lookup = lookup;
+        this.defaultAnchor = defaultAnchor;
     }
 
     @Override
@@ -80,6 +83,11 @@ public class FXMLView<C> implements View {
     @Override
     public Position getDefaultPosition() {
         return defaultPosition;
+    }
+
+    @Override
+    public ViewAnchor getDefaultAnchor() {
+        return defaultAnchor;
     }
 
     @Override
@@ -160,6 +168,7 @@ public class FXMLView<C> implements View {
         private C controller;
         private ViewKind kind = ViewKind.TOOL;
         private LookupContext lookup;
+        private ViewAnchor anchor = ViewAnchor.WINDOW;
 
         /**
          * Set the builder value "id"
@@ -191,6 +200,25 @@ public class FXMLView<C> implements View {
          */
         public Builder<C> withPos(Position pos) {
             this.pos = pos;
+            return this;
+        }
+
+        /**
+         * Set what the position is measured from, see
+         * {@link View#getDefaultAnchor()}.
+         * <p>
+         * Defaults to {@link ViewAnchor#WINDOW}. With
+         * {@link ViewAnchor#EDITOR} the view is placed beside the editor
+         * pane: {@code withPos(Position.BOTTOM).withAnchor(ViewAnchor.EDITOR)}
+         * is a panel under the documents.
+         *
+         * @param anchor the anchor of the position
+         * @return fluent builder interface
+         * @since 1.4.0
+         */
+        public Builder<C> withAnchor(ViewAnchor anchor) {
+            Objects.requireNonNull(anchor, "anchor must not be null");
+            this.anchor = anchor;
             return this;
         }
 
@@ -363,7 +391,7 @@ public class FXMLView<C> implements View {
 
 
             return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind,
-                    resolveLookup());
+                    resolveLookup(), anchor);
         }
 
         /**
@@ -379,7 +407,7 @@ public class FXMLView<C> implements View {
             // Objects.requireNonNull(controller, "Can not initialize a FXMLView without a controller.");
 
             return new FXMLView<>(id, title, pos, rootPane, toolTipInfo, viewAreaSize, controller, viewImage, kind,
-                    resolveLookup());
+                    resolveLookup(), anchor);
         }
     }
 }

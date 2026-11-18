@@ -52,7 +52,10 @@ public interface WindowManager {
     /**
      * Register a new view within this window manager.
      * <p>
-     * The Position will give an advice where this view should be placed.
+     * The Position will give an advice where this view should be placed:
+     * which side, and the {@linkplain View#getDefaultAnchor() anchor} of the
+     * view says of what — the content of the main window, or the editor pane
+     * alone ({@link ViewAnchor#EDITOR}).
      * <p>
      * If {@code showView} is {@code true} the new view is also made the focused view
      * (see {@link #focusedViewProperty()}). JavaFX's focus owner only moves on user
@@ -193,6 +196,7 @@ public interface WindowManager {
      * <p>
      * A view that was registered next to a parent view is shown next to that parent again. If the parent is not shown
      * any more — hidden, or gone for good like a closed document — the view is placed where the parent would go.
+     * A view without a parent is placed by its position and its {@linkplain View#getDefaultAnchor() anchor}.
      *
      * @param view The view to show.
      */
