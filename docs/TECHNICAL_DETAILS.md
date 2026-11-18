@@ -190,6 +190,24 @@ public enum Position {
 Side positions create or reuse split panes. `CENTER` places a view in the
 current tab area.
 
+What a side position is the side of is the view's `ViewAnchor`
+(`View.getDefaultAnchor()`):
+
+- `WINDOW` (default) — the content of the main `RootArea`. The view is
+  added to the root's child, which splits whatever is there.
+- `EDITOR` — the editor pane, the tab area marked as editor that takes the
+  `CENTER` views (`ViewArea.getEditorPane()`). The view splits that pane
+  alone. The pane exists as long as the main `RootArea` does, also without
+  views, so the result does not depend on registration order or on a
+  document being open.
+
+The anchor is read wherever a view is placed by its defaults: `register(view)`,
+`restoreDefaultLayout()`, `showView()` for a hidden view, and
+`restoreLayout()` for a shown view the layout does not mention. A view
+registered with a parent is placed next to the parent; only if neither the
+parent nor a place derived from it exists any more do its own defaults
+apply.
+
 ## FXML Loading
 
 `FXMLLoaderFactory` creates a fresh `FXMLLoader` per lookup. Its controller

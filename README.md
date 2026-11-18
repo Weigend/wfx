@@ -12,6 +12,7 @@ synchronous in-process event bus.
 ## Features
 
 - **Window Management** - tab-based views with drag & drop, splittable areas, and registration-order independent layouts
+- **Panels beside the editor** - a view can anchor its position to the editor pane instead of the window (`ViewAnchor.EDITOR`): a console under the documents keeps its place whatever is registered around it, and needs no open document to be docked to
 - **Layout persistence** - `saveLayout()` / `restoreLayout()` capture the arrangement of the views (tabs, splits, dividers, detached windows) as text, so an application can reopen the way the user left it
 - **View Lifecycle** - every view declares its kind via `ViewKind` (`TOOL` or `DOCUMENT`); close, `restoreDefaultLayout()`, and the auto-built View menu all follow that classification
 - **Auto-built View menu** - optional `view-menu` extension adds a top-level View entry per registered TOOL view, kept in sync with the registry
@@ -49,7 +50,11 @@ above as what exists, and this section as what to expect from it.
   from them; it was built for one of the two applications, which is being
   moved onto context lookups.
 - Layout persistence (1.2.0) is covered by tests and shown in the example
-  application, but neither of the two applications uses it yet.
+  application. One of the two applications is being moved onto it.
+- Anchoring a panel to the editor pane (1.4.0) is covered by tests. It was
+  built for that application: its panel under the documents could only be
+  docked once the first document was open, which was too late for the
+  layout of the last session to place it.
 
 **Works, with rough edges**
 
@@ -302,6 +307,44 @@ public class MyModule implements Module {
 `FXMLView.Builder` binds the FXML file from step 3 to its controller class
 and adds the registration metadata (id, title, dock position) the
 `WindowManager` needs.
+
+**Beside the window or beside the editor.** A position names a side —
+of what, the view's anchor says. By default it is the content of the main
+window: a view at `BOTTOM` takes its share from everything that is there
+when it is registered, so a panel registered after an explorer on the left
+runs under the explorer as well. With `ViewAnchor.EDITOR` the side is that
+of the editor pane, the pane that takes the `CENTER` views:
+
+```java
+FXMLView<ConsoleController> console = new FXMLView.Builder<ConsoleController>()
+        .withId("console")
+        .withTitle("Console")
+        .withPos(Position.BOTTOM)
+        .withAnchor(ViewAnchor.EDITOR)      // under the documents only
+        .withViewAreaSize(0.25)             // a quarter of the editor pane
+        .withFile(getClass().getResource("console.fxml"))
+        .build();
+Lookup.lookup(WindowManager.class).register(console);
+```
+
+```
+ anchor WINDOW (default)            anchor EDITOR
++----------+-------------+        +----------+-------------+
+| explorer | documents   |        | explorer | documents   |
+|          |             |        |          |             |
++----------+-------------+        |          +-------------+
+| console                |        |          | console     |
++------------------------+        +----------+-------------+
+```
+
+The result does not depend on the order in which the views are
+registered. The editor pane exists from the start and stays when its last
+document is closed, so such a panel is registered at startup like any
+other tool — there is no need to wait for the first document and register
+the panel with that document as its parent. `restoreDefaultLayout()` and
+`showView()` put it back beside the editor pane. A view that is not built
+with `FXMLView` overrides `View.getDefaultAnchor()`. Registering a view
+with a parent view still places it next to that parent.
 
 **Tool vs document views.** Every view has a `ViewKind`. The default
 `TOOL` describes a persistent panel — closing its tab hides the view but
@@ -899,6 +942,12 @@ public class LayoutModule implements Module {
     }
 }
 ```
+
+A layout can only place what is registered. A panel that belongs under
+the documents is therefore registered at startup with
+`ViewAnchor.EDITOR` (see step 4), not later with the first document as
+its parent — or it would open at its default place and size in every
+session.
 
 Views registered in `preload()` are all in place when the first
 `start()` runs. If a module registers views in its own `start()`, give

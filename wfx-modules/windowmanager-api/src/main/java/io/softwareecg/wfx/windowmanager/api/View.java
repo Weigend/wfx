@@ -61,6 +61,22 @@ public interface View {
     Position getDefaultPosition();
 
     /**
+     * Get what the {@linkplain #getDefaultPosition() default position} of this
+     * view is measured from.
+     * <p>
+     * The default is {@link ViewAnchor#WINDOW}: the position names a side of
+     * the main window's content. Override and return
+     * {@link ViewAnchor#EDITOR} for a panel that belongs beside the editor
+     * pane — under the documents, say — wherever the other panels are.
+     *
+     * @return the anchor of the default position.
+     * @since 1.4.0
+     */
+    default ViewAnchor getDefaultAnchor() {
+        return ViewAnchor.WINDOW;
+    }
+
+    /**
      * Get the root node for the content area of this view.
      *
      * @return The views content root node.

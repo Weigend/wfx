@@ -24,6 +24,7 @@ import io.softwareecg.wfx.lookup.api.LookupContext;
 import io.softwareecg.wfx.lookup.api.ProxyLookupContext;
 import io.softwareecg.wfx.windowmanager.api.Position;
 import io.softwareecg.wfx.windowmanager.api.View;
+import io.softwareecg.wfx.windowmanager.api.ViewAnchor;
 import io.softwareecg.wfx.windowmanager.api.ViewKind;
 import io.softwareecg.wfx.windowmanager.api.ViewLifecycle;
 import io.softwareecg.wfx.windowmanager.api.WindowFactory;
@@ -137,16 +138,33 @@ public class WindowManagerImpl implements MultiWindowManager {
         }
         ViewStatus v = new ViewStatus(view);
 
-        ViewArea area = getMainRootArea();
         boolean show = showView;
         Position position = v.getPosition();
         TabArea oldArea = unregisterImpl(view);
+        // Ask for the default area only now: taking the view out may have
+        // removed the pane it was in, and with it a split.
+        ViewArea area = defaultAreaOf(view);
         if (oldArea != null && oldArea.isValid()) {
             area = oldArea;
             position = Position.CENTER;
             show = true;
         }
         register(v, show, area, position);
+    }
+
+    /**
+     * The area a view is added to when it is placed by its own defaults, see
+     * {@link View#getDefaultAnchor()}: the editor pane of the main window for
+     * a view anchored there, otherwise the whole content of the main window.
+     */
+    private ViewArea defaultAreaOf(View view) {
+        if (view.getDefaultAnchor() == ViewAnchor.EDITOR) {
+            ViewArea editorPane = getMainRootArea().getEditorPane();
+            if (editorPane != null) {
+                return editorPane;
+            }
+        }
+        return getMainRootArea();
     }
 
     /**
@@ -194,7 +212,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         boolean show = unregister(view, false) || showView;
         ViewArea area = findAreaToAdd(parentStatus);
         if (area == null) {
-            area = getMainRootArea();
+            area = defaultAreaOf(view);
         }
         register(viewStatus, show, area, viewStatus.getPosition());
     }
@@ -212,7 +230,7 @@ public class WindowManagerImpl implements MultiWindowManager {
      *
      * @param parentView start the search for a visible parent view area.
      * @return the area to add the view to; null if the view has to be placed
-     *         by its own position alone.
+     *         by its own defaults alone.
      */
     private ViewArea findAreaToAdd(ViewStatus parentView) {
         ViewStatus parent = parentView;
@@ -575,7 +593,7 @@ public class WindowManagerImpl implements MultiWindowManager {
         for (ViewStatus status : unknownShown) {
             status.restoreDefault();
             ViewArea target = status.getParent() != null ? findAreaToAdd(status.getParent()) : null;
-            (target != null ? target : root).add(status, status.getPosition());
+            (target != null ? target : defaultAreaOf(status.getView())).add(status, status.getPosition());
         }
         unknownShown.forEach(ViewStatus::setDividerPositions);
         build.dividers.forEach(Runnable::run);

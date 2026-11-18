@@ -136,6 +136,18 @@ public class FXMLViewTest {
     }
 
     @Test
+    public void testAnchorIsTheWindowUnlessTheBuilderIsToldOtherwise() throws Exception {
+        FXMLView.Builder<TestController> builder = new FXMLView.Builder<TestController>().withId("example:1")
+                .withTitle("Example view")
+                .withFile(getClass().getResource("exampleView.fxml"))
+                .withPos(Position.BOTTOM);
+
+        assertThat(builder.build().getDefaultAnchor(), is(ViewAnchor.WINDOW));
+        assertThat(builder.withAnchor(ViewAnchor.EDITOR).build().getDefaultAnchor(), is(ViewAnchor.EDITOR));
+        assertThat(builder.clone().getDefaultAnchor(), is(ViewAnchor.EDITOR));
+    }
+
+    @Test
     public void testBuilderWithoutClassLoader() throws Exception {
         FXMLView<TestController> view = new FXMLView.Builder<TestController>().withId("example:1")
                 .withTitle("Example view")
