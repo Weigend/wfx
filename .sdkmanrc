@@ -1,0 +1,2 @@
+# JDK for this project, same major version as CI. Activate with: sdk env
+java=21.0.6.fx-librca
