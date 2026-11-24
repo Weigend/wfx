@@ -108,7 +108,8 @@ issue that describes the use case is the way to move it up.
 
 ## Requirements
 
-- **Java 21** or higher
+- **Java 21** or higher (to build with tests on JDK 25, see
+  [Known Issues](#known-issues))
 - **JavaFX 21** or higher
 - **Maven 3.8+** for building
 
@@ -1140,6 +1141,42 @@ Two notes:
   `DataModule` publishes, it misses the event. Use `@Priority` to order
   modules — or have the producer hold the most recent event and replay
   it for late subscribers.
+
+## Known Issues
+
+### The tests fail on JDK 25
+
+`mvn clean install` fails on JDK 25. The code compiles, but the build stops at
+a failing test in `ui-utils` and skips all modules after it. With `-fae`, tests
+in `platform-core` fail as well. The error in `ui-utils` is:
+
+```
+Java 25 (69) is not supported by the current version of Byte Buddy
+which officially supports Java 22 (66)
+```
+
+The cause is a test dependency: Mockito 5.7.0 uses Byte Buddy 1.14.9, which
+officially supports Java versions up to 22. No production code is involved.
+
+**Recommended:** build with JDK 21, as the CI does. With
+[SDKMAN!](https://sdkman.io), the `.sdkmanrc` in the project root selects a
+matching JDK for the current shell:
+
+```bash
+sdk env install   # once, if that JDK is not installed yet
+sdk env
+mvn clean install
+```
+
+**Workaround on JDK 25:** turn on Byte Buddy's experimental mode. All tests
+pass with it on JDK 25.0.5.1.
+
+```bash
+mvn clean install -Dnet.bytebuddy.experimental=true
+```
+
+Updating Mockito alone does not solve the problem: with 5.21.0, the tests in
+`platform-core` fail because JUnit may not access the module's packages.
 
 ## Dependencies
 
