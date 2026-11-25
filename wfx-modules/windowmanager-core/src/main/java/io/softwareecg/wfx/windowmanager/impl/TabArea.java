@@ -169,7 +169,33 @@ public class TabArea extends ViewArea {
         views.add(view);
         view.setArea(this);
         view.setPosition(position);
-        tabPane.getTabs().add(view.getTab());
+        tabPane.getTabs().add(view.takeBesideParent() ? indexBehind(view.getParent()) : tabPane.getTabs().size(),
+                view.getTab());
+    }
+
+    /**
+     * Where a tab goes that belongs beside {@code parent}: right behind the tab
+     * of the parent and behind the tabs placed beside it before; at the end if
+     * the parent is not in this area.
+     */
+    private int indexBehind(ViewStatus parent) {
+        int index = -1;
+        for (int i = 0; i < tabPane.getTabs().size(); i++) {
+            if (tabPane.getTabs().get(i).getUserData() instanceof ViewStatus status
+                    && status.getView() == parent.getView()) {
+                index = i;
+            }
+        }
+        if (index < 0) {
+            return tabPane.getTabs().size();
+        }
+        int behind = index + 1;
+        while (behind < tabPane.getTabs().size()
+                && tabPane.getTabs().get(behind).getUserData() instanceof ViewStatus status
+                && status.getParent() != null && status.getParent().getView() == parent.getView()) {
+            behind++;
+        }
+        return behind;
     }
 
     /**

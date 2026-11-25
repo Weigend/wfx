@@ -78,8 +78,10 @@ public interface WindowManager {
      * Register and a new view within this window manager using a parent view to define the exact position.
      * <p>
      * It use the given parent view with the views position to exactly define the displayed position. If the position is
-     * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
-     * value the area which contains the parent view will be split according to the value of position of the new view.
+     * {@link Position#CENTER} the registered view will be placed as tab right behind the tab of the parent view, and
+     * behind the tabs placed next to the same parent before; closing it brings the parent back to the front. In any
+     * other position value the area which contains the parent view will be split according to the value of position
+     * of the new view.
      *
      * @param view   The view to register.
      * @param parent An already registered view which defines the exact position to insert the view.
@@ -92,8 +94,10 @@ public interface WindowManager {
      * Register a new view within this window manager using a parent view to define the exact position.
      * <p>
      * It use the given parent view with the views position to exactly define the displayed position. If the position is
-     * {@link Position#CENTER} the registered view will be placed as tab next to the parent view. In any other position
-     * value the area which contains the parent view will be split according to the value of position of the new view.
+     * {@link Position#CENTER} the registered view will be placed as tab right behind the tab of the parent view, and
+     * behind the tabs placed next to the same parent before; closing it brings the parent back to the front. In any
+     * other position value the area which contains the parent view will be split according to the value of position
+     * of the new view.
      * <p>
      * If {@code showView} is {@code true} the new view is also made the focused view
      * (see {@link #focusedViewProperty()}).

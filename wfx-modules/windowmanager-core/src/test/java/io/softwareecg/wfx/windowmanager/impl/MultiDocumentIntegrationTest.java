@@ -30,6 +30,7 @@ import io.softwareecg.wfx.windowmanager.impl.LayoutSnapshot.Split;
 import io.softwareecg.wfx.windowmanager.impl.LayoutSnapshot.Tabs;
 import io.softwareecg.wfx.windowmanager.testutil.GuiTestHelper;
 import javafx.scene.Scene;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -155,6 +156,38 @@ public class MultiDocumentIntegrationTest {
 
         assertThat("what is active is what the user sees", visible.get(), contains("second"));
         assertThat(active.get(), is(second));
+    }
+
+    /** A view of a document opened next to it, like a second view of the same thing. */
+    @Test
+    public void aTabNextToItsParentIsRightBehindItAndGivesBackToItWhenClosed() throws Exception {
+        Document first = new Document("first");
+        Document second = new Document("second");
+        View firstView = documentView("first", Position.CENTER, first);
+        View secondView = documentView("second", Position.CENTER, second);
+        View firstDetail = documentView("first detail", Position.CENTER, first);
+        View firstMore = documentView("first more", Position.CENTER, first);
+        AtomicReference<List<String>> order = new AtomicReference<>();
+        AtomicReference<List<String>> visible = new AtomicReference<>();
+
+        onFx(() -> {
+            windowManager.register(firstView);
+            windowManager.register(secondView);
+            windowManager.register(firstDetail, firstView);
+            windowManager.register(firstMore, firstView);
+            TabPane tabs = (TabPane) windowManager.getRootPane().lookup(".tab-pane");
+            List<String> ids = new ArrayList<>();
+            tabs.getTabs().forEach(tab -> ids.add(((ViewStatus) tab.getUserData()).getView().getViewId()));
+            order.set(ids);
+        });
+        assertThat(order.get(), contains("first", "first detail", "first more", "second"));
+
+        onFx(() -> {
+            windowManager.closeView(firstMore);
+            windowManager.closeView(firstDetail);
+            visible.set(visibleViewIds());
+        });
+        assertThat("the parent comes back, not the neighbour", visible.get(), contains("first"));
     }
 
     @Test

@@ -292,6 +292,10 @@ public class WindowManagerImpl implements MultiWindowManager {
         ViewLifecycle.attached(viewStatus.getView().getRootNode());
         boolean shown = false;
         if (show && viewArea != null && position != null) {
+            // A tab next to its parent is a tab beside the parent's tab.
+            if (viewStatus.getParent() != null) {
+                viewStatus.placeBesideParent();
+            }
             viewArea.add(viewStatus, position);
             shown = true;
         }
