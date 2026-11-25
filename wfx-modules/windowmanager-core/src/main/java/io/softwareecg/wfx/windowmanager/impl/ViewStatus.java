@@ -48,6 +48,8 @@ public class ViewStatus {
     private final View view;
     private final Position defaultPosition;
     private final ViewStatus parent;
+    /** Set by the registration, taken by the tab area. */
+    private boolean besideParent;
     /**
      * The status whether this view is visible or hidden (or something else)
      */
@@ -101,6 +103,22 @@ public class ViewStatus {
      */
     public ViewStatus getParent() {
         return parent;
+    }
+
+    /**
+     * Let the next {@link TabArea} that takes this view as a tab put it right
+     * behind the tab of its parent, not at the end. Only the registration does
+     * so: a restored layout keeps the order the user gave the tabs.
+     */
+    void placeBesideParent() {
+        besideParent = true;
+    }
+
+    /** Whether the tab goes beside the parent's tab; asking forgets it. */
+    boolean takeBesideParent() {
+        boolean beside = besideParent;
+        besideParent = false;
+        return beside && parent != null;
     }
 
     /**
